@@ -1,0 +1,155 @@
+<style>
+    .btnArrow {
+        font-size: xx-large;
+        display: block;
+        line-height: 41px;
+    }
+
+    #date {
+        margin: 0 10px;
+        width: 170px;
+        text-align: center;
+        font-size: x-large;
+    }
+
+    .ui-icon {
+        margin-top: 0px;
+    }
+
+    .workTime{
+        margin-left: 50px;
+        width: 110px;
+    }
+
+    .workDay{
+        width: 150px;
+    }
+
+    .reportsTime {
+        margin-left: 50px;
+        width: 140px;
+    }
+
+    .tabelTime {
+        margin-left: 50px;
+        width: 140px;
+    }
+
+    .totalInfo {
+        margin-top: 15px;
+    }
+</style>
+
+
+<div style="display: flex;">
+    <h3 class="titlePage">Выработка / Табель</h3>
+
+    <div style="display: flex; height: 40px; margin-left: 20px;">
+        <i class="bi bi-arrow-left-circle btnArrow colorGreen" increment="-1"></i>
+        <input id="date" name="date" type="text" readonly>
+        <i class="bi bi-arrow-right-circle btnArrow colorGreen" increment="1"></i>
+    </div>
+</div>
+
+<div id="containerResult"></div>
+
+<script>
+    let week = 0;
+    let accordion = false;
+
+    $(document).ready(function() {
+
+        $('.btnArrow').on('click', function(event){
+            clickAnimate(this);
+            week += parseInt($(this).attr('increment')||0);
+            updateInfo();
+        })
+
+        $('#date').on('click', function(event){
+            week = 0;
+            updateInfo();
+        })
+
+        function updateInfo() {
+            NProgress.start();
+
+            $.ajax({ url: '/app/tabelWork', type: 'GET', data: {week:week}, dataType: 'json', success: function(response) {
+                console.log('response', response);
+
+                if(accordion){
+                    $( "#containerResult" ).accordion("destroy");
+                    accordion = false;
+                }
+
+                $('#containerResult').html('');
+                $('#date').val(''); 
+
+                if (response.error) {
+                    toastr.error("Ошибка при получении данных");
+                    return;
+                }
+
+                $('#date').val(response['Период']);     
+
+                response.days.forEach((day) => {
+                    console.log('day', day);
+                    let elemDay = $(`<h3 style="display: flex;">
+                                        <div class="workDay">${day.dateLabel}</div>
+                                        <div class="workTime">${day['ВремяПрихода']} - ${day['ВремяУхода']}</div>
+                                        <div class="reportsTime">${day['ВремяВыработкиЗаДеньПоОтчетамСтрокой']}</div>
+                                        <div class="tabelTime">${day['ИтогЧасовЗаДеньПоТабелюСтрокой']}</div>
+                                    </h3>`);
+                    $('#containerResult').append(elemDay);
+
+                    let elemDayInfo = $(`<div></div>`).appendTo('#containerResult');
+
+                    if (day.reports.length > 0) {
+                        let elemDayReports = $(`<table><thead><tr>
+                                                    <th>Деталь</th>
+                                                    <th style="width:90px;">Станок</th>
+                                                    <th style="width:115px;">Кол-во изготовлено</th>
+                                                    <th style="width:90px;">Кол-во годных</th>
+                                                    <th style="width:135px;">Полное время, мм:сс</th>
+                                                    <th style="width:130px;">Общее время, чч:мм</th>
+                                                </tr></thead><tbody></tbody></table>`);
+
+                        $(elemDayInfo).append(elemDayReports);
+
+                        let elemTbody = $(elemDayInfo).find('tbody');
+
+                        day.reports.forEach((report) => {
+                            console.log('report', report, report['Деталь']['Артикул']);
+                            let elemDataRow = $(`<tr>
+                                <td>${report['Деталь']['Артикул']}</td>
+                                <td class="textAlignCenter">${report['Станок']['ИнвентарныйНомер']}</td>
+                                <td class="textAlignEnd">${report['КоличествоИзготовлено']}</td>
+                                <td class="textAlignEnd">${report['КоличествоГодных']}</td>
+                                <td class="textAlignCenter">${report['ПолноеВремя']}</td>
+                                <td class="textAlignCenter">${report['ДлительностьВремя']}</td>
+                            </tr>`);
+                            console.log('elemDataRow', elemDataRow);
+                            $(elemTbody).append(elemDataRow);
+                        })
+                    }
+                    
+                });
+
+                $("#containerResult").accordion({
+                    heightStyle: "content",
+                    collapsible: true,
+                    active: false
+                });
+
+
+                let elemTotal = $(`<h4 class="totalInfo">${response['ИтоговаяСтрока']}</h4>`);
+                $('#containerResult').append(elemTotal);
+
+                accordion = true;
+            },complete: function(xhr, status) {
+                NProgress.done();
+            }});
+        }
+
+        updateInfo();
+    })
+</script>

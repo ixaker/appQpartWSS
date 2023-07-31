@@ -1,0 +1,296 @@
+<style>
+    #fixReportRow input {
+        width: 300px;
+        flex: inherit;
+    }
+
+    .labelFixBrak {
+        margin-left: 10px;
+    }
+
+    #groupFixReport {
+        width: 430px;
+        margin: auto;
+        background-color: aliceblue;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #d7e7f5;
+    }
+
+    #saveFixReport {
+        margin-right: 15px;
+        margin-left: auto;
+    }
+
+    #fixReportForm {
+        padding: 20px;
+    }
+
+    #time {
+        text-align: center;
+    }
+</style>
+
+<h3 class="titlePage">Список брака</h3>
+
+<table id="ОтчетПоРаботе2022" url="/app/getListDefect" filter="filterForDefectTable" append="end" init header>
+    <tr class="config" style="display: none;">
+        <td title="Дата" 
+            name="ДатаОтчета" 
+            style="width: 70px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+        <td title="Номер детали" 
+            name="Деталь" 
+            key="Артикул" 
+            style="width: 100%;"><div class="dataCell"></div></td>
+        <td title="Станок" 
+            name="Станок" 
+            key="ИнвентарныйНомер" 
+            style="width: 70px;"><div class="dataCell"></div></td>
+        <td title="МЛ"  
+            name="Заказ" 
+            key="Номер" 
+            style="width: 60px;"><div class="dataCell textAlignCenter"></div></td>
+        <td title="Код операции" 
+            name="ЭтапПроизводства" 
+            key="КодНовый" 
+            style="width: 90px;"><div class="dataCell textAlignCenter"></div></td>
+        <td title="Оператор" 
+            name="Сотрудник" 
+            key="Наименование" 
+            style="width: 220px;"><div class="dataCell"></div></td>
+        <td title="Надо исправить" 
+            name="КоличествоОсталосьИсправить" 
+            style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
+        <td title="" 
+            style="width: 55px;"><div class="groupBtnRow">
+                <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+            </div></td>
+    </tr>
+
+    <tr id="fixReportRow" style="display: none;">
+        <td colspan="99">
+            <div id="fixReportForm">
+                <div id="groupFixReport">
+                    <h5 style="margin-bottom: 20px; font-weight: bold;">Создание отчета по исправлению брака</h5>
+                    <div class="input-group mb-2">
+                        <label for="sotrudnik" class="labelFixBrak" style="width: 180px;">Кто исправлял :</label>
+                        <input type="text" 
+                            class="form-control inputFixBrak" 
+                            id="sotrudnik" 
+                            url="/app/autocompleteSotrydnik" 
+                            name="Станок" 
+                            key="ИнвентарныйНомер" 
+                            style="width: 200px;"
+                            aria-describedby="basic-addon3">
+                    </div>
+
+                    <div class="input-group mb-2">
+                        <label for="date" class="labelFixBrak" style="width: 180px;">Когда исправлял :</label>
+                        <input type="date" class="form-control inputFixBrak" style="width: 200px;" id="date" aria-describedby="basic-addon3">
+                    </div>
+
+                    <div class="input-group mb-2">
+                        <label for="time" class="labelFixBrak" style="width: 300px;">Времени потрачено, чч:мм:</label>
+                        <input type="text" class="form-control inputFixBrak" inputmode="numeric" style="width: 80px;" id="time" placeholder="чч:мм" aria-describedby="basic-addon3">
+                    </div>
+
+                    <div class="input-group mb-2">
+                        <label for="time" class="labelFixBrak" style="width: 300px;">Количество исправлено, шт:</label>
+                        <input type="number" class="form-control inputFixBrak textAlignEnd" inputmode="numeric" style="width: 80px;" id="count" aria-describedby="basic-addon3">
+                    </div>
+
+                    <div style="display: flex; margin-top: 20px;">
+                        <button type="button" class="btn btn-success" id="saveFixReport">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" id="cancelFixReport">Отмена</button>
+                    </div>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</table>
+
+<script>
+    $(document).ready(function() {
+        initTables();
+
+        initInputSotrudnik();
+        initInputTimeMask();
+        initInputDate();
+        initInputCount();
+
+        $('#ОтчетПоРаботе2022').on('click', '.btnPlay', function(event){
+            const rowID = $(this).attr('rowID');
+            const row = $('#' + rowID);
+            const maxCount = parseInt($(row).find('.dataCell[name="КоличествоОсталосьИсправить"]').text()||0);
+
+
+            $('#sotrudnik').val('');
+            $('#sotrudnik').attr('uid', '');
+            setValid('#sotrudnik', false);
+
+            $('#date').val('');
+            setValid('#date', false);
+
+            $('#time').val('');
+            setValid('#time', false);
+
+            $('#count').val('');
+            $('#count').attr('maxCount', maxCount);
+            setValid('#count', false);
+
+            $('#fixReportRow').attr('report', rowID)
+            $('#fixReportRow').insertAfter(row);
+            $('#fixReportRow').show();
+            
+        });
+
+        filterForDefectTable = function(data) {
+            console.log('func filterForDefectTable', data);  
+            
+            var result = true;
+
+            try {
+                if (!data['Проведен']) {
+                    result = false;    
+                }else if (data['КоличествоБрака'] == 0) {
+                    result = false;
+                }else if ((data['КоличествоОсталосьИсправить']||0) == 0) {
+                    result = false;
+                }
+            } catch (error) {}
+
+            return result;
+        }
+
+        callbackWSS = async function(data) {
+            console.log('callbackWSS', data);
+            callbackTable(data);
+        }
+
+        function initInputSotrudnik() {
+            const element = $('#sotrudnik');
+            const url = $(element).attr('url');
+
+            $(element).autocomplete({ 
+                source: function(req, res) { 
+                    $.ajax({ url: url, dataType: "json", data: { term: req.term},
+                        success: function(data) { res(data);}
+                    });
+                },
+                select: function(event, ui){ 
+                    $(this).attr('uid', ui.item.uid);
+                    setValid(this, true);
+                    $(this).blur();
+                },
+                position: { my: "left bottom", at: "left top" },
+                minLength: 1
+            }).on("input" , function() { 
+                $(element).attr('uid', '');
+                setValid(element, false);
+            }).on("blur"  , function() { 
+                if(($(element).attr('uid')||'') === ''){
+                    $(element).val('');
+                }
+            });
+
+        }
+
+        function initInputTimeMask() {
+            const element = $('#time')
+            $(element).mask('00:A0', {
+                'translation':{A: {pattern: /[0-5]/}},
+                onComplete: function(cep) {
+                    console.log('onComplete cep', cep, this);
+                    if(cep != '00:00'){
+                        setValid('#time', true);
+                    }},
+                onChange: function(cep){
+                    setValid('#time', false);}
+            }).on("blur" , function() { 
+
+            });
+        }
+
+        function initInputDate() {
+            $('#date').on("change" , function() {
+                const value = $(this).val();
+                
+                if (value.length == 0) {
+                    setValid(this, false);    
+                } else {
+                    setValid(this, true); 
+                }
+            })
+        }
+
+        function initInputCount() {
+            $('#count').on("change" , function() {
+                const value = $(this).val();
+                const maxCount = parseInt($(this).attr('maxCount')||0);
+
+                if (value == 0 || value === '' || value < 0 || value > maxCount) {
+                    setValid(this, false);    
+                } else {
+                    setValid(this, true); 
+                }
+            })
+        }
+
+        $('#cancelFixReport').on('click', function(event){
+            clickAnimate(this);
+            setTimeout(() => { $('#fixReportRow').hide(300);}, 200);
+        });
+
+        $('#saveFixReport').on('click', function(event){
+            clickAnimate(this);
+
+            const sotrudnik = $('#sotrudnik');
+            const date = $('#date');
+            const time = $('#time');
+            const count = $('#count');
+
+            if (sotrudnik.hasClass('invalid')) {
+                toastr.error('Укажите кто исправлял брак')
+                return;
+            }
+
+            if (date.hasClass('invalid')) {
+                toastr.error('Укажите когда исправлялся брак')
+                return;
+            }
+
+            if (time.hasClass('invalid')) {
+                toastr.error('Укажите сколько времени ушло на исправление брака')
+                return;
+            }
+
+            if (count.hasClass('invalid')) {
+                toastr.error('Укажите сколько штук исправлено')
+                return;
+            }
+
+            const data = {};
+            data.reportBrak = $('#fixReportRow').attr('report');
+            data.sotrudnik = $(sotrudnik).attr('uid');
+            data.date = new Date($(date).val());
+            data.time = $(time).val();
+            data.count = parseInt($(count).val());
+
+            console.log('data', data);
+
+            NProgress.start();
+
+            $.ajax({url: '/app/createFixReport', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('logToServer', status, data); }
+            }).always(function() {
+                NProgress.done();
+                highlight = true;
+            });
+
+            //setTimeout(() => { $('#fixReportRow').hide(300);}, 200);
+        });
+
+    });
+</script>

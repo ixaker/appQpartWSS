@@ -1,0 +1,405 @@
+<style>
+    #userListContent {
+        max-width: 900px;
+        margin: auto;
+    }
+
+
+
+    #btnLoadUserList {
+        margin: auto;
+        white-space: nowrap;
+        margin-left: 0px;
+        margin-right: 10px;
+    }
+
+    #usersContainer {
+        margin-top: 20px;
+    }
+
+    .userCard { 
+        border: 1px solid #BBBBBB;
+        background-color: #FFFFFF;
+        margin-top: 15px;
+        border-radius: 7px;
+        box-shadow: 2px 3px 5px #999;
+        padding: 5px 10px;
+    }
+
+    .userName {
+        width: 100%;
+        display: flex;
+    }
+
+    .userCountFaceID {
+        margin-left: auto;
+        width: 150px;
+        text-align: end;
+    }
+
+    .userActions{
+        display: flex;
+        justify-content: flex-end;
+    }
+    .countFaceID {
+        margin-left: auto;
+        line-height: 45px;
+        position: relative;
+        width: 125px;
+    }
+
+    .btnUserEdit {
+        margin-left: 10px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        background-color: aliceblue;
+    }
+
+    #formVideoCamera {
+        border: 1px solid #999;
+        border-radius: 5px;
+        background-color: rgba(225,225,225,.93);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70%;
+        max-width: 400px;
+        /* height: 70%; */
+        padding: 10px;
+    }
+
+    #blockFormForVideoScaner {
+        background-color: rgba(105,105,105,.90);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    #videoScaner {
+        width: 100%;
+        max-width: 400px;
+        margin: auto;
+    }
+
+    .btnUserVideoScaner {
+        background-color: aliceblue;
+        width: 40%;
+    }
+
+    #groupBtnVideoScaner {
+        display: flex;
+        margin-top: 5px;
+    }
+
+    #groupUserInfoForVideoScaner {
+        display: flex;
+    }
+
+    #selectedUserForVideoScaner {
+        font-size: 1.6em;
+    }
+
+    #infoForSelectedUserForVideoScaner {
+        font-size: 1.6em;
+        margin-left: auto;
+    }
+
+    .groupSearch {
+        margin-left: auto;
+        width: 400px;
+        margin-top: 6px;
+        border: 1px solid #AAA;
+        background-color: #FFF;
+    }
+
+    #search {
+        border: none;
+        line-height: 100%;
+        height: 100%;
+    }
+
+    #search:focus {
+        box-shadow:none
+    }
+
+    #search-addon {
+        background-color: #FFF;
+    }
+
+    .userProfaFaceID {
+        line-height: 1.7em;
+        margin-left: auto;
+    }
+
+    .userNameText {
+        display: flex;
+        width: 100%;
+    }
+
+    .userMenuFaceID {
+        line-height: 1.7em;
+        margin-left: 20px;
+    }
+
+    .userNameFaceID {
+        width: 300px;
+    }
+
+    @media (max-width: 650px) {
+        #userListContent {
+            max-width: 600px;
+        }
+
+        .groupSearch {
+            width: 300px;
+        }
+
+        .userMenuFaceID {
+            display: none;
+        }
+
+        .userNameFaceID {
+            width: 200px;
+            font-size: 1.2em;
+        }
+    }
+
+    .hide {
+            display: none;
+    }
+
+    mark {
+        background: yellow;
+        padding: 0;
+    }
+</style>
+
+<div id="userListContent">
+    
+
+    <div style="display: flex;">
+        <button id="btnLoadUserList" type="button" class="btn btn-secondary btn-lg mainColor" onclick="loadUserListFrom1C()">Загрузить список из 1С</button>
+
+        <div class="input-group rounded groupSearch">
+            <input type="search" id="search" class="form-control rounded" placeholder="Поиск по ФИО и должности" aria-label="Search" aria-describedby="search-addon" />
+            <span class="input-group-text border-0" id="search-addon">
+                <i class="bi bi-search"></i>
+            </span>
+          </div>
+    </div>
+
+
+    <div id="usersContainer">
+        <% users.forEach(function(user){ %>
+            <div class="userCard" id ="<%= user.uid %>">
+                <div class="userName">
+                    <div class="userNameText">
+                        <h4 class="userNameFaceID"><%= user.name %></h4>
+                        <h6 class="userMenuFaceID"><%= user.menu %></h6>
+                        <h6 class="userProfaFaceID"><%= user.profa %></h6>
+                    </div>
+                    <h4 class="userCountFaceID"><%= user.count %> фото</h4>
+                </div>
+                <div class="userActions">
+                    <button class="btn btn-outline-dark btnUserEdit" onclick="loginUser('<%= user.uid %>')">Залогиниться</button>
+                    <button class="btn btn-outline-dark btnUserEdit" onclick="deletePhotos('<%= user.uid %>')">Удалить все фото</button>
+                    <button class="btn btn-outline-dark btnUserEdit" onclick="addPhoto(this, '<%= user.uid %>', '<%= user.name %>', '<%= user.count %>')">Добавить фото</button>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+<div id="blockFormForVideoScaner" style="display: none;">
+    <div id="formVideoCamera">
+
+        <video id="videoScaner" width="250" height="auto" autoplay></video>
+
+        <div id="groupBtnVideoScaner">
+            <button id="btnStartScanFace" class="btn btn-outline-dark btnUserVideoScaner" style="display: none;" onclick="startVideoScaner()">Начать</button>
+            <button class="btn btn-outline-dark btnUserVideoScaner rightAlign" onclick="closeVideoScaner()">Закрыть</button>
+        </div>
+
+        <div id="groupUserInfoForVideoScaner">
+            <div id="selectedUserForVideoScaner"></div>.
+            <div id="infoForSelectedUserForVideoScaner"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var videoScaner = document.getElementById('videoScaner');
+    var selectedUID = '';
+    var scannerActive = false; 
+    var canvasVideoScaner = document.createElement('canvas');
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        console.log(navigator.mediaDevices);
+
+        navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+            videoScaner.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error('Ошибка доступа к веб-камере: ', error);
+            toastr["error"]('Ошибка доступа к веб-камере');
+        });
+    } else {
+        console.error('Браузер не поддерживает API доступа к медиа-устройствам');
+        toastr["error"]('Браузер не поддерживает API доступа к медиа-устройствам');
+    }
+
+    videoScaner.addEventListener('loadeddata', () => {
+        console.log("event loadeddata videoScaner");
+        $('#btnStartScanFace').show();
+    });
+
+    function addPhoto(btn, uid, name, count) {
+        console.log('addPhoto', uid, btn);
+
+        selectedUID = uid;
+
+        $('#selectedUserForVideoScaner').text(name);
+        $('#infoForSelectedUserForVideoScaner').text($('#' + selectedUID + ' .userCountFaceID').text());
+        $('#blockFormForVideoScaner').show();
+    }
+
+    function closeVideoScaner() {
+        console.log("closeVideoScaner");
+        $('#blockFormForVideoScaner').hide();
+        scannerActive = false;
+        $('#btnStartScanFace').html('Начать');
+    }
+
+    function startVideoScaner() {
+        console.log("startVideoScaner");
+        scannerActive = !scannerActive;
+
+        if(scannerActive){
+            $('#btnStartScanFace').html('Остановить');
+            savePhoto();
+        }else{
+            $('#btnStartScanFace').html('Начать');
+        }
+    }
+
+    function savePhoto() {
+        console.log("start uploadPhoto");
+
+        try {
+            if (scannerActive) {
+                if ($('#videoScaner').is(':visible')) {
+                    NProgress.start();
+
+                    const context = canvasVideoScaner.getContext('2d');
+
+                    canvasVideoScaner.width = videoScaner.videoWidth;
+                    canvasVideoScaner.height = videoScaner.videoHeight;
+
+                    context.drawImage(videoScaner, 0, 0, canvasVideoScaner.width, canvasVideoScaner.height);
+                    
+                    canvasVideoScaner.toBlob(function(blob) {
+                        console.log(blob);
+
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            $.post('/saveFace', { photo: reader.result, uid: selectedUID }, function(response) {
+                                console.log(response);
+                                NProgress.done();
+
+                                if (response.detectFace) {
+                                    $('#infoForSelectedUserForVideoScaner').text(response.similarity + ' - ' + response.user.count);
+                                    $('#' + selectedUID + ' .userCountFaceID').text('' + response.user.count + ' шт');
+                                    toastr["info"]('OK')
+                                }else{
+                                    toastr["error"]('Лицо не обнаружено');
+                                }
+                                
+                                setTimeout(() => {
+                                    savePhoto();    
+                                }, 500);
+
+                            }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                                console.log("error - /saveFace");
+                                NProgress.done();
+
+                                setTimeout(() => {
+                                    savePhoto();    
+                                }, 500);
+                                
+                                toastr["error"]('ERROR');
+                            });
+                        }
+                        reader.readAsDataURL(blob);
+                    }, 'image/jpeg');
+                }
+            }
+        } catch (error) {
+            toastr["error"](error);
+        }
+    }
+
+    function deletePhotos(uid) {
+        console.log('deletePhotos', uid);
+
+        $.post('/deleteFaces', {uid: uid }, function(response) {
+            console.log(response);
+            $('#' + response.user.uid + ' .userCountFaceID').text('' + response.user.count + ' шт');
+        });
+    }
+
+    function loadUserListFrom1C() {
+        NProgress.start();
+
+        $.get('/loadUserListFrom1C', function(response) {
+            NProgress.done();
+            $('#content').html(response);
+        });
+    }
+
+    function loginUser(uid) {
+        $.post("/token", {user:uid}, function(data, status){
+            console.log('logToServer', "Data: ", data , "\nStatus: ", status);
+            console.log('token', data.token);
+
+            $('#content').html('');
+            $('#menu').html('');
+            localStorage.setItem('PageUID', '');
+            PageUID = '';
+            $.cookie("token", data.token);
+            authentication();
+
+        });
+    }
+
+
+    $(document).ready(function() {
+        $('#search').on("input", function() {
+            let searchTerms = $(this).val().split(' ').filter(Boolean);
+
+            $('.userCard').each(function() {
+                let found = true;
+                let elements = $(this).find('.userNameFaceID, .userProfaFaceID').map(function(){return {el:$(this)}}).get();
+                elements.forEach(element => {element.text = element.el.text().replace(/<mark>|<\/mark>/g, "")});
+
+                if (searchTerms.length > 0) {found = searchTerms.every(term => {
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    return elements.some(element => {
+                        if (element.text.match(regex)) {
+                            element.text = element.text.replace(regex, '<mark>$1</mark>');
+                            return true;
+                        }
+                        return false;
+                    });
+                })}
+
+                $(this).toggleClass('hide', !found);
+                elements.forEach(element => { element.el.html(element.text)});
+            });
+        });
+
+    });
+</script>

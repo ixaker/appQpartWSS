@@ -1,0 +1,61 @@
+
+
+<h3 class="titlePage" >Список отчетов на проверку ОТК</h3>
+
+<table id="Надо" url="/app/getListNeed" filter="filterForNeed" append="end">
+    <tr class="config" style="display: none;">
+        <td title="МЛ"  
+            name="Заказ" 
+            key="Номер" 
+            style="width: 60px;"><div class="dataCell textAlignCenter"></div></td>
+        <td title="Дата" 
+            name="Заказ" 
+            key="Дата"
+            style="width: 70px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+        <td title="Номер детали" 
+            name="Деталь" 
+            key="Артикул" 
+            style="width: 100%;"><div class="dataCell"></div></td>
+        <td title="Код операции" 
+            name="ЭтапПроизводства" 
+            key="КодНовый" 
+            style="width: 90px;"><div class="dataCell textAlignCenter"></div></td>
+        <td title="Надо" 
+            name="Надо" 
+            style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
+        <td title="Надо будет" 
+            name="НадоИлиНадоБудетИзготовить" 
+            style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
+        <td title="" 
+            style="width: 55px;"><div class="groupBtnRow">
+                <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+            </div></td>
+    </tr>
+</table>
+
+
+
+<script>
+    $(document).ready(function() {
+        initTables();
+
+        filterForDefectTable = function(data) {
+            console.log('func filterForDefectTable', data);  
+            
+            var result = true;
+
+            try {
+                if (!data['Проведен']) {
+                    result = false;    
+                }else if (data['КоличествоБрака'] == 0) {
+                    result = false;
+                }else if ((data['КоличествоОсталосьИсправить']||0) == 0) {
+                    result = false;
+                }
+            } catch (error) {}
+
+            return result;
+        }
+
+    });
+</script>

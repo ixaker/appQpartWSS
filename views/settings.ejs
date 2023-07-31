@@ -1,0 +1,52 @@
+<style>
+    .input-group-text{
+        background-color: darkgreen;
+        color: white;
+    }
+
+    #space {
+        height: 3px;
+    }
+</style>
+
+<h3 class="titlePage" >Настройки : </h3>
+
+<div class="input-group input-group-lg">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Станок к которому привязан этот планшет : </span>
+    </div>
+    <input type="text" id="stanok" url="/app/autocompleteStanok" minLength=1 class="form-control">
+</div>
+
+<div id="space"></div>
+
+
+
+<script>
+    $(document).ready(function() {
+        
+        function setAutocompleteStanok(element) {
+            $(element).attr('uid', stanok.uid);
+            $(element).val(stanok.value);
+
+            $(element).autocomplete({ 
+                source: $(element).attr('url'),
+                select: function(event, ui){ 
+                    $(this).attr('uid', ui.item.uid);
+                    $.cookie("stanok", JSON.stringify(ui.item), { expires: 365 });
+                    $('#navbar_text_stanok').text(ui.item.fullName);
+                    stanok = ui.item;
+                    $('#navbar_text_stanok').show();
+                },
+                minLength: parseInt($(element).attr('minLength'))
+            }).on("input", function(){
+                $(this).attr('uid', '');
+                $.cookie("stanok", '{"value":"","uid":"","fullName":""}', { expires: 365 });
+                $('#navbar_text_stanok').text('');
+                $('#navbar_text_stanok').hide();
+            }).on("blur" , function(){ if(($(this).attr('uid')||'') === ''){$(this).val('')}});
+        }
+
+        setAutocompleteStanok('#stanok');
+    });
+</script>

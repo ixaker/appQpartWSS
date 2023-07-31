@@ -1,0 +1,1117 @@
+<style>
+    .titlePage {
+        line-height: 40px;
+        font-weight: bold;
+    }
+
+    table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
+    }
+
+    tr {
+        height: 50px;
+    }
+
+    th, td {
+        overflow: hidden;  /* прячет содержимое, если оно не умещается в ячейку */
+        text-overflow: ellipsis;  /* добавляет многоточие, если содержимое не умещается в ячейку */
+        border: 1px solid rgb(202, 202, 202);
+    }
+
+    th {
+        background-color: darkgreen;
+        color: white;
+        border: 1px solid white;
+        text-align: center;
+    }
+
+    td {
+        white-space: nowrap;  /* запрещает перенос текста на новую строку */
+        font-size: 1.3em;
+        background-color: #FFFFFF;
+    }
+    
+    td input {
+        width: 100%;
+        box-sizing: border-box;  /* Учитывает padding и border в общей ширине */
+        border: 0;
+    }
+
+    .ui-autocomplete {
+        max-height: 115px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        font-size: 1.3em;
+    }
+
+    .stanok {
+        text-align: center;
+    }
+
+    table td:nth-child(2) {
+        text-align: center;
+    }
+
+    .apply {
+        height: 25px;
+        margin-top: 7px;
+    }
+
+    .done {
+        height: 25px;
+        margin-top: 7px;
+    }
+
+    .naladka {
+        height: 25px;
+        margin-top: 7px;
+    }
+
+    .codeOperatoin {
+        text-align: center;
+    }
+
+    .textAlignCenter {
+        text-align: center;
+    }
+
+    .textAlignEnd {
+        text-align: end;
+    }
+
+    #commandPanel {
+        display: flex;
+        margin-top: -5px;
+    }
+    
+    #btnAdd {
+        margin-left: auto;
+        font-size: xx-large;
+        color: #007431;
+        margin-right: 10px;
+    }
+
+    .btnDeleteCell {
+        text-align: center;
+    }
+
+    .groupBtnRow {
+        display: flex;
+        padding-left: 10px;
+    }
+
+    .btnRow {
+        font-size: xx-large;
+        display: block;
+        margin-right: 10px;
+    }
+
+    .btnDelete {
+        color: #FF0000;
+    }
+
+    .btnEdit {
+        color: #007431;
+    }
+
+    .btnFile {
+        color: #007431;
+    }
+
+    .btnPlay {
+        color: #007431;
+    }
+
+    .btnOk {
+        color: #007431;
+    }
+
+    .btnPause {
+        color: red;
+    }
+
+    @media (max-width: 800px) {
+        .hideIfNoSpace1000 {
+            display: none;
+        }
+
+        .titlePage {
+            font-size: x-large;
+            margin-top: 5px;
+        }
+    }
+
+    @media (max-width: 650px) {
+        .hideIfNoSpace500 {
+            display: none;
+        }
+    }
+
+    @media (max-width: 450px) {
+        .titlePage {
+            font-size: medium;
+            margin-top: 10px;
+        }
+    }
+
+    #groupCurrentReport {
+        font-size: xxx-large;
+        margin-bottom: 70px;
+        /* margin-top: 15px; */
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    #countDetalForCurrentReport {
+        width: 140px;
+        border: 1px solid #777;
+        border-radius: 10px;
+        line-height: 1.2em;
+        height: 1.2em;
+        margin: 5px 20px 0px 20px;
+        text-align: center;
+        background-color: #FFFFFF;
+        color: crimson;
+    }
+
+    #nameDetalForCurrentReport {
+        border: 1px solid #777;
+        border-radius: 10px;
+        line-height: 1.2em;
+        height: 1.2em;
+        /* margin: 5px 10px 0px 10px; */
+        text-align: center;
+        background-color: #FFFFFF;
+        padding: 0 15px;
+        width: 410px;
+        overflow: hidden;
+    }
+    .labelForCountCurrentDetal{
+        line-height: 1.7em;
+        margin: 5px 10px 0px 10px;
+        font-size: xx-large;
+        width: 150px;
+    }
+
+    fieldset { 
+        border: 1px solid #AAA;
+        padding: 10px;
+        border-radius: 10px;
+        background-color: aliceblue;
+    }
+
+    legend {
+        width: auto;
+        margin-left: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-bottom: 0px;
+    }
+
+    .historyCurrentReport {
+        width: 100%;
+        top: -17px;
+        position: relative;
+        height: auto;
+        margin-left: 10px;
+        margin-right: 15px;
+        background-color: #FFFFFF;
+        padding: 0 10px 0 10px;
+    }
+
+    .timerDetalForCurrentReport {
+        border: 1px solid #777;
+        border-radius: 10px;
+        text-align: center;
+        background-color: #FFFFFF;
+        padding-left: 10px;
+        padding-right: 10px;
+        width: 130px;
+    }
+
+    #textHistory {
+        font-size: 0.3em;
+        max-height: 230px;
+        margin-bottom: 0;
+        overflow-x: hidden;
+    }
+
+    .disabledBtnIncrement {
+        color: #777 !important;
+        background-color: aliceblue !important;
+    }
+
+    #groupBtnWorkCurrentReport {
+        text-align: right;
+    }
+
+    .btnWorkCurrentReport {
+        width: 180px;
+        border: 1px solid #AAA;
+        font-size: xx-large;
+        margin-right: 15px;
+        margin-left: 10px;
+    }
+
+    #btnPauseCurrentReport {
+        background-color: bisque;
+    }
+
+    #btnAvariaCurrentReport {
+        background-color: coral;
+    }
+
+    table tr td:first-child {
+        text-align: center;
+    }
+
+    #groupPDF {
+        padding: 10px 10px 5px 10px;
+        background-color: #777;
+    }
+
+    #menuPDF {
+        display: flex;
+        margin-bottom: 5px;
+    }
+
+    #pdf_viewer {
+        width: 100%;
+    }
+
+    #listFiles {
+        width: 300px;
+        border: 1px solid;
+        margin-right: 50px;
+        height: 36px;
+    }
+
+    .labelListFiles {
+        color: white;
+        margin-bottom: 0px;
+        margin-right: 5px;
+        line-height: 1.7em;
+    }
+
+    #closePDF {
+        margin-left: auto;
+    }
+
+    #labelCurrentPage {
+        color: black;
+        margin-bottom: 0px;
+        padding: 0 5px;
+        line-height: 1.2em;
+        margin-top: 5px;
+    }
+
+    #prevPDF {
+        font-size: 1.5em;
+        color: #007431;
+        line-height: 1.19em;
+    }
+
+    #nextPDF {
+        font-size: 1.5em;
+        color: #007431;
+        line-height: 1.19em;
+    }
+
+    .groupBtnPages {
+        background: white;
+        padding: 2px 5px 0;
+        display: flex;
+    }
+
+    .disabledBtn {
+        color: #777 !important;
+    }
+</style>
+
+<div id="commandPanel">
+    <h3 class="titlePage" >Список наладок за текущую смену</h3>
+    <i class="bi bi-plus-circle" id="btnAdd"></i>
+</div>
+
+<table id="table">
+    <tr>
+        <th style="width: 60px;">Готов</th>  
+        <th style="width: 70px;">Станок</th>
+        <th style="width: 100%" class="hideIfNoSpace500">Номер детали</th>
+        <th style="width: 60px;">МЛ</th>
+        <th style="width: 75px;" >Код операц</th>
+        <th style="width: 50px;">К-во</th>
+        <th style="width: 70px;" class="hideIfNoSpace1000">Время маш.</th>
+        <th style="width: 70px;" >Время полное</th>
+        <th style="width: 70px;" >Время наладки</th>
+        <th style="width: 40px;" class="hideIfNoSpace500">Дет</th>
+        <th style="width: 140px;"></th>
+    </tr>
+
+    <tr id=rowPDF" style="display: none;">
+        <td colspan="99">
+            <div id="groupPDF">
+                <div id="menuPDF">
+                    <label class="labelListFiles">Файл:</label>
+                    <select id="listFiles">
+                        <option value="10852.pdf">10852.pdf</option>
+                    </select>
+
+                    <label class="labelListFiles">Страница:</label>
+                    <div class="groupBtnPages">
+                        <i id="prevPDF" class="bi bi-arrow-left-circle disabledBtn"></i>
+                        <label id="labelCurrentPage">1 из 1</label>
+                        <i id="nextPDF" class="bi bi-arrow-right-circle disabledBtn"></i>
+                    </div>
+                    
+                    <button id="closePDF">Закрыть</button>
+                </div>
+                
+                <canvas id="pdf_viewer"></canvas>
+            </div>    
+        </td>  
+    </tr>
+</table>
+
+<script>
+    var docName = 'ОтчетПоРаботе2022';
+    var startTimeWork = new Date();
+    var highlight = false;
+    var timerWork = false;
+    var disableBtnIncrement = false;
+    var avaria = false;
+    var currentReport = '';
+    var pdfDoc;
+    var numPage = 1;
+
+    $(document).ready(function() {
+        currentMenu = 'Список работ за текущую смену';
+        logToServer('Загрузка странички');
+        subscriptions = [];
+        subscriptions.push(docName);
+        updateSubscribeWSS();
+
+        callbackWSS = async function(data) {
+            console.log("callbackWSS", data);
+
+            if (data.topic === docName) {
+                const reportRow = $('#' + data.uid);
+                const newReport = data.data;
+
+                if (reportRow.length) {
+                    console.log("reportRow", reportRow);
+                    checkVisibleReport(reportRow, newReport);
+
+                    if (await reportChanged(reportRow, newReport)) {
+                        console.log("report edited");
+
+                        reportRow.attr('fullTimeAll', newReport['ДлительностьЧасов']);
+
+                        for (let name in newReport) {
+                            const element = reportRow.find('[name="' + name + '"]');
+
+                            if (element.length) {
+                                const value = newReport[name];
+
+                                if (typeof value === 'object' && value !== null) {
+                                    const newUid = value['uid']||'';
+
+                                    if (newUid !== '') {
+                                        const oldUid = element.attr('uid')||'';
+                                        const key = element.attr('key')||'';
+
+                                        if (newUid !== oldUid) {
+                                            if (key.length) {
+                                                highlightElement(element);
+                                                element.attr('uid', newUid);
+                                                setValueCell(element, value[key]);
+                                                eventOnBlur(element);
+                                                setValid(element, true);
+                                            }
+                                        }
+                                    }else{
+                                        element.attr('uid', '');
+                                        setValueCell(element, '');
+                                        setValid(element, false);
+                                    }
+
+                                    if (name === 'Деталь') {
+                                        const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
+
+                                        if(data.uid === reportCurrentWork) {
+                                            $('#nameDetalForCurrentReport').text(element.val());
+                                            highlightElement($('#nameDetalForCurrentReport'));
+                                        }
+                                    }
+                                } else {
+                                    const oldValue = getValueCell(element);
+
+                                    if (String(oldValue) !== String(value)) {
+                                        highlightElement(element);
+                                        console.log('set new value', 'type', typeof value , value, element);
+                                        console.log('old value', 'type', typeof oldValue , oldValue);
+
+                                        if (typeof value === 'boolean') {
+                                            element.prop('checked', value);
+                                        }else{
+                                            setValueCell(element, value)
+                                            element.val(value);
+
+                                            console.log('setValid', name,  String(value) !== '');
+
+                                            setValid(element, String(value) !== '');
+                                        }
+
+                                        if (name === 'Проведен') {
+                                            onChangeApplyReport(reportRow, value);
+                                        }
+
+                                        if (name === 'ПолноеВремя') {
+                                            console.log();
+                                            const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
+
+                                            if(data.uid === reportCurrentWork) {
+                                                $('#timerNorma').text(value);
+                                                highlightElement($('#timerNorma'));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        setStateElements(newReport, reportRow)
+                    }
+                }else{
+                    addNewRow(newReport);
+                }
+            }
+            console.log("end callback WSS");
+        };
+
+        function setValueCell(element, value) {
+            if (element.is(':input')) {
+                element.val(value);
+            } else {
+                element.text(value);
+            }
+        }
+
+        function getValueCell(element) {
+            if (element.is(':input')) {
+                return element.val();
+            } else {
+                return element.text();
+            }
+        }
+
+        async function reportChanged(reportRow, newReport) {
+            const newReportMD5 = await getHash(newReport);
+            const oldReportMD5 = reportRow.attr('MD5')||'';
+            reportRow.attr('MD5', newReportMD5);
+            console.log('newReportMD5', newReportMD5, 'oldReportMD5', oldReportMD5);
+            return newReportMD5 !== oldReportMD5;
+        }
+
+        function checkVisibleReport(reportRow, newReport) {
+            const oldVisible = reportRow.is(":visible");
+            reportRow.toggle(!newReport['ПометкаУдаления']);
+            const newVisible = reportRow.is(":visible");
+
+            if (oldVisible != newVisible) {
+                highlightElement(reportRow.find('input'));
+            }
+        }
+
+        async function addNewRow(newReport) {
+            console.log('addNewRow', newReport);
+
+            const reportDate = new Date(newReport['Дата']);
+
+            if (reportDate.getTime() > startTimeWork.getTime()) {
+                let reportRow = $(`
+                <tr id="${newReport.uid}" fullTimeAll="${newReport['ДлительностьЧасов']}" disabled>
+                    <td><input 
+                        type="checkbox" 
+                        name="Проведен" 
+                        class="apply" ${newReport['Проведен'] ? 'checked' : ''}>
+                    <td><input 
+                        type="text" 
+                        url="/app/autocompleteStanok" 
+                        minLength=1 
+                        name="Станок" 
+                        key="ИнвентарныйНомер" 
+                        class="stanok" 
+                        uid="${newReport['Станок'].uid || ''}" 
+                        value="${newReport['Станок']['ИнвентарныйНомер'] || ''}"></td>
+                    <td class="hideIfNoSpace500"><input 
+                        type="text" 
+                        url="/app/autocompleteArticle" 
+                        minLength=1 
+                        name="Деталь" 
+                        key="Артикул" 
+                        class="article" 
+                        uid="${newReport['Деталь'].uid || ''}" 
+                        value="${newReport['Деталь']['Артикул'] || ''}"></td>
+                    <td><input 
+                        type="text" 
+                        inputmode="numeric" 
+                        url="/app/autocompleteZakaz" 
+                        minLength=0
+                        name="Заказ" 
+                        key="Номер" 
+                        class="ml textAlignCenter" 
+                        uid="${newReport['Заказ'].uid || ''}" 
+                        value="${newReport['Заказ']['Номер'] || ''}"></td>
+                    <td ><input 
+                        type="text" 
+                        inputmode="numeric" 
+                        url="/app/autocompleteCodeOperation" 
+                        minLength=0 
+                        name="ЭтапПроизводства" 
+                        key="КодНовый" 
+                        class="codeOperatoin" 
+                        uid="${newReport['ЭтапПроизводства'].uid || ''}" 
+                        value="${newReport['ЭтапПроизводства']['КодНовый'] || ''}"></td>
+                    <td><input 
+                        type="number" 
+                        name="КоличествоИзготовлено" 
+                        min="0" 
+                        class="quantity textAlignEnd" 
+                        value="${newReport['КоличествоИзготовлено']}"></td>
+                    <td class="hideIfNoSpace1000"><input 
+                        type="text" 
+                        inputmode="numeric" 
+                        name="МашинноеВремя" 
+                        placeholder="мм:сс"
+                        mask="00:A0" 
+                        class="machineTime textAlignCenter" 
+                        value="${newReport['МашинноеВремя']}"></td>
+                    <td ><input 
+                        type="text" 
+                        inputmode="numeric" 
+                        name="ПолноеВремя" 
+                        placeholder="мм:сс" 
+                        mask="00:A0" 
+                        class="fullTime textAlignCenter" 
+                        value="${newReport['ПолноеВремя']}"></td>
+                    <td ><input 
+                        type="text" 
+                        inputmode="numeric" 
+                        name="НаладкаВремя" 
+                        placeholder="минут" 
+                        class="fullTime textAlignCenter" 
+                        value="${newReport['НаладкаВремя']}"></td>
+                    <td class="hideIfNoSpace500"><input 
+                        type="number" 
+                        name="КоличествоДеталейЗаОднуУстановку" 
+                        min="0" 
+                        class="install textAlignEnd" 
+                        value="${newReport['КоличествоДеталейЗаОднуУстановку']}"></td>
+                    <td class="btnDeleteCell">
+                        <div class="groupBtnRow">
+                            
+                            <i class="bi bi-check-circle btnRow btnOk" report="${newReport.uid}" style="display: none;"></i>
+                            <i class="bi bi-pencil btnEdit btnRow" report="${newReport.uid}"></i>
+                            <i class="bi bi-trash btnDelete btnRow" name="ПометкаУдаления" report="${newReport.uid}" style="display: none;"></i>
+                            <i class="bi bi-play-circle btnPlay btnRow" report="${newReport.uid}"></i>
+                            <i class="bi bi-pause-circle btnPause btnRow" report="${newReport.uid}" style="display: none;"></i>
+                            <i class="bi bi-file-earmark-ruled btnFile btnRow" report="${newReport.uid}"></i>
+                        </div>
+                        </td>
+                </tr>`).insertAfter("#table tr:first");
+
+                $(reportRow).find('input').prop('disabled', true);
+                onChangeApplyReport(reportRow, newReport['Проведен']);
+                highlightElement(reportRow.find('input'));
+
+                reportRow.find('[url]:not([url=""])').each(function() {
+                    setAutocomplete(this);
+                    setValid(this, ($(this).attr('uid')||'') !== '');
+                });
+
+                reportRow.find('input:not([url])').each(function() {
+                    setEventOnChange(this);
+                    setValid(this, $(this).val() !== '');
+                });
+
+                reportRow.find('[mask]:not([mask=""])').each(function() {
+                    setTimeInputMask(this);
+                });
+
+                const newReportMD5 = await getHash(newReport);
+                reportRow.attr('MD5', newReportMD5);
+
+                setStateElements(newReport, reportRow);
+            }
+        }
+
+        function setStateElements(newReport, reportRow) {
+            const nadadchikDone = newReport['Проведен'];
+
+            if (nadadchikDone) {
+                $(reportRow).find('.apply').show();
+            }
+        }
+
+        function onChangeApplyReport(reportRow, value) {
+            console.log('onChangeApplyReport', value, reportRow);
+            //$(reportRow).find('input').prop('disabled', value);
+            //$(reportRow).find('.btnDelete').toggle(!value);
+            //$(reportRow).find('.groupBtnRow').toggle(!value);
+            //$(reportRow).find('input').prop('disabled', value);
+            //$(reportRow).find('.apply').prop('disabled', true);
+
+            if (value) {
+                $(reportRow).find('.btnOk').trigger('click');
+            }
+            
+        }
+
+        function highlightElement(element) {
+            if (highlight) {
+                element.addClass('highlight').delay(600).queue(function(next) {
+                    element.removeClass('highlight');
+                    next();
+                });
+            }
+        }
+
+        function eventOnSelect(element, ui) {
+            console.log('eventOnSelect');
+            $(element).attr('uid', ui.item.uid);
+            $(element).data("json", ui.item);
+            setValid(element, true);
+            //$(element).blur();
+
+            setTimeout(() => {
+                $(element).blur();
+            }, 50); // время анимации в миллисекундах
+
+            sendNotificationOnChange(element, ui.item);
+
+            const report = $(element).parent().parent().attr('id');
+            var reportRow = $('#' + report);
+            const currDetal = $(reportRow).find('[name="Деталь"]').val();
+
+            logToServer('Изменено значение "'+ $(element).attr('name') +'" = ' + ui.item.value, {item:ui.item, report:report, currDetal:currDetal});
+        }
+
+        function sendNotificationOnChange(element, value) {
+            console.log('sendNotificationOnChange');
+            const report = $(element).parent().parent().attr('id');
+
+            payload = {};
+            payload.type = 'Документы';
+            payload.docName = docName;
+            payload.doc = report;
+            payload.keyName = $(element).attr('name');
+            payload.value = value;
+
+            sendWSS('updateDataOnServer', docName, payload);
+        }
+
+        function sendNotification(report, name, value) {
+            payload = {};
+            payload.type = 'Документы';
+            payload.docName = docName;
+            payload.doc = report;
+            payload.keyName = name;
+            payload.value = value;
+
+            sendWSS(action = 'updateDataOnServer', docName, payload);
+        }
+
+        function eventOnInput(element) {
+            console.log('eventOnInput');
+            $(element).attr('uid', '');
+            $(element).data("json", {});
+            setValid(element, false);
+            $(element).parent().parent().attr('MD5', '');
+        }
+
+        function eventOnBlur(element) {
+            console.log('eventOnBlur');
+            var data = $(element).data("autocompleteData")||[];
+            console.log('eventOnBlur autocompleteData', data); // выводим данные в консоль
+            console.log($(element).attr('uid'), ($(element).attr('uid')||''), ($(element).attr('uid')||'') === ''); // выводим данные в консоль
+
+            if(($(element).attr('uid')||'') === ''){
+                if (data.length == 1) {
+                    $(element).val(data[0].value);
+                    eventOnSelect(element, { item: data[0]})
+                }else{
+                    $(element).val('');
+                    eventOnInput(element);
+                    sendNotificationOnChange(element, {});
+                }
+            }else{
+                setValid(element, true);
+            }
+        }
+
+        function fetchAutocomplete(url, request, response, element) {
+            const report = element.parent().parent().attr('id');
+
+            $.ajax({
+                url: url,
+                dataType: "json",
+                data: {
+                    term: request.term,  // это ваше текущее значение input
+                    report: report,
+                    stanok: stanok.uid,
+                    naladka: true
+                },
+                success: function(data) {
+                    response(data);
+                    element.data("autocompleteData", data);
+                }
+            });
+        }
+
+        function setAutocomplete(element) {
+            const url = $(element).attr('url');
+
+            $(element).autocomplete({ 
+                source: function(req, res) { fetchAutocomplete(url, req, res, this.element);},
+                select: function(event, ui){ 
+                    eventOnSelect(this, ui);
+                    //event.preventDefault();
+                    $(this).blur()
+                },
+                position: { my: "left bottom", at: "left top" },
+                minLength: parseInt($(element).attr('minLength'))
+            }).on("input" , function() { eventOnInput(this) 
+            }).on("blur"  , function() { eventOnBlur(this)
+            }).on("focus", function() { $(this).autocomplete("search")
+            }).on('click', function() {
+                var val = this.value;
+                this.value = '';
+                this.value = val;
+            }).on('keyup', function(event) {
+                if (event.which == 13) {
+                    event.preventDefault();
+                    $(this).blur();
+                }
+            });
+        }
+
+        function setEventOnChange(element) {
+            $(element).on('change', function() {
+                var userInput;
+                var type = $(this).attr('type');
+
+                if (type == 'checkbox') {
+                    userInput = $(this).is(":checked"); // Булево значение
+                } else if (type == 'number') {
+                    userInput = parseFloat($(this).val()); // Число
+                } else {
+                    userInput = $(this).val(); // Для всех остальных типов вернём строку
+                }
+
+                setValid(this, userInput !== '');
+                $(element).parent().parent().attr('MD5', '');
+                sendNotificationOnChange(this, userInput);
+
+                logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
+
+            });
+
+            $(element).on('keyup', function(event) {
+                if (event.which == 13) {
+                    event.preventDefault();
+                    $(this).blur();
+                }
+            });
+
+            $(element).on('click', function() {
+                var val = this.value;
+                this.value = '';
+                this.value = val;
+            });
+        }
+
+        function setTimeInputMask(element) {
+            $(element).mask('00:A0', {
+                'translation':{A: {pattern: /[0-5]/}},
+                onComplete: function(cep) {
+                    if(cep != '00:00'){setValid(this, true);}},
+                onChange: function(cep){
+                    setValid(this, false);}
+            });
+        }
+
+        $('#btnAdd').on('click', function(event){
+            clickAnimate(this);
+            NProgress.start();
+            highlight = false;
+
+            console.log('stanok', stanok);
+            logToServer('Нажата кнопка "Добавить"');
+
+            const data = {naladka:true};
+
+            if(stanok.uid !== ''){
+                data.stanok = stanok;
+            }
+
+            $.ajax({url: '/app/createReport', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('logToServer', status, data); }
+            }).always(function() {
+                NProgress.done();
+                highlight = true;
+            });
+        });
+
+        $.get("/app/getCurrentReportOperator", function(response) {
+            startTimeWork = new Date(response.startTimeWork);
+            console.log(response);
+
+            response.reports.forEach((report) => {
+                callbackWSS(report);
+            });
+
+            highlight = true;
+
+            $('.titlePage').text($('.titlePage').text() + ' c ' + startTimeWork.toLocaleString());
+        });
+        
+        function logToHistory(msg) {
+            const currentTime = new Date();
+            var timeString = currentTime.toLocaleTimeString('en-US', { hour12: false });
+            const newRowHistory = timeString + ' ' + msg;
+            $('#textHistory').text(newRowHistory + '\n' + $('#textHistory').text());
+            //logToServer(msg);
+        }
+
+        $('#table').on('click', '.btnDelete', function(event){
+            clickAnimate(this);
+            if (confirm("Вы уверены, что хотите удалить строку?")) {
+                const report = $(this).attr('report');
+                const reportRow = $('#' + report);
+                const currDetal = $(reportRow).find('[name="Деталь"]').val();
+
+                logToServer('Нажата кнопка "Удалить"', {report:report, currDetal:currDetal});
+
+                sendNotification($(this).attr('report'), $(this).attr('name'), true);
+            }
+        });
+
+        $('#table').on('click', '.btnEdit', function(event){
+            clickAnimate(this);
+            
+            const report = $(this).attr('report');
+
+            $('#table').find('.btnDelete').hide();
+            //$('#table').find('.btnPlay').hide();
+            $('#table').find('.btnEdit').show();
+            $('#table').find('.btnOk').hide();
+            $('#table').find('input').prop('disabled', true);
+
+            var reportRow = $('#' + report);
+            console.log('reportRow', reportRow); 
+
+            const currDetal = $(reportRow).find('[name="Деталь"]').val();
+
+            $(reportRow).find('.btnOk').show();
+            $(reportRow).find('.btnDelete').show();
+            $(reportRow).find('.btnEdit').hide();
+            $(reportRow).find('.btnPlay').hide();
+            $(reportRow).find('input').prop('disabled', false);
+
+            clickAnimate($(reportRow).find('.btnOk'));
+
+            logToServer('Нажата кнопка "Редактировать"', {report:report, currDetal:currDetal});
+            
+        });
+
+        $('#table').on('click', '.btnOk', function(event){
+            currentReport = $(this).attr('report');
+            var reportRow = $('#' + currentReport);
+
+            $(this).hide();
+            $(reportRow).find('.btnEdit').show();
+            $(reportRow).find('.btnPlay').show();
+            $(reportRow).find('.btnDelete').hide();
+
+            clickAnimate($(reportRow).find('.btnEdit'));
+            
+            $(reportRow).find('input').prop('disabled', true);
+        });
+
+        $('#table').on('click', '.btnPlay', function(event){
+            clickAnimate(this);
+            
+            currentReport = $(this).attr('report');
+            const reportRow = $('#' + currentReport);
+            const element = $(reportRow).find('[name="НаладкаВремя"]');
+
+            element.attr('startTime', new Date());
+            element.attr('oldValue', element.val());
+
+            $('#table').find('.btnPause').hide();
+            $('#table').find('.btnPlay').show();
+
+            $(this).hide();
+            $(reportRow).find('.btnPause').show();
+            clickAnimate($(reportRow).find('.btnPause'));
+
+            timerWork = true;
+        });
+
+        $('#table').on('click', '.btnPause', function(event){
+            clickAnimate(this);
+            
+            currentReport = $(this).attr('report');
+            var reportRow = $('#' + currentReport);
+
+            $(this).hide();
+            $(reportRow).find('.btnPlay').show();
+            clickAnimate($(reportRow).find('.btnPlay'));
+            
+            timerWork = false;
+
+
+        });
+
+        $('#table').on('click', '.btnFile', function(event){
+            clickAnimate(this);
+
+            currentReport = $(this).attr('report');
+            const reportRow = $('#' + currentReport);
+            const currDetal = $(reportRow).find('[name="Деталь"]').attr('uid')||'';
+            const selectList = $('#listFiles');
+
+            if (currDetal !== '') {
+                $.get("/app/getFiles?detal=" + currDetal, function(response) {
+                    const responseObject = JSON.parse(response);
+                    console.log(responseObject);
+
+                    selectList.html('');
+
+                    if (responseObject.files.length > 0) {
+                        responseObject.files.forEach((file) => {
+                            console.log(file);
+
+                            const option = $('<option>');
+                            option.val(file.uid);
+                            option.text(file.name);
+                            selectList.append(option);
+
+                        });
+
+                        $('#groupPDF').parent().parent().insertAfter(reportRow);
+                        $('#groupPDF').parent().parent().show();
+
+                        selectList.trigger('change');
+                    }
+                });
+            }
+        });
+        
+        setInterval(() => {
+            if (timerWork) {
+                console.log('timerWork');
+                const reportRow = $('#' + currentReport);
+                const element = $(reportRow).find('[name="НаладкаВремя"]');
+
+                var currNaladka = parseFloat(element.attr('value')||0);
+                currNaladka = (currNaladka + 1);
+                element.attr('value', currNaladka);
+                element.val(currNaladka);
+
+                $(reportRow).attr('MD5', '');
+
+                sendNotification(currentReport, "НаладкаВремя", currNaladka);
+            }
+        }, 60000);
+    
+        $('#closePDF').on('click', function (event) {
+            $('#groupPDF').parent().parent().hide();
+            NProgress.done();
+        })
+    
+        $('#listFiles').on('change', function (event) {
+            var selectedOption = $(this).val();
+            console.log('Выбран пункт: ' + selectedOption);
+
+            const canvas = document.getElementById('pdf_viewer');
+            const context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            NProgress.start();
+
+            $('#prevPDF').prop('disabled', true);
+            $('#nextPDF').prop('disabled', true);
+            $('#labelCurrentPage').text(`1 из 1`);
+
+            pdfjsLib.getDocument('/app/getFile?file=' + selectedOption).promise
+                .then(function(pdfDoc_) {
+                    pdfDoc = pdfDoc_;
+                    renderPage(1);
+                })
+                .catch(function(error) {
+                    console.error('Ошибка при чтении PDF:', error);
+                    toastr["error"](error, "Ошибка при чтении PDF");
+                    NProgress.done();
+                });
+        })
+
+        $("#prevPDF").click(function() {
+            if ($(this).hasClass('disabledBtn')) {
+                return;    
+            }
+
+            clickAnimate(this);
+
+            if (numPage <= 1) {
+                return;
+            }
+            numPage--;
+            renderPage(numPage);
+        });
+
+        $("#nextPDF").click(function() {
+            if ($(this).hasClass('disabledBtn')) {
+                return;    
+            }
+
+            clickAnimate(this);
+
+            if (numPage >= pdfDoc.numPages) {
+                return;
+            }
+            numPage++;
+            renderPage(numPage);
+        });
+
+        function renderPage(num) {
+            numPage = num;
+
+            $('#labelCurrentPage').text(`${numPage} из ${pdfDoc.numPages}`)
+
+            $('#prevPDF').toggleClass('disabledBtn', numPage <= 1);
+            $('#nextPDF').toggleClass('disabledBtn', numPage >= pdfDoc.numPages);
+
+
+            pdfDoc.getPage(num).then(function(page) {
+                var viewport = page.getViewport({scale: 1.0});
+                var canvas = document.getElementById('pdf_viewer');
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+                NProgress.done();
+            });
+        }
+    });
+</script>
+
