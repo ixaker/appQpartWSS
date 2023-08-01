@@ -12,6 +12,22 @@ const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const log = require('./loggerConfig');
 
+
+const envFilePath = path.join(__dirname, '.env');
+
+if (!fs.existsSync(envFilePath)) {
+  const defaultEnvData = `secret=my-secret-key
+  base=UTCRM_test
+  API_1C_LOGIN=tele
+  API_1C_PASSWORD=tele
+  domian=wss.qpart.com.ua
+  botToken=5963182008:AAEAaqku-cJbC6Er7GHgYtVOZuR-8QO1fps
+  chatId=672754822`;
+
+  fs.writeFileSync(envFilePath, defaultEnvData);
+}
+
+
 require('dotenv').config();
 
 const botToken = process.env.botToken; // токен Telegram бота
@@ -79,19 +95,20 @@ async function getDataFromMe(path, req, callback) {
     });
     callback(response.data);
   } catch (error) {
-    log.error('getDataFromMe - error');
+    log.error('getDataFromMe - error', error);
   }
 }
 
 // Обработчик запроса главной страницы
 app.get('/adminAuth', (req, res, next) => {
-  console.log('admin');
+  console.log('admin', userInfo['f9c18a95-123c-11ed-81c1-000c29006152']);
   req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
   
   let result = {};
   result.detectUser = true;
   result.user = userInfo[req.user.uid];
   result.token = jwt.sign(result.user, secret, options);
+  log.info(result);
   res.send(result);
 });
 
@@ -571,6 +588,12 @@ async function calcCount() {
 
 async function initDB() {
   try {
+      if (!fs.existsSync(embeddingsDataPath)) {
+        const DataDB = JSON.stringify([], null, 2);
+        fs.writeFileSync(embeddingsDataPath, DataDB);
+      }
+
+
       const loadedEmbeddingsData = fs.readFileSync(embeddingsDataPath);
       db = JSON.parse(loadedEmbeddingsData);
       embeddings = db.map((rec) => rec.embedding);
@@ -580,15 +603,31 @@ async function initDB() {
       embeddings = [];
   }
 
-/*     db = [];
-  embeddings = []; */
+
 
   try {
+      if (!fs.existsSync(userInfoDataPath)) {
+        const DataUserInfo = JSON.stringify([], null, 2);
+        fs.writeFileSync(userInfoDataPath, DataUserInfo);
+      }
+
       const loadedUserInfoData = fs.readFileSync(userInfoDataPath); // Чтение данных из файла
       userInfo = JSON.parse(loadedUserInfoData);
   } catch (error) {
       log.error(error);
       userInfo = {};
+  }
+
+
+  if (Object.keys(userInfo).length == 0) {
+    userInfo['f9c18a95-123c-11ed-81c1-000c29006152'] = {
+      "name": "Голуб Виталий",
+      "uid": "f9c18a95-123c-11ed-81c1-000c29006152",
+      "count": 0,
+      "isAdmin": false,
+      "profa": "Программист",
+      "menu": ""
+    };
   }
 
   calcCount();
