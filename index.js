@@ -44,7 +44,7 @@ const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
 
 const autoAuthorizationHolub = false;
 
-const domian = 'wss.qpart.com.ua';
+const domian = process.env.domian;
 const app = express();
 const portHttp = 80;
 const portHttps = 443;
@@ -89,6 +89,7 @@ app.use(cookieParser());
 
 
 async function getDataFromMe(path, req, callback) {
+  log.info('getDataFromMe', `https://${domian}${path}`);
   try {
     const response = await axios.get(`https://${domian}${path}`, { 
       headers: { Cookie: 'token=' + req.cookies.token } 
@@ -101,14 +102,14 @@ async function getDataFromMe(path, req, callback) {
 
 // Обработчик запроса главной страницы
 app.get('/adminAuth', (req, res, next) => {
-  console.log('admin', userInfo['f9c18a95-123c-11ed-81c1-000c29006152']);
+  //console.log('admin', userInfo['f9c18a95-123c-11ed-81c1-000c29006152']);
   req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
   
   let result = {};
   result.detectUser = true;
   result.user = userInfo[req.user.uid];
   result.token = jwt.sign(result.user, secret, options);
-  log.info(result);
+  //log.info(result);
   res.send(result);
 });
 
@@ -123,9 +124,9 @@ function authenticateToken(req, res, next) {
     return;
   } else {
     const token = req.cookies.token;
-    log.data('authenticateToken', token);
+/*     log.data('authenticateToken', token);
     log.data('authenticateToken', req.user);
-    log.data('authenticateToken', req.cookies);
+    log.data('authenticateToken', req.cookies); */
 
     if (token == null) {
       //req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
@@ -145,7 +146,7 @@ function authenticateToken(req, res, next) {
       //log.data('authenticateToken user', user);
       
       let {iat, exp, ...userClear} = user;
-      log.data('authenticateToken user', user, userClear);
+      //log.data('authenticateToken user', user, userClear);
       req.user = userClear;
       next();
     });
@@ -165,7 +166,7 @@ app.use((req, res, next) => {
   //log.data('cookies', req.cookies);
 
   //log.data('app.use Info', 'req.cookies.token', req.cookies.token.substring(0, 30));
-  log.data('app.use Info', 'req.cookies.token', req.cookies);
+  //log.data('app.use Info', 'req.cookies.token', req.cookies);
 
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
@@ -173,17 +174,22 @@ app.use((req, res, next) => {
     }else{
       let {iat, exp, ...userClear} = user;
       req.user = userClear;
-      log.data('app.use Info', 'user', req.user);
+      //log.data('app.use Info', 'user', req.user);
     }
   });
 
   //req.body = {};
-  log.data('app.use body', req.body);
+  //log.data('app.use body', req.body);
 
   next();
 });
 
 // Middleware для переадресации запросов с базовой авторизацией /app
+app.use('/app', (req, res, next) => {
+  log.info('/app', req.path);
+  next();  
+});
+
 app.use('/app', authenticateToken, createProxyMiddleware({
   target: API_1C_URL, // здесь ваше целевое значение
   changeOrigin: true,
@@ -193,6 +199,8 @@ app.use('/app', authenticateToken, createProxyMiddleware({
     const newTarget = new url.URL(proxyReq.path, 'http://localhost');
     newTarget.searchParams.set('uid', req.user.uid); // добавляем новый параметр
     proxyReq.path = newTarget.toString().replace('http://localhost', '');
+
+    log.warn('proxyReq.path', API_1C_URL, proxyReq.path);
   }
 }));
 
@@ -363,7 +371,7 @@ app.post('/deleteFaces', authenticateToken, async (req, res) => {
 
 app.get('/loadUserListFrom1C', authenticateToken, async (req, res) => {
   await getDataFromMe('/app/getUserList', req, (data) => {
-    log.data(data);
+    log.data('getUserList', data);
     userInfo = data.users.reduce((acc, cur) => { acc[cur.uid] = { ...cur}; return acc; }, {});
     saveDB();
   });
