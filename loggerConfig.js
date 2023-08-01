@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+
 // loggerConfig.js
 const log = require('@vladmandic/pilogger');
 
@@ -20,6 +23,24 @@ const options = {
     getters: true,
   }
 };
+
+
+const folderName = 'log';
+
+// Получаем путь к папке проекта
+const projectDir = path.resolve(__dirname);
+
+// Получаем полный путь к папке, которую нужно создать
+const folderPath = path.join(projectDir, folderName);
+
+// Проверяем, существует ли папка
+if (!fs.existsSync(folderPath)) {
+  // Если папки не существует, создаем её
+  fs.mkdirSync(folderPath);
+
+}
+
+
 
 log.configure(options);
 
