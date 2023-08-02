@@ -162,7 +162,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
+  //log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
   //log.data('cookies', req.cookies);
 
   //log.data('app.use Info', 'req.cookies.token', req.cookies.token.substring(0, 30));
@@ -170,7 +170,7 @@ app.use((req, res, next) => {
 
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
-      log.error('app.use Info', 'token ERROR');
+      //log.error('app.use Info', 'token ERROR');
     }else{
       let {iat, exp, ...userClear} = user;
       req.user = userClear;
@@ -186,7 +186,7 @@ app.use((req, res, next) => {
 
 // Middleware для переадресации запросов с базовой авторизацией /app
 app.use('/app', (req, res, next) => {
-  log.info('/app', req.path);
+  //log.info('/app', req.path);
   next();  
 });
 
@@ -233,6 +233,9 @@ app.post('/detectFace', async (req, res) => {
         result.finded = await human.match.find(embedding, embeddings);
         log.info('finded: ', result.finded);
         result.similarity = result.finded.similarity.toFixed(2);
+
+        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}`;
+        sendTextMessageToTelegramBot(message);
 
         if(result.finded.index > -1){
           if (result.finded.similarity > 0.85) {
@@ -333,6 +336,9 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
         result.finded = await human.match.find(embedding, embeddings);
         log.info('finded: ', result.finded);
         result.similarity = result.finded.similarity.toFixed(2);
+
+        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}`;
+        sendTextMessageToTelegramBot(message);
 
         if(result.finded.similarity < 1){
           const newEmbedding = {uid: req.body.uid, embedding: embedding};
@@ -448,14 +454,14 @@ wss.on('connection', (ws, request) => {
   });
 
   ws.on('message', async (message) => {
-    log.info('WSS Received message:', message.toString().length);
-    log.info('message str', message.toString());
+    //log.info('WSS Received message:', message.toString().length);
+    //log.info('message str', message.toString());
 
     try {
       let client = clients.find(c => c.socket === ws);
       let { action, topic, payload, user } = JSON.parse(message);
 
-      log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
+      //log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
 
       if (action === 'subscribe') {
         client.subscriptions.push(topic);
@@ -676,8 +682,8 @@ setInterval(() => {
     return clientCopy;
   });
 
-  log.data('clients', clientsForLog);
-  log.info('Check wss connections', wss.clients.size);
+  //log.data('clients', clientsForLog);
+  //log.info('Check wss connections', wss.clients.size);
 
   wss.clients.forEach((ws) => {
     if (!ws.isAlive){
@@ -744,7 +750,7 @@ function sendImageToTelegramBot(base64Data) {
     // Отправляем запрос POST с данными картинки
     axios(options)
       .then((response) => {
-        console.log('Картинка успешно отправлена в Telegram бота');
+        //console.log('Картинка успешно отправлена в Telegram бота');
       })
       .catch((error) => {
         console.error('Ошибка при отправке картинки в Telegram бота:', error);
@@ -769,7 +775,7 @@ function sendTextMessageToTelegramBot(message) {
   
     axios(options)
       .then((response) => {
-        console.log('Сообщение успешно отправлено в Telegram бота');
+        //console.log('Сообщение успешно отправлено в Telegram бота');
       })
       .catch((error) => {
         console.error('Ошибка при отправке сообщения в Telegram бота:', error);
