@@ -242,7 +242,7 @@ app.post('/detectFace', async (req, res) => {
             result.detectUser = true;
             result.token = jwt.sign(result.user, secret, options);
 
-            message = `Detected ${result.user.name} - ${result.similarity} `;
+            message = `+ Detected ${result.user.name} - ${result.similarity} `;
             sendTextMessageToTelegramBot(message);
           }else{
             const uid = db[result.finded.index].uid;

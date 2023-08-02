@@ -11,7 +11,7 @@
     <tr class="config" style="display: none;">
         <td title="Дата" 
             name="ДатаОтчета" 
-            style="width: 55px;"><div class="dataCell textAlignCenter"></div></td>
+            style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
         <td title="Номер детали" 
             name="Заказ" 
             key="АртикулНаименование" 
@@ -73,10 +73,17 @@
 
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForOTK = function(data, result = true) {
+            console.log('filterForOTK', data);
+
             try {
                 if (!data['Проведен']){
                     result = false;
                 }
+
+                if (data['СтатусОТК']){
+                    result = false;
+                }
+
             } catch (error) { console.log(error) }
 
             return result;
