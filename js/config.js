@@ -48,6 +48,8 @@ function GetInfo1C(url, param = '', callback, elem=false, type='GET') {
 }
 
 function setValid(elem, valid){             // подсветка неправильно заполненых полей красным
+    console.log('setValid', valid, elem);
+
     if ($(elem).is(':input')) {
         if(valid){
             $(elem).removeClass('invalid');

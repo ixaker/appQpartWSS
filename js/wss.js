@@ -54,7 +54,7 @@ function connectWebSocket() {
 
     try {
         if (auth) {
-            socket = new WebSocket('wss://wss.qpart.com.ua/');
+            socket = new WebSocket("wss://" + window.location.host);
 
             socket.addEventListener('open', function(event) {
                 console.log("wss - open");
@@ -72,7 +72,7 @@ function connectWebSocket() {
             });
 
             socket.addEventListener('message', function (event) {
-                //console.log('Message from server: ' + event.data);
+                console.log('Message from server: ' + event.data);
 
                 //toastr["info"]('WSS', event.data);
 

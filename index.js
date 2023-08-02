@@ -448,14 +448,14 @@ wss.on('connection', (ws, request) => {
   });
 
   ws.on('message', async (message) => {
-    //log.info('WSS Received message:', message.toString().length);
-    //log.info('message str', message.toString());
+    log.info('WSS Received message:', message.toString().length);
+    log.info('message str', message.toString());
 
     try {
       let client = clients.find(c => c.socket === ws);
       let { action, topic, payload, user } = JSON.parse(message);
 
-      //log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
+      log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
 
       if (action === 'subscribe') {
         client.subscriptions.push(topic);
@@ -487,6 +487,8 @@ wss.on('connection', (ws, request) => {
           }
         });
       } else if (action === 'updateDataOnServer') {
+        log.info(action, topic, payload);
+
         await axios.post(`${API_1C_URL}/app/updateData`, JSON.parse(message), {
           headers: {
             'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
@@ -674,8 +676,8 @@ setInterval(() => {
     return clientCopy;
   });
 
-  //log.data('clients', clientsForLog);
-  //log.info('Check wss connections', wss.clients.size);
+  log.data('clients', clientsForLog);
+  log.info('Check wss connections', wss.clients.size);
 
   wss.clients.forEach((ws) => {
     if (!ws.isAlive){

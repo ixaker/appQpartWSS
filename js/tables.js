@@ -110,6 +110,11 @@ async function addNewRow(table, newData) {
         eval(callbackNameAddNevRow + "(" + JSON.stringify(newData) + ")");
     }
 
+    $(newRow).find('input:not([url])').each(function() {
+        setEventOnChange(this, newData);
+        setValid(this, $(this).val() !== '');
+    });
+
     callbackTable(newData);
 }
 
@@ -257,4 +262,73 @@ callbackTable = async function(data) {
 
 function formatDate(dateString, mask) {
     return moment(dateString).format(mask);
+}
+
+function setEventOnChange(element, newData) {
+    $(element).attr('rowID', newData.uid);
+
+    $(element).on('change', function() {
+        var userInput;
+        let validValue = false;
+        var type = $(this).attr('type');
+
+        if (type == 'checkbox') {
+            userInput = $(this).is(":checked"); // Булево значение
+            validValue = true;
+            
+        } else if (type == 'number') {
+            userInput = parseFloat($(this).val()); // Число
+
+            if (userInput > 0) {
+                validValue = true;
+            }
+
+        } else {
+            userInput = $(this).val(); // Для всех остальных типов вернём строку
+
+            if (userInput !== '') {
+                validValue = true;
+            }
+        }
+
+        if ($(this)[0].hasAttribute('checkValid')) {
+            setValid(this, validValue);
+        }
+        
+        $(element).parent().parent().attr('MD5', '');
+        sendNotificationOnChange(this, userInput);
+
+        logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
+
+    });
+
+    $(element).on('keyup', function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
+            $(this).blur();
+        }
+    });
+
+    $(element).on('click', function() {
+        var val = this.value;
+        this.value = '';
+        this.value = val;
+    });
+}
+
+function sendNotificationOnChange(element, value) {
+    const docName = $(element).closest('table').attr('id');
+    const doc = $(element).closest('tr').attr('id');
+    const keyName = $(element).attr('name');
+
+    payload = {};
+    payload.type = 'Документы';
+    payload.docName = docName;
+    payload.doc = doc;
+    payload.keyName = keyName;
+    payload.value = value;
+
+    console.log('sendNotificationOnChange', payload);
+
+    sendWSS('updateDataOnServer', docName, payload);
 }

@@ -1,71 +1,13 @@
-<style>
-    .titlePage {
-        line-height: 40px;
-        font-weight: bold;
-    }
 
-    table {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
-        font-size: 0.8em;
-    }
-
-    tr {
-        height: 50px;
-    }
-
-    th, td {
-        overflow: hidden;  /* прячет содержимое, если оно не умещается в ячейку */
-        text-overflow: ellipsis;  /* добавляет многоточие, если содержимое не умещается в ячейку */
-        border: 1px solid rgb(202, 202, 202);
-    }
-
-    th {
-        background-color: darkgreen;
-        color: white;
-        border: 1px solid white;
-        text-align: center;
-    }
-
-    td {
-        white-space: nowrap;  /* запрещает перенос текста на новую строку */
-        font-size: 1.3em;
-        background-color: #FFFFFF;
-        padding: 0 5px;
-    }
-
-    td input {
-        width: 100%;
-        box-sizing: border-box;  /* Учитывает padding и border в общей ширине */
-        border: 0;
-    }
-
-    .groupBtnRow {
-        display: flex;
-        padding-left: 5px;
-    }
-
-/*     th.noEdit {
-        color: darkgray;
-    } */
-
-    #ОтчетПоРаботе2022 th:nth-child(-n+5) {
-        color: darkgray;
-    }
-
-    .dataCell[name="ЭтапПроизводства"] {
-        white-space: normal;
-    }
-
-    .dataCell[name="Сотрудник"] {
-        white-space: normal;
-    }
-</style>
 
 <h3 class="titlePage" >Список отчетов на проверку ОТК</h3>
 
-<table id="ОтчетПоРаботе2022" url="/app/getCurrentReportForOTK">
+<table  id="ОтчетПоРаботе2022" 
+        url="/app/getCurrentReportForOTK" 
+        filter="filterForOTK" 
+        addNevRow="callbackAddNewRowForOTK" 
+        append="end" 
+        sort="0" init header>
     <tr class="config" style="display: none;">
         <td title="Дата" 
             name="ДатаОтчета" 
@@ -93,7 +35,7 @@
             name="КоличествоПроверено" 
             style="width: 65px;">
             <input type="number" 
-            inputmode="numeric" 
+            inputmode="numeric" checkValid 
                 min="0" 
                 class="dataCell quantity textAlignEnd" style="padding: 0px;"></td>
         <td title="Брак" 
@@ -117,262 +59,45 @@
     </tr>
 </table>
 
+
+
 <script>
-    var highlight = false;
-
     $(document).ready(function() {
-        updateTable('#ОтчетПоРаботе2022');
-
-        logToServer('Загрузка странички');
-        subscriptions = [];
-        subscriptions.push('ОтчетПоРаботе2022_all');
-        updateSubscribeWSS();
-
-        function updateTable(tableForUpdate) {
-            const url = $(tableForUpdate).attr('url')||'';
-
-            if (url === '') {
-                toastr["error"]("Не указан url таблицы!");
-            } else {
-                createHeadersRow(tableForUpdate);
-
-                $.ajax({ url: url, type: 'GET', dataType: 'json', success: function(response) {
-                    console.log(response);
-
-                    response.reports.forEach((report) => {
-                        callbackWSS(report);
-                    });
-                }});
-            }
-        }
-
-        function createHeadersRow(tableForUpdate) {
-            let newRow = $(`<tr></tr>`);
-
-            $(tableForUpdate).find('.config').children().each(function() {
-                newRow.append($(`<th style="${$(this).attr('style')}">${$(this).attr('title')}</th>`));
-            });
-       
-            $($('<thead></thead>').append(newRow)).prependTo(tableForUpdate);
-        }
+        initTables();
+        addSubscribeWSS('ОтчетПоРаботе2022_all');
 
         callbackWSS = async function(data) {
-            console.log("callbackWSS", data);
+            console.log('callbackWSS', data);
+            callbackTable(data);
+        }
 
-            const table = $(`#${data.topic}`);
-            const reportRow = $('#' + data.uid);
-            const newData = data.data;
-
-            if (reportRow.length) {
-                checkVisibleReport(reportRow, newData);
-
-                if (await reportChanged(reportRow, newData)) {
-                    console.log("data edited");
-
-                    for (let name in newData) {
-                        const element = reportRow.find('[name="' + name + '"]').find('.dataCell');
-
-                        if (element.length) {
-                            let value = newData[name];
-
-                            if (typeof value === 'object' && value !== null) {
-                                const newUid = value['uid']||'';
-
-                                if (newUid !== '') {
-                                    const oldUid = element.attr('uid')||'';
-                                    const key = element.attr('key')||'';
-
-                                    if (newUid !== oldUid) {
-                                        if (key.length) {
-                                            highlightElement(element);
-                                            element.attr('uid', newUid);
-                                            setValueCell(element, value[key]);
-                                            //eventOnBlur(element);
-                                            setValid(element, true);
-                                        }
-                                    }
-                                }else{
-                                    element.attr('uid', '');
-                                    setValueCell(element, '');
-                                    setValid(element, false);
-                                }
-
-                                if (name === 'Деталь') {
-                                    const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                    if(data.uid === reportCurrentWork) {
-                                        $('#nameDetalForCurrentReport').text(element.val());
-                                        highlightElement($('#nameDetalForCurrentReport'));
-                                    }
-                                }
-                            } else {
-                                const oldValue = getValueCell(element);
-
-                                if (name === 'ДатаОтчета') {
-                                    value = value.substr(8, 2) + "." + value.substr(5, 2);
-                                }
-
-                                if (String(oldValue) !== String(value)) {
-                                    highlightElement(element);
-                                    console.log('set new value', 'type', typeof value , value, element);
-                                    console.log('old value', 'type', typeof oldValue , oldValue);
-
-                                    if (typeof value === 'boolean') {
-                                        element.prop('checked', value);
-                                    }else{
-                                        
-                                        setValueCell(element, value)
-                                        element.val(value);
-
-                                        console.log('setValid', name,  String(value) !== '');
-
-                                        if (name !== 'КоличествоБрака') {
-                                            setValid(element, String(value) !== '');
-                                        }
-                                    }
-
-                                    if (name === 'Проведен') {
-                                        onChangeApplyReport(reportRow, value);
-                                    }
-
-                                    if (name === 'ПолноеВремя') {
-                                        console.log();
-                                        const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                        if(data.uid === reportCurrentWork) {
-                                            $('#timerNorma').text(value);
-                                            highlightElement($('#timerNorma'));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+        // callback при изменении данных в строке для определения показать или убрать строку
+        filterForOTK = function(data, result = true) {
+            try {
+                if (!data['Проведен']){
+                    result = false;
                 }
-            }else{
-                addNewRow(table, newData);
-            }
+            } catch (error) { console.log(error) }
+
+            return result;
         }
 
-        function checkVisibleReport(reportRow, newReport) {
-            console.log('checkVisibleReport', newReport);
-
-            const oldVisible = reportRow.is(":visible");
-            // если Проведен и не СтатусОТК
-
-            if (newReport['Проведен'] && !newReport['СтатусОТК'] && newReport['ЭтапПроизводства']['ОТК']) {
-                reportRow.show();    
-            } else {
-                reportRow.hide();
-            }
-
-
-
-
-            const newVisible = reportRow.is(":visible");
-
-            if (oldVisible != newVisible) {
-                highlightElement(reportRow.find('input'));
-            }
-        }
-
-        async function reportChanged(reportRow, newReport) {
-            const newReportMD5 = await getHash(newReport);
-            const oldReportMD5 = reportRow.attr('MD5')||'';
-            reportRow.attr('MD5', newReportMD5);
-            console.log('newReportMD5', newReportMD5, 'oldReportMD5', oldReportMD5);
-            return newReportMD5 !== oldReportMD5;
-        }
-
-        function getValueCell(element) {
-            if (element.is(':input')) {
-                return element.val();
-            } else {
-                return element.text();
-            }
-        }
-
-        function setValueCell(element, value) {
-            if (element.is(':input')) {
-                element.val(value);
-            } else {
-                element.text(value);
-            }
-        }
-
-        async function addNewRow(table, newData) {
-            console.log('addNewRow', table, newData);
-
-            let newRow = $(`<tr id="${newData.uid}"></tr>`);
-
-            $(table).find('.config').children().each(function() {
-                const cell = $(this).clone();
-                const children = $(cell).children()[0];
-
-                const name = $(cell).attr('name')||'';
-                const key = $(cell).attr('key')||'';
-
-                if (name !== '') {
-                    let value = newData[name];
-
-                    $(children).attr('name', name);
-
-                    if (typeof value === 'object' && value !== null) {
-                        $(children).attr('key', key);
-
-                        $(children).attr('uid', value.uid);
-                        $(children).attr('label', value[key]);
-                    } else {
-                        if (name === 'ДатаОтчета') {
-                            value = value.substr(8, 2) + "." + value.substr(5, 2);
-                        }
-
-
-                        $(children).attr('label', value);
-                    }
-
-                    if ($(children).is("input")) {
-                        $(children).val($(children).attr('label'));
-                    } else {
-                        $(children).text($(children).attr('label'));
-                    }
-
-                    console.log("+ ", name, key, value);
-
-                }
-                newRow.append(cell);
-
-                $(cell).find('.btnRow').each(function() {
-                    $(this).attr('report', newData.uid);
-                })
-            });
-
-            table.find('tbody').append(newRow);
-
-            $(newRow).find('input').prop('disabled', true);
-
-            newRow.find('input:not([url])').each(function() {
-                setEventOnChange(this);
-                setValid(this, $(this).val() !== '');
-            });
-
-            checkVisibleReport(newRow, newData);
-
-            const newDataMD5 = await getHash(newData);
-            newRow.attr('MD5', newDataMD5);
+        // callback при добавлении строки
+        callbackAddNewRowForOTK = function(data) {
+            return;
         }
 
         $('#ОтчетПоРаботе2022').on('click', '.btnEdit', function(event){
             clickAnimate(this);
             
-            const report = $(this).attr('report');
+            const rowid = $(this).attr('rowid');
 
 
             $('#ОтчетПоРаботе2022').find('.btnEdit').show();
             $('#ОтчетПоРаботе2022').find('.btnOk').hide();
             $('#ОтчетПоРаботе2022').find('input').prop('disabled', true);
 
-            var reportRow = $('#' + report);
+            var reportRow = $('#' + rowid);
             console.log('reportRow', reportRow); 
 
             const currDetal = $(reportRow).find('[name="Деталь"]').val();
@@ -383,86 +108,23 @@
 
             clickAnimate($(reportRow).find('.btnOk'));
 
-            logToServer('Нажата кнопка "Редактировать"', {report:report, currDetal:currDetal});
+            logToServer('Нажата кнопка "Редактировать"', {report:rowid, currDetal:currDetal});
             
         });
 
         $('#ОтчетПоРаботе2022').on('click', '.btnOk', function(event){
-            currentReport = $(this).attr('report');
-            var reportRow = $('#' + currentReport);
+            rowid = $(this).attr('rowid');
+            var row = $('#' + rowid);
 
             $(this).hide();
-            $(reportRow).find('.btnEdit').show();
-            $(reportRow).find('.btnFile').show();
-            $(reportRow).find('.btnDelete').hide();
+            $(row).find('.btnEdit').show();
+            $(row).find('.btnFile').show();
+            $(row).find('.btnDelete').hide();
 
-            clickAnimate($(reportRow).find('.btnEdit'));
+            clickAnimate($(row).find('.btnEdit'));
             
-            $(reportRow).find('input').prop('disabled', true);
+            $(row).find('input').prop('disabled', true);
         });
 
-        function setEventOnChange(element) {
-            $(element).on('change', function() {
-                var userInput;
-                var type = $(this).attr('type');
-
-                if (type == 'checkbox') {
-                    userInput = $(this).is(":checked"); // Булево значение
-                } else if (type == 'number') {
-                    userInput = parseFloat($(this).val()); // Число
-                } else {
-                    userInput = $(this).val(); // Для всех остальных типов вернём строку
-                }
-
-                setValid(this, userInput !== '');
-                $(element).parent().parent().attr('MD5', '');
-                sendNotificationOnChange(this, userInput);
-
-                logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
-
-            });
-
-            $(element).on('keyup', function(event) {
-                if (event.which == 13) {
-                    event.preventDefault();
-                    $(this).blur();
-                }
-            });
-
-            $(element).on('click', function() {
-                var val = this.value;
-                this.value = '';
-                this.value = val;
-            });
-        }
-
-        function sendNotificationOnChange(element, value) {
-            console.log('sendNotificationOnChange');
-            const docName = $(element).closest('table').attr('id');
-            const doc = $(element).closest('tr').attr('id');
-            const keyName = $(element).parent().attr('name');
-
-            console.log(docName, doc, keyName, element);
-            payload = {};
-            payload.type = 'Документы';
-            payload.docName = docName;
-            payload.doc = doc;
-            payload.keyName = keyName;
-            payload.value = value;
-
-            sendWSS('updateDataOnServer', docName, payload);
-        }
-    
-        function highlightElement(element) {
-            if (highlight) {
-                element.addClass('highlight').delay(600).queue(function(next) {
-                    element.removeClass('highlight');
-                    next();
-                });
-            }
-        }
-    
-    
     });
-
 </script>
