@@ -363,8 +363,8 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
 
       log.data(`Detected:`, 'Face:', detection.face.length, 'Body:', detection.body.length, 'Hand:', detection.hand.length, 'Objects:', detection.object.length, 'Gestures:', detection.gesture.length);
 
-      log.data(Object.keys(detection));
-      log.data('persons', detection.persons);
+      //log.data(Object.keys(detection));
+      //log.data('persons', detection.persons);
 
       if(detection.face.length == 1){
         result.detectFace = true;
