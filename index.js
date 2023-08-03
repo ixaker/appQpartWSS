@@ -83,7 +83,6 @@ const humanConfig = { // user configuration for human, used to fine-tune behavio
       return: false, 
       mask: false,
       minConfidence: 0.80
-      //modelPath: 'faceres.json'
      }, // return tensor is used to get detected face image
     description: { enabled: true }, // default model for face descriptor extraction is faceres
     // mobilefacenet: { enabled: true, modelPath: 'https://vladmandic.github.io/human-models/models/mobilefacenet.json' }, // alternative model
