@@ -67,6 +67,39 @@ let db = null;
 
 let clients = [];
 
+const humanConfig = { // user configuration for human, used to fine-tune behavior
+  cacheSensitivity: 0,
+  modelBasePath: 'file://models/',
+  filter: { 
+    enabled: true, 
+    equalization: true,
+    return: false
+  },
+  debug: true,
+  face: {
+    enabled: true,
+    detector: { 
+      rotation: true, 
+      return: false, 
+      mask: false,
+      minConfidence: 0.80
+      //modelPath: 'faceres.json'
+     }, // return tensor is used to get detected face image
+    description: { enabled: true }, // default model for face descriptor extraction is faceres
+    // mobilefacenet: { enabled: true, modelPath: 'https://vladmandic.github.io/human-models/models/mobilefacenet.json' }, // alternative model
+    // insightface: { enabled: true, modelPath: 'https://vladmandic.github.io/insightface/models/insightface-mobilenet-swish.json' }, // alternative model
+    iris: { enabled: false }, // needed to determine gaze direction
+    emotion: { enabled: false }, // not needed
+    mesh: { enabled: false },   // not needed
+    antispoof: { enabled: false }, // enable optional antispoof module
+    liveness: { enabled: false }, // enable optional liveness module
+  },
+  body: { enabled: false },
+  hand: { enabled: false },
+  object: { enabled: false },
+  gesture: { enabled: false }, // parses face and iris gestures
+};
+
 // ******************************************* Web сервер *******************************************
 const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert)}, app);
 
@@ -330,14 +363,18 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
 
       log.data(`Detected:`, 'Face:', detection.face.length, 'Body:', detection.body.length, 'Hand:', detection.hand.length, 'Objects:', detection.object.length, 'Gestures:', detection.gesture.length);
 
+      log.data(Object.keys(detection));
+      log.data('persons', detection.persons);
+
       if(detection.face.length == 1){
         result.detectFace = true;
         const embedding = detection.face[0].embedding;
         result.finded = await human.match.find(embedding, embeddings);
         log.info('finded: ', result.finded);
         result.similarity = result.finded.similarity.toFixed(2);
+        result.score = detection.face[0].score;
 
-        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}`;
+        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${detection.face[0].score}`;
         sendTextMessageToTelegramBot(message);
 
         if(result.finded.similarity < 1){
@@ -561,8 +598,9 @@ async function detectFaceFromBase64(img) {
 }
 
 async function detectFaceFromBuffer(buffer) {
-  const tensor = human.tf.node.decodeImage(buffer, 3);
-  const result = await human.detect(tensor);
+  const tensor = human.tf.node.decodeImage(buffer);
+  log.state('Loaded image:', tensor);
+  const result = await human.detect(tensor, humanConfig);
   human.tf.dispose(tensor);
 
   return result;
@@ -571,7 +609,7 @@ async function detectFaceFromBuffer(buffer) {
 //********************************************* main ******************************************/
 
 async function main() {
-  human = new Human.Human(); // create instance of human
+  human = new Human.Human(humanConfig); // create instance of human
 
   await human.tf.ready();
   await human.load();
@@ -588,6 +626,8 @@ async function main() {
   http.createServer(app).listen(portHttp, () => {
     console.log('HTTP Server running on port ' + portHttp);
   });
+
+  log.info('human.config', human.config);
 }
 
 async function calcCount() {
@@ -753,7 +793,7 @@ function sendImageToTelegramBot(base64Data) {
         //console.log('Картинка успешно отправлена в Telegram бота');
       })
       .catch((error) => {
-        console.error('Ошибка при отправке картинки в Telegram бота:', error);
+        console.error('Ошибка при отправке картинки в Telegram бота:');
       });
   } catch (error) {
     
@@ -778,7 +818,7 @@ function sendTextMessageToTelegramBot(message) {
         //console.log('Сообщение успешно отправлено в Telegram бота');
       })
       .catch((error) => {
-        console.error('Ошибка при отправке сообщения в Telegram бота:', error);
+        console.error('Ошибка при отправке сообщения в Telegram бота:');
       });
   } catch (error) {
     
