@@ -265,8 +265,9 @@ app.post('/detectFace', async (req, res) => {
         result.finded = await human.match.find(embedding, embeddings);
         log.info('finded: ', result.finded);
         result.similarity = result.finded.similarity.toFixed(2);
+        result.score = detection.face[0].score;
 
-        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}`;
+        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${detection.face[0].score}`;
         sendTextMessageToTelegramBot(message);
 
         if(result.finded.index > -1){
