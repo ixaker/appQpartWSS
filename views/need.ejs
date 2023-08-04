@@ -250,7 +250,6 @@
                 <th>К-во</th>
                 <th>Брак</th>
                 <th>Надо</th>
-                <!-- <th>Можно</th> -->
                 <th>Утеря</th>
             </tr>
         </thead>
@@ -261,8 +260,7 @@
                 <td>{{ЭтапПроизводства}}</td>
                 <td class="textAlignEnd">{{Сделано}}</td>
                 <td class="textAlignEnd">{{Брак}}</td>
-                <!-- <td class="textAlignEnd {{addClass}}">{{Изготовить}}</td> -->
-                <td class="textAlignEnd {{addClass}}">{{МожноДелать}}</td>
+                <td class="textAlignEnd {{addClass}}">{{Изготовить}}</td>
                 <td class="textAlignEnd">{{Утеря}}</td>
             </tr>
             {{/each}}
@@ -770,7 +768,7 @@
             let needInit = false;
 
             clickAnimate(this);
-            
+
             $('#infoZakazRow').attr('oldZakazUID', zakazUID);
 
             if ($('#infoZakazRow').is(':visible')) {
