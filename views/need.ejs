@@ -70,7 +70,25 @@
         #Надо td:nth-child(2) {
             font-size: 0.9em !important;
         }
+    }
 
+    #infoZakazForm {
+        max-width: 600px;
+        margin: auto;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    #infoZakazForm tr {
+        height: 25px;
+    }
+
+    #infoZakazForm th{
+        width: 40px;
+    }
+
+    #infoZakazForm th:nth-child(2) {
+        width: 160px;
     }
 </style>
 
@@ -211,7 +229,7 @@
                     </tr>
 
                     <tr id="infoZakazRow" style="display: none;">
-                        <td colspan="99" style="background-color: aliceblue;">
+                        <td colspan="6" style="background-color: aliceblue;">
                             <div id="infoZakazForm">
                                 Заказ
                             </div>
@@ -223,6 +241,34 @@
     </tr>
 </table>
 
+<script id="infoZakaz-template" type="text/x-handlebars-template">
+    <table>
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Этап производства</th>
+                <th>К-во</th>
+                <th>Брак</th>
+                <th>Надо</th>
+                <!-- <th>Можно</th> -->
+                <th>Утеря</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each items}}
+            <tr>
+                <td class="textAlignCenter">{{КодНовый}}</td>
+                <td>{{ЭтапПроизводства}}</td>
+                <td class="textAlignEnd">{{Сделано}}</td>
+                <td class="textAlignEnd">{{Брак}}</td>
+                <!-- <td class="textAlignEnd {{addClass}}">{{Изготовить}}</td> -->
+                <td class="textAlignEnd {{addClass}}">{{МожноДелать}}</td>
+                <td class="textAlignEnd">{{Утеря}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
 
 
 
@@ -314,8 +360,6 @@
             } catch (error) { console.log(error) }
         }
 
-
-
         callbackWSS = async function(data) {
             console.log('callbackWSS', data);
             callbackTable(data);
@@ -324,7 +368,8 @@
         $('#аГруппыЭтаповПроизводства').on('click', '.аГруппыЭтаповПроизводства', function(event){
             console.log(this);
 
-            $('#newReportRow').hide();
+            $('#newReportRow').hide(0);
+            $('#infoZakazRow').hide(0);
 
             const groupEtapID = $(this).attr('id');
             const oldGroupEtapID = $('#listWork').attr('groupEtapID');
@@ -389,7 +434,11 @@
             const groupEtapID = $('#listWork').attr('groupEtapID');
             const userInfo = $('#menu').data('userInfo');
 
+            clickAnimate(this);
+
             console.log(data);
+
+            $('#infoZakazRow').hide(0);
 
             if ($('#newReportRow').is(':visible')) {
                 $('#newReportRow').hide(100);
@@ -718,48 +767,63 @@
             const zakaz = data.data['Заказ'];
             const zakazUID = zakaz['uid'];
             const oldZakazUID = $('#infoZakazRow').attr('oldZakazUID');
-
-            $('#infoZakazRow').attr('oldZakazUID', zakazUID);
             let needInit = false;
 
-            console.log('click', this);
-            console.log('row', row);
-            console.log('data', data);
-            console.log('zakaz', zakaz);
+            clickAnimate(this);
+            
+            $('#infoZakazRow').attr('oldZakazUID', zakazUID);
 
-            $('#newReportRow').hide();
-            $('#infoZakazRow').hide();
+            if ($('#infoZakazRow').is(':visible')) {
+                if (zakazUID !== oldZakazUID) {
+                    needInit = true;   
+                }else{
+                    $('#infoZakazRow').hide(100);
+                }    
+            }else{
+                needInit = true;
+            }
 
+            if (needInit) {
+                NProgress.start();
 
+                $.ajax({ url: '/app/zakazInfo', type: 'GET', dataType: 'json', data: {zakaz:zakaz.uid}, success: function(response) {
+                    console.log('response', response);
 
-            NProgress.start();
+                    if (!response.error) {
+                        Handlebars.registerHelper('isHighDays', function(days) {
+                            console.log('isHighDays', days);
+                            return days > 5;
+                        });
 
-            $.ajax({ url: '/app/zakazInfo', type: 'GET', dataType: 'json', data: {zakaz:zakaz.uid}, success: function(response) {
-                console.log('response', response);
+                        const templateSource = $('#infoZakaz-template').html();
+                        const template = Handlebars.compile(templateSource);
+                        const items = response['ТекущееСостояниеЭтаповЗаказа']['ЭтапыПроизводства'];
 
-                if (!response.error) {
-                    
+                        items.forEach((item) => {
+                            item['Сделано'] = item['Сделано'] === '0' ? '' : item['Сделано'];
+                            item['Брак'] = item['Брак'] === '0' ? '' : item['Брак'];
+                            item['Изготовить'] = item['Изготовить'] === '0' ? '' : item['Изготовить'];
+                            item['Утеря'] = item['Утеря'] === '0' ? '' : item['Утеря'];
+                            item['МожноДелать'] = item['МожноДелать'] === '0' ? '' : item['МожноДелать'];
 
-                    const zakazUID = response['Заказ']['uid'];
-                    const oldZakazUID = $('#infoZakazRow').attr('oldZakazUID');
+                            item['КоличествоДнейБездействияНадо'] = parseInt(item['КоличествоДнейБездействияНадо']);
 
-                    $('#infoZakazRow').attr('oldZakazUID', zakazUID);
-                    let needInit = false;
+                            item['addClass'] = item['КоличествоДнейБездействияНадо'] > 5 ? ' colorRed' : '';
+                            
+                        });
 
-                    if (zakazUID !== oldZakazUID) {
-                        needInit = true;   
-                    }
-
-                    if (needInit) {
+                        const tableHtml = template({ items: items });
+                        $('#infoZakazForm').html(tableHtml);
+                        
+                        $('#infoZakazRow').insertAfter(row);
                         $('#infoZakazRow').show(200);
                     }
-
-                }
-            }, complete: function(response){
-                NProgress.done();
-            }});
-
-
+                }, error: function (xhr, status, error) {
+                    console.error("Ошибка:", error);
+                }, complete: function(response){
+                    NProgress.done();
+                }});
+            };
         });
     });
 </script>
