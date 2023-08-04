@@ -271,7 +271,7 @@ app.post('/detectFace', async (req, res) => {
         sendTextMessageToTelegramBot(message);
 
         if(result.finded.index > -1){
-          if (result.finded.similarity > 0.85) {
+          if (result.finded.similarity > 0.7) {
             const uid = db[result.finded.index].uid;
             result.user = userInfo[uid];
             log.info('user: ', result.user);
