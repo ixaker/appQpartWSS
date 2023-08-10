@@ -39,7 +39,6 @@
 <table  id="ОтчетПоРаботе2022" 
         url="/app/getCurrentReportForOTK" 
         filter="filterForOTK" 
-        addNevRow="callbackAddNewRowForOTK" 
         append="end" 
         sort="0" init header>
     <tr class="config" style="display: none;">
@@ -68,23 +67,29 @@
         <td title="Прове рено" 
             name="КоличествоПроверено" 
             style="width: 65px;">
-            <input type="number" 
-            inputmode="numeric" checkValid 
-                min="0" 
-                class="dataCell quantity textAlignEnd" style="padding: 0px;"></td>
+            <input  type="number" 
+                    inputmode="numeric" 
+                    sync="none" 
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style="padding: 0px;"></td>
         <td title="Брак" 
             name="КоличествоБрака" 
             style="width: 60px;">
-            <input type="number" 
-                inputmode="numeric" 
-                min="0" 
-                class="dataCell quantity textAlignEnd" style="padding: 0px;"></td>
+            <input  type="number" 
+                    inputmode="numeric"
+                    sync="none"  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style="padding: 0px;"></td>
         <td title="Готов" 
             name="СтатусОТК"
             style="width: 55px;"> 
-            <input type="checkbox" 
-                name="Проведен" 
-                class="dataCell checkboxInTable" ></td>
+            <input  type="checkbox" 
+                    name="Проведен" 
+                    sync="none" 
+                    class="dataCell checkboxInTable"></td>
         <td title="" 
             style="width: 55px;"><div class="groupBtnRow">
                 <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
@@ -100,10 +105,7 @@
         initTables();
         addSubscribeWSS('ОтчетПоРаботе2022_all');
 
-        callbackWSS = async function(data) {
-            console.log('callbackWSS', data);
-            callbackTable(data);
-        }
+        callbackWSS = async function(data) { callbackTable(data); };
 
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForOTK = function(data, result = true) {
@@ -113,8 +115,12 @@
                 if (!data['Проведен']){
                     result = false;
                 }
-
+                
                 if (data['СтатусОТК']){
+                    result = false;
+                }
+                
+                if (!data['Заказ']['Активен']){
                     result = false;
                 }
 
@@ -123,48 +129,47 @@
             return result;
         }
 
-        // callback при добавлении строки
-        callbackAddNewRowForOTK = function(data) {
-            return;
-        }
-
         $('#ОтчетПоРаботе2022').on('click', '.btnEdit', function(event){
-            clickAnimate(this);
-            
             const rowid = $(this).attr('rowid');
-
+            const row = $('#' + rowid);
+            const currDetal = $(row).find('[name="Деталь"]').val();
 
             $('#ОтчетПоРаботе2022').find('.btnEdit').show();
             $('#ОтчетПоРаботе2022').find('.btnOk').hide();
             $('#ОтчетПоРаботе2022').find('input').prop('disabled', true);
 
-            var reportRow = $('#' + rowid);
-            console.log('reportRow', reportRow); 
+            $(row).find('.btnOk').show();
+            $(row).find('.btnEdit').hide();
+            $(row).find('input').prop('disabled', false);
 
-            const currDetal = $(reportRow).find('[name="Деталь"]').val();
-
-            $(reportRow).find('.btnOk').show();
-            $(reportRow).find('.btnEdit').hide();
-            $(reportRow).find('input').prop('disabled', false);
-
-            clickAnimate($(reportRow).find('.btnOk'));
+            clickAnimate($(row).find('.btnOk'));
 
             logToServer('Нажата кнопка "Редактировать"', {report:rowid, currDetal:currDetal});
-            
         });
 
         $('#ОтчетПоРаботе2022').on('click', '.btnOk', function(event){
-            rowid = $(this).attr('rowid');
-            var row = $('#' + rowid);
+            const rowid = $(this).attr('rowid');
+            const row = $('#' + rowid);
+            const currDetal = $(row).find('[name="Деталь"]').val();
+            const data = $(row).data('data');
 
-            $(this).hide();
+            $(row).find('.btnOk').hide();
             $(row).find('.btnEdit').show();
-            $(row).find('.btnFile').show();
-            $(row).find('.btnDelete').hide();
+            $(row).find('input').prop('disabled', true);
 
             clickAnimate($(row).find('.btnEdit'));
             
-            $(row).find('input').prop('disabled', true);
+            logToServer('Нажата кнопка "Применить"', {report:rowid, currDetal:currDetal});
+
+            const docName = $(this).closest('table').attr('id');
+            const doc = $(this).closest('tr').attr('id');
+
+            payload = {};
+            payload.type = 'Документы';
+            payload.doc = doc;
+            payload.data = data;
+
+            sendWSS('updateDataOnServer', docName, payload);
         });
 
     });

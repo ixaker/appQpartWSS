@@ -186,7 +186,7 @@ callbackTable = async function(data) {
                 //return;
             }
         }
-
+        data.edited = {};
         $(row).data('data', data);
 
         if (await reportChanged(row, newData) && visible) {
@@ -279,6 +279,7 @@ function setEventOnChange(element, newData) {
         const keyName = $(element).attr('name');
         const row = $('#' + newData.uid);
         const data = $(row).data('data');
+        var sync = $(this).attr('sync')||'auto';
 
         console.log('data', data);
 
@@ -305,12 +306,15 @@ function setEventOnChange(element, newData) {
             setValid(this, validValue);
         }
         
-        data.data[keyName] = userInput;
+        data.edited[keyName] = userInput;
         $(row).data('data', data);
 
         $(element).parent().parent().attr('MD5', '');
-        sendNotificationOnChange(this, userInput);
 
+        if (sync === 'auto') {
+            sendNotificationOnChange(this, userInput);
+        }
+        
         logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
 
     });

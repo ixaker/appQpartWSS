@@ -108,7 +108,7 @@ function authentication() {
         loadMenu(response.user, response.token);
         $.cookie("token", response.token);
     }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
-        //console.log("error - /authentication");
+        console.log("error - /authentication");
         exit();
     });
 }
@@ -130,7 +130,7 @@ $(function() {
 });
 
 function loadMenu(userInfo, token) {
-    //console.log('start loadMenu', userInfo);
+    console.log('start loadMenu', userInfo);
 
     user = userInfo;
     auth = true;
@@ -149,7 +149,7 @@ function loadMenu(userInfo, token) {
     reconectWebSocket();
 
     $.get('/app/getUserMenu', function(response) {
-        //console.log('/app/getUserMenu', response);
+        console.log('/app/getUserMenu', response);
 
         const userInfo = response.userInfo;
         //console.log('userInfo', userInfo);
@@ -168,6 +168,8 @@ function loadMenu(userInfo, token) {
             
             $.get(PageURL, function(response) {
                 $('#content').html(response);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                exit();
             });
         }); 
 
@@ -181,6 +183,6 @@ function loadMenu(userInfo, token) {
             } 
         }
     }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
-        console.log("error - /getUserMenu", jqXHR.responseText);
+        exit();
     });
 }
