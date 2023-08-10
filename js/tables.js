@@ -16,7 +16,7 @@ async function initTables() {
 
 // инициализация таблицы
 async function initTable(table) {
-    console.log('initTable', table);
+    //console.log('initTable', table);
 
     createHeaderForTable(table);
 
@@ -32,14 +32,14 @@ async function initTable(table) {
         NProgress.start();
 
         await $.ajax({ url: $(table).attr('url'), type: 'GET', dataType: 'json', data: param, success: function(response) {
-            console.log('response', response);
+            //console.log('response', response);
 
             if (!response.error) {
                 response.list.forEach(async (item) => {
                     await callbackTable(item);
                 });
 
-                addSubscribeWSS($(table).attr('id'))
+                addSubscribeWSS($(table).attr('id'));
             }
         }, complete: function(response){
             NProgress.done();
@@ -48,7 +48,7 @@ async function initTable(table) {
         toastr["error"]('Ошибка запроса к 1С'); 
         NProgress.done();           
     }
-    console.log('end initTable');
+    //console.log('end initTable');
 }
 
 // создание стороки заголовков таблицы
@@ -183,13 +183,13 @@ callbackTable = async function(data) {
 
             if (!visible) {
                 $(row).remove();
-                return;
+                //return;
             }
         }
 
         $(row).data('data', data);
 
-        if (await reportChanged(row, newData)) {
+        if (await reportChanged(row, newData) && visible) {
             $(row).children().children().each(function() {
                 let dataCell = this;
                 let name = $(dataCell).attr('name');
@@ -255,6 +255,11 @@ callbackTable = async function(data) {
             } 
 
         }
+        //console.log('callbackTable', '111');
+        const callbackAfterWrite = $(table).attr('callbackAfterWrite')||'';
+        callback(callbackAfterWrite, data);
+        
+
     }else{
         addNewRow(table, data);
     }
@@ -271,6 +276,11 @@ function setEventOnChange(element, newData) {
         var userInput;
         let validValue = false;
         var type = $(this).attr('type');
+        const keyName = $(element).attr('name');
+        const row = $('#' + newData.uid);
+        const data = $(row).data('data');
+
+        console.log('data', data);
 
         if (type == 'checkbox') {
             userInput = $(this).is(":checked"); // Булево значение
@@ -295,6 +305,9 @@ function setEventOnChange(element, newData) {
             setValid(this, validValue);
         }
         
+        data.data[keyName] = userInput;
+        $(row).data('data', data);
+
         $(element).parent().parent().attr('MD5', '');
         sendNotificationOnChange(this, userInput);
 
@@ -320,6 +333,8 @@ function sendNotificationOnChange(element, value) {
     const docName = $(element).closest('table').attr('id');
     const doc = $(element).closest('tr').attr('id');
     const keyName = $(element).attr('name');
+    const row = $('#' + doc);
+    const data = $(row).data('data');
 
     payload = {};
     payload.type = 'Документы';
@@ -327,8 +342,21 @@ function sendNotificationOnChange(element, value) {
     payload.doc = doc;
     payload.keyName = keyName;
     payload.value = value;
+    payload.data = data;
 
     console.log('sendNotificationOnChange', payload);
 
     sendWSS('updateDataOnServer', docName, payload);
+}
+
+function callback(funcName, param = null) {
+    if (funcName !== '') {
+        func = window[funcName];
+
+        if (param === null) {
+            return func();
+        } else {
+            return func(param);
+        }
+    }    
 }

@@ -6,9 +6,10 @@ let callbackWSS;
 function sendWSS(action = '', topic = '', payload = '') {
     try {
         const msg = {action:action, topic:topic, payload:payload, user:user};
-        console.log('sendWSS', msg, 'WebSocketConnected', WebSocketConnected);
+        //console.log('sendWSS', msg, 'WebSocketConnected', WebSocketConnected);
 
         if (WebSocketConnected) {
+            console.log('sendWSS - socket.send');
             socket.send(JSON.stringify(msg));
         }
     } catch (error) {
@@ -33,15 +34,19 @@ function clearSubscribeWSS(){
 
 function addSubscribeWSS(topic){
     subscriptions.push(topic);
+    subscriptions = [...new Set(subscriptions)];
     sendWSS('subscribe', topic);
+    console.log('addSubscribeWSS', topic, subscriptions);
 }
 
 function reconectWebSocket() {
+    console.log('reconectWebSocket');
     disconectWebSocket();
-    connectWebSocket();
+    //connectWebSocket('reconectWebSocket');
 }
 
 function disconectWebSocket() {
+    console.log('disconectWebSocket');
     try {
         socket.close();
     } catch (error) {
@@ -49,11 +54,16 @@ function disconectWebSocket() {
     }
 }
 
-function connectWebSocket() {
-    console.log('start connectWebSocket', auth);
+function connectWebSocket(from = 'none') {
+    console.log('start connectWebSocket', from, firstConnection, auth, socket);
 
     try {
         if (auth) {
+            if(WebSocketConnected){
+                disconectWebSocket();
+            }
+
+            console.log('new WebSocket');
             socket = new WebSocket("wss://" + window.location.host);
 
             socket.addEventListener('open', function(event) {
@@ -72,7 +82,7 @@ function connectWebSocket() {
             });
 
             socket.addEventListener('message', function (event) {
-                console.log('Message from server: ' + event.data);
+                //console.log('Message from server: ' + event.data);
 
                 //toastr["info"]('WSS', event.data);
 
@@ -101,6 +111,8 @@ function connectWebSocket() {
                 setTimeout(connectWebSocket, 3000); // Повторное подключение через 3 секунды
             });
 
+        }else{
+            setTimeout(connectWebSocket, 3000); // Повторное подключение через 3 секунды
         }
     } catch (error) {
             

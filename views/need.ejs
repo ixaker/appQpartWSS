@@ -64,7 +64,8 @@
         }
 
         #Надо .dataCell {
-            text-wrap: wrap;  
+            /* text-wrap: wrap; */  
+            white-space: initial;
         }
         
         #Надо td:nth-child(2) {
@@ -90,6 +91,41 @@
     #infoZakazForm th:nth-child(2) {
         width: 160px;
     }
+
+    .DefectListMainRow td{
+        background-color: coral;
+    }
+
+    #fixReportRow input {
+        width: 300px;
+        flex: inherit;
+    }
+
+    .labelFixBrak {
+        margin-left: 10px;
+    }
+
+    #groupFixReport {
+        width: 430px;
+        margin: auto;
+        background-color: aliceblue;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #d7e7f5;
+    }
+
+    #saveFixReport {
+        margin-right: 15px;
+        margin-left: auto;
+    }
+
+    #fixReportForm {
+        padding: 20px;
+    }
+
+    #time {
+        text-align: center;
+    }
 </style>
 
 <h3 class="titlePage">Надо делать</h3>
@@ -99,8 +135,8 @@
         url="/app/getListGroupEtapNeed" 
         filter="filterForListGroupEtapNeed" 
         addNevRow="callbackAddNewRowForListGroupEtapNeed" 
-        append="end" sort="0" init
->
+        append="end" sort="0" init>
+
     <tr class="config" style="display: none;">
         <td title="Код"  
             name="Код" 
@@ -112,6 +148,107 @@
             name="КоличествоРаботы" 
             style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
     </tr>
+
+    <tr class="DefectListMainRow" id="DefectListMainRow" style="display: none;">
+        <td title="Код"  
+            name="Код" 
+            style="width: 30px;"><div class="dataCell textAlignCenter">00</div></td>
+        <td title="Групповой этап"  
+            name="Наименование" 
+            style="width: 160px;"><div class="dataCell">Брак</div></td>
+        <td title="Количество работ" 
+            name="КоличествоРаботы" 
+            style="width: 100px;"><div id="countRowInDefectList" class="dataCell textAlignEnd">0</div></td>
+    </tr>
+
+    <tr id="DefectListRow" style="display: none;" class="selectedGroupEtap">
+        <td style="display: none;">01</td>
+        <td colspan="3" style="padding-top: 5px; padding-bottom: 5px;">
+            <table  id="ОтчетПоРаботе2022" 
+                    url="/app/getListDefect" 
+                    filter="filterForDefectTable" 
+                    append="end" 
+                    addNevRow="callbackAddNewRowForListDefect" 
+                    callbackAfterWrite="callbackAfterWriteListDefect" 
+                    init header>
+                <tr class="config" style="display: none;">
+                    <td title="Дата" 
+                        name="ДатаОтчета" 
+                        style="width: 70px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+                    <td title="Номер детали" 
+                        name="Заказ" 
+                        key="АртикулНаименование" 
+                        style="width: 100%;"><div class="dataCell"></div></td>
+                    <td title="Станок" 
+                        name="Станок" 
+                        key="ИнвентарныйНомер" 
+                        style="width: 70px;"><div class="dataCell"></div></td>
+                    <td title="МЛ" 
+                        name="Заказ" 
+                        key="Номер" 
+                        style="width: 60px;"><div class="dataCell textAlignCenter"></div></td>
+                    <td title="Код операции" 
+                        name="ЭтапПроизводства" 
+                        key="КодНовый" 
+                        style="width: 90px;"><div class="dataCell textAlignCenter"></div></td>
+                    <td title="Оператор" 
+                        name="Сотрудник" 
+                        key="Наименование" 
+                        style="width: 220px;"><div class="dataCell"></div></td>
+                    <td title="Надо исправить" 
+                        name="КоличествоОсталосьИсправить" 
+                        style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
+                    <td title="" 
+                        style="width: 55px;"><div class="groupBtnRow">
+                            <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+                        </div></td>
+                </tr>
+            
+                <tr id="fixReportRow" style="display: none;">
+                    <td colspan="99">
+                        <div id="fixReportForm">
+                            <div id="groupFixReport">
+                                <h5 style="margin-bottom: 20px; font-weight: bold;">Создание отчета по исправлению брака</h5>
+                                <div class="input-group mb-2">
+                                    <label for="sotrudnikFix" class="labelFixBrak" style="width: 180px;">Кто исправлял :</label>
+                                    <input type="text" 
+                                        class="form-control inputFixBrak" 
+                                        id="sotrudnikFix" 
+                                        url="/app/autocompleteSotrydnik" 
+                                        name="Станок" 
+                                        key="ИнвентарныйНомер" 
+                                        style="width: 200px;"
+                                        aria-describedby="basic-addon3">
+                                </div>
+            
+                                <div class="input-group mb-2">
+                                    <label for="dateFix" class="labelFixBrak" style="width: 180px;">Когда исправлял :</label>
+                                    <input type="date" class="form-control inputFixBrak" style="width: 200px;" id="dateFix" aria-describedby="basic-addon3">
+                                </div>
+            
+                                <div class="input-group mb-2">
+                                    <label for="time" class="labelFixBrak" style="width: 300px;">Времени потрачено, чч:мм:</label>
+                                    <input type="text" class="form-control inputFixBrak" inputmode="numeric" style="width: 80px;" id="time" placeholder="чч:мм" aria-describedby="basic-addon3">
+                                </div>
+            
+                                <div class="input-group mb-2">
+                                    <label for="time" class="labelFixBrak" style="width: 300px;">Количество исправлено, шт:</label>
+                                    <input type="number" class="form-control inputFixBrak textAlignEnd" inputmode="numeric" style="width: 80px;" id="countFix" aria-describedby="basic-addon3">
+                                </div>
+            
+                                <div style="display: flex; margin-top: 20px;">
+                                    <button type="button" class="btn btn-success" id="saveFixReport">Сохранить</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelFixReport">Отмена</button>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
 
     <tr id="listWork" style="display: none;" class="selectedGroupEtap">
         <td style="display: none;" id="kod">01</td>
@@ -142,9 +279,6 @@
                         <td title="Надо" 
                             name="МожноДелать" 
                             style="width: 70px;"><div class="dataCell textAlignEnd"></div></td>
-<!--                         <td title="Брак" 
-                            name="Брак" 
-                            style="width: 70px;"><div class="dataCell textAlignEnd"></div></td> -->
                         <td title="Дни" 
                             name="КоличествоДнейБездействияНадо" 
                             style="width: 70px;"><div class="dataCell textAlignEnd"></div></td>
@@ -230,9 +364,7 @@
 
                     <tr id="infoZakazRow" style="display: none;">
                         <td colspan="6" style="background-color: aliceblue;">
-                            <div id="infoZakazForm">
-                                Заказ
-                            </div>
+                            <div id="infoZakazForm"></div>
                         </td>
                     </tr>
                 </table>
@@ -277,12 +409,17 @@
         initTables();
 
         initInputProvider();
-        initInputSotrudnik();
+        initInputSotrudnik('#sotrudnik');
+        initInputSotrudnik('#sotrudnikFix');
         initInputTimeMask();
-        initInputDate();
-        initInputCount();
+        initInputDate('#date');
+        initInputDate('#dateFix');
+        initInputCount('#count');
+        initInputCount('#countFix');
         initInputWeight();
         initInputPrice();
+
+        addSubscribeWSS('ОтчетПоРаботе2022_all');
 
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForListGroupEtapNeed = function(data, result = true) {
@@ -311,8 +448,6 @@
 
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForNeed = function(data, result = true) {
-            console.log('func filterForNeed', data);  
-
             try {
                 const groupEtapID = $('#listWork').attr('groupEtapID');
 
@@ -334,10 +469,10 @@
                     const row = $("#" + data['uid']);
                     const days = parseInt(data['КоличествоДнейБездействияНадо']);
 
-                    console.log('days', days, 'row', row);
+                    //console.log('days', days, 'row', row);
 
                     if (days >= 5) {
-                        console.log('cell', $(row).find('.dataCell[name="КоличествоДнейБездействияНадо"]'));
+                        //console.log('cell', $(row).find('.dataCell[name="КоличествоДнейБездействияНадо"]'));
                         $(row).find('.dataCell[name="КоличествоДнейБездействияНадо"]').addClass('colorRed');
                     }
                 }
@@ -347,7 +482,7 @@
         }
 
         callbackAddNewRowForListNeed = function (data) {
-            console.log('callbackAddNewRowForListNeed', data);
+            //console.log('callbackAddNewRowForListNeed', data);
 
             try {
                 if (access) {
@@ -359,8 +494,22 @@
         }
 
         callbackWSS = async function(data) {
-            console.log('callbackWSS', data);
+            //console.log('callbackWSS', data);
             callbackTable(data);
+        }
+
+        filterForDefectTable = function(data, result = true) {
+            try {
+                if (!data['Проведен']) {
+                    result = false;    
+                }else if (data['КоличествоБрака'] == 0) {
+                    result = false;
+                }else if ((data['КоличествоОсталосьИсправить']||0) == 0) {
+                    result = false;
+                }
+            } catch (error) {}
+
+            return result;
         }
 
         $('#аГруппыЭтаповПроизводства').on('click', '.аГруппыЭтаповПроизводства', function(event){
@@ -382,13 +531,13 @@
                 } else {
                     $('#Надо').children('tbody').children('.rowData').remove();
                     needInit = true;
-                    $('#listWork').show(200);
+                    $('#listWork').show(300);
                 }    
             } else {
                 $('#listWork').hide(0);
                 $('#Надо').children('tbody').children('.rowData').remove();
                 $('#listWork').insertAfter(row);
-                $('#listWork').show(200); 
+                $('#listWork').show(300); 
                 needInit = true;   
             }
 
@@ -525,8 +674,8 @@
             }
         }
 
-        function initInputSotrudnik() {
-            const element = $('#sotrudnik');
+        function initInputSotrudnik(element) {
+            //const element = $('#sotrudnik');
             const url = $(element).attr('url');
 
             $(element).autocomplete({ 
@@ -575,10 +724,21 @@
                 onChange: function(cep){
                     setValid('#timeStop', false);}
             });
+
+            $('#time').mask('00:A0', {
+                'translation':{A: {pattern: /[0-5]/}},
+                onComplete: function(cep) {
+                    console.log('onComplete cep', cep, this);
+                    if(cep != '00:00'){
+                        setValid('#time', true);
+                    }},
+                onChange: function(cep){
+                    setValid('#time', false);}
+            });
         }
 
-        function initInputDate() {
-            $('#date').on("change" , function() {
+        function initInputDate(element) {
+            $(element).on("change" , function() {
                 const value = $(this).val();
                 
                 if (value.length == 0) {
@@ -589,8 +749,8 @@
             })
         }
 
-        function initInputCount() {
-            $('#count').on("change" , function() {
+        function initInputCount(element) {
+            $(element).on("change" , function() {
                 const value = $(this).val();
                 const maxCount = parseInt($(this).attr('maxCount')||0);
 
@@ -822,6 +982,124 @@
                     NProgress.done();
                 }});
             };
+        });
+    
+        // ************************************************** Брак ********************************************************
+        callbackAddNewRowForListDefect = function(data) {
+            const userInfo = $('#menu').data('userInfo');
+            const access = userInfo.data['ПравоВноситьИсправлениеБрака']||false;
+            
+            console.log('callbackAddNewRowForListDefect', access, $('#' + data.data['uid']).find('.btnPlay'));
+
+            try {
+                if (access) {
+                    $('#' + data.data['uid']).find('.btnPlay').show();        
+                } else {
+                    $('#' + data.data['uid']).find('.btnPlay').remove(); 
+                }
+            } catch (error) { console.log(error) }
+        }
+        
+        callbackAfterWriteListDefect = function(data) {
+            console.log('callbackAfterWriteListDefect', data);
+            const countDefect = $('#ОтчетПоРаботе2022').children('tbody').children('.rowData').length;
+            const visibleDefect = countDefect > 0;
+            const currState = $('#DefectListMainRow').is(':visible');
+
+            if (visibleDefect !== currState) {
+                if (visibleDefect) {
+                    $('#DefectListMainRow').show(300);
+                } else {
+                    $('#DefectListMainRow').hide(200);
+                    $('#DefectListRow').hide(200);
+                }
+            }
+
+            $('#countRowInDefectList').text(countDefect);
+            console.log('callbackAfterWriteListDefect', countDefect, visibleDefect, currState);
+        }
+
+        $('#аГруппыЭтаповПроизводства').on('click', '.DefectListMainRow', function(event){
+            if ($('#DefectListRow').is(':visible')) {
+                $('#DefectListRow').hide(200);
+            } else {
+                $('#DefectListRow').show(300);
+                console.log('iiiiiiii');
+            }  
+        });
+    
+        $('#ОтчетПоРаботе2022').on('click', '.btnPlay', function(event){
+            const rowID = $(this).attr('rowID');
+            const row = $('#' + rowID);
+            const maxCount = parseInt($(row).find('.dataCell[name="КоличествоОсталосьИсправить"]').text()||0);
+
+
+            $('#sotrudnikFix').val('');
+            $('#sotrudnikFix').attr('uid', '');
+            setValid('#sotrudnikFix', false);
+
+            $('#dateFix').val('');
+            setValid('#dateFix', false);
+
+            $('#time').val('');
+            setValid('#time', false);
+
+            $('#countFix').val('');
+            $('#countFix').attr('maxCount', maxCount);
+            setValid('#countFix', false);
+
+            $('#fixReportRow').attr('report', rowID)
+            $('#fixReportRow').insertAfter(row);
+            $('#fixReportRow').show();
+        });
+
+        $('#cancelFixReport').on('click', function(event){
+            clickAnimate(this);
+            setTimeout(() => { $('#fixReportRow').hide(300);}, 200);
+        });
+
+        $('#saveFixReport').on('click', function(event){
+            clickAnimate(this);
+
+            const sotrudnik = $('#sotrudnikFix');
+            const date = $('#dateFix');
+            const time = $('#time');
+            const count = $('#countFix');
+
+            if (sotrudnik.hasClass('invalid')) {
+                toastr.error('Укажите кто исправлял брак');
+                return;
+            }else if (date.hasClass('invalid')) {
+                toastr.error('Укажите когда исправлялся брак');
+                return;
+            }else if (time.hasClass('invalid')) {
+                toastr.error('Укажите сколько времени ушло на исправление брака');
+                return;
+            }else if (count.hasClass('invalid')) {
+                toastr.error('Укажите сколько штук исправлено');
+                return;
+            }
+
+            const data = {};
+            data.reportBrak = $('#fixReportRow').attr('report');
+            data.sotrudnik  = $(sotrudnik).attr('uid');
+            data.date       = new Date($(date).val());
+            data.time       = $(time).val();
+            data.count      = parseInt($(count).val());
+
+            console.log('data', data);
+
+            NProgress.start();
+
+            $.ajax({url: '/app/createFixReport', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('logToServer', status, data); }
+            }).always(function() {
+                NProgress.done();
+                highlight = true;
+            });
+
+            setTimeout(() => { $('#fixReportRow').hide(300);}, 200);
         });
     });
 </script>

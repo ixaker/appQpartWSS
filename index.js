@@ -320,7 +320,7 @@ app.post('/dataUpdated', (req, res) => {
   subscribedClients = [...new Set(subscribedClients)];
 
   log.data('subscribedClients', subscribedClients.length);
-  log.data('arr ' + subscribedClients);
+  //log.data('arr ', subscribedClients);
 
   subscribedClients.forEach(function(client) {
     log.data('client', Object.keys(client));

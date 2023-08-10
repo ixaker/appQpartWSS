@@ -20,7 +20,7 @@ $(function() {
 });
 
 function GetInfo1C(url, param = '', callback, elem=false, type='GET') { 
-    console.log('start GetInfo1C', url, param, type);
+    //console.log('start GetInfo1C', url, param, type);
 
     $.ajax({
         type: type,
@@ -36,7 +36,7 @@ function GetInfo1C(url, param = '', callback, elem=false, type='GET') {
         dataType: "text",
         async:true,
         error: function( jqXHR , textStatus, errorThrown ){ 
-            console.log(jqXHR);
+            //console.log(jqXHR);
 
             if(jqXHR.status == 530){ 
                 toastr["error"](jqXHR.responseText); 
@@ -89,6 +89,7 @@ function convertToTime(decimalHours) {
 async function logToServer(msg, data = {}) {
     $.ajax({url: '/app/log', method: 'POST', contentType: 'application/json',
         data: JSON.stringify({msg:msg, user:user, stanok:stanok, currentMenu:currentMenu, data:data}), 
-        success: function(data, status) { console.log('logToServer', status); }
+        success: function(data, status) { //console.log('logToServer', status); 
+        }
     });
 }

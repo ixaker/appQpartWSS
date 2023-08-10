@@ -101,14 +101,14 @@ function uploadPhoto() {
 }
 
 function authentication() {
-    console.log("start authentication");
+    //console.log("start authentication");
 
     $.post('/authentication', {}, function(response) {
-        console.log('/authentication', response);
+        //console.log('/authentication', response);
         loadMenu(response.user, response.token);
         $.cookie("token", response.token);
     }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
-        console.log("error - /authentication");
+        //console.log("error - /authentication");
         exit();
     });
 }
@@ -130,7 +130,7 @@ $(function() {
 });
 
 function loadMenu(userInfo, token) {
-    console.log('start loadMenu', userInfo);
+    //console.log('start loadMenu', userInfo);
 
     user = userInfo;
     auth = true;
@@ -149,10 +149,10 @@ function loadMenu(userInfo, token) {
     reconectWebSocket();
 
     $.get('/app/getUserMenu', function(response) {
-        console.log('/app/getUserMenu', response);
+        //console.log('/app/getUserMenu', response);
 
         const userInfo = response.userInfo;
-        console.log('userInfo', userInfo);
+        //console.log('userInfo', userInfo);
 
         $('#menu').html(response.menu);   // загружаем меню
         $('#menu').data('userInfo', userInfo);
@@ -161,7 +161,7 @@ function loadMenu(userInfo, token) {
             $('.navbar-collapse').collapse('hide');    // скрываем меню
             PageUID = $(this).attr("uid");
             PageURL = $(this).attr("url");
-            console.log('PageURL', PageURL);
+            //console.log('PageURL', PageURL);
 
             localStorage.setItem('PageUID', PageUID);
             sendWSS('unsubscribeAll');
