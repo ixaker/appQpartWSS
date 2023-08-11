@@ -93,3 +93,50 @@ async function logToServer(msg, data = {}) {
         }
     });
 }
+
+function initInputAutocomplete(element) {
+    try {
+        const url = $(element).attr('url');
+
+        $(element).autocomplete({ 
+            source: function(req, res) { 
+                $.ajax({ url: url, dataType: "json", data: { term: req.term},
+                    success: function(data) { res(data);}
+                });
+            },
+            select: function(event, ui){ 
+                $(this).attr('uid', ui.item.uid);
+                setValid(this, true);
+                $(this).blur();
+            },
+            position: { my: "left bottom", at: "left top" },
+            minLength: 1
+        }).on("input" , function() { 
+            $(element).attr('uid', '');
+            setValid(element, false);
+        }).on("blur"  , function() { 
+            if(($(element).attr('uid')||'') === ''){
+                $(element).val('');
+            }
+        });
+    } catch (error) {
+        toastr["error"]('Ошибка при initInputAutocomplete');        
+    }
+}
+
+function initInputTimeMask(element) {
+    try {
+        $(element).mask('00:A0', {
+            'translation':{A: {pattern: /[0-5]/}},
+            onComplete: function(cep) {
+                console.log('onComplete cep', cep, this);
+                if(cep != '00:00'){
+                    setValid(element, true);
+                }},
+            onChange: function(cep){
+                setValid(element, false);}
+        });
+    } catch (error) {
+        toastr["error"]('Ошибка при initInputTimeMask');    
+    }
+}

@@ -50,7 +50,7 @@
         margin-top: 7px;
     }
 
-    @media (max-width: 450px) {
+    @media (max-width: 780px) {
         #Надо th {
             width: auto !important;  
         }
@@ -455,8 +455,14 @@
         initTables();
 
         initInputProvider();
-        initInputSotrudnik('#sotrudnik');
-        initInputSotrudnik('#sotrudnikFix');
+        initInputAutocomplete('#provider');
+        initInputAutocomplete('#sotrudnik');
+        initInputAutocomplete('#sotrudnikFix');
+
+        initInputTimeMask('#timeStart');
+        initInputTimeMask('#timeStop');
+        initInputTimeMask('#time');
+
         initInputTimeMask();
         initInputDate('#date');
         initInputDate('#dateFix');
@@ -466,6 +472,66 @@
         initInputPrice();
 
         addSubscribeWSS('ОтчетПоРаботе2022_all');
+        callbackWSS = async function(data) {callbackTable(data)};
+
+        function initInputProvider() {
+            const userInfo = $('#menu').data('userInfo');
+
+            if (!userInfo.data['ПравоВноситьПодряды']) {
+                $('#workInProvider').hide();
+            }
+        }
+
+        function initInputDate(element) {
+            $(element).on("change" , function() {
+                const value = $(this).val();
+                
+                if (value.length == 0) {
+                    setValid(this, false);    
+                } else {
+                    setValid(this, true); 
+                }
+            })
+        }
+
+        function initInputCount(element) {
+            $(element).on("change" , function() {
+                const value = $(this).val();
+                const maxCount = parseInt($(this).attr('maxCount')||0);
+
+                if (value == 0 || value === '' || value < 0 || value > maxCount) {
+                    setValid(this, false);    
+                } else {
+                    setValid(this, true); 
+                }
+            })
+        }
+
+        function initInputWeight() {
+            $('#weight').on("change" , function() {
+                const value = $(this).val();
+                console.log(value);
+                if (value == 0 || value === '' || value < 0 ) {
+                    setValid(this, false);    
+                } else {
+                    setValid(this, true); 
+                }
+            })
+        }
+
+        function initInputPrice() {
+            $('#price').on("change" , function() {
+                const value = $(this).val();
+
+                if (value == 0 || value === '' || value < 0 ) {
+                    setValid(this, false);    
+                } else {
+                    setValid(this, true); 
+                }
+            })
+        }
+
+// ************************************************** Надо ********************************************************
 
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForListGroupEtapNeed = function(data, result = true) {
@@ -515,10 +581,7 @@
                     const row = $("#" + data['uid']);
                     const days = parseInt(data['КоличествоДнейБездействияНадо']);
 
-                    //console.log('days', days, 'row', row);
-
                     if (days >= 5) {
-                        //console.log('cell', $(row).find('.dataCell[name="КоличествоДнейБездействияНадо"]'));
                         $(row).find('.dataCell[name="КоличествоДнейБездействияНадо"]').addClass('colorRed');
                     }
                 }
@@ -528,8 +591,6 @@
         }
 
         callbackAddNewRowForListNeed = function (data) {
-            //console.log('callbackAddNewRowForListNeed', data);
-
             try {
                 if (access) {
                     $('#' + data.data['uid']).find('.btnPlay').show();        
@@ -539,25 +600,7 @@
             } catch (error) { console.log(error) }
         }
 
-        callbackWSS = async function(data) {
-            //console.log('callbackWSS', data);
-            callbackTable(data);
-        }
-
-        filterForDefectTable = function(data, result = true) {
-            try {
-                if (!data['Проведен']) {
-                    result = false;    
-                }else if (data['КоличествоБрака'] == 0) {
-                    result = false;
-                }else if ((data['КоличествоОсталосьИсправить']||0) == 0) {
-                    result = false;
-                }
-            } catch (error) {}
-
-            return result;
-        }
-
+        // обработка клика по строке Этапа производства
         $('#аГруппыЭтаповПроизводства').on('click', '.аГруппыЭтаповПроизводства', function(event){
             console.log(this);
 
@@ -619,6 +662,7 @@
             }
         });
 
+        // обработка клика по кнопке Создания отчета
         $('#Надо').on('click', '.btnPlay', function(event){
             const rowID = $(this).attr('rowID');
             const row = $('#' + rowID);
@@ -687,156 +731,13 @@
             }
         });
 
-        function initInputProvider() {
-            const userInfo = $('#menu').data('userInfo');
-
-            if (userInfo.data['ПравоВноситьПодряды']) {
-                const element = $('#provider');
-                const url = $(element).attr('url');
-
-                $(element).autocomplete({ 
-                    source: function(req, res) { 
-                        $.ajax({ url: url, dataType: "json", data: { term: req.term},
-                            success: function(data) { res(data);}
-                        });
-                    },
-                    select: function(event, ui){ 
-                        $(this).attr('uid', ui.item.uid);
-                        setValid(this, true);
-                        $(this).blur();
-                    },
-                    position: { my: "left bottom", at: "left top" },
-                    minLength: 1
-                }).on("input" , function() { 
-                    $(element).attr('uid', '');
-                    setValid(element, false);
-                }).on("blur"  , function() { 
-                    if(($(element).attr('uid')||'') === ''){
-                        $(element).val('');
-                    }
-                });
-            } else {
-                $('#workInProvider').hide();
-            }
-        }
-
-        function initInputSotrudnik(element) {
-            //const element = $('#sotrudnik');
-            const url = $(element).attr('url');
-
-            $(element).autocomplete({ 
-                source: function(req, res) { 
-                    $.ajax({ url: url, dataType: "json", data: { term: req.term},
-                        success: function(data) { res(data);}
-                    });
-                },
-                select: function(event, ui){ 
-                    $(this).attr('uid', ui.item.uid);
-                    setValid(this, true);
-                    $(this).blur();
-                },
-                position: { my: "left bottom", at: "left top" },
-                minLength: 1
-            }).on("input" , function() { 
-                $(element).attr('uid', '');
-                setValid(element, false);
-            }).on("blur"  , function() { 
-                if(($(element).attr('uid')||'') === ''){
-                    $(element).val('');
-                }
-            });
-        }
-
-        function initInputTimeMask() {
-
-            $('#timeStart').mask('00:A0', {
-                'translation':{A: {pattern: /[0-5]/}},
-                onComplete: function(cep) {
-                    console.log('onComplete cep', cep, this);
-                    if(cep != '00:00'){
-                        setValid('#timeStart', true);
-                    }},
-                onChange: function(cep){
-                    setValid('#timeStart', false);}
-            });
-
-            $('#timeStop').mask('00:A0', {
-                'translation':{A: {pattern: /[0-5]/}},
-                onComplete: function(cep) {
-                    console.log('onComplete cep', cep, this);
-                    if(cep != '00:00'){
-                        setValid('#timeStop', true);
-                    }},
-                onChange: function(cep){
-                    setValid('#timeStop', false);}
-            });
-
-            $('#time').mask('00:A0', {
-                'translation':{A: {pattern: /[0-5]/}},
-                onComplete: function(cep) {
-                    console.log('onComplete cep', cep, this);
-                    if(cep != '00:00'){
-                        setValid('#time', true);
-                    }},
-                onChange: function(cep){
-                    setValid('#time', false);}
-            });
-        }
-
-        function initInputDate(element) {
-            $(element).on("change" , function() {
-                const value = $(this).val();
-                
-                if (value.length == 0) {
-                    setValid(this, false);    
-                } else {
-                    setValid(this, true); 
-                }
-            })
-        }
-
-        function initInputCount(element) {
-            $(element).on("change" , function() {
-                const value = $(this).val();
-                const maxCount = parseInt($(this).attr('maxCount')||0);
-
-                if (value == 0 || value === '' || value < 0 || value > maxCount) {
-                    setValid(this, false);    
-                } else {
-                    setValid(this, true); 
-                }
-            })
-        }
-
-        function initInputWeight() {
-            $('#weight').on("change" , function() {
-                const value = $(this).val();
-                console.log(value);
-                if (value == 0 || value === '' || value < 0 ) {
-                    setValid(this, false);    
-                } else {
-                    setValid(this, true); 
-                }
-            })
-        }
-
-        function initInputPrice() {
-            $('#price').on("change" , function() {
-                const value = $(this).val();
-
-                if (value == 0 || value === '' || value < 0 ) {
-                    setValid(this, false);    
-                } else {
-                    setValid(this, true); 
-                }
-            })
-        }
-
+        // обработка клика по кнопке Отмена создания отчета
         $('#cancelNewReport').on('click', function(event){
             clickAnimate(this);
             setTimeout(() => { $('#newReportRow').hide(300);}, 200);
         });
 
+        // обработка клика по кнопке Сохранить отчет
         $('#saveNewReport').on('click', function(event){
             clickAnimate(this);
 
@@ -907,34 +808,28 @@
             data.weight = parseInt($(weight).val()||0);
             data.price = parseInt($(price).val()||0);
             data.priceForOne = parseInt($(priceForOne).val()||0);
-
             data.data = $('#newReportRow').data('data')||{};
-
-            console.log('data', data);
 
             NProgress.start();
 
             $.ajax({url: '/app/createNewReport', method: 'POST', contentType: 'application/json',
                 data: JSON.stringify(data), 
                 success: function(data, status) { 
-                    console.log('logToServer', status, data); 
-
                     if (data.error) {
                         toastr.error(data['Причина']);
                     }else{
                         toastr.success('Отчет создан!');
                     }
-
                 }
             }).always(function() {
                 NProgress.done();
                 highlight = true;
             });
 
-
             setTimeout(() => { $('#newReportRow').hide(300);}, 200);
         });
 
+        // обработка клика по галочке Сделано у подрядчика
         $('#workInProviderInput').on('change', function() {
             const data = $('#newReportRow').data('data');
 
@@ -965,6 +860,7 @@
             }
         });
 
+        // обработка клика по номеру заказа, отображает таблицу всех этапов с количеством
         $('#аГруппыЭтаповПроизводства').on('click', '.zakaz', function(event){
             const row = $(this).parent();
             const data = $(row).data('data');
@@ -1009,11 +905,8 @@
                             item['Изготовить'] = item['Изготовить'] === '0' ? '' : item['Изготовить'];
                             item['Утеря'] = item['Утеря'] === '0' ? '' : item['Утеря'];
                             item['МожноДелать'] = item['МожноДелать'] === '0' ? '' : item['МожноДелать'];
-
                             item['КоличествоДнейБездействияНадо'] = parseInt(item['КоличествоДнейБездействияНадо']);
-
                             item['addClass'] = item['КоличествоДнейБездействияНадо'] > 5 ? ' colorRed' : '';
-                            
                         });
 
                         const tableHtml = template({ items: items });
@@ -1030,13 +923,25 @@
             };
         });
     
-        // ************************************************** Брак ********************************************************
+// ************************************************** Брак ********************************************************
+        filterForDefectTable = function(data, result = true) {
+            try {
+                if (!data['Проведен']) {
+                    result = false;    
+                }else if (data['КоличествоБрака'] == 0) {
+                    result = false;
+                }else if ((data['КоличествоОсталосьИсправить']||0) == 0) {
+                    result = false;
+                }
+            } catch (error) {}
+
+            return result;
+        }
+
         callbackAddNewRowForListDefect = function(data) {
             const userInfo = $('#menu').data('userInfo');
             const access = userInfo.data['ПравоВноситьИсправлениеБрака']||false;
             
-            console.log('callbackAddNewRowForListDefect', access, $('#' + data.data['uid']).find('.btnPlay'));
-
             try {
                 if (access) {
                     $('#' + data.data['uid']).find('.btnPlay').show();        
@@ -1078,7 +983,6 @@
             const rowID = $(this).attr('rowID');
             const row = $('#' + rowID);
             const maxCount = parseInt($(row).find('.dataCell[name="КоличествоОсталосьИсправить"]').text()||0);
-
 
             $('#sotrudnikFix').val('');
             $('#sotrudnikFix').attr('uid', '');
