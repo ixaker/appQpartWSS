@@ -1,4 +1,8 @@
 <style>
+    table {
+        font-size: 0.9em;
+    }
+
     @media (max-width: 450px) {
         #ОтчетПоРаботе2022 th {
             width: auto !important;  
@@ -44,7 +48,7 @@
     <tr class="config" style="display: none;">
         <td title="Дата" 
             name="ДатаОтчета" 
-            style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+            style="width: 46px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
         <td title="Номер детали" 
             name="Заказ" 
             key="АртикулНаименование" 
@@ -52,7 +56,7 @@
         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
-            style="width: 50px;"><div class="dataCell textAlignCenter"></div></td>
+            style="width: 45px;"><div class="dataCell textAlignCenter"></div></td>
         <td title="Оператор" 
             name="Сотрудник" 
             key="Наименование" 
@@ -63,10 +67,10 @@
             style="width: 170px;"><div class="dataCell"></div></td>
         <td title="Изгото влено" 
             name="КоличествоИзготовлено" 
-            style="width: 60px; padding: 0px;"><div class="dataCell textAlignEnd"></div></td>
+            style="width: 55px; padding: 0px;"><div class="dataCell textAlignEnd" style="padding: 5px;"></div></td>
         <td title="Прове рено" 
             name="КоличествоПроверено" 
-            style="width: 65px;">
+            style="width: 60px; padding: 0px;">
             <input  type="number" 
                     inputmode="numeric" 
                     sync="none" 
@@ -76,7 +80,7 @@
                     style="padding: 0px;"></td>
         <td title="Брак" 
             name="КоличествоБрака" 
-            style="width: 60px;">
+            style="width: 55px; padding: 0px;">
             <input  type="number" 
                     inputmode="numeric"
                     sync="none"  
