@@ -43,13 +43,12 @@ const API_1C_URL = 'http://10.8.0.3/' + base + '/hs';
 const API_1C_LOGIN = process.env.API_1C_LOGIN;
 const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
 
+const adminRoute = process.env.adminRoute||'admin';
+
 const autoAuthorizationHolub = false;
 
 const domian = process.env.domian;
 const app = express();
-const portHttp = 80;
-const portHttps = 443;
-
 
 app.set('view engine', 'ejs');
 
@@ -245,7 +244,7 @@ app.get('/', (req, res) => {
   res.sendFile(createPath('index.html'));
 });
 
-app.get('/admin', (req, res) => {
+app.get('/' + adminRoute, (req, res) => {
   res.sendFile(createPath('admin.html'));
 });
 
@@ -621,11 +620,6 @@ async function main() {
   // Запуск сервера
   httpsServer.listen(443, () => {
     log.info('Secure server is running on port 443');
-  });
-
-  // Создаем HTTP сервер на порту 80
-  http.createServer(app).listen(portHttp, () => {
-    console.log('HTTP Server running on port ' + portHttp);
   });
 
   log.info('human.config', human.config);
