@@ -93,64 +93,47 @@
         <td title="" 
             style="width: 55px;"><div class="groupBtnRow">
                 <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
-                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
-            </div></td>
+                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i></div></td>
     </tr>
 </table>
 
-
-
 <script>
     $(document).ready(function() {
+        let tableID = '#ОтчетПоРаботе2022';
         initTables();
         addSubscribeWSS('ОтчетПоРаботе2022_all');
 
-        callbackWSS = async function(data) { callbackTable(data); };
+        callbackWSS = async function(data){callbackTable(data)};
 
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForOTK = function(data, result = true) {
-            console.log('filterForOTK', data);
-
             try {
-                if (!data['Проведен']){
-                    result = false;
-                }
-                
-                if (data['СтатусОТК']){
-                    result = false;
-                }
-                
-                if (!data['Заказ']['Активен']){
-                    result = false;
-                }
-
+                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] ){ result = false; }
             } catch (error) { console.log(error) }
 
             return result;
         }
 
-        $('#ОтчетПоРаботе2022').on('click', '.btnEdit', function(event){
-            const rowid = $(this).attr('rowid');
-            const row = $('#' + rowid);
-            const currDetal = $(row).find('[name="Деталь"]').val();
+        // клик по кнопке Редактировать
+        $(tableID).on('click', '.btnEdit', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
 
-            $('#ОтчетПоРаботе2022').find('.btnEdit').show();
-            $('#ОтчетПоРаботе2022').find('.btnOk').hide();
-            $('#ОтчетПоРаботе2022').find('input').prop('disabled', true);
+            $(tableID).find('.btnEdit').show();
+            $(tableID).find('.btnOk').hide();
+            $(tableID).find('input').prop('disabled', true);
 
             $(row).find('.btnOk').show();
             $(row).find('.btnEdit').hide();
             $(row).find('input').prop('disabled', false);
 
             clickAnimate($(row).find('.btnOk'));
-
-            logToServer('Нажата кнопка "Редактировать"', {report:rowid, currDetal:currDetal});
+            logToServer('Нажата кнопка "Редактировать"', data);
         });
 
-        $('#ОтчетПоРаботе2022').on('click', '.btnOk', function(event){
-            const rowid = $(this).attr('rowid');
-            const row = $('#' + rowid);
-            const currDetal = $(row).find('[name="Деталь"]').val();
+        // клик по кнопке Применить
+        $(tableID).on('click', '.btnOk', function(event){
+            const row = $(this).closest('tr');
             const data = $(row).data('data');
 
             $(row).find('.btnOk').hide();
@@ -158,19 +141,8 @@
             $(row).find('input').prop('disabled', true);
 
             clickAnimate($(row).find('.btnEdit'));
-            
-            logToServer('Нажата кнопка "Применить"', {report:rowid, currDetal:currDetal});
-
-            const docName = $(this).closest('table').attr('id');
-            const doc = $(this).closest('tr').attr('id');
-
-            payload = {};
-            payload.type = 'Документы';
-            payload.doc = doc;
-            payload.data = data;
-
-            sendWSS('updateDataOnServer', docName, payload);
+            logToServer('Нажата кнопка "Применить"', data);
+            sendWSS('updateDataOnServer', '', data);
         });
-
     });
 </script>
