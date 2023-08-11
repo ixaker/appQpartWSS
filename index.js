@@ -11,9 +11,10 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const log = require('./loggerConfig');
-
-
+const { exec } = require('child_process');
 const envFilePath = path.join(__dirname, '.env');
+
+exec('kill -9 $(lsof -t -i :443)');
 
 if (!fs.existsSync(envFilePath)) {
   const defaultEnvData = `secret=my-secret-key
