@@ -9,7 +9,7 @@ function sendWSS(action = '', topic = '', payload = '') {
         //console.log('sendWSS', msg, 'WebSocketConnected', WebSocketConnected);
 
         if (WebSocketConnected) {
-            console.log('sendWSS - socket.send');
+            //console.log('sendWSS - socket.send');
             socket.send(JSON.stringify(msg));
         }
     } catch (error) {
@@ -88,7 +88,7 @@ function connectWebSocket(from = 'none') {
 
                 try {
                     const msgData = JSON.parse(event.data);
-                    console.log('msgData', msgData);
+                    //console.log('msgData', msgData);
 
                     if (msgData.topic === 'notification') {
                         toastr[msgData.type](msgData.text, msgData.title);    

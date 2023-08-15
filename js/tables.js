@@ -9,8 +9,6 @@ async function initTables() {
         await initTable(this);
     });
 
-    //callbackWSS = callbackTable;
-
     enableHighlightElement();
 }
 
@@ -32,14 +30,19 @@ async function initTable(table) {
         NProgress.start();
 
         await $.ajax({ url: $(table).attr('url'), type: 'GET', dataType: 'json', data: param, success: function(response) {
-            //console.log('response', response);
+            console.log('initTable response', response);
 
             if (!response.error) {
+                callbackFromAttr(table, 'callbackBeforeInitTable', response);
+
                 response.list.forEach(async (item) => {
                     await callbackTable(item);
                 });
 
                 addSubscribeWSS($(table).attr('id'));
+                $(table).data('response', response);
+
+                callbackFromAttr(table, 'callbackAfterInitTable', response);
             }
         }, complete: function(response){
             NProgress.done();
@@ -104,15 +107,26 @@ async function addNewRow(table, newData) {
         $(table).children('tbody').prependTo(newRow);
     }
 
-    const callbackNameAddNevRow = $(table).attr('addNevRow')||'';
-
-    if (callbackNameAddNevRow !== '') {
-        eval(callbackNameAddNevRow + "(" + JSON.stringify(newData) + ")");
-    }
+    callbackFromAttr(table, 'addNevRow', newData);
 
     $(newRow).find('input:not([url])').each(function() {
         setEventOnChange(this, newData);
-        setValid(this, $(this).val() !== '');
+
+        if ($(this)[0].hasAttribute('checkValid')) {
+            setValid(this, $(this).val() !== '');
+        }
+    });
+
+    $(newRow).find('[url]:not([url=""])').each(function() {
+        initInputAutocompleteForTable(this);
+
+        if ($(this)[0].hasAttribute('checkValid')) {
+            setValid(this, ($(this).attr('uid')||'') !== '');
+        }
+    });
+
+    $(newRow).find('[mask]:not([mask=""])').each(function() {
+        initInputTimeMask(this);
     });
 
     callbackTable(newData);
@@ -122,7 +136,7 @@ async function reportChanged(row, newData) {
     const newMD5 = await getHash(newData);
     const oldMD5 = row.attr('MD5')||'';
     row.attr('MD5', newMD5);
-    //console.log('newMD5', newMD5, 'oldMD5', oldMD5);
+    // console.log('newMD5', newMD5, 'oldMD5', oldMD5);
     return newMD5 !== oldMD5;
 }
 
@@ -173,19 +187,12 @@ callbackTable = async function(data) {
     const newData = data.data;
 
     if (row.length) {
-        //console.log('row', row);
+        let visible = callbackFromAttr(table, 'filter', newData);
 
-        const filterFunc = $(table).attr('filter')||'';
-        let visible = true;
-
-        if (filterFunc !== '') {
-            visible = eval(filterFunc + "(" + JSON.stringify(newData) + ")");
-
-            if (!visible) {
-                $(row).remove();
-                //return;
-            }
+        if (!visible) {
+            $(row).remove();
         }
+
         data.edited = {};
         $(row).data('data', data);
 
@@ -194,8 +201,6 @@ callbackTable = async function(data) {
                 let dataCell = this;
                 let name = $(dataCell).attr('name');
                 let value = newData[name];
-
-                //console.log('dataCell', dataCell, value);
 
                 if (typeof value === 'object' && value !== null) {
                     const newUid = value['uid']||'';
@@ -249,17 +254,12 @@ callbackTable = async function(data) {
                 needSort = true;
                 let columnSort = parseInt($(table).attr('sort'));
 
-
                 $(table).trigger("update");
                 $(table).trigger("sorton", [[[columnSort, 0]]]);
             } 
-
         }
-        //console.log('callbackTable', '111');
-        const callbackAfterWrite = $(table).attr('callbackAfterWrite')||'';
-        callback(callbackAfterWrite, data);
         
-
+        callbackFromAttr(table, 'callbackAfterWrite', data);
     }else{
         addNewRow(table, data);
     }
@@ -281,7 +281,7 @@ function setEventOnChange(element, newData) {
         const data = $(row).data('data');
         var sync = $(this).attr('sync')||'auto';
 
-        console.log('data', data);
+        //console.log('data', data);
 
         if (type == 'checkbox') {
             userInput = $(this).is(":checked"); // Булево значение
@@ -312,7 +312,7 @@ function setEventOnChange(element, newData) {
         $(element).parent().parent().attr('MD5', '');
 
         if (sync === 'auto') {
-            sendNotificationOnChange(this, userInput);
+            sendNotificationOnChangeRowTable(this);
         }
         
         logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
@@ -333,34 +333,86 @@ function setEventOnChange(element, newData) {
     });
 }
 
-function sendNotificationOnChange(element, value) {
-    const docName = $(element).closest('table').attr('id');
-    const doc = $(element).closest('tr').attr('id');
-    const keyName = $(element).attr('name');
-    const row = $('#' + doc);
-    const data = $(row).data('data');
+function initInputAutocompleteForTable(element) {
+    try {
+        const url = $(element).attr('url');
 
-    payload = {};
-    payload.type = 'Документы';
-    payload.docName = docName;
-    payload.doc = doc;
-    payload.keyName = keyName;
-    payload.value = value;
-    payload.data = data;
+        $(element).autocomplete({ 
+            source: function(req, res) { 
+                const data = { term: req.term};
+                const row = $(this.element).closest('tr');
 
-    console.log('sendNotificationOnChange', payload);
+                data.report = $(row).attr('id')||'';
+                data.stanok = stanok.uid;
+                
+                $.ajax({ url: url, dataType: "json", data: data,
+                    success: function(data) { res(data);}
+                });
+            },
+            select: function(event, ui){ 
+                const keyName = $(this).attr('name');
+                const row = $(this).closest('tr');
+                const data = $(row).data('data');
+                const sync = $(this).attr('sync')||'auto';
 
-    sendWSS('updateDataOnServer', docName, payload);
+                data.edited[keyName] = ui.item;
+                $(row).data('data', data);
+
+                $(this).attr('uid', ui.item.uid);
+                
+                if ($(this)[0].hasAttribute('checkValid')) {
+                    setValid(this, true);
+                }
+
+                if (sync === 'auto') {
+                    sendNotificationOnChangeRowTable(this);
+                }
+
+                $(this).blur();
+            },
+            position: { my: "left bottom", at: "left top" },
+            minLength: parseInt($(element).attr('minLength')||1)
+        }).on("input" , function() { 
+            $(element).attr('uid', '');
+            if ($(this)[0].hasAttribute('checkValid')) {
+                setValid(this, false);
+            }
+        }).on("blur"  , function() { 
+            if(($(element).attr('uid')||'') === ''){
+                $(element).val('');
+            }
+        }).on("focus", function() { 
+            $(this).autocomplete("search");
+        });
+    } catch (error) {
+        toastr["error"]('Ошибка при initInputAutocomplete');        
+    }
 }
 
-function callback(funcName, param = null) {
-    if (funcName !== '') {
-        func = window[funcName];
+function sendNotificationOnChangeRowTable(elementInput) {
+    const docName = $(elementInput).closest('table').attr('id');
+    const row = $(elementInput).closest('tr');
+    const data = $(row).data('data');
 
-        if (param === null) {
-            return func();
-        } else {
-            return func(param);
-        }
-    }    
+    if (Object.keys(data.edited).length) {
+        sendWSS('updateDataOnServer', docName, data);
+    }
+}
+
+function callbackFromAttr(element, attr, param = null) {
+    try {
+        const callbackFunc = $(element).attr(attr)||'';
+
+        if (callbackFunc !== '') {
+            let func = window[callbackFunc];
+
+            if (param === null) {
+                return func();
+            } else {
+                return func(param);
+            }
+        }   
+    } catch (error) {
+        console.log('callbackFromAttr', error);        
+    } 
 }

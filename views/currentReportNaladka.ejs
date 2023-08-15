@@ -1,86 +1,4 @@
 <style>
-    .titlePage {
-        line-height: 40px;
-        font-weight: bold;
-    }
-
-    table {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
-    }
-
-    tr {
-        height: 50px;
-    }
-
-    th, td {
-        overflow: hidden;  /* прячет содержимое, если оно не умещается в ячейку */
-        text-overflow: ellipsis;  /* добавляет многоточие, если содержимое не умещается в ячейку */
-        border: 1px solid rgb(202, 202, 202);
-    }
-
-    th {
-        background-color: darkgreen;
-        color: white;
-        border: 1px solid white;
-        text-align: center;
-    }
-
-    td {
-        white-space: nowrap;  /* запрещает перенос текста на новую строку */
-        font-size: 1.3em;
-        background-color: #FFFFFF;
-    }
-    
-    td input {
-        width: 100%;
-        box-sizing: border-box;  /* Учитывает padding и border в общей ширине */
-        border: 0;
-    }
-
-    .ui-autocomplete {
-        max-height: 115px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        font-size: 1.3em;
-    }
-
-    .stanok {
-        text-align: center;
-    }
-
-    table td:nth-child(2) {
-        text-align: center;
-    }
-
-    .apply {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .done {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .naladka {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .codeOperatoin {
-        text-align: center;
-    }
-
-    .textAlignCenter {
-        text-align: center;
-    }
-
-    .textAlignEnd {
-        text-align: end;
-    }
-
     #commandPanel {
         display: flex;
         margin-top: -5px;
@@ -91,180 +9,6 @@
         font-size: xx-large;
         color: #007431;
         margin-right: 10px;
-    }
-
-    .btnDeleteCell {
-        text-align: center;
-    }
-
-    .groupBtnRow {
-        display: flex;
-        padding-left: 10px;
-    }
-
-    .btnRow {
-        font-size: xx-large;
-        display: block;
-        margin-right: 10px;
-    }
-
-    .btnDelete {
-        color: #FF0000;
-    }
-
-    .btnEdit {
-        color: #007431;
-    }
-
-    .btnFile {
-        color: #007431;
-    }
-
-    .btnPlay {
-        color: #007431;
-    }
-
-    .btnOk {
-        color: #007431;
-    }
-
-    .btnPause {
-        color: red;
-    }
-
-    @media (max-width: 800px) {
-        .hideIfNoSpace1000 {
-            display: none;
-        }
-
-        .titlePage {
-            font-size: x-large;
-            margin-top: 5px;
-        }
-    }
-
-    @media (max-width: 650px) {
-        .hideIfNoSpace500 {
-            display: none;
-        }
-    }
-
-    @media (max-width: 450px) {
-        .titlePage {
-            font-size: medium;
-            margin-top: 10px;
-        }
-    }
-
-    #groupCurrentReport {
-        font-size: xxx-large;
-        margin-bottom: 70px;
-        /* margin-top: 15px; */
-        padding-left: 5px;
-        padding-right: 5px;
-    }
-
-    #countDetalForCurrentReport {
-        width: 140px;
-        border: 1px solid #777;
-        border-radius: 10px;
-        line-height: 1.2em;
-        height: 1.2em;
-        margin: 5px 20px 0px 20px;
-        text-align: center;
-        background-color: #FFFFFF;
-        color: crimson;
-    }
-
-    #nameDetalForCurrentReport {
-        border: 1px solid #777;
-        border-radius: 10px;
-        line-height: 1.2em;
-        height: 1.2em;
-        /* margin: 5px 10px 0px 10px; */
-        text-align: center;
-        background-color: #FFFFFF;
-        padding: 0 15px;
-        width: 410px;
-        overflow: hidden;
-    }
-    .labelForCountCurrentDetal{
-        line-height: 1.7em;
-        margin: 5px 10px 0px 10px;
-        font-size: xx-large;
-        width: 150px;
-    }
-
-    fieldset { 
-        border: 1px solid #AAA;
-        padding: 10px;
-        border-radius: 10px;
-        background-color: aliceblue;
-    }
-
-    legend {
-        width: auto;
-        margin-left: 10px;
-        padding-left: 15px;
-        padding-right: 15px;
-        margin-bottom: 0px;
-    }
-
-    .historyCurrentReport {
-        width: 100%;
-        top: -17px;
-        position: relative;
-        height: auto;
-        margin-left: 10px;
-        margin-right: 15px;
-        background-color: #FFFFFF;
-        padding: 0 10px 0 10px;
-    }
-
-    .timerDetalForCurrentReport {
-        border: 1px solid #777;
-        border-radius: 10px;
-        text-align: center;
-        background-color: #FFFFFF;
-        padding-left: 10px;
-        padding-right: 10px;
-        width: 130px;
-    }
-
-    #textHistory {
-        font-size: 0.3em;
-        max-height: 230px;
-        margin-bottom: 0;
-        overflow-x: hidden;
-    }
-
-    .disabledBtnIncrement {
-        color: #777 !important;
-        background-color: aliceblue !important;
-    }
-
-    #groupBtnWorkCurrentReport {
-        text-align: right;
-    }
-
-    .btnWorkCurrentReport {
-        width: 180px;
-        border: 1px solid #AAA;
-        font-size: xx-large;
-        margin-right: 15px;
-        margin-left: 10px;
-    }
-
-    #btnPauseCurrentReport {
-        background-color: bisque;
-    }
-
-    #btnAvariaCurrentReport {
-        background-color: coral;
-    }
-
-    table tr td:first-child {
-        text-align: center;
     }
 
     #groupPDF {
@@ -292,7 +36,7 @@
         color: white;
         margin-bottom: 0px;
         margin-right: 5px;
-        line-height: 1.7em;
+        line-height: 2em;
     }
 
     #closePDF {
@@ -321,7 +65,7 @@
 
     .groupBtnPages {
         background: white;
-        padding: 2px 5px 0;
+        padding: 5px 5px 0;
         display: flex;
     }
 
@@ -331,23 +75,109 @@
 </style>
 
 <div id="commandPanel">
-    <h3 class="titlePage" >Список наладок за текущую смену</h3>
+    <h3 class="titlePage">Список наладок за текущую смену</h3>
     <i class="bi bi-plus-circle" id="btnAdd"></i>
 </div>
 
-<table id="table">
-    <tr>
-        <th style="width: 60px;">Готов</th>  
-        <th style="width: 70px;">Станок</th>
-        <th style="width: 100%" class="hideIfNoSpace500">Номер детали</th>
-        <th style="width: 60px;">МЛ</th>
-        <th style="width: 75px;" >Код операц</th>
-        <th style="width: 50px;">К-во</th>
-        <th style="width: 70px;" class="hideIfNoSpace1000">Время маш.</th>
-        <th style="width: 70px;" >Время полное</th>
-        <th style="width: 70px;" >Время наладки</th>
-        <th style="width: 40px;" class="hideIfNoSpace500">Дет</th>
-        <th style="width: 140px;"></th>
+<table  id="ОтчетПоРаботе2022" 
+        url="/app/getCurrentReportOperator" 
+        callbackBeforeInitTable="callbackBeforeDoneNaladka" 
+        filter="filterForNaladka" 
+        callbackAfterInitTable="callbackAfterDoneNaladka" 
+        append="end" 
+        init header>
+    <tr class="config" style="display: none;">
+        <td title="Готов" 
+            name="Проведен"
+            style="width: 55px;"> 
+            <input  type="checkbox" 
+                    sync="none" 
+                    class="dataCell checkboxInTable"></td>
+        <td title="Станок" 
+            name="Станок" 
+            key="ИнвентарныйНомер" 
+            style="width: 70px;">
+            <input  type="text" 
+                    minLength=1 
+                    url="/app/autocompleteStanok"   
+                    checkValid  
+                    class="dataCell textAlignCenter" 
+                    style="padding: 0px;"></td>
+        <td title="Номер детали" 
+            name="Деталь" 
+            key="АртикулНаименование" 
+            style="width: 100%;">
+            <input  type="text" 
+                    minLength=1 
+                    url="/app/autocompleteArticle"  
+                    checkValid 
+                    class="dataCell"></input></td>
+        <td title="МЛ"  
+            name="Заказ" 
+            key="Номер" 
+            style="width: 55px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteZakaz"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Этап" 
+            name="ЭтапПроизводства" 
+            key="КодНовый" 
+            style="width: 60px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteCodeOperation"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="К-во" 
+            name="КоличествоИзготовлено" 
+            style="width: 55px; padding: 0px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style="padding: 0px;"></td>
+        <td title="Время маш." 
+            name="МашинноеВремя" 
+            style="width: 65px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    mask="00:A0" 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Время полное" 
+            name="ПолноеВремя" 
+            style="width: 65px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    mask="00:A0" 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Время наладки" 
+            name="НаладкаВремя" 
+            style="width: 75px; padding: 0px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell textAlignCenter" 
+                    style="padding: 0px;"></td>
+
+        <td title="" 
+            style="width: 140px;"><div class="groupBtnRow">
+                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
+                <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+                <i class="bi bi-trash btnDelete btnRow colorRed" name="ПометкаУдаления" style="display: none;"></i>
+                <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+                <i class="bi bi-pause-circle btnPause btnRow colorRed" style="display: none;"></i>
+                <i class="bi bi-file-earmark-ruled btnFile btnRow colorGreen"></i>
+            </div></td>
     </tr>
 
     <tr id=rowPDF" style="display: none;">
@@ -376,486 +206,54 @@
 </table>
 
 <script>
-    var docName = 'ОтчетПоРаботе2022';
-    var startTimeWork = new Date();
-    var highlight = false;
-    var timerWork = false;
-    var disableBtnIncrement = false;
-    var avaria = false;
-    var currentReport = '';
-    var pdfDoc;
-    var numPage = 1;
-
     $(document).ready(function() {
-        currentMenu = 'Список работ за текущую смену';
-        logToServer('Загрузка странички');
-        subscriptions = [];
-        subscriptions.push(docName);
-        updateSubscribeWSS();
+        let tableID = '#ОтчетПоРаботе2022';
+        let startTimeWork = new Date();
+        let timerWork = false;
+        let timerIncrement = null;
+        var pdfDoc;
+        var numPage = 1;
 
-        callbackWSS = async function(data) {
-            console.log("callbackWSS", data);
+        initTables();
 
-            if (data.topic === docName) {
-                const reportRow = $('#' + data.uid);
-                const newReport = data.data;
+        // callback при получении данных от сервера по wss
+        callbackWSS = async function(data){callbackTable(data)};
 
-                if (reportRow.length) {
-                    console.log("reportRow", reportRow);
-                    checkVisibleReport(reportRow, newReport);
+        // callback при изменении данных в строке для определения показать или убрать строку
+        filterForNaladka = function(data, result = true) {
+            const reportDate = new Date(data['Дата']);
 
-                    if (await reportChanged(reportRow, newReport)) {
-                        console.log("report edited");
+            try {
+                if ( reportDate < startTimeWork ){ result = false; }
+                if ( data['ПометкаУдаления'] )   { result = false; }
 
-                        reportRow.attr('fullTimeAll', newReport['ДлительностьЧасов']);
+            } catch (error) { console.log(error) }
 
-                        for (let name in newReport) {
-                            const element = reportRow.find('[name="' + name + '"]');
-
-                            if (element.length) {
-                                const value = newReport[name];
-
-                                if (typeof value === 'object' && value !== null) {
-                                    const newUid = value['uid']||'';
-
-                                    if (newUid !== '') {
-                                        const oldUid = element.attr('uid')||'';
-                                        const key = element.attr('key')||'';
-
-                                        if (newUid !== oldUid) {
-                                            if (key.length) {
-                                                highlightElement(element);
-                                                element.attr('uid', newUid);
-                                                setValueCell(element, value[key]);
-                                                eventOnBlur(element);
-                                                setValid(element, true);
-                                            }
-                                        }
-                                    }else{
-                                        element.attr('uid', '');
-                                        setValueCell(element, '');
-                                        setValid(element, false);
-                                    }
-
-                                    if (name === 'Деталь') {
-                                        const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                        if(data.uid === reportCurrentWork) {
-                                            $('#nameDetalForCurrentReport').text(element.val());
-                                            highlightElement($('#nameDetalForCurrentReport'));
-                                        }
-                                    }
-                                } else {
-                                    const oldValue = getValueCell(element);
-
-                                    if (String(oldValue) !== String(value)) {
-                                        highlightElement(element);
-                                        console.log('set new value', 'type', typeof value , value, element);
-                                        console.log('old value', 'type', typeof oldValue , oldValue);
-
-                                        if (typeof value === 'boolean') {
-                                            element.prop('checked', value);
-                                        }else{
-                                            setValueCell(element, value)
-                                            element.val(value);
-
-                                            console.log('setValid', name,  String(value) !== '');
-
-                                            setValid(element, String(value) !== '');
-                                        }
-
-                                        if (name === 'Проведен') {
-                                            onChangeApplyReport(reportRow, value);
-                                        }
-
-                                        if (name === 'ПолноеВремя') {
-                                            console.log();
-                                            const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                            if(data.uid === reportCurrentWork) {
-                                                $('#timerNorma').text(value);
-                                                highlightElement($('#timerNorma'));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        setStateElements(newReport, reportRow)
-                    }
-                }else{
-                    addNewRow(newReport);
-                }
-            }
-            console.log("end callback WSS");
-        };
-
-        function setValueCell(element, value) {
-            if (element.is(':input')) {
-                element.val(value);
-            } else {
-                element.text(value);
-            }
+            //console.log('filterForNaladka', result, data, data['ПометкаУдаления'], reportDate, startTimeWork);
+            return result;
         }
 
-        function getValueCell(element) {
-            if (element.is(':input')) {
-                return element.val();
-            } else {
-                return element.text();
-            }
+        // callback перед отрисовкой таблицы
+        callbackBeforeDoneNaladka = function(data) {
+            startTimeWork = new Date(data.startTimeWork);
+            $('.titlePage').text('Список наладок за текущую смену c ' + startTimeWork.toLocaleString());
         }
 
-        async function reportChanged(reportRow, newReport) {
-            const newReportMD5 = await getHash(newReport);
-            const oldReportMD5 = reportRow.attr('MD5')||'';
-            reportRow.attr('MD5', newReportMD5);
-            console.log('newReportMD5', newReportMD5, 'oldReportMD5', oldReportMD5);
-            return newReportMD5 !== oldReportMD5;
+        // callback после отрисовки таблицы
+        callbackAfterDoneNaladka = function(data) {
+
         }
 
-        function checkVisibleReport(reportRow, newReport) {
-            const oldVisible = reportRow.is(":visible");
-            reportRow.toggle(!newReport['ПометкаУдаления']);
-            const newVisible = reportRow.is(":visible");
-
-            if (oldVisible != newVisible) {
-                highlightElement(reportRow.find('input'));
-            }
-        }
-
-        async function addNewRow(newReport) {
-            console.log('addNewRow', newReport);
-
-            const reportDate = new Date(newReport['Дата']);
-
-            if (reportDate.getTime() > startTimeWork.getTime()) {
-                let reportRow = $(`
-                <tr id="${newReport.uid}" fullTimeAll="${newReport['ДлительностьЧасов']}" disabled>
-                    <td><input 
-                        type="checkbox" 
-                        name="Проведен" 
-                        class="apply" ${newReport['Проведен'] ? 'checked' : ''}>
-                    <td><input 
-                        type="text" 
-                        url="/app/autocompleteStanok" 
-                        minLength=1 
-                        name="Станок" 
-                        key="ИнвентарныйНомер" 
-                        class="stanok" 
-                        uid="${newReport['Станок'].uid || ''}" 
-                        value="${newReport['Станок']['ИнвентарныйНомер'] || ''}"></td>
-                    <td class="hideIfNoSpace500"><input 
-                        type="text" 
-                        url="/app/autocompleteArticle" 
-                        minLength=1 
-                        name="Деталь" 
-                        key="Артикул" 
-                        class="article" 
-                        uid="${newReport['Деталь'].uid || ''}" 
-                        value="${newReport['Деталь']['Артикул'] || ''}"></td>
-                    <td><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        url="/app/autocompleteZakaz" 
-                        minLength=0
-                        name="Заказ" 
-                        key="Номер" 
-                        class="ml textAlignCenter" 
-                        uid="${newReport['Заказ'].uid || ''}" 
-                        value="${newReport['Заказ']['Номер'] || ''}"></td>
-                    <td ><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        url="/app/autocompleteCodeOperation" 
-                        minLength=0 
-                        name="ЭтапПроизводства" 
-                        key="КодНовый" 
-                        class="codeOperatoin" 
-                        uid="${newReport['ЭтапПроизводства'].uid || ''}" 
-                        value="${newReport['ЭтапПроизводства']['КодНовый'] || ''}"></td>
-                    <td><input 
-                        type="number" 
-                        name="КоличествоИзготовлено" 
-                        min="0" 
-                        class="quantity textAlignEnd" 
-                        value="${newReport['КоличествоИзготовлено']}"></td>
-                    <td class="hideIfNoSpace1000"><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        name="МашинноеВремя" 
-                        placeholder="мм:сс"
-                        mask="00:A0" 
-                        class="machineTime textAlignCenter" 
-                        value="${newReport['МашинноеВремя']}"></td>
-                    <td ><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        name="ПолноеВремя" 
-                        placeholder="мм:сс" 
-                        mask="00:A0" 
-                        class="fullTime textAlignCenter" 
-                        value="${newReport['ПолноеВремя']}"></td>
-                    <td ><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        name="НаладкаВремя" 
-                        placeholder="минут" 
-                        class="fullTime textAlignCenter" 
-                        value="${newReport['НаладкаВремя']}"></td>
-                    <td class="hideIfNoSpace500"><input 
-                        type="number" 
-                        name="КоличествоДеталейЗаОднуУстановку" 
-                        min="0" 
-                        class="install textAlignEnd" 
-                        value="${newReport['КоличествоДеталейЗаОднуУстановку']}"></td>
-                    <td class="btnDeleteCell">
-                        <div class="groupBtnRow">
-                            
-                            <i class="bi bi-check-circle btnRow btnOk" report="${newReport.uid}" style="display: none;"></i>
-                            <i class="bi bi-pencil btnEdit btnRow" report="${newReport.uid}"></i>
-                            <i class="bi bi-trash btnDelete btnRow" name="ПометкаУдаления" report="${newReport.uid}" style="display: none;"></i>
-                            <i class="bi bi-play-circle btnPlay btnRow" report="${newReport.uid}"></i>
-                            <i class="bi bi-pause-circle btnPause btnRow" report="${newReport.uid}" style="display: none;"></i>
-                            <i class="bi bi-file-earmark-ruled btnFile btnRow" report="${newReport.uid}"></i>
-                        </div>
-                        </td>
-                </tr>`).insertAfter("#table tr:first");
-
-                $(reportRow).find('input').prop('disabled', true);
-                onChangeApplyReport(reportRow, newReport['Проведен']);
-                highlightElement(reportRow.find('input'));
-
-                reportRow.find('[url]:not([url=""])').each(function() {
-                    setAutocomplete(this);
-                    setValid(this, ($(this).attr('uid')||'') !== '');
-                });
-
-                reportRow.find('input:not([url])').each(function() {
-                    setEventOnChange(this);
-                    setValid(this, $(this).val() !== '');
-                });
-
-                reportRow.find('[mask]:not([mask=""])').each(function() {
-                    setTimeInputMask(this);
-                });
-
-                const newReportMD5 = await getHash(newReport);
-                reportRow.attr('MD5', newReportMD5);
-
-                setStateElements(newReport, reportRow);
-            }
-        }
-
-        function setStateElements(newReport, reportRow) {
-            const nadadchikDone = newReport['Проведен'];
-
-            if (nadadchikDone) {
-                $(reportRow).find('.apply').show();
-            }
-        }
-
-        function onChangeApplyReport(reportRow, value) {
-            console.log('onChangeApplyReport', value, reportRow);
-            //$(reportRow).find('input').prop('disabled', value);
-            //$(reportRow).find('.btnDelete').toggle(!value);
-            //$(reportRow).find('.groupBtnRow').toggle(!value);
-            //$(reportRow).find('input').prop('disabled', value);
-            //$(reportRow).find('.apply').prop('disabled', true);
-
-            if (value) {
-                $(reportRow).find('.btnOk').trigger('click');
-            }
-            
-        }
-
-        function highlightElement(element) {
-            if (highlight) {
-                element.addClass('highlight').delay(600).queue(function(next) {
-                    element.removeClass('highlight');
-                    next();
-                });
-            }
-        }
-
-        function eventOnSelect(element, ui) {
-            console.log('eventOnSelect');
-            $(element).attr('uid', ui.item.uid);
-            $(element).data("json", ui.item);
-            setValid(element, true);
-            //$(element).blur();
-
-            setTimeout(() => {
-                $(element).blur();
-            }, 50); // время анимации в миллисекундах
-
-            sendNotificationOnChange(element, ui.item);
-
-            const report = $(element).parent().parent().attr('id');
-            var reportRow = $('#' + report);
-            const currDetal = $(reportRow).find('[name="Деталь"]').val();
-
-            logToServer('Изменено значение "'+ $(element).attr('name') +'" = ' + ui.item.value, {item:ui.item, report:report, currDetal:currDetal});
-        }
-
-        function sendNotificationOnChange(element, value) {
-            console.log('sendNotificationOnChange');
-            const report = $(element).parent().parent().attr('id');
-
-            payload = {};
-            payload.type = 'Документы';
-            payload.docName = docName;
-            payload.doc = report;
-            payload.keyName = $(element).attr('name');
-            payload.value = value;
-
-            sendWSS('updateDataOnServer', docName, payload);
-        }
-
-        function sendNotification(report, name, value) {
-            payload = {};
-            payload.type = 'Документы';
-            payload.docName = docName;
-            payload.doc = report;
-            payload.keyName = name;
-            payload.value = value;
-
-            sendWSS(action = 'updateDataOnServer', docName, payload);
-        }
-
-        function eventOnInput(element) {
-            console.log('eventOnInput');
-            $(element).attr('uid', '');
-            $(element).data("json", {});
-            setValid(element, false);
-            $(element).parent().parent().attr('MD5', '');
-        }
-
-        function eventOnBlur(element) {
-            console.log('eventOnBlur');
-            var data = $(element).data("autocompleteData")||[];
-            console.log('eventOnBlur autocompleteData', data); // выводим данные в консоль
-            console.log($(element).attr('uid'), ($(element).attr('uid')||''), ($(element).attr('uid')||'') === ''); // выводим данные в консоль
-
-            if(($(element).attr('uid')||'') === ''){
-                if (data.length == 1) {
-                    $(element).val(data[0].value);
-                    eventOnSelect(element, { item: data[0]})
-                }else{
-                    $(element).val('');
-                    eventOnInput(element);
-                    sendNotificationOnChange(element, {});
-                }
-            }else{
-                setValid(element, true);
-            }
-        }
-
-        function fetchAutocomplete(url, request, response, element) {
-            const report = element.parent().parent().attr('id');
-
-            $.ajax({
-                url: url,
-                dataType: "json",
-                data: {
-                    term: request.term,  // это ваше текущее значение input
-                    report: report,
-                    stanok: stanok.uid,
-                    naladka: true
-                },
-                success: function(data) {
-                    response(data);
-                    element.data("autocompleteData", data);
-                }
-            });
-        }
-
-        function setAutocomplete(element) {
-            const url = $(element).attr('url');
-
-            $(element).autocomplete({ 
-                source: function(req, res) { fetchAutocomplete(url, req, res, this.element);},
-                select: function(event, ui){ 
-                    eventOnSelect(this, ui);
-                    //event.preventDefault();
-                    $(this).blur()
-                },
-                position: { my: "left bottom", at: "left top" },
-                minLength: parseInt($(element).attr('minLength'))
-            }).on("input" , function() { eventOnInput(this) 
-            }).on("blur"  , function() { eventOnBlur(this)
-            }).on("focus", function() { $(this).autocomplete("search")
-            }).on('click', function() {
-                var val = this.value;
-                this.value = '';
-                this.value = val;
-            }).on('keyup', function(event) {
-                if (event.which == 13) {
-                    event.preventDefault();
-                    $(this).blur();
-                }
-            });
-        }
-
-        function setEventOnChange(element) {
-            $(element).on('change', function() {
-                var userInput;
-                var type = $(this).attr('type');
-
-                if (type == 'checkbox') {
-                    userInput = $(this).is(":checked"); // Булево значение
-                } else if (type == 'number') {
-                    userInput = parseFloat($(this).val()); // Число
-                } else {
-                    userInput = $(this).val(); // Для всех остальных типов вернём строку
-                }
-
-                setValid(this, userInput !== '');
-                $(element).parent().parent().attr('MD5', '');
-                sendNotificationOnChange(this, userInput);
-
-                logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
-
-            });
-
-            $(element).on('keyup', function(event) {
-                if (event.which == 13) {
-                    event.preventDefault();
-                    $(this).blur();
-                }
-            });
-
-            $(element).on('click', function() {
-                var val = this.value;
-                this.value = '';
-                this.value = val;
-            });
-        }
-
-        function setTimeInputMask(element) {
-            $(element).mask('00:A0', {
-                'translation':{A: {pattern: /[0-5]/}},
-                onComplete: function(cep) {
-                    if(cep != '00:00'){setValid(this, true);}},
-                onChange: function(cep){
-                    setValid(this, false);}
-            });
-        }
-
+        // клик по кнопке Добавить отчет
         $('#btnAdd').on('click', function(event){
             clickAnimate(this);
             NProgress.start();
             highlight = false;
 
-            console.log('stanok', stanok);
-            logToServer('Нажата кнопка "Добавить"');
+            logToServer('Нажата кнопка "Добавить отчет"');
 
-            const data = {naladka:true};
-
-            if(stanok.uid !== ''){
-                data.stanok = stanok;
-            }
+            const data = { naladka:true };
+            if(stanok.uid !== ''){ data.stanok = stanok; };
 
             $.ajax({url: '/app/createReport', method: 'POST', contentType: 'application/json',
                 data: JSON.stringify(data), 
@@ -866,144 +264,127 @@
             });
         });
 
-        $.get("/app/getCurrentReportOperator", function(response) {
-            startTimeWork = new Date(response.startTimeWork);
-            console.log(response);
+        // клик по кнопке Редактировать
+        $(tableID).on('click', '.btnEdit', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
 
-            response.reports.forEach((report) => {
-                callbackWSS(report);
-            });
+            $(tableID).find('.btnDelete').hide();
+            $(tableID).find('.btnPlay').show();
+            $(tableID).find('.btnEdit').show();
+            $(tableID).find('.btnOk').hide();
+            $(tableID).find('input').prop('disabled', true);
 
-            highlight = true;
+            $(row).find('.btnOk').show();
+            $(row).find('.btnDelete').show();
+            $(row).find('.btnEdit').hide();
+            $(row).find('.btnPlay').hide();
+            $(row).find('input').prop('disabled', false);
 
-            $('.titlePage').text($('.titlePage').text() + ' c ' + startTimeWork.toLocaleString());
+            clickAnimate($(row).find('.btnOk'));
+            logToServer('Нажата кнопка "Редактировать"', data);
         });
-        
-        function logToHistory(msg) {
-            const currentTime = new Date();
-            var timeString = currentTime.toLocaleTimeString('en-US', { hour12: false });
-            const newRowHistory = timeString + ' ' + msg;
-            $('#textHistory').text(newRowHistory + '\n' + $('#textHistory').text());
-            //logToServer(msg);
-        }
 
-        $('#table').on('click', '.btnDelete', function(event){
+        // клик по кнопке Применить
+        $(tableID).on('click', '.btnOk', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+
+            $(row).find('.btnOk').hide();
+            $(row).find('.btnEdit').show();
+            $(row).find('.btnPlay').show();
+            $(row).find('.btnDelete').hide(); 
+            $(row).find('input').prop('disabled', true);
+
+            clickAnimate($(row).find('.btnEdit'));
+            logToServer('Нажата кнопка "Редактировать"', data);
+            sendNotificationOnChangeRowTable(this);
+        });
+
+        // клик по кнопке Удалить
+        $(tableID).on('click', '.btnDelete', function(event){
             clickAnimate(this);
-            if (confirm("Вы уверены, что хотите удалить строку?")) {
-                const report = $(this).attr('report');
-                const reportRow = $('#' + report);
-                const currDetal = $(reportRow).find('[name="Деталь"]').val();
+            if (confirm("Вы уверены, что хотите удалить отчет?")) {
+                const row = $(this).closest('tr');
+                const data = $(row).data('data');
 
-                logToServer('Нажата кнопка "Удалить"', {report:report, currDetal:currDetal});
+                data.edited['ПометкаУдаления'] = true;
+                $(row).data('data', data);
 
-                sendNotification($(this).attr('report'), $(this).attr('name'), true);
+                logToServer('Нажата кнопка "Удалить"', data);
+                sendNotificationOnChangeRowTable(this);
             }
         });
 
-        $('#table').on('click', '.btnEdit', function(event){
-            clickAnimate(this);
-            
-            const report = $(this).attr('report');
+        // клик по кнопке Старт таймера
+        $(tableID).on('click', '.btnPlay', function(event){ 
+            const table = $(this).closest('table');
+            const row = $(this).closest('tr');
 
-            $('#table').find('.btnDelete').hide();
-            //$('#table').find('.btnPlay').hide();
-            $('#table').find('.btnEdit').show();
-            $('#table').find('.btnOk').hide();
-            $('#table').find('input').prop('disabled', true);
-
-            var reportRow = $('#' + report);
-            console.log('reportRow', reportRow); 
-
-            const currDetal = $(reportRow).find('[name="Деталь"]').val();
-
-            $(reportRow).find('.btnOk').show();
-            $(reportRow).find('.btnDelete').show();
-            $(reportRow).find('.btnEdit').hide();
-            $(reportRow).find('.btnPlay').hide();
-            $(reportRow).find('input').prop('disabled', false);
-
-            clickAnimate($(reportRow).find('.btnOk'));
-
-            logToServer('Нажата кнопка "Редактировать"', {report:report, currDetal:currDetal});
-            
-        });
-
-        $('#table').on('click', '.btnOk', function(event){
-            currentReport = $(this).attr('report');
-            var reportRow = $('#' + currentReport);
+            $(table).find('.btnPause').hide();
+            $(table).find('.btnPlay').show();
 
             $(this).hide();
-            $(reportRow).find('.btnEdit').show();
-            $(reportRow).find('.btnPlay').show();
-            $(reportRow).find('.btnDelete').hide();
+            $(row).find('.btnPause').show();
+            clickAnimate($(row).find('.btnPause'));
 
-            clickAnimate($(reportRow).find('.btnEdit'));
-            
-            $(reportRow).find('input').prop('disabled', true);
+            function wrapper() {
+                const btnPause = $('.btnPause:visible');
+
+                if (btnPause.length > 0) {
+                    const row = $(btnPause).closest('tr');
+                    const data = $(row).data('data');
+                    const element = $(row).find('.dataCell[name="НаладкаВремя"]');
+                    const currNaladka = parseFloat(element.val()||0) + 1;
+
+                    data.edited['НаладкаВремя'] = currNaladka;
+                    $(row).data('data', data);
+
+                    sendNotificationOnChangeRowTable(element);
+                    timerIncrement = setTimeout(wrapper, 60000);
+                }
+            }
+
+            clearInterval(timerIncrement);
+            timerIncrement = setTimeout(wrapper, 60000);
         });
 
-        $('#table').on('click', '.btnPlay', function(event){
-            clickAnimate(this);
-            
-            currentReport = $(this).attr('report');
-            const reportRow = $('#' + currentReport);
-            const element = $(reportRow).find('[name="НаладкаВремя"]');
-
-            element.attr('startTime', new Date());
-            element.attr('oldValue', element.val());
-
-            $('#table').find('.btnPause').hide();
-            $('#table').find('.btnPlay').show();
+        // клик по кнопке Пауза таймера
+        $(tableID).on('click', '.btnPause', function(event){
+            const row = $(this).closest('tr');
 
             $(this).hide();
-            $(reportRow).find('.btnPause').show();
-            clickAnimate($(reportRow).find('.btnPause'));
-
-            timerWork = true;
+            $(row).find('.btnPlay').show();
+            clickAnimate($(row).find('.btnPlay'));
+            
+            clearInterval(timerIncrement);
         });
 
-        $('#table').on('click', '.btnPause', function(event){
-            clickAnimate(this);
-            
-            currentReport = $(this).attr('report');
-            var reportRow = $('#' + currentReport);
-
-            $(this).hide();
-            $(reportRow).find('.btnPlay').show();
-            clickAnimate($(reportRow).find('.btnPlay'));
-            
-            timerWork = false;
-
-
-        });
-
-        $('#table').on('click', '.btnFile', function(event){
+        // клик по кнопке Просмотр файлов
+        $(tableID).on('click', '.btnFile', function(event){
             clickAnimate(this);
 
-            currentReport = $(this).attr('report');
-            const reportRow = $('#' + currentReport);
-            const currDetal = $(reportRow).find('[name="Деталь"]').attr('uid')||'';
+            const row = $(this).closest('tr');
+            const currDetal = $(row).find('.dataCell[name="Деталь"]').attr('uid')||'';
             const selectList = $('#listFiles');
 
             if (currDetal !== '') {
                 $.get("/app/getFiles?detal=" + currDetal, function(response) {
-                    const responseObject = JSON.parse(response);
-                    console.log(responseObject);
+                    console.log('response', response);
 
                     selectList.html('');
 
-                    if (responseObject.files.length > 0) {
-                        responseObject.files.forEach((file) => {
+                    if (response.files.length > 0) {
+                        response.files.forEach((file) => {
                             console.log(file);
 
                             const option = $('<option>');
                             option.val(file.uid);
                             option.text(file.name);
                             selectList.append(option);
-
                         });
 
-                        $('#groupPDF').parent().parent().insertAfter(reportRow);
+                        $('#groupPDF').parent().parent().insertAfter(row);
                         $('#groupPDF').parent().parent().show();
 
                         selectList.trigger('change');
@@ -1011,29 +392,14 @@
                 });
             }
         });
-        
-        setInterval(() => {
-            if (timerWork) {
-                console.log('timerWork');
-                const reportRow = $('#' + currentReport);
-                const element = $(reportRow).find('[name="НаладкаВремя"]');
 
-                var currNaladka = parseFloat(element.attr('value')||0);
-                currNaladka = (currNaladka + 1);
-                element.attr('value', currNaladka);
-                element.val(currNaladka);
-
-                $(reportRow).attr('MD5', '');
-
-                sendNotification(currentReport, "НаладкаВремя", currNaladka);
-            }
-        }, 60000);
-    
+        // клик по кнопке Закрыть просмотр файлов
         $('#closePDF').on('click', function (event) {
             $('#groupPDF').parent().parent().hide();
             NProgress.done();
         })
     
+        // обработка выбора файла из списка
         $('#listFiles').on('change', function (event) {
             var selectedOption = $(this).val();
             console.log('Выбран пункт: ' + selectedOption);
@@ -1060,6 +426,7 @@
                 });
         })
 
+        // предыдущая страница pdf файла
         $("#prevPDF").click(function() {
             if ($(this).hasClass('disabledBtn')) {
                 return;    
@@ -1074,6 +441,7 @@
             renderPage(numPage);
         });
 
+        // следующая страница pdf файла
         $("#nextPDF").click(function() {
             if ($(this).hasClass('disabledBtn')) {
                 return;    
@@ -1088,6 +456,7 @@
             renderPage(numPage);
         });
 
+        // отрисовка страницы pdf файла
         function renderPage(num) {
             numPage = num;
 
@@ -1095,7 +464,6 @@
 
             $('#prevPDF').toggleClass('disabledBtn', numPage <= 1);
             $('#nextPDF').toggleClass('disabledBtn', numPage >= pdfDoc.numPages);
-
 
             pdfDoc.getPage(num).then(function(page) {
                 var viewport = page.getViewport({scale: 1.0});

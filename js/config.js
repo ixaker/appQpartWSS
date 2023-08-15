@@ -100,7 +100,9 @@ function initInputAutocomplete(element) {
 
         $(element).autocomplete({ 
             source: function(req, res) { 
-                $.ajax({ url: url, dataType: "json", data: { term: req.term},
+                const data = { term: req.term};
+
+                $.ajax({ url: url, dataType: "json", data: data,
                     success: function(data) { res(data);}
                 });
             },
