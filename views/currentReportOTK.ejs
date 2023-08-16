@@ -73,7 +73,6 @@
             style="width: 60px; padding: 0px;">
             <input  type="number" 
                     inputmode="numeric" 
-                    sync="none" 
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
@@ -82,8 +81,7 @@
             name="КоличествоБрака" 
             style="width: 55px; padding: 0px;">
             <input  type="number" 
-                    inputmode="numeric"
-                    sync="none"  
+                    inputmode="numeric"  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
                     style="padding: 0px;"></td>
@@ -112,7 +110,7 @@
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForOTK = function(data, result = true) {
             try {
-                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] ){ result = false; }
+                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']){ result = false; }
             } catch (error) { console.log(error) }
 
             return result;

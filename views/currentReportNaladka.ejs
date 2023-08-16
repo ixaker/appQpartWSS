@@ -72,10 +72,37 @@
     .disabledBtn {
         color: #777 !important;
     }
+
+    @media (max-width: 800px) {
+        #content {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        .titlePage {
+            font-size: 0.7em !important;
+        }
+
+        #ОтчетПоРаботе2022 th {
+            width: auto !important;  
+        }
+
+        #ОтчетПоРаботе2022 {
+            font-size: 0.5em !important;  
+        }
+
+        .checkboxInTable {
+            height: 15px !important; 
+        }
+
+        .btnRow {
+            font-size: initial !important; 
+        }
+    }
 </style>
 
 <div id="commandPanel">
-    <h3 class="titlePage">Список наладок за текущую смену</h3>
+    <h3 class="titlePage"></h3>
     <i class="bi bi-plus-circle" id="btnAdd"></i>
 </div>
 
@@ -85,6 +112,7 @@
         filter="filterForNaladka" 
         callbackAfterInitTable="callbackAfterDoneNaladka" 
         append="end" 
+        style="display: none;"
         init header>
     <tr class="config" style="display: none;">
         <td title="Готов" 
@@ -132,7 +160,7 @@
                     url="/app/autocompleteCodeOperation"  
                     checkValid 
                     class="dataCell textAlignCenter"></input></td>
-        <td title="К-во" 
+        <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
             style="width: 55px; padding: 0px;">
             <input  type="number" 
@@ -159,6 +187,15 @@
                     placeholder="мм:сс"
                     mask="00:A0" 
                     class="dataCell textAlignCenter"></input></td>
+        <td title="Дет за 1 уст" 
+            name="КоличествоДеталейЗаОднуУстановку" 
+            style="width: 55px; padding: 0px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style="padding: 0px;"></td>
         <td title="Время наладки" 
             name="НаладкаВремя" 
             style="width: 75px; padding: 0px;">
@@ -166,7 +203,7 @@
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
-                    class="dataCell textAlignCenter" 
+                    class="dataCell textAlignEnd" 
                     style="padding: 0px;"></td>
 
         <td title="" 
@@ -235,8 +272,18 @@
 
         // callback перед отрисовкой таблицы
         callbackBeforeDoneNaladka = function(data) {
-            startTimeWork = new Date(data.startTimeWork);
-            $('.titlePage').text('Список наладок за текущую смену c ' + startTimeWork.toLocaleString());
+            console.log('callbackBeforeDoneNaladka', data.startTimeWork);
+            
+            if (data.startTimeWork == '0001-01-01T00:00:00Z') {
+                $('.titlePage').text('Смена еще не начата');
+                $('#btnAdd').hide();
+                $(tableID).hide();
+            }else{
+                startTimeWork = new Date(data.startTimeWork);
+                $('.titlePage').text('Список наладок за текущую смену c ' + startTimeWork.toLocaleString());
+                $('#btnAdd').show();
+                $(tableID).show();
+            }
         }
 
         // callback после отрисовки таблицы

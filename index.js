@@ -551,6 +551,16 @@ wss.on('connection', (ws, request) => {
             }
 
             ws.send(JSON.stringify(msg));
+          }else{
+            const msg = {
+              topic: 'notification',
+              type: 'success',           // success, error, warning, info.
+              text: 'Сохранено',
+              title: ''
+            }
+
+            response.topic = 'notification'
+            ws.send(JSON.stringify(msg));
           }
 
         }).catch((error) => {
