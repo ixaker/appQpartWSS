@@ -1,5 +1,20 @@
 <style>
-    .titlePage {
+    #commandPanel {
+        display: flex;
+        margin-top: -5px;
+    }
+    
+    #btnAdd {
+        margin-left: auto;
+        font-size: xx-large;
+        color: #007431;
+        margin-right: 10px;
+    }
+
+</style>
+
+<style>
+    /* .titlePage {
         line-height: 40px;
         font-weight: bold;
     }
@@ -7,7 +22,7 @@
     table {
         width: 100%;
         table-layout: fixed;
-        border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
+        border-collapse: collapse;
     }
 
     tr {
@@ -15,8 +30,8 @@
     }
 
     th, td {
-        overflow: hidden;  /* прячет содержимое, если оно не умещается в ячейку */
-        text-overflow: ellipsis;  /* добавляет многоточие, если содержимое не умещается в ячейку */
+        overflow: hidden;
+        text-overflow: ellipsis;
         border: 1px solid rgb(202, 202, 202);
     }
 
@@ -28,14 +43,14 @@
     }
 
     td {
-        white-space: nowrap;  /* запрещает перенос текста на новую строку */
+        white-space: nowrap;
         font-size: 1.3em;
         background-color: #FFFFFF;
     }
     
     td input {
         width: 100%;
-        box-sizing: border-box;  /* Учитывает padding и border в общей ширине */
+        box-sizing: border-box; 
         border: 0;
     }
 
@@ -57,7 +72,6 @@
     .apply {
         height: 25px;
         margin-top: 0px;
-        /* display: none; */
     }
 
     .done {
@@ -155,7 +169,6 @@
     #groupCurrentReport {
         font-size: xxx-large;
         margin-bottom: 70px;
-        /* margin-top: 15px; */
         padding-left: 5px;
         padding-right: 5px;
     }
@@ -177,7 +190,6 @@
         border-radius: 10px;
         line-height: 1.2em;
         height: 1.2em;
-        /* margin: 5px 10px 0px 10px; */
         text-align: center;
         background-color: #FFFFFF;
         padding: 0 15px;
@@ -259,22 +271,11 @@
         background-color: coral;
     }
 
-/*     .apply:checked {
-      display: block !important;
-    } */
-
     .btnPlay {
         font-size: xx-large;
         color: #007431;
         display: block;
     }
-
-/*     .apply + .btnPlay {
-        display: block;
-    }
-    .apply:checked + .btnPlay {
-      display: none;
-    } */
 
     table tr td:first-child {
         text-align: center;
@@ -283,7 +284,7 @@
     .timeLimit {
         color: #FFFFFF !important;
         background-color: #FF0000 !important;
-    }
+    } */
 
 </style>
 
@@ -330,7 +331,114 @@
     <i class="bi bi-plus-circle" id="btnAdd"></i>
 </div>
 
-<table id="table">
+<table  id="ОтчетПоРаботе2022" 
+        url="/app/getCurrentReportOperator" 
+        callbackBeforeInitTable="callbackBeforeDone" 
+        filter="callbackFilter" 
+        callbackAfterInitTable="callbackAfterDone" 
+        append="up" 
+        style="display: none;"
+        init header>
+    <tr class="config" style="display: none;">
+        <td title="Готов" 
+            name="Проведен"
+            style="width: 55px;"> 
+            <input  type="checkbox" 
+                    sync="none" 
+                    class="dataCell checkboxInTable"></td>
+        <td title="Станок" 
+            name="Станок" 
+            key="ИнвентарныйНомер" 
+            style="width: 70px;">
+            <input  type="text" 
+                    minLength=1 
+                    url="/app/autocompleteStanok"   
+                    checkValid  
+                    class="dataCell textAlignCenter" 
+                    style="padding: 0px;"></td>
+        <td title="Номер детали" 
+            name="Деталь" 
+            key="АртикулНаименование" 
+            style="width: 100%;">
+            <input  type="text" 
+                    minLength=1 
+                    url="/app/autocompleteArticle"  
+                    checkValid 
+                    class="dataCell"></input></td>
+        <td title="МЛ"  
+            name="Заказ" 
+            key="Номер" 
+            style="width: 55px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteZakaz"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Этап" 
+            name="ЭтапПроизводства" 
+            key="КодНовый" 
+            style="width: 60px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteCodeOperation"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="К-во изгот" 
+            name="КоличествоИзготовлено" 
+            style="width: 55px; padding: 0px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style="padding: 0px;"></td>
+        <td title="Время маш." 
+            name="МашинноеВремя" 
+            style="width: 65px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    mask="00:A0" 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Время полное" 
+            name="ПолноеВремя" 
+            style="width: 65px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    mask="00:A0" 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Дет за 1 уст" 
+            name="КоличествоДеталейЗаОднуУстановку" 
+            style="width: 55px; padding: 0px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style="padding: 0px;"></td>
+        <td title="" 
+            style="width: 100px;"><div class="groupBtnRow">
+                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
+                <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+                <i class="bi bi-trash btnDelete btnRow colorRed" name="ПометкаУдаления" style="display: none;"></i>
+                <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+                <i class="bi bi-pause-circle btnPause btnRow colorRed" style="display: none;"></i>
+            </div></td>
+    </tr>
+
+    <tr id="lastRowSumm">
+        <td colspan="8" class="labelfullTimeAll">Общее время выработки за смену : </td>  
+        <td id="fullTimeAll">00:00</td> 
+        <td colspan="2"></td> 
+    </tr>
+</table>
+
+<!-- <table id="table">
     <tr>
         <th style="width: 50px;"></th>  
         <th style="width: 70px;">Станок</th>
@@ -350,18 +458,68 @@
         <td id="fullTimeAll">00:00</td> 
         <td colspan="2"></td> 
     </tr>
-  </table>
+  </table> -->
 
 <script>
-    var docName = 'ОтчетПоРаботе2022';
+/*     var docName = 'ОтчетПоРаботе2022';
     var startTimeWork = new Date();
     var highlight = false;
     var timerWork = false;
     var disableBtnIncrement = false;
-    var avaria = false;
+    var avaria = false; */
     
     $(document).ready(function() {
-        currentMenu = 'Список работ за текущую смену';
+        let tableID = '#ОтчетПоРаботе2022';
+        let startTimeWork = new Date();
+
+        initTables();
+
+        // callback при получении данных от сервера по wss
+        callbackWSS = async function(data){callbackTable(data)};
+
+        // callback при изменении данных в строке для определения показать или убрать строку
+        callbackFilter = function(data, result = true) {
+            const reportDate = new Date(data['Дата']);
+
+            try {
+                if ( reportDate < startTimeWork ){ result = false; }
+                if ( data['ПометкаУдаления'] )   { result = false; }
+
+            } catch (error) { console.log(error) }
+
+            //console.log('filterForNaladka', result, data, data['ПометкаУдаления'], reportDate, startTimeWork);
+            return result;
+        }
+
+        // callback перед отрисовкой таблицы
+        callbackBeforeDone = function(data) {
+            console.log('callbackBeforeDone', data.startTimeWork);
+            
+            if (data.startTimeWork == '0001-01-01T00:00:00Z') {
+                $('.titlePage').text('Смена еще не начата');
+                $('#btnAdd').hide();
+                $(tableID).hide();
+            }else{
+                startTimeWork = new Date(data.startTimeWork);
+                $('.titlePage').text('Список наладок за текущую смену c ' + startTimeWork.toLocaleString());
+                $('#btnAdd').show();
+                $(tableID).show();
+            }
+        }
+
+        // callback после отрисовки таблицы
+        callbackAfterDone = function(data) {}
+
+
+
+
+
+
+
+
+
+
+/*         currentMenu = 'Список работ за текущую смену';
         logToServer('Загрузка странички');
         subscriptions = [];
         subscriptions.push(docName);
@@ -927,7 +1085,7 @@
 
             $('.titlePage').text($('.titlePage').text() + ' c ' + startTimeWork.toLocaleString());
         });
-    
+     */
         $('.btnIncrementCount').on('click', function(event){
             if (disableBtnIncrement) {
                 return;
@@ -980,7 +1138,7 @@
             return firstPartString + ':' + secondPartString;
         }
 
-        setInterval(() => {
+/*         setInterval(() => {
             if (timerWork) {
                 const currentSeconds = parseInt($('#timer').attr('seconds')); 
                 const newSeconds = currentSeconds + 1;
@@ -998,9 +1156,9 @@
                     }, 500);
                 }
             }
-        }, 1000);
+        }, 1000); */
     
-        $('#btnPauseCurrentReport').on('click', function(event){
+/*         $('#btnPauseCurrentReport').on('click', function(event){
             if (avaria == true) {
                 return;
             }
@@ -1014,9 +1172,9 @@
                 logToHistory('Пауза');
                 logToServer('Нажата кнопка "Пауза"');
             }
-        })
+        }) */
         
-        function setStateBtnPause(state) {
+ /*        function setStateBtnPause(state) {
             timerWork = state;
 
             if (timerWork == true) {
@@ -1024,9 +1182,9 @@
             } else {
                 $('#btnPauseCurrentReport').text('Пуск');
             }
-        }
+        } */
 
-        $('#btnAvariaCurrentReport').on('click', function(event){
+/*         $('#btnAvariaCurrentReport').on('click', function(event){
             clickAnimate(this); 
             avaria = !avaria;
             
@@ -1047,17 +1205,17 @@
                 disableBtnIncrement = false;
             }
 
-        })
+        }) */
         
-        function logToHistory(msg) {
+/*         function logToHistory(msg) {
             const currentTime = new Date();
             var timeString = currentTime.toLocaleTimeString('en-US', { hour12: false });
             const newRowHistory = timeString + ' ' + msg;
             $('#textHistory').text(newRowHistory + '\n' + $('#textHistory').text());
             //logToServer(msg);
-        }
+        } */
     
-        $('#table').on('click', '.btnPlay', function(event){
+/*         $('#table').on('click', '.btnPlay', function(event){
             const report = $(this).attr('report');
             const reportRow = $('#' + report);
 
@@ -1084,18 +1242,18 @@
             setStateBtnPause(timerWork);
 
             logToHistory(currDetal)
-        });
+        }); */
     
-        $('#btnCloseCurrentReport').on('click', function(event) {
+/*         $('#btnCloseCurrentReport').on('click', function(event) {
             logToServer('Нажата кнопка "Закрыть"');
             $('#groupCurrentReport').hide();
             setStateBtnPause(false);
             resetTimer();
             logToHistory('Закрыть');
             
-        })
+        }) */
     
-        function convertTimeToSeconds(timeString) {
+/*         function convertTimeToSeconds(timeString) {
             try {
                 var timeArray = timeString.split(':');
             
@@ -1120,7 +1278,9 @@
                 console.log('Ошибка:', error.message);
                 return 0;
             }
-        }
+        } */
     });
+
+    // строка 1126
 </script>
 

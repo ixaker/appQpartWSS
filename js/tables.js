@@ -76,10 +76,13 @@ function createHeaderForTable(table) {
 
 // добавление новой строки
 async function addNewRow(table, newData) {
-    //console.log('addNewRow', table, newData);
+    console.log('start addNewRow', table, newData);
 
     const tableID = $(table).attr('id')||'tableID';
     let newRow = $(`<tr id="${newData.uid}" style="display:none"></tr>`);
+
+    console.log('tableID', tableID);
+    console.log('newRow', newRow);
 
     $(table).children('tbody').children('.config').children().each(function() {
         const cell = $(this).clone();
@@ -104,7 +107,11 @@ async function addNewRow(table, newData) {
     if (append === 'end') {
         $(table).children('tbody').append(newRow);
     } else {
-        $(table).children('tbody').prependTo(newRow);
+        console.log('$(table)', $(table));
+
+        $(table).children('tbody').prepend(newRow);
+
+        console.log('newRow', newRow);
     }
 
     callbackFromAttr(table, 'addNevRow', newData);
@@ -129,6 +136,7 @@ async function addNewRow(table, newData) {
         initInputTimeMask(this);
     });
 
+    console.log('addNewRow', newRow, newData);
     callbackTable(newData);
 }
 
@@ -180,11 +188,14 @@ function disableHighlightElement() {
 
 // функция вызываемая для обновления данных в строке
 callbackTable = async function(data) {
-    //console.log('callbackTable', data);
+    console.log('callbackTable', data);
 
     const table = $(`#${data.topic}`);
     const row = $('#' + data.uid);
     const newData = data.data;
+
+    console.log('data', data.topic, data.uid);
+    console.log('row', row);
 
     if (row.length) {
         let visible = callbackFromAttr(table, 'filter', newData);
@@ -261,6 +272,7 @@ callbackTable = async function(data) {
         
         callbackFromAttr(table, 'callbackAfterWrite', data);
     }else{
+        console.log('row.length = 0');
         addNewRow(table, data);
     }
 }
