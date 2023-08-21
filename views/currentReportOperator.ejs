@@ -11,147 +11,6 @@
         margin-right: 10px;
     }
 
-</style>
-
-<style>
-    /* .titlePage {
-        line-height: 40px;
-        font-weight: bold;
-    }
-
-    table {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: collapse;
-    }
-
-    tr {
-        height: 50px;
-    }
-
-    th, td {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        border: 1px solid rgb(202, 202, 202);
-    }
-
-    th {
-        background-color: darkgreen;
-        color: white;
-        border: 1px solid white;
-        text-align: center;
-    }
-
-    td {
-        white-space: nowrap;
-        font-size: 1.3em;
-        background-color: #FFFFFF;
-    }
-    
-    td input {
-        width: 100%;
-        box-sizing: border-box; 
-        border: 0;
-    }
-
-    .ui-autocomplete {
-        max-height: 115px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        font-size: 1.3em;
-    }
-
-    .stanok {
-        text-align: center;
-    }
-
-    table td:nth-child(2) {
-        text-align: center;
-    }
-
-    .apply {
-        height: 25px;
-        margin-top: 0px;
-    }
-
-    .done {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .naladka {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .codeOperatoin {
-        text-align: center;
-    }
-
-    .textAlignCenter {
-        text-align: center;
-    }
-
-    .textAlignEnd {
-        text-align: end;
-    }
-
-    #commandPanel {
-        display: flex;
-        margin-top: -5px;
-    }
-    
-    #btnAdd {
-        margin-left: auto;
-        font-size: xx-large;
-        color: #007431;
-        margin-right: 10px;
-    }
-
-    .btnDeleteCell {
-        text-align: center;
-    }
-
-    .btnDelete {
-        font-size: xx-large;
-        color: #FF0000;
-        display: block;
-    }
-
-    @media (max-width: 800px) {
-        .hideIfNoSpace1000 {
-            display: none;
-        }
-
-        .titlePage {
-            font-size: x-large;
-            margin-top: 5px;
-        }
-    }
-
-    @media (max-width: 650px) {
-        .hideIfNoSpace500 {
-            display: none;
-        }
-
-        #lastRowSumm {
-            display: none;
-        }
-    }
-
-    @media (max-width: 450px) {
-        .titlePage {
-            font-size: medium;
-            margin-top: 10px;
-        }
-    }
-
-    .btnEdit {
-        font-size: xx-large;
-        color: #007431;
-        display: block;
-    }
-
     #lastRowSumm .labelfullTimeAll{
         text-align: end;
         padding-right: 5px;
@@ -164,6 +23,7 @@
     #lastRowSumm td {
         background-color: transparent;
         border: 0;
+        text-align: center;
     }
 
     #groupCurrentReport {
@@ -271,21 +131,45 @@
         background-color: coral;
     }
 
-    .btnPlay {
-        font-size: xx-large;
-        color: #007431;
-        display: block;
-    }
-
-    table tr td:first-child {
-        text-align: center;
-    }
-
     .timeLimit {
         color: #FFFFFF !important;
         background-color: #FF0000 !important;
-    } */
+    }
 
+    @media (max-width: 800px) {
+        #content {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        .titlePage {
+            font-size: 0.7em !important;
+        }
+
+        #ОтчетПоРаботе2022 th {
+            width: auto !important;  
+        }
+
+        #ОтчетПоРаботе2022 th:nth-child(1) {
+            width: 35px !important;
+        }
+
+        #ОтчетПоРаботе2022 th:nth-child(2) {
+            width: 20% !important;
+        }
+
+        #ОтчетПоРаботе2022 {
+            font-size: 0.5em !important;  
+        }
+
+        .checkboxInTable {
+            height: 15px !important; 
+        }
+
+        .btnRow {
+            font-size: initial !important; 
+        }
+    }
 </style>
 
 <div id="groupCurrentReport" report="" style="display: none;">
@@ -327,7 +211,7 @@
 </div>
 
 <div id="commandPanel">
-    <h3 class="titlePage" >Список работ за текущую смену</h3>
+    <h4 class="titlePage" >Список работ за текущую смену</h4>
     <i class="bi bi-plus-circle" id="btnAdd"></i>
 </div>
 
@@ -336,16 +220,12 @@
         callbackBeforeInitTable="callbackBeforeDone" 
         filter="callbackFilter" 
         callbackAfterInitTable="callbackAfterDone" 
+        addNevRow="callbackAddNewRow"
+        callbackAfterWrite="callbackAfterWrite"
         append="up" 
         style="display: none;"
         init header>
     <tr class="config" style="display: none;">
-        <td title="Готов" 
-            name="Проведен"
-            style="width: 55px;"> 
-            <input  type="checkbox" 
-                    sync="none" 
-                    class="dataCell checkboxInTable"></td>
         <td title="Станок" 
             name="Станок" 
             key="ИнвентарныйНомер" 
@@ -359,11 +239,12 @@
         <td title="Номер детали" 
             name="Деталь" 
             key="АртикулНаименование" 
-            style="width: 100%;">
+            style="width: 100%; min-width: 100px;">
             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteArticle"  
                     checkValid 
+                    style="min-width: 100px !important;" 
                     class="dataCell"></input></td>
         <td title="МЛ"  
             name="Заказ" 
@@ -387,13 +268,13 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
-            style="width: 55px; padding: 0px;">
+            style="width: 55px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
-                    style="padding: 0px;"></td>
+                    style=""></td>
         <td title="Время маш." 
             name="МашинноеВремя" 
             style="width: 65px;">
@@ -401,7 +282,8 @@
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
-                    mask="00:A0" 
+                    limitHourse="99" 
+                    data-mask="99:A9"  
                     class="dataCell textAlignCenter"></input></td>
         <td title="Время полное" 
             name="ПолноеВремя" 
@@ -410,19 +292,35 @@
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
-                    mask="00:A0" 
+                    limitHourse="99" 
+                    data-mask="99:A9" 
                     class="dataCell textAlignCenter"></input></td>
         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 55px; padding: 0px;">
+            style="width: 55px; ">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
-                    style="padding: 0px;"></td>
+                    style=""></td>
+        <td title="Общее время" 
+            name="ДлительностьВремя" 
+            style="width: 65px;">
+            <div  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    mask="00:A0" 
+                    class="dataCell textAlignCenter"></div></td>
+        <td title="Готов" 
+            name="СтатусОператора"
+            style="width: 55px;"> 
+            <input  type="checkbox" 
+                    sync="none" 
+                    class="dataCell checkboxInTable"></td>
         <td title="" 
-            style="width: 100px;"><div class="groupBtnRow">
+            style="width: 94px;"><div class="groupBtnRow">
                 <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
                 <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
                 <i class="bi bi-trash btnDelete btnRow colorRed" name="ПометкаУдаления" style="display: none;"></i>
@@ -432,45 +330,19 @@
     </tr>
 
     <tr id="lastRowSumm">
-        <td colspan="8" class="labelfullTimeAll">Общее время выработки за смену : </td>  
+        <td colspan="8" class="labelfullTimeAll">Общее время выработки за смену, чч:мм : </td>  
         <td id="fullTimeAll">00:00</td> 
         <td colspan="2"></td> 
     </tr>
 </table>
 
-<!-- <table id="table">
-    <tr>
-        <th style="width: 50px;"></th>  
-        <th style="width: 70px;">Станок</th>
-        <th style="width: 75px;" >Код операц</th>
-        <th style="width: auto" class="hideIfNoSpace500">Номер детали</th>
-        <th style="width: 60px;">МЛ</th>
-        <th style="width: 50px;">К-во</th>
-        <th style="width: 70px;" class="hideIfNoSpace1000">Время маш.</th>
-        <th style="width: 70px;" >Время полное</th>
-        <th style="width: 70px;" >Общее время</th>
-        <th style="width: 40px;" class="hideIfNoSpace500">Дет</th>
-        <th style="width: 50px;">Готов</th>
-        <th style="width: 50px;"></th>
-    </tr>
-    <tr id="lastRowSumm">
-        <td colspan="8" class="labelfullTimeAll">Общее время выработки за смену : </td>  
-        <td id="fullTimeAll">00:00</td> 
-        <td colspan="2"></td> 
-    </tr>
-  </table> -->
-
 <script>
-/*     var docName = 'ОтчетПоРаботе2022';
-    var startTimeWork = new Date();
-    var highlight = false;
-    var timerWork = false;
-    var disableBtnIncrement = false;
-    var avaria = false; */
-    
     $(document).ready(function() {
         let tableID = '#ОтчетПоРаботе2022';
         let startTimeWork = new Date();
+        let timerWork = false;
+        let disableBtnIncrement = false;
+        let avaria = false
 
         initTables();
 
@@ -479,29 +351,31 @@
 
         // callback при изменении данных в строке для определения показать или убрать строку
         callbackFilter = function(data, result = true) {
+            console.log('callbackFilter', data);
+
             const reportDate = new Date(data['Дата']);
 
             try {
                 if ( reportDate < startTimeWork ){ result = false; }
                 if ( data['ПометкаУдаления'] )   { result = false; }
+                if ( !data['ЭтоОтчетОператора'] )   { result = false; }
+
+                $('#countDetalForCurrentReport').text(data['КоличествоИзготовлено']);
 
             } catch (error) { console.log(error) }
 
-            //console.log('filterForNaladka', result, data, data['ПометкаУдаления'], reportDate, startTimeWork);
             return result;
         }
 
         // callback перед отрисовкой таблицы
-        callbackBeforeDone = function(data) {
-            console.log('callbackBeforeDone', data.startTimeWork);
-            
+        callbackBeforeDone = function(data) { 
             if (data.startTimeWork == '0001-01-01T00:00:00Z') {
                 $('.titlePage').text('Смена еще не начата');
                 $('#btnAdd').hide();
                 $(tableID).hide();
             }else{
                 startTimeWork = new Date(data.startTimeWork);
-                $('.titlePage').text('Список наладок за текущую смену c ' + startTimeWork.toLocaleString());
+                $('.titlePage').text('Список работ за текущую смену с ' + startTimeWork.toLocaleString());
                 $('#btnAdd').show();
                 $(tableID).show();
             }
@@ -510,523 +384,73 @@
         // callback после отрисовки таблицы
         callbackAfterDone = function(data) {}
 
-
-
-
-
-
-
-
-
-
-/*         currentMenu = 'Список работ за текущую смену';
-        logToServer('Загрузка странички');
-        subscriptions = [];
-        subscriptions.push(docName);
-        updateSubscribeWSS();
-
-        callbackWSS = async function(data) {
-            console.log("callbackWSS", data);
-
-            if (data.topic === docName) {
-                const reportRow = $('#' + data.uid);
-                const newReport = data.data;
-
-                if (reportRow.length) {
-                    console.log("reportRow", reportRow);
-                    checkVisibleReport(reportRow, newReport);
-
-                    if (await reportChanged(reportRow, newReport)) {
-                        console.log("report edited");
-
-                        reportRow.attr('fullTimeAll', newReport['ДлительностьЧасов']);
-
-                        for (let name in newReport) {
-                            const element = reportRow.find('[name="' + name + '"]');
-
-                            if (element.length) {
-                                const value = newReport[name];
-
-                                if (typeof value === 'object' && value !== null) {
-                                    const newUid = value['uid']||'';
-
-                                    if (newUid !== '') {
-                                        const oldUid = element.attr('uid')||'';
-                                        const key = element.attr('key')||'';
-
-                                        if (newUid !== oldUid) {
-                                            if (key.length) {
-                                                highlightElement(element);
-                                                element.attr('uid', newUid);
-                                                setValueCell(element, value[key]);
-                                                eventOnBlur(element);
-                                                setValid(element, true);
-                                            }
-                                        }
-                                    }else{
-                                        element.attr('uid', '');
-                                        setValueCell(element, '');
-                                        setValid(element, false);
-                                    }
-
-                                    if (name === 'Деталь') {
-                                        const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                        if(data.uid === reportCurrentWork) {
-                                            $('#nameDetalForCurrentReport').text(element.val());
-                                            highlightElement($('#nameDetalForCurrentReport'));
-                                        }
-                                    }
-                                } else {
-                                    const oldValue = getValueCell(element);
-
-                                    if (String(oldValue) !== String(value)) {
-                                        highlightElement(element);
-                                        console.log('set new value', 'type', typeof value , value, element);
-                                        console.log('old value', 'type', typeof oldValue , oldValue);
-
-                                        if (typeof value === 'boolean') {
-                                            element.prop('checked', value);
-                                        }else{
-                                            setValueCell(element, value)
-                                            element.val(value);
-
-                                            console.log('setValid', name,  String(value) !== '');
-
-                                            setValid(element, String(value) !== '');
-                                        }
-
-                                        if (name === 'Проведен') {
-                                            onChangeApplyReport(reportRow, value);
-                                        }
-
-                                        if (name === 'КоличествоИзготовлено') {
-                                            const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                            if(data.uid === reportCurrentWork) {
-                                                $('#countDetalForCurrentReport').text(value);
-                                                highlightElement($('#countDetalForCurrentReport'));
-                                                resetTimer();
-                                            }
-                                        }
-
-                                        if (name === 'ПолноеВремя') {
-                                            console.log();
-                                            const reportCurrentWork = $('#countDetalForCurrentReport').attr('report');
-
-                                            if(data.uid === reportCurrentWork) {
-                                                $('#timerNorma').text(value);
-                                                highlightElement($('#timerNorma'));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        updateFullTimeAll();
-                        setStateElements(newReport, reportRow)
-                    }
-                }else{
-                    addNewRow(newReport);
-                }
-            }
-            console.log("end callback WSS");
-        };
-
-        function setValueCell(element, value) {
-            if (element.is(':input')) {
-                element.val(value);
-            } else {
-                element.text(value);
-            }
+        // callback после вставки новой пустой строки, перед заполнением данными
+        callbackAddNewRow = function(data) {
+            console.log('callbackAddNewRow', data);
         }
 
-        function getValueCell(element) {
-            if (element.is(':input')) {
-                return element.val();
-            } else {
-                return element.text();
-            }
-        }
+        // callback после внесения изменений в строку с сервера
+        callbackAfterWrite = function(data) {
+            console.log('callbackAfterWrite', data);
+            updateFullTimeAll();
 
-        async function reportChanged(reportRow, newReport) {
-            const newReportMD5 = await getHash(newReport);
-            const oldReportMD5 = reportRow.attr('MD5')||'';
-            reportRow.attr('MD5', newReportMD5);
-            console.log('newReportMD5', newReportMD5, 'oldReportMD5', oldReportMD5);
-            return newReportMD5 !== oldReportMD5;
-        }
+            if (data.data['Проведен']) {
+                console.log('eeeeeeeeeeeeeeeeeeee');
 
-        function checkVisibleReport(reportRow, newReport) {
-            const oldVisible = reportRow.is(":visible");
-            reportRow.toggle(!newReport['ПометкаУдаления']);
-            const newVisible = reportRow.is(":visible");
+                let row = $('#' + data['uid']);
+                $(row).find('.btnRow ').remove();
 
-            if (oldVisible != newVisible) {
-                highlightElement(reportRow.find('input'));
-            }
-        }
-
-        async function addNewRow(newReport) {
-            console.log('addNewRow', newReport);
-
-            const reportDate = new Date(newReport['Дата']);
-
-            if (reportDate.getTime() > startTimeWork.getTime()) {
-                let reportRow = $(`
-                <tr id="${newReport.uid}" fullTimeAll="${newReport['ДлительностьЧасов']}" disabled>
-                    <td><input 
-                        type="checkbox" 
-                        name="Проведен" 
-                        class="apply" ${newReport['Проведен'] ? 'checked' : ''}>
-                        <i class="bi bi-play-circle btnPlay" report="${newReport.uid}"></i></td>
-                    <td><input 
-                        type="text" 
-                        url="/app/autocompleteStanok" 
-                        minLength=1 
-                        name="Станок" 
-                        key="ИнвентарныйНомер" 
-                        class="stanok" 
-                        uid="${newReport['Станок'].uid || ''}" 
-                        value="${newReport['Станок']['ИнвентарныйНомер'] || ''}"></td>
-                    <td ><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        url="/app/autocompleteCodeOperation" 
-                        minLength=1 
-                        name="ЭтапПроизводства" 
-                        key="КодНовый" 
-                        class="codeOperatoin" 
-                        uid="${newReport['ЭтапПроизводства'].uid || ''}" 
-                        value="${newReport['ЭтапПроизводства']['КодНовый'] || ''}"></td>
-                    <td class="hideIfNoSpace500"><input 
-                        type="text" 
-                        url="/app/autocompleteArticle" 
-                        minLength=1 
-                        name="Деталь" 
-                        key="Артикул" 
-                        class="article" 
-                        uid="${newReport['Деталь'].uid || ''}" 
-                        value="${newReport['Деталь']['Артикул'] || ''}"></td>
-                    <td><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        url="/app/autocompleteZakaz" 
-                        minLength=0
-                        name="Заказ" 
-                        key="Номер" 
-                        class="ml textAlignCenter" 
-                        uid="${newReport['Заказ'].uid || ''}" 
-                        value="${newReport['Заказ']['Номер'] || ''}"></td>
-                    <td><input 
-                        type="number" 
-                        name="КоличествоИзготовлено" 
-                        min="0" 
-                        class="quantity textAlignEnd" 
-                        value="${newReport['КоличествоИзготовлено']}"></td>
-                    <td class="hideIfNoSpace1000"><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        name="МашинноеВремя" 
-                        placeholder="мм:сс"
-                        mask="00:A0" 
-                        class="machineTime textAlignCenter" 
-                        value="${newReport['МашинноеВремя']}"></td>
-                    <td ><input 
-                        type="text" 
-                        inputmode="numeric" 
-                        name="ПолноеВремя" 
-                        placeholder="мм:сс" 
-                        mask="00:A0" 
-                        class="fullTime textAlignCenter" 
-                        value="${newReport['ПолноеВремя']}"></td>
-                    <td ><div 
-                        name="ДлительностьВремя"  
-                        class="fullTimeAll textAlignCenter">
-                        ${newReport['ДлительностьВремя']}</div></td>
-                    <td class="hideIfNoSpace500"><input 
-                        type="number" 
-                        name="КоличествоДеталейЗаОднуУстановку" 
-                        min="0" 
-                        class="install textAlignEnd" 
-                        value="${newReport['КоличествоДеталейЗаОднуУстановку']}"></td>
-                    <td><input 
-                        type="checkbox" 
-                        name="СтатусОператора" 
-                        class="done" ${newReport['СтатусОператора'] ? 'checked' : ''}></td>
-                    <td class="btnDeleteCell">
-                        <div class="groupBtnRow">
-                            <i class="bi bi-x-circle btnDelete" name="ПометкаУдаления" report="${newReport.uid}" style="display: none;"></i>
-                            <i class="bi bi-pencil btnEdit" report="${newReport.uid}"></i>
-                        </div>
-                        </td>
-                </tr>`).insertAfter("#table tr:first");
-
-                $(reportRow).find('input').prop('disabled', true);
-                onChangeApplyReport(reportRow, newReport['Проведен']);
-                highlightElement(reportRow.find('input'));
-
-                reportRow.find('[url]:not([url=""])').each(function() {
-                    setAutocomplete(this);
-                    setValid(this, ($(this).attr('uid')||'') !== '');
-                });
-
-                reportRow.find('input:not([url])').each(function() {
-                    setEventOnChange(this);
-                    setValid(this, $(this).val() !== '');
-                });
-
-                reportRow.find('[mask]:not([mask=""])').each(function() {
-                    setTimeInputMask(this);
-                });
-
-                const newReportMD5 = await getHash(newReport);
-                reportRow.attr('MD5', newReportMD5);
-
-                updateFullTimeAll();
-
-                setStateElements(newReport, reportRow);
-            }
-        }
-
-        function setStateElements(newReport, reportRow) {
-            const operatorDone = newReport['СтатусОператора'];
-            const nadadchikDone = newReport['Проведен'];
-
-            console.log('setStateElements', operatorDone, nadadchikDone);
-
-            $(reportRow).find('.btnPlay').toggle(!operatorDone);
-            $(reportRow).find('.apply').toggle(operatorDone);
-
-            if (operatorDone) {
-                $(reportRow).find('.btnPlay').hide();
-                $(reportRow).find('.apply').show();
-            } else {
-                $(reportRow).find('.btnPlay').show();
-                $(reportRow).find('.apply').hide();
             }
 
-            if (nadadchikDone) {
-                $(reportRow).find('.btnPlay').hide();
-                $(reportRow).find('.apply').show();
-            }
-
-            $(reportRow).find('.apply').prop('disabled', true);
         }
 
-        function updateFullTimeAll() {
-            var sum = 0;
+        // клик по кнопке Редактировать
+        $(tableID).on('click', '.btnEdit', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
 
-            $('#table').find('[fullTimeAll]').each(function() {
-                var value = $(this).attr('fullTimeAll')||0;
-                sum += parseFloat(value);
-            });
+            $(tableID).find('.btnDelete').hide();
+            $(tableID).find('.btnPlay').show();
+            $(tableID).find('.btnEdit').show();
+            $(tableID).find('.btnOk').hide();
+            $(tableID).find('input').prop('disabled', true);
 
-            var timeString = convertToTime(sum);
-            $('#fullTimeAll').text(timeString);
-        }
+            $(row).find('.btnOk').show();
+            $(row).find('.btnDelete').show();
+            $(row).find('.btnEdit').hide();
+            $(row).find('.btnPlay').hide();
+            $(row).find('input').prop('disabled', false);
 
-        function onChangeApplyReport(reportRow, value) {
-            console.log('onChangeApplyReport', value, reportRow);
-            //$(reportRow).find('input').prop('disabled', value);
-            //$(reportRow).find('.btnDelete').toggle(!value);
-            //$(reportRow).find('.groupBtnRow').toggle(!value);
-            //$(reportRow).find('input').prop('disabled', value);
-            //$(reportRow).find('.apply').prop('disabled', true);
+            clickAnimate($(row).find('.btnOk'));
+            logToServer('Нажата кнопка "Редактировать"', data);
+        });
 
-            if (value) {
-                $(reportRow).find('input').prop('disabled', true);
-                $(reportRow).find('.groupBtnRow').hide();
-            } else {
-                $(reportRow).find('.groupBtnRow').show();
-            }
-            
-        }
+        // клик по кнопке Применить
+        $(tableID).on('click', '.btnOk', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
 
-        function highlightElement(element) {
-            if (highlight) {
-                element.addClass('highlight').delay(600).queue(function(next) {
-                    element.removeClass('highlight');
-                    next();
-                });
-            }
-        }
+            $(row).find('.btnOk').hide();
+            $(row).find('.btnEdit').show();
+            $(row).find('.btnPlay').show();
+            $(row).find('.btnDelete').hide(); 
+            $(row).find('input').prop('disabled', true);
 
-        function eventOnSelect(element, ui) {
-            console.log('eventOnSelect');
-            $(element).attr('uid', ui.item.uid);
-            $(element).data("json", ui.item);
-            setValid(element, true);
-            //$(element).blur();
+            clickAnimate($(row).find('.btnEdit'));
+            logToServer('Нажата кнопка "Применить"', data);
+            sendNotificationOnChangeRowTable(this);
+        });
 
-            setTimeout(() => {
-                $(element).blur();
-            }, 50); // время анимации в миллисекундах
-
-            sendNotificationOnChange(element, ui.item);
-
-            const report = $(element).parent().parent().attr('id');
-            var reportRow = $('#' + report);
-            const currDetal = $(reportRow).find('[name="Деталь"]').val();
-
-            logToServer('Изменено значение "'+ $(element).attr('name') +'" = ' + ui.item.value, {item:ui.item, report:report, currDetal:currDetal});
-        }
-
-        function sendNotificationOnChange(element, value) {
-            console.log('sendNotificationOnChange');
-            const report = $(element).parent().parent().attr('id');
-
-            payload = {};
-            payload.type = 'Документы';
-            payload.docName = docName;
-            payload.doc = report;
-            payload.keyName = $(element).attr('name');
-            payload.value = value;
-
-            sendWSS('updateDataOnServer', docName, payload);
-        }
-
-        function sendNotification(report, name, value) {
-            payload = {};
-            payload.type = 'Документы';
-            payload.docName = docName;
-            payload.doc = report;
-            payload.keyName = name;
-            payload.value = value;
-
-            sendWSS(action = 'updateDataOnServer', docName, payload);
-        }
-
-        function eventOnInput(element) {
-            console.log('eventOnInput');
-            $(element).attr('uid', '');
-            $(element).data("json", {});
-            setValid(element, false);
-            $(element).parent().parent().attr('MD5', '');
-        }
-
-        function eventOnBlur(element) {
-            console.log('eventOnBlur');
-            var data = $(element).data("autocompleteData")||[];
-            console.log('eventOnBlur autocompleteData', data); // выводим данные в консоль
-            console.log($(element).attr('uid'), ($(element).attr('uid')||''), ($(element).attr('uid')||'') === ''); // выводим данные в консоль
-
-            if(($(element).attr('uid')||'') === ''){
-                if (data.length == 1) {
-                    eventOnSelect(element, { item: data[0]})
-                }else{
-                    $(element).val('');
-                    eventOnInput(element);
-                    sendNotificationOnChange(element, {});
-                }
-            }else{
-                setValid(element, true);
-            }
-        }
-
-        function fetchAutocomplete(url, request, response, element) {
-            const report = element.parent().parent().attr('id');
-
-            $.ajax({
-                url: url,
-                dataType: "json",
-                data: {
-                    term: request.term,  // это ваше текущее значение input
-                    report: report
-                },
-                success: function(data) {
-                    response(data);
-                    element.data("autocompleteData", data);
-                }
-            });
-        }
-
-        function setAutocomplete(element) {
-            const url = $(element).attr('url');
-
-            $(element).autocomplete({ 
-                source: function(req, res) { fetchAutocomplete(url, req, res, this.element);},
-                select: function(event, ui){ 
-                    eventOnSelect(this, ui);
-                    //event.preventDefault();
-                    $(this).blur()
-                },
-                position: { my: "left bottom", at: "left top" },
-                minLength: parseInt($(element).attr('minLength'))
-            }).on("input" , function() { eventOnInput(this) 
-            }).on("blur"  , function() { eventOnBlur(this)
-            }).on("focus", function() { $(this).autocomplete("search")
-            }).on('click', function() {
-                var val = this.value;
-                this.value = '';
-                this.value = val;
-            }).on('keyup', function(event) {
-                if (event.which == 13) {
-                    event.preventDefault();
-                    $(this).blur();
-                }
-            });
-        }
-
-        function setEventOnChange(element) {
-            $(element).on('change', function() {
-                var userInput;
-                var type = $(this).attr('type');
-
-                if (type == 'checkbox') {
-                    userInput = $(this).is(":checked"); // Булево значение
-                } else if (type == 'number') {
-                    userInput = parseFloat($(this).val()); // Число
-                } else {
-                    userInput = $(this).val(); // Для всех остальных типов вернём строку
-                }
-
-                setValid(this, userInput !== '');
-                $(element).parent().parent().attr('MD5', '');
-                sendNotificationOnChange(this, userInput);
-
-                logToServer('Изменено значение "'+ $(this).attr('name') +'" = ' + userInput);
-
-            });
-
-            $(element).on('keyup', function(event) {
-                if (event.which == 13) {
-                    event.preventDefault();
-                    $(this).blur();
-                }
-            });
-
-            $(element).on('click', function() {
-                var val = this.value;
-                this.value = '';
-                this.value = val;
-            });
-        }
-
-        function setTimeInputMask(element) {
-            $(element).mask('00:A0', {
-                'translation':{A: {pattern: /[0-5]/}},
-                onComplete: function(cep) {
-                    if(cep != '00:00'){setValid(this, true);}},
-                onChange: function(cep){
-                    setValid(this, false);}
-            });
-        }
-
+        // клик по кнопке Добавить отчет
         $('#btnAdd').on('click', function(event){
             clickAnimate(this);
             NProgress.start();
             highlight = false;
 
-            console.log('stanok', stanok);
-            logToServer('Нажата кнопка "Добавить"');
+            logToServer('Нажата кнопка "Добавить отчет"');
 
-            const data = {operator:true};
-
-            if(stanok.uid !== ''){
-                data.stanok = stanok;
-            }
+            const data = { operator:true };
+            if(stanok.uid !== ''){ data.stanok = stanok; }
 
             $.ajax({url: '/app/createReport', method: 'POST', contentType: 'application/json',
                 data: JSON.stringify(data), 
@@ -1037,65 +461,46 @@
             });
         });
 
-        $('#table').on('click', '.btnDelete', function(event){
+
+        $(tableID).on('click', '.btnPlay', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+
+            console.log('btnPlay', data, row);
+
+            $('#countDetalForCurrentReport').text(data.data['КоличествоИзготовлено']);
+            $('#countDetalForCurrentReport').attr('report', data.data['uid']);
+            $('#timerNorma').text(data.data['ПолноеВремя']);
+            $('#timerNorma').attr('seconds', convertTimeToSeconds(data.data['ПолноеВремя']));
+            $('#nameDetalForCurrentReport').text(data.data['Деталь']['АртикулНаименование']);
+
+            $('#groupCurrentReport').show();
+            setStateBtnPause(timerWork);
+
             clickAnimate(this);
-            if (confirm("Вы уверены, что хотите удалить строку?")) {
-                const report = $(this).attr('report');
-                const reportRow = $('#' + report);
-                const currDetal = $(reportRow).find('[name="Деталь"]').val();
+            disableBtnIncrement = false;
 
-                logToServer('Нажата кнопка "Удалить"', {report:report, currDetal:currDetal});
+            logToHistory(data.data['Деталь']['АртикулНаименование'])
+        });
 
-                sendNotification($(this).attr('report'), $(this).attr('name'), true);
+        function convertTimeToSeconds(timeString) {
+            const [minutes, seconds] = timeString.split(':').map(Number);
+
+            if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) {
+                console.log('Ошибка: Недопустимое значение времени.');
+                return 0;
             }
-        });
 
-        $('#table').on('click', '.btnEdit', function(event){
-            clickAnimate(this);
-            
-            const report = $(this).attr('report');
+            return (minutes * 60) + seconds;
+        }
 
-            $('#table').find('.btnDelete').hide();
-            $('#table').find('.btnEdit').show();
-            $('#table').find('input').prop('disabled', true);
-
-            var reportRow = $('#' + report);
-            console.log('reportRow', reportRow); 
-
-            const currDetal = $(reportRow).find('[name="Деталь"]').val();
-
-            $(reportRow).find('.btnDelete').show();
-            $(reportRow).find('.btnEdit').hide();
-            $(reportRow).find('input').prop('disabled', false);
-
-            logToServer('Нажата кнопка "Редактировать"', {report:report, currDetal:currDetal});
-            
-        });
-
-        $.get("/app/getCurrentReportOperator", function(response) {
-            console.log('GET - /app/getCurrentReportOperator', response);
-
-            startTimeWork = new Date(response.startTimeWork);
-
-            response.reports.forEach((report) => {
-                callbackWSS(report);
-            });
-
-            highlight = true;
-
-            $('.titlePage').text($('.titlePage').text() + ' c ' + startTimeWork.toLocaleString());
-        });
-     */
         $('.btnIncrementCount').on('click', function(event){
-            if (disableBtnIncrement) {
-                return;
-            }
-
             const report = $('#countDetalForCurrentReport').attr('report');
 
-            if (report === '') {
-                return;
-            }
+            console.log('btnIncrementCount click', disableBtnIncrement, report);
+
+            if (disableBtnIncrement) { return; }
+            if (report === '') { return; }
 
             $('.btnIncrementCount').addClass('disabledBtnIncrement');
             disableBtnIncrement = true;
@@ -1105,22 +510,24 @@
                 disableBtnIncrement = false;
             }, 5000);
 
-            const incrementCount = parseInt($(this).attr('increment')); 
-            const currentCount = parseInt($('#countDetalForCurrentReport').text()||0);
-            const keyName = $('#countDetalForCurrentReport').attr('name');
-            const newValue = currentCount + incrementCount;
-
-            clickAnimate(this);
-            console.log('click btnIncrementCount', incrementCount, currentCount, keyName, report, newValue);
-
-            sendNotification(report, keyName, newValue);
-
+            clickAnimate(this); 
             resetTimer();
             setStateBtnPause(true);
 
+            const row = $('#' + report);
+            const dataRow = $(row).data('data');
+            const keyName = 'КоличествоИзготовлено';
+            const input = $(row).find('.dataCell[name="' + keyName + '"]')
+            const incrementCount = parseInt($(this).attr('increment')); 
             const incrementCountString = (incrementCount > 0) ? "+" + incrementCount : incrementCount.toString();
             logToHistory('изготовлено ' + incrementCountString);
-            logToServer('Нажата кнопка "' + incrementCountString + '"', {newValue:newValue, report:report});
+
+            dataRow.edited[keyName] = parseInt(dataRow.data[keyName]) + incrementCount;
+            $(row).data('data', dataRow);
+
+            sendNotificationOnChangeRowTable(input);
+
+            console.log('IncrementCount', row, dataRow, input);
         })
         
         function resetTimer() {
@@ -1138,7 +545,59 @@
             return firstPartString + ':' + secondPartString;
         }
 
-/*         setInterval(() => {
+        $('#btnPauseCurrentReport').on('click', function(event){
+            if (avaria == true) {
+                return;
+            }
+            clickAnimate(this);
+            setStateBtnPause(!timerWork);
+
+            if (timerWork == true) {
+                logToHistory('Пуск');
+            } else {
+                logToHistory('Пауза');
+            }
+        })
+        
+        function setStateBtnPause(state) {
+            timerWork = state;
+
+            if (timerWork == true) {
+                $('#btnPauseCurrentReport').text('Пауза');
+            } else {
+                $('#btnPauseCurrentReport').text('Пуск');
+            }
+        }
+
+        $('#btnAvariaCurrentReport').on('click', function(event){
+            clickAnimate(this); 
+            avaria = !avaria;
+            
+            if (avaria == true) {
+                setStateBtnPause(false);
+                $(this).text('Запущен');
+                logToHistory('Авария');
+                $('.btnIncrementCount').addClass('disabledBtnIncrement');
+                $('#btnPauseCurrentReport').addClass('disabledBtnIncrement');
+                disableBtnIncrement = true;
+            } else {
+                $(this).text('Авария');
+                logToHistory('Запущен');
+                $('.btnIncrementCount').removeClass('disabledBtnIncrement');
+                $('#btnPauseCurrentReport').removeClass('disabledBtnIncrement');
+                disableBtnIncrement = false;
+            }
+
+        })
+
+        $('#btnCloseCurrentReport').on('click', function(event) {
+            logToServer('Нажата кнопка "Закрыть"');
+            $('#groupCurrentReport').hide();
+            setStateBtnPause(false);
+            resetTimer();   
+        })
+
+        callbackFuncSecondInterval = function() {
             if (timerWork) {
                 const currentSeconds = parseInt($('#timer').attr('seconds')); 
                 const newSeconds = currentSeconds + 1;
@@ -1156,131 +615,30 @@
                     }, 500);
                 }
             }
-        }, 1000); */
-    
-/*         $('#btnPauseCurrentReport').on('click', function(event){
-            if (avaria == true) {
-                return;
-            }
-            clickAnimate(this);
-            setStateBtnPause(!timerWork);
+        }
 
-            if (timerWork == true) {
-                logToHistory('Пуск');
-                logToServer('Нажата кнопка "Пуск"');
-            } else {
-                logToHistory('Пауза');
-                logToServer('Нажата кнопка "Пауза"');
-            }
-        }) */
-        
- /*        function setStateBtnPause(state) {
-            timerWork = state;
-
-            if (timerWork == true) {
-                $('#btnPauseCurrentReport').text('Пауза');
-            } else {
-                $('#btnPauseCurrentReport').text('Пуск');
-            }
-        } */
-
-/*         $('#btnAvariaCurrentReport').on('click', function(event){
-            clickAnimate(this); 
-            avaria = !avaria;
-            
-            if (avaria == true) {
-                setStateBtnPause(false);
-                $(this).text('Запущен');
-                logToHistory('Авария');
-                logToServer('Нажата кнопка "Авария"');
-                $('.btnIncrementCount').addClass('disabledBtnIncrement');
-                $('#btnPauseCurrentReport').addClass('disabledBtnIncrement');
-                disableBtnIncrement = true;
-            } else {
-                $(this).text('Авария');
-                logToHistory('Запущен');
-                logToServer('Нажата кнопка "Запущен"');
-                $('.btnIncrementCount').removeClass('disabledBtnIncrement');
-                $('#btnPauseCurrentReport').removeClass('disabledBtnIncrement');
-                disableBtnIncrement = false;
-            }
-
-        }) */
-        
-/*         function logToHistory(msg) {
+        function logToHistory(msg) {
             const currentTime = new Date();
             var timeString = currentTime.toLocaleTimeString('en-US', { hour12: false });
             const newRowHistory = timeString + ' ' + msg;
             $('#textHistory').text(newRowHistory + '\n' + $('#textHistory').text());
-            //logToServer(msg);
-        } */
-    
-/*         $('#table').on('click', '.btnPlay', function(event){
-            const report = $(this).attr('report');
-            const reportRow = $('#' + report);
+        }
 
-            $('#table').find('.btnDelete').hide();
-            $('#table').find('.btnEdit').show();
-            $('#table').find('input').prop('disabled', true);
-            
-            // Current report
-            $('#countDetalForCurrentReport').attr('report', report);
-            const currCount = $(reportRow).find('[name="КоличествоИзготовлено"]').val();
-            const currFullTime = $(reportRow).find('[name="ПолноеВремя"]').val();
-            const secondsCurrFullTime = convertTimeToSeconds(currFullTime);
-            const currDetal = $(reportRow).find('[name="Деталь"]').val();
+        function updateFullTimeAll() {
+            var sum = 0.0;
 
-            logToServer('Нажата кнопка "Play"', {currDetal:currDetal, currCount:currCount, report:report, currFullTime:currFullTime});
-            console.log('currCount', currCount, 'currFullTime', currFullTime);
+            $(tableID).find('.rowData ').each(function() {
+                const data = $(this).data('data');
+                const hoursString = data.data['ДлительностьЧасов']||'0';
+                const hoursStringConv = hoursString.replace(',', '.');
+                const hours = parseFloat(hoursStringConv);
 
-            $('#countDetalForCurrentReport').text(currCount);
-            $('#timerNorma').text(currFullTime);
-            $('#timerNorma').attr('seconds', secondsCurrFullTime);
-            $('#nameDetalForCurrentReport').text(currDetal);
+                sum += hours;
+            });
 
-            $('#groupCurrentReport').show();
-            setStateBtnPause(timerWork);
-
-            logToHistory(currDetal)
-        }); */
-    
-/*         $('#btnCloseCurrentReport').on('click', function(event) {
-            logToServer('Нажата кнопка "Закрыть"');
-            $('#groupCurrentReport').hide();
-            setStateBtnPause(false);
-            resetTimer();
-            logToHistory('Закрыть');
-            
-        }) */
-    
-/*         function convertTimeToSeconds(timeString) {
-            try {
-                var timeArray = timeString.split(':');
-            
-                if (timeArray.length !== 2) {
-                throw new Error('Неверный формат времени. Используйте формат "mm:ss".');
-                }
-            
-                var minutes = parseInt(timeArray[0], 10);
-                var seconds = parseInt(timeArray[1], 10);
-            
-                if (isNaN(minutes) || isNaN(seconds)) {
-                throw new Error('Неверный формат времени. Используйте формат "mm:ss".');
-                }
-            
-                if (minutes < 0 || seconds < 0 || seconds >= 60) {
-                throw new Error('Недопустимое значение времени.');
-                }
-            
-                var totalSeconds = (minutes * 60) + seconds;
-                return totalSeconds;
-            } catch (error) {
-                console.log('Ошибка:', error.message);
-                return 0;
-            }
-        } */
+            var timeString = convertToTime(sum);
+            $('#fullTimeAll').text(timeString);
+        }
     });
-
-    // строка 1126
 </script>
 

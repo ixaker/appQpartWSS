@@ -162,13 +162,13 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
-            style="width: 55px; padding: 0px;">
+            style="width: 55px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
-                    style="padding: 0px;"></td>
+                    style=""></td>
         <td title="Время маш." 
             name="МашинноеВремя" 
             style="width: 65px;">
@@ -176,7 +176,8 @@
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
-                    mask="00:A0" 
+                    limitHourse="99" 
+                    data-mask="99:A9"
                     class="dataCell textAlignCenter"></input></td>
         <td title="Время полное" 
             name="ПолноеВремя" 
@@ -185,27 +186,27 @@
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
-                    mask="00:A0" 
+                    limitHourse="99" 
+                    data-mask="99:A9" 
                     class="dataCell textAlignCenter"></input></td>
         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 55px; padding: 0px;">
+            style="width: 55px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
-                    style="padding: 0px;"></td>
+                    style=""></td>
         <td title="Время наладки" 
             name="НаладкаВремя" 
-            style="width: 75px; padding: 0px;">
+            style="width: 75px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell textAlignEnd" 
-                    style="padding: 0px;"></td>
-
+                    style=""></td>
         <td title="" 
             style="width: 140px;"><div class="groupBtnRow">
                 <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
@@ -262,7 +263,7 @@
             try {
                 if ( reportDate < startTimeWork ){ result = false; }
                 if ( data['ПометкаУдаления'] )   { result = false; }
-
+                if ( !data['ЭтоОтчетНаладчика'] )   { result = false; }
             } catch (error) { console.log(error) }
 
             //console.log('filterForNaladka', result, data, data['ПометкаУдаления'], reportDate, startTimeWork);
@@ -286,9 +287,7 @@
         }
 
         // callback после отрисовки таблицы
-        callbackAfterDoneNaladka = function(data) {
-
-        }
+        callbackAfterDoneNaladka = function(data) { }
 
         // клик по кнопке Добавить отчет
         $('#btnAdd').on('click', function(event){

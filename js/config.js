@@ -17,6 +17,21 @@ $(function() {
     if (stanok.fullName === "") {
         $('#navbar_text_stanok').hide();
     }
+
+    $.jMaskGlobals = {
+        //maskElements: 'input,td,span,div',
+        //dataMaskAttr: '*[data-mask]',
+        //dataMask: true,
+        //watchInterval: 300,
+        //watchInputs: true,
+        //watchDataMask: false,
+        //byPassKeys: [9, 16, 17, 18, 36, 37, 38, 39, 40, 91],
+        translation: {
+          'A': {pattern: /[0-5]/ },
+          '9': {pattern: /\d/, optional: true},
+          'B': {pattern: /[0-2]/ }
+        }
+    };
 });
 
 function GetInfo1C(url, param = '', callback, elem=false, type='GET') { 
@@ -82,7 +97,7 @@ function convertToTime(decimalHours) {
   
     var hoursString = (hours < 10) ? '0' + hours : hours;
     var minutesString = (minutes < 10) ? '0' + minutes : minutes;
-  
+
     return hoursString + ':' + minutesString;
 }
 
@@ -102,7 +117,10 @@ function initInputAutocomplete(element) {
             source: function(req, res) { 
                 const data = { term: req.term};
 
-                $.ajax({ url: url, dataType: "json", data: data,
+                $.ajax({method: 'POST', url: url, 
+                    dataType: "json", 
+                    data: JSON.stringify(data), 
+                    contentType: 'application/json',
                     success: function(data) { res(data);}
                 });
             },
@@ -110,6 +128,7 @@ function initInputAutocomplete(element) {
                 $(this).attr('uid', ui.item.uid);
                 setValid(this, true);
                 $(this).blur();
+                callbackFromAttr(this, 'callbackSelect', ui.item)
             },
             position: { my: "left bottom", at: "left top" },
             minLength: 1
@@ -128,17 +147,40 @@ function initInputAutocomplete(element) {
 
 function initInputTimeMask(element) {
     try {
-        $(element).mask('00:A0', {
-            'translation':{A: {pattern: /[0-5]/}},
+        var dataMask = $(element).attr('data-mask')||'00:A0';
+
+        $(element).mask(dataMask, {
+            selectOnFocus: true,
+            clearIfNotMatch: true,
             onComplete: function(cep) {
-                console.log('onComplete cep', cep, this);
+                console.log('onComplete cep', cep);
+
                 if(cep != '00:00'){
                     setValid(element, true);
                 }},
             onChange: function(cep){
-                setValid(element, false);}
+                setValid(element, false);
+                
+                let parts = cep.split(':');
+                let hours = parseInt('0' + parts[0]);
+                let limitHourse = parseInt($(element).attr('limitHourse'))||999;
+
+                if (hours > limitHourse ) {
+                    let newCep = cep.slice(0, -1);
+                    $(element).val(newCep);
+                }
+
+                console.log(cep, parts, hours);
+            }
         });
     } catch (error) {
         toastr["error"]('Ошибка при initInputTimeMask');    
     }
 }
+
+setInterval(() => {
+    try {
+        let func = window['callbackFuncSecondInterval'];
+        return func();
+    } catch (error) {}
+}, 1000);

@@ -276,7 +276,7 @@
             
                                 <div class="input-group mb-2">
                                     <label for="time" class="labelFixBrak" style="width: 300px;">Времени потрачено, чч:мм:</label>
-                                    <input type="text" class="form-control inputFixBrak" inputmode="numeric" style="width: 80px;" id="time" placeholder="чч:мм" aria-describedby="basic-addon3">
+                                    <input type="text" class="form-control inputFixBrak" inputmode="numeric" limitHourse="99" data-mask="99:A9" style="width: 80px;" id="time" placeholder="чч:мм" aria-describedby="basic-addon3">
                                 </div>
             
                                 <div class="input-group mb-2">
@@ -375,9 +375,9 @@
                                     <div class="input-group mb-2" id="workTimePeriod">
                                         <label for="time" class="labelNewReport" style="width: 150px;">Время работы</label>
                                         <label for="time" class="labelNewReport textAlignEnd" style="width: 20px; padding-right: 3px;">с:</label>
-                                        <input type="text" class="form-control inputFixBrak textAlignCenter" inputmode="numeric" style="width: 80px;" id="timeStart" placeholder="чч:мм" aria-describedby="basic-addon3">
+                                        <input type="text" class="form-control inputFixBrak textAlignCenter" inputmode="numeric" limitHourse="23" data-mask="B9:A9" style="width: 80px;" id="timeStart" placeholder="чч:мм" aria-describedby="basic-addon3">
                                         <label for="time" class="labelNewReport textAlignEnd" style="width: 30px;">по:</label>
-                                        <input type="text" class="form-control inputFixBrak textAlignCenter" inputmode="numeric" style="width: 80px;" id="timeStop" placeholder="чч:мм" aria-describedby="basic-addon3">
+                                        <input type="text" class="form-control inputFixBrak textAlignCenter" inputmode="numeric" limitHourse="23" data-mask="B9:A9" style="width: 80px;" id="timeStop" placeholder="чч:мм" aria-describedby="basic-addon3">
                                     </div>
                 
                                     <div class="input-group mb-2">

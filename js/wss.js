@@ -36,17 +36,14 @@ function addSubscribeWSS(topic){
     subscriptions.push(topic);
     subscriptions = [...new Set(subscriptions)];
     sendWSS('subscribe', topic);
-    console.log('addSubscribeWSS', topic, subscriptions);
 }
 
 function reconectWebSocket() {
     console.log('reconectWebSocket');
     disconectWebSocket();
-    //connectWebSocket('reconectWebSocket');
 }
 
 function disconectWebSocket() {
-    console.log('disconectWebSocket');
     try {
         socket.close();
     } catch (error) {

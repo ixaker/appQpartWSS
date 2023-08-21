@@ -1,5 +1,38 @@
 <style>
-    .titlePage {
+    #ОтчетПоРаботе2022 {
+        font-size: 0.9em;
+    }
+
+    @media (max-width: 800px) {
+        #content {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        .titlePage {
+            font-size: 0.7em !important;
+        }
+
+        #ОтчетПоРаботе2022 th {
+            width: auto !important;  
+        }
+
+        #ОтчетПоРаботе2022 {
+            font-size: 0.5em !important;  
+        }
+
+        .checkboxInTable {
+            height: 15px !important; 
+        }
+
+        .btnRow {
+            font-size: initial !important; 
+        }
+    }
+</style>
+
+<style>
+    /* .titlePage {
         line-height: 40px;
         font-weight: bold;
     }
@@ -7,7 +40,7 @@
     table {
         width: 100%;
         table-layout: fixed;
-        border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
+        border-collapse: collapse; 
         font-size: smaller;
     }
 
@@ -16,8 +49,8 @@
     }
 
     th, td {
-        overflow: hidden;  /* прячет содержимое, если оно не умещается в ячейку */
-        text-overflow: ellipsis;  /* добавляет многоточие, если содержимое не умещается в ячейку */
+        overflow: hidden; 
+        text-overflow: ellipsis; 
         border: 1px solid rgb(202, 202, 202);
     }
 
@@ -29,14 +62,14 @@
     }
 
     td {
-        white-space: nowrap;  /* запрещает перенос текста на новую строку */
+        white-space: nowrap; 
         font-size: 1.3em;
         background-color: #FFFFFF;
     }
 
     td input {
         width: 100%;
-        box-sizing: border-box;  /* Учитывает padding и border в общей ширине */
+        box-sizing: border-box; 
         border: 0;
     }
 
@@ -100,41 +133,216 @@
     .operator {
         padding: 5px;
         text-align: left;
-    }
+    } */
 </style>
 
 <h3 class="titlePage" >Список отчетов операторов которые надо проверить</h3>
 
-<table id="table">
-    <tr>
-        <th style="width: 50px;"></th>
-        <th style="width: 180px;">Оператор</th>  
-        <th style="width: 60px;">Станок</th>
-        <th style="width: 65px;" >Код операц</th>
-        <th style="width: auto" class="hideIfNoSpace500">Номер детали</th>
-        <th style="width: 50px;">МЛ</th>
-        <th style="width: 50px;">К-во</th>
-        <th style="width: 60px;" class="hideIfNoSpace1000">Время маш.</th>
-        <th style="width: 60px;" >Время полное</th>
-        <th style="width: 60px;" class="hideIfNoSpace500">Дет</th>
-        <th style="width: 60px;" >Кол-во остаток</th>
-        <th style="width: 50px;"></th>
+<table  id="ОтчетПоРаботе2022" 
+        url="/app/getCurrentReportOperatorForCheck" 
+        callbackBeforeInitTable="callbackBeforeInitTable" 
+        filter="filter" 
+        callbackAfterInitTable="callbackAfterInitTable" 
+        addNevRow="callbackAddNewRow" 
+        callbackAfterWrite="callbackAfterWrite" 
+        append="end" 
+        init header>
+    <tr class="config" style="display: none;">
+        <td title="Оператор" 
+            name="Сотрудник" 
+            key="Наименование" 
+            style="width: 170px;"><div class="dataCell"></div></td>
+        <td title="Станок" 
+            name="Станок" 
+            key="ИнвентарныйНомер" 
+            style="width: 60px;">
+            <input  type="text" 
+                    minLength=1 
+                    url="/app/autocompleteStanok"   
+                    checkValid  
+                    class="dataCell textAlignCenter" 
+                    style="padding: 0px;"></td>
+        <td title="Номер детали" 
+            name="Деталь" 
+            key="АртикулНаименование" 
+            style="width: 100%;">
+            <input  type="text" 
+                    minLength=1 
+                    url="/app/autocompleteArticle"  
+                    checkValid 
+                    class="dataCell"></input></td>
+        <td title="МЛ"  
+            name="Заказ" 
+            key="Номер" 
+            style="width: 50px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteZakaz"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Этап" 
+            name="ЭтапПроизводства" 
+            key="КодНовый" 
+            style="width: 55px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteCodeOperation"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Время маш." 
+            name="МашинноеВремя" 
+            style="width: 55px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    limitHourse="99" 
+                    data-mask="99:A9"
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Время полное" 
+            name="ПолноеВремя" 
+            style="width: 58px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    checkValid 
+                    placeholder="мм:сс"
+                    limitHourse="99" 
+                    data-mask="99:A9" 
+                    class="dataCell textAlignCenter"></input></td>
+        <td title="Дет за 1 уст" 
+            name="КоличествоДеталейЗаОднуУстановку" 
+            style="width: 50px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style=""></td>
+        <td title="К-во изгот" 
+            name="КоличествоИзготовлено" 
+            style="width: 55px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell quantity textAlignEnd" 
+                    style=""></td>
+        <td title="Кол-во остаток" 
+            name="КоличествоОсталосьНаЭтапе" 
+            style="width: 65px;">
+            <input  type="number" 
+                    inputmode="numeric"  
+                    checkValid  
+                    min="0" 
+                    class="dataCell textAlignEnd" 
+                    style=""></td>
+        <td title="Готов" 
+            name="Проведен"
+            style="width: 50px;"> 
+            <input  type="checkbox" 
+                    sync="none" 
+                    class="dataCell checkboxInTable"></td>
+        <td title="" 
+            style="width: 55px;"><div class="groupBtnRow">
+                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
+                <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+            </div></td>
     </tr>
 </table>
 
 <script>
-    var docName = 'ОтчетПоРаботе2022';
-    var highlight = false;
-
     $(document).ready(function() {
-        currentMenu = 'Список отчетов операторов которые надо проверить';
+        let tableID = '#ОтчетПоРаботе2022';
+
+        initTables();
+
+        // callback при получении данных от сервера по wss
+        callbackWSS = async function(data){callbackTable(data)};
+
+        // callback перед отрисовкой таблицы
+        callbackBeforeInitTable = function(data) {}
+
+        // callback при изменении данных в строке для определения показать или убрать строку
+        filter = function(data, result = true) {
+            console.log('filter', data);
+
+            if (!data['СтатусОператора']) {
+                result = false;    
+            }
+
+            if (data['Проведен']) {
+                result = false;    
+            }
+
+            if (data['ПометкаУдаления']) {
+                result = false;    
+            }
+
+            if (!data['ЭтоОтчетОператора']) {
+                result = false;    
+            }
+
+            return result;
+        }
+
+        // callback после отрисовки таблицы
+        callbackAfterInitTable = function(data) {}
+
+        // callback после вставки новой пустой строки, перед заполнением данными
+        callbackAddNewRow = function(data) {}
+
+        // callback после внесения изменений в строку с сервера
+        callbackAfterWrite = function(data) {
+            console.log('callbackAfterWrite', data);
+
+
+        }
+
+        // клик по кнопке Редактировать
+        $(tableID).on('click', '.btnEdit', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+
+            $(tableID).find('.btnEdit').show();
+            $(tableID).find('.btnOk').hide();
+            $(tableID).find('input').prop('disabled', true);
+
+            $(row).find('.btnOk').show();
+            $(row).find('.btnEdit').hide();
+            $(row).find('input').prop('disabled', false);
+
+            clickAnimate($(row).find('.btnOk'));
+            logToServer('Нажата кнопка "Редактировать"', data);
+        });
+
+        // клик по кнопке Применить
+        $(tableID).on('click', '.btnOk', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+
+            $(row).find('.btnOk').hide();
+            $(row).find('.btnEdit').show();
+            $(row).find('input').prop('disabled', true);
+
+            clickAnimate($(row).find('.btnEdit'));
+            logToServer('Нажата кнопка "Применить"', data);
+            sendNotificationOnChangeRowTable(this);
+        });
+
+
+
+
+
+/*         currentMenu = 'Список отчетов операторов которые надо проверить';
         logToServer('Загрузка странички');
         subscriptions = [];
         subscriptions.push(docName);
         subscriptions.push(docName + '_all');
-        updateSubscribeWSS();
+        updateSubscribeWSS(); */
 
-        $.get("/app/getCurrentReportOperatorForCheck", function(response) {
+ /*        $.get("/app/getCurrentReportOperatorForCheck", function(response) {
             var responseObject = JSON.parse(response);
             console.log(responseObject);
 
@@ -143,9 +351,9 @@
             });
 
             highlight = true;
-        });
+        }); */
 
-        callbackWSS = async function(data) {
+        /* callbackWSS = async function(data) {
             console.log("callbackWSS", data);
 
             if (data.topic === docName) {
@@ -249,9 +457,9 @@
                 }
             }
             console.log("end callback WSS");
-        };
+        }; */
 
-        async function addNewRow(newReport) {
+        /* async function addNewRow(newReport) {
             console.log('addNewRow', newReport);
 
             const reportDate = new Date(newReport['Дата']);
@@ -369,18 +577,18 @@
             reportRow.attr('MD5', newReportMD5);
 
             checkVisibleReport(reportRow, newReport);
-        }
+        } */
 
-        function highlightElement(element) {
+        /* function highlightElement(element) {
             if (highlight) {
                 element.addClass('highlight').delay(600).queue(function(next) {
                     element.removeClass('highlight');
                     next();
                 });
             }
-        }
+        } */
 
-        $('#table').on('click', '.btnEdit', function(event){
+        /* $('#table').on('click', '.btnEdit', function(event){
             clickAnimate(this);
             
             const report = $(this).attr('report');
@@ -399,9 +607,9 @@
             $(reportRow).find('input').prop('disabled', false);
 
             logToServer('Нажата кнопка "Редактировать"', {report:report, currDetal:currDetal});
-        });
+        }); */
 
-        $('#table').on('click', '.btnDelete', function(event){
+        /* $('#table').on('click', '.btnDelete', function(event){
             clickAnimate(this);
             if (confirm("Вы уверены, что хотите удалить строку?")) {
                 const report = $(this).attr('report');
@@ -412,9 +620,9 @@
 
                 sendNotification($(this).attr('report'), $(this).attr('name'), true);
             }
-        });
+        }); */
 
-        function sendNotification(report, name, value) {
+        /* function sendNotification(report, name, value) {
             payload = {};
             payload.type = 'Документы';
             payload.docName = docName;
@@ -423,9 +631,9 @@
             payload.value = value;
 
             sendWSS(action = 'updateDataOnServer', docName, payload);
-        }
+        } */
 
-        function checkVisibleReport(reportRow, newReport) {
+        /* function checkVisibleReport(reportRow, newReport) {
             const oldVisible = reportRow.is(":visible");
 
             var newVisible = false;
@@ -453,33 +661,33 @@
             if (oldVisible != newVisible) {
                 highlightElement(reportRow.find('input'));
             }
-        }
+        } */
 
-        async function reportChanged(reportRow, newReport) {
+        /* async function reportChanged(reportRow, newReport) {
             const newReportMD5 = await getHash(newReport);
             const oldReportMD5 = reportRow.attr('MD5')||'';
             reportRow.attr('MD5', newReportMD5);
             console.log('newReportMD5', newReportMD5, 'oldReportMD5', oldReportMD5);
             return newReportMD5 !== oldReportMD5;
-        }
+        } */
 
-        function setValueCell(element, value) {
+        /* function setValueCell(element, value) {
             if (element.is(':input')) {
                 element.val(value);
             } else {
                 element.text(value);
             }
-        }
+        } */
 
-        function getValueCell(element) {
+        /* function getValueCell(element) {
             if (element.is(':input')) {
                 return element.val();
             } else {
                 return element.text();
             }
-        }
+        } */
 
-        function onChangeApplyReport(reportRow, value) {
+        /* function onChangeApplyReport(reportRow, value) {
             console.log('onChangeApplyReport', value, reportRow);
             //$(reportRow).find('input').prop('disabled', value);
             //$(reportRow).find('.btnDelete').toggle(!value);
@@ -493,9 +701,9 @@
                 $(reportRow).find('.btnEdit').show();
             }
 
-        }
+        } */
 
-        function setAutocomplete(element) {
+        /* function setAutocomplete(element) {
             const url = $(element).attr('url');
 
             $(element).autocomplete({ 
@@ -520,9 +728,9 @@
                     $(this).blur();
                 }
             });
-        }
+        } */
 
-        function setEventOnChange(element) {
+        /* function setEventOnChange(element) {
             $(element).on('change', function() {
                 var userInput;
                 var type = $(this).attr('type');
@@ -560,9 +768,9 @@
                 this.value = '';
                 this.value = val;
             });
-        }
+        } */
 
-        function setTimeInputMask(element) {
+        /* function setTimeInputMask(element) {
             $(element).mask('00:A0', {
                 'translation':{A: {pattern: /[0-5]/}},
                 onComplete: function(cep) {
@@ -570,17 +778,17 @@
                 onChange: function(cep){
                     setValid(this, false);}
             });
-        }
+        } */
 
-        function eventOnInput(element) {
+        /* function eventOnInput(element) {
             console.log('eventOnInput');
             $(element).attr('uid', '');
             $(element).data("json", {});
             setValid(element, false);
             $(element).parent().parent().attr('MD5', '');
-        }
+        } */
 
-        function eventOnBlur(element) {
+        /* function eventOnBlur(element) {
             console.log('eventOnBlur');
             var data = $(element).data("autocompleteData")||[];
             console.log('eventOnBlur autocompleteData', data); // выводим данные в консоль
@@ -597,9 +805,9 @@
             }else{
                 setValid(element, true);
             }
-        }
+        } */
 
-        function fetchAutocomplete(url, request, response, element) {
+        /* function fetchAutocomplete(url, request, response, element) {
             const report = element.parent().parent().attr('id');
 
             $.ajax({
@@ -614,9 +822,9 @@
                     element.data("autocompleteData", data);
                 }
             });
-        }
+        } */
 
-        function eventOnSelect(element, ui) {
+        /* function eventOnSelect(element, ui) {
             console.log('eventOnSelect');
             $(element).attr('uid', ui.item.uid);
             $(element).data("json", ui.item);
@@ -634,9 +842,9 @@
             const currDetal = $(reportRow).find('[name="Деталь"]').val();
 
             logToServer('Изменено значение "'+ $(element).attr('name') +'" = ' + ui.item.value, {item:ui.item, report:report, currDetal:currDetal});
-        }
+        } */
 
-        function sendNotificationOnChange(element, value) {
+        /* function sendNotificationOnChange(element, value) {
             console.log('sendNotificationOnChange');
             const report = $(element).parent().parent().attr('id');
 
@@ -648,7 +856,7 @@
             payload.value = value;
 
             sendWSS('updateDataOnServer', docName, payload);
-        }
+        } */
 
 
     });

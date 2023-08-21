@@ -123,7 +123,7 @@ async function addNewRow(table, newData) {
         }
     });
 
-    $(newRow).find('[mask]:not([mask=""])').each(function() {
+    $(newRow).find('[data-mask]:not([data-mask=""])').each(function() {
         initInputTimeMask(this);
     });
 
@@ -178,14 +178,9 @@ function disableHighlightElement() {
 
 // функция вызываемая для обновления данных в строке
 callbackTable = async function(data) {
-    console.log('callbackTable', data);
-
     const table = $(`#${data.topic}`);
     const row = $('#' + data.uid);
     const newData = data.data;
-
-    console.log('data', data.topic, data.uid);
-    console.log('row', row);
 
     if (row.length) {
         let visible = callbackFromAttr(table, 'filter', newData);
@@ -262,7 +257,6 @@ callbackTable = async function(data) {
         
         callbackFromAttr(table, 'callbackAfterWrite', data);
     }else{
-        console.log('row.length = 0');
         addNewRow(table, data);
     }
 }
@@ -283,6 +277,7 @@ function setEventOnChange(element, newData) {
         const data = $(row).data('data');
         var sync = $(this).attr('sync')||'auto';
 
+        row.attr('MD5', '');
         //console.log('data', data);
 
         if (type == 'checkbox') {
@@ -328,11 +323,11 @@ function setEventOnChange(element, newData) {
         }
     });
 
-    $(element).on('click', function() {
+/*     $(element).on('click', function() {
         var val = this.value;
         this.value = '';
         this.value = val;
-    });
+    }); */
 }
 
 function initInputAutocompleteForTable(element) {
@@ -343,11 +338,16 @@ function initInputAutocompleteForTable(element) {
             source: function(req, res) { 
                 const data = { term: req.term};
                 const row = $(this.element).closest('tr');
+                const dataRow = $(row).data('data');
 
                 data.report = $(row).attr('id')||'';
                 data.stanok = stanok.uid;
-                
-                $.ajax({ url: url, dataType: "json", data: data,
+                data.dataRow = dataRow;
+
+                $.ajax({method: 'POST', url: url, 
+                    dataType: "json", 
+                    data: JSON.stringify(data), 
+                    contentType: 'application/json',
                     success: function(data) { res(data);}
                 });
             },
