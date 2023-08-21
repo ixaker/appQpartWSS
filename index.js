@@ -13,6 +13,7 @@ const cookieParser = require('cookie-parser');
 const log = require('./loggerConfig');
 const { exec } = require('child_process');
 const envFilePath = path.join(__dirname, '.env');
+const sharp = require('sharp');
 
 exec('kill -9 $(lsof -t -i :443)');
 
@@ -82,7 +83,7 @@ const humanConfig = { // user configuration for human, used to fine-tune behavio
       rotation: true, 
       return: false, 
       mask: false,
-      minConfidence: 0.80
+      minConfidence: 0.82
      }, // return tensor is used to get detected face image
     description: { enabled: true }, // default model for face descriptor extraction is faceres
     // mobilefacenet: { enabled: true, modelPath: 'https://vladmandic.github.io/human-models/models/mobilefacenet.json' }, // alternative model
@@ -258,7 +259,7 @@ app.post('/detectFace', async (req, res) => {
     if ('photo' in req.body) {
       const detection = await detectFaceFromBase64(req.body.photo);
 
-      log.data(`Detected:`, 'Face:', detection.face.length, 'Body:', detection.body.length, 'Hand:', detection.hand.length, 'Objects:', detection.object.length, 'Gestures:', detection.gesture.length);
+      log.data(`Detected:`, 'Face:', detection.face.length, 'Body:', detection.body.length, 'Hand:', detection.hand.length, 'Objects:', detection.object.length, 'Gestures:', detection.gesture.length, 'blurScore', detection.blurScore);
 
       if(detection.face.length == 1){
         const embedding = detection.face[0].embedding;
@@ -267,11 +268,11 @@ app.post('/detectFace', async (req, res) => {
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
 
-        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${detection.face[0].score}`;
+        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${detection.face[0].score}, blurScore - ${detection.blurScore}`;
         sendTextMessageToTelegramBot(message);
 
         if(result.finded.index > -1){
-          if (result.finded.similarity > 0.7) {
+          if (result.finded.similarity > 0.72) {
             const uid = db[result.finded.index].uid;
             result.user = userInfo[uid];
             log.info('user: ', result.user);
@@ -591,6 +592,32 @@ wss.on('error', (error) => {
 });
 
 //********************************************* human **********************************/
+async function getBlurScore (bufferImage) {
+  const image = sharp(bufferImage);
+
+  // Преобразуем изображение в grayscale
+  const grayscaleImage = await image.clone().grayscale().toBuffer();
+
+  // Вычисляем градиенты с использованием оператора Sobel
+  const gradients = await sharp(grayscaleImage)
+  .raw()
+  .toBuffer({ resolveWithObject: true });  
+
+  let totalGradient = 0;
+
+  // Вычисляем сумму квадратов градиентов
+  for (let i = 0; i < gradients.data.length; i++) {
+    totalGradient += gradients.data[i] * gradients.data[i];
+  }
+
+  log.info('getBlurScore', gradients.info, totalGradient)
+
+  // Нормализуем меру размытия
+  const blurScore = Math.sqrt(totalGradient) / (gradients.info.width * gradients.info.height);
+
+  return blurScore;
+}
+
 
 async function detectFaceFromBase64(img) {
   try {
@@ -599,6 +626,10 @@ async function detectFaceFromBase64(img) {
       const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
       const buffer = Buffer.from(base64Image, 'base64');
       const result = await detectFaceFromBuffer(buffer);
+
+      const blurScore = await getBlurScore(buffer);
+      result.blurScore = blurScore;
+
       return result;
   } catch (error) {
       log.error(error);
