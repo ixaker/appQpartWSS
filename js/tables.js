@@ -323,11 +323,13 @@ function setEventOnChange(element, newData) {
         }
     });
 
-/*     $(element).on('click', function() {
-        var val = this.value;
+    $(element).on('click', function() {
+        $(this).focus();
+        $(this).select();
+        /* var val = this.value;
         this.value = '';
-        this.value = val;
-    }); */
+        this.value = val; */
+    });
 }
 
 function initInputAutocompleteForTable(element) {
