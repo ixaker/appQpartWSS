@@ -99,6 +99,11 @@ body, html{
     text-align: end;
 }
 
+.nav-link {
+    padding: 0.8rem 1rem;
+    font-size: 1.3em;
+}
+
 .mainColor {
     background-color: darkgreen !important; 
 }
