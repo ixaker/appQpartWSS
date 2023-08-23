@@ -4,7 +4,9 @@
         margin: auto;
     }
 
-
+    #content {
+        min-width: 400px;
+    }
 
     #btnLoadUserList {
         margin: auto;
@@ -165,6 +167,11 @@
             width: 200px;
             font-size: 1.2em;
         }
+
+        .btn {
+            font-size: 0.9em;
+            padding: 3px;
+        }
     }
 
     .hide {
@@ -174,6 +181,14 @@
     mark {
         background: yellow;
         padding: 0;
+    }
+
+    .work{
+        width: 10px;
+        height: 10px;
+/*         background-color: gray; */
+        border-radius: 5px;
+        margin-top: 18px;
     }
 </style>
 
@@ -204,6 +219,11 @@
                     <h4 class="userCountFaceID"><%= user.count %> фото</h4>
                 </div>
                 <div class="userActions">
+                    <div class="work"   <% if (user.work) { %>
+                                            style="background-color: lightgrey;"   
+                                        <% } else { %>
+                                            style="background-color: chartreuse;" 
+                                        <% } %>></div>
                     <button class="btn btn-outline-dark btnUserEdit" onclick="loginUser('<%= user.uid %>')">Залогиниться</button>
                     <button class="btn btn-outline-dark btnUserEdit" onclick="deletePhotos('<%= user.uid %>')">Удалить все фото</button>
                     <button class="btn btn-outline-dark btnUserEdit" onclick="addPhoto(this, '<%= user.uid %>', '<%= user.name %>', '<%= user.count %>')">Добавить фото</button>
