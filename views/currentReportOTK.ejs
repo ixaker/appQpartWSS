@@ -3,6 +3,11 @@
         font-size: 1.1em;
     }
 
+    i.btnRow {
+        margin-right: 18px;
+        font-size: xxx-large;
+    }
+
     @media (max-width: 800px) {
         #ОтчетПоРаботе2022 th {
             width: auto !important;  
@@ -48,7 +53,7 @@
     <tr class="config" style="display: none;">
         <td title="Дата" 
             name="ДатаОтчета" 
-            style="width: 46px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+            style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
         <td title="Номер детали" 
             name="Заказ" 
             key="АртикулНаименование" 
@@ -56,21 +61,21 @@
         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
-            style="width: 45px;"><div class="dataCell textAlignCenter"></div></td>
+            style="width: 65px;"><div class="dataCell textAlignCenter"></div></td>
         <td title="Оператор" 
             name="Сотрудник" 
             key="Наименование" 
-            style="width: 110px;"><div class="dataCell"></div></td>
+            style="width: 200px;"><div class="dataCell"></div></td>
         <td title="Этап производства" 
             name="ЭтапПроизводства" 
             key="Наименование" 
-            style="width: 170px;"><div class="dataCell"></div></td>
+            style="width: 200px;"><div class="dataCell"></div></td>
         <td title="Изгото влено" 
             name="КоличествоИзготовлено" 
-            style="width: 55px; "><div class="dataCell textAlignEnd" style="padding: 5px;"></div></td>
+            style="width: 75px; "><div class="dataCell textAlignEnd" style="padding: 5px;"></div></td>
         <td title="Прове рено" 
             name="КоличествоПроверено" 
-            style="width: 60px;">
+            style="width: 75px;">
             <input  type="number" 
                     inputmode="numeric" 
                     checkValid  
@@ -79,7 +84,7 @@
                     class="dataCell quantity textAlignEnd"></td>
         <td title="Брак" 
             name="КоличествоБрака" 
-            style="width: 55px;">
+            style="width: 60px;">
             <input  type="number" 
                     inputmode="numeric"  
                     min="0" 
@@ -87,13 +92,13 @@
                     class="dataCell quantity textAlignEnd"></td>
         <td title="Готов" 
             name="СтатусОТК"
-            style="width: 55px;"> 
+            style="width: 65px;"> 
             <input  type="checkbox" 
                     name="Проведен" 
                     sync="none" 
                     class="dataCell checkboxInTable"></td>
         <td title="" 
-            style="width: 55px;"><div class="groupBtnRow">
+            style="width: 70px;"><div class="groupBtnRow">
                 <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
                 <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i></div></td>
     </tr>
