@@ -386,7 +386,10 @@ function initInputAutocompleteForTable(element) {
                 $(element).val('');
             }
         }).on("focus", function() { 
+
+        }).on("click", function() { 
             $(this).autocomplete("search");
+            $(this).select();
         });
     } catch (error) {
         toastr["error"]('Ошибка при initInputAutocomplete');        
