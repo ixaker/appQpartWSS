@@ -1,4 +1,18 @@
 <style>
+
+    .titlePage {
+        line-height: 63px;
+    }
+
+    #ОтчетПоРаботе2022 {
+        font-size: 1.2em;
+    }
+
+    i.btnRow {
+        margin-right: 18px;
+        font-size: xxx-large;
+    }
+
     #commandPanel {
         display: flex;
         margin-top: -5px;
@@ -6,9 +20,13 @@
     
     #btnAdd {
         margin-left: auto;
-        font-size: xx-large;
+        font-size: xxx-large;
         color: #007431;
         margin-right: 10px;
+    }
+
+    .ui-autocomplete {
+        font-size: xx-large;
     }
 
     #lastRowSumm .labelfullTimeAll{
@@ -229,7 +247,7 @@
         <td title="Станок" 
             name="Станок" 
             key="ИнвентарныйНомер" 
-            style="width: 70px;">
+            style="width: 90px;">
             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteStanok"   
@@ -239,36 +257,36 @@
         <td title="Номер детали" 
             name="Деталь" 
             key="АртикулНаименование" 
-            style="width: 100%; min-width: 100px;">
+            style="width: 100%;">
             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteArticle"  
                     checkValid 
                     style="min-width: 100px !important;" 
                     class="dataCell"></input></td>
-        <td title="МЛ"  
-            name="Заказ" 
-            key="Номер" 
-            style="width: 55px;">
-            <input  type="text" 
-                    inputmode="numeric" 
-                    minLength=0 
-                    url="/app/autocompleteZakaz"  
-                    checkValid 
-                    class="dataCell textAlignCenter"></input></td>
         <td title="Этап" 
             name="ЭтапПроизводства" 
             key="КодНовый" 
-            style="width: 60px;">
+            style="width: 75px;">
             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
                     url="/app/autocompleteCodeOperation"  
                     checkValid 
                     class="dataCell textAlignCenter"></input></td>
+        <td title="МЛ"  
+            name="Заказ" 
+            key="Номер" 
+            style="width: 65px;">
+            <input  type="text" 
+                    inputmode="numeric" 
+                    minLength=0 
+                    url="/app/autocompleteZakaz"  
+                    checkValid 
+                    class="dataCell textAlignCenter"></input></td>
         <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
-            style="width: 55px;">
+            style="width: 65px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -277,7 +295,7 @@
                     style=""></td>
         <td title="Время маш." 
             name="МашинноеВремя" 
-            style="width: 65px;">
+            style="width: 75px;">
             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -287,7 +305,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Время полное" 
             name="ПолноеВремя" 
-            style="width: 65px;">
+            style="width: 80px;">
             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -297,7 +315,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 55px; ">
+            style="width: 75px; ">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -306,7 +324,7 @@
                     style=""></td>
         <td title="Общее время" 
             name="ДлительностьВремя" 
-            style="width: 65px;">
+            style="width: 75px;">
             <div  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -315,12 +333,12 @@
                     class="dataCell textAlignCenter"></div></td>
         <td title="Готов" 
             name="СтатусОператора"
-            style="width: 55px;"> 
+            style="width: 65px;"> 
             <input  type="checkbox" 
                     sync="none" 
                     class="dataCell checkboxInTable"></td>
         <td title="" 
-            style="width: 94px;"><div class="groupBtnRow">
+            style="width: 140px;"><div class="groupBtnRow">
                 <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
                 <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
                 <i class="bi bi-trash btnDelete btnRow colorRed" name="ПометкаУдаления" style="display: none;"></i>
@@ -439,6 +457,21 @@
             clickAnimate($(row).find('.btnEdit'));
             logToServer('Нажата кнопка "Применить"', data);
             sendNotificationOnChangeRowTable(this);
+        });
+
+        // клик по кнопке Удалить
+        $(tableID).on('click', '.btnDelete', function(event){
+            clickAnimate(this);
+            if (confirm("Вы уверены, что хотите удалить отчет?")) {
+                const row = $(this).closest('tr');
+                const data = $(row).data('data');
+
+                data.edited['ПометкаУдаления'] = true;
+                $(row).data('data', data);
+
+                logToServer('Нажата кнопка "Удалить"', data);
+                sendNotificationOnChangeRowTable(this);
+            }
         });
 
         // клик по кнопке Добавить отчет
