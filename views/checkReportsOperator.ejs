@@ -1,6 +1,6 @@
 <style>
     #ОтчетПоРаботе2022 {
-        font-size: 0.9em;
+        /* font-size: 0.9em; */
     }
 
     @media (max-width: 800px) {
@@ -31,111 +31,6 @@
     }
 </style>
 
-<style>
-    /* .titlePage {
-        line-height: 40px;
-        font-weight: bold;
-    }
-
-    table {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: collapse; 
-        font-size: smaller;
-    }
-
-    tr {
-        height: 45px;
-    }
-
-    th, td {
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        border: 1px solid rgb(202, 202, 202);
-    }
-
-    th {
-        background-color: darkgreen;
-        color: white;
-        border: 1px solid white;
-        text-align: center;
-    }
-
-    td {
-        white-space: nowrap; 
-        font-size: 1.3em;
-        background-color: #FFFFFF;
-    }
-
-    td input {
-        width: 100%;
-        box-sizing: border-box; 
-        border: 0;
-    }
-
-    .ui-autocomplete {
-        max-height: 115px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        font-size: 1.3em;
-    }
-
-    .stanok {
-        text-align: center;
-    }
-
-    table td:nth-child(2) {
-        text-align: center;
-    }
-
-    .apply {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .naladka {
-        height: 25px;
-        margin-top: 7px;
-    }
-
-    .codeOperatoin {
-        text-align: center;
-    }
-
-    .textAlignCenter {
-        text-align: center;
-    }
-
-    .textAlignEnd {
-        text-align: end;
-    }
-
-    .btnDeleteCell {
-        text-align: center;
-    }
-
-    .btnDelete {
-        font-size: x-large;
-        color: #FF0000;
-        display: block;
-    }
-
-    .btnEdit {
-        font-size: x-large;
-        color: #007431;
-        display: block;
-    }
-
-    table tr td:first-child {
-        text-align: center;
-    }
-
-    .operator {
-        padding: 5px;
-        text-align: left;
-    } */
-</style>
-
 <h3 class="titlePage" >Список отчетов операторов которые надо проверить</h3>
 
 <table  id="ОтчетПоРаботе2022" 
@@ -151,11 +46,11 @@
         <td title="Оператор" 
             name="Сотрудник" 
             key="Наименование" 
-            style="width: 170px;"><div class="dataCell"></div></td>
+            style="width: 200px;"><div class="dataCell"></div></td>
         <td title="Станок" 
             name="Станок" 
             key="ИнвентарныйНомер" 
-            style="width: 60px;">
+            style="width: 70px;">
             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteStanok"   
@@ -174,7 +69,7 @@
         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
-            style="width: 50px;">
+            style="width: 60px;">
             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
@@ -184,7 +79,7 @@
         <td title="Этап" 
             name="ЭтапПроизводства" 
             key="КодНовый" 
-            style="width: 55px;">
+            style="width: 70px;">
             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
@@ -193,7 +88,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Время маш." 
             name="МашинноеВремя" 
-            style="width: 55px;">
+            style="width: 70px;">
             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -203,7 +98,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Время полное" 
             name="ПолноеВремя" 
-            style="width: 58px;">
+            style="width: 70px;">
             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -213,7 +108,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 50px;">
+            style="width: 65px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -231,7 +126,7 @@
                     style=""></td>
         <td title="Кол-во остаток" 
             name="КоличествоОсталосьНаЭтапе" 
-            style="width: 65px;">
+            style="width: 70px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -240,7 +135,7 @@
                     style=""></td>
         <td title="Готов" 
             name="Проведен"
-            style="width: 50px;"> 
+            style="width: 60px;"> 
             <input  type="checkbox" 
                     sync="none" 
                     class="dataCell checkboxInTable"></td>
