@@ -1,4 +1,17 @@
 <style>
+    .titlePage {
+        line-height: 63px;
+    }
+
+    #ОтчетПоРаботе2022 {
+        font-size: 1.2em;
+    }
+
+    i.btnRow {
+        margin-right: 18px;
+        font-size: xxx-large;
+    }
+
     #commandPanel {
         display: flex;
         margin-top: -5px;
@@ -6,9 +19,13 @@
     
     #btnAdd {
         margin-left: auto;
-        font-size: xx-large;
+        font-size: xxx-large;
         color: #007431;
         margin-right: 10px;
+    }
+
+    .ui-autocomplete {
+        font-size: xx-large;
     }
 
     #groupPDF {
@@ -117,14 +134,14 @@
     <tr class="config" style="display: none;">
         <td title="Готов" 
             name="Проведен"
-            style="width: 55px;"> 
+            style="width: 70px;"> 
             <input  type="checkbox" 
                     sync="none" 
                     class="dataCell checkboxInTable"></td>
         <td title="Станок" 
             name="Станок" 
             key="ИнвентарныйНомер" 
-            style="width: 70px;">
+            style="width: 90px;">
             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteStanok"   
@@ -143,7 +160,7 @@
         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
-            style="width: 55px;">
+            style="width: 65px;">
             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
@@ -153,7 +170,7 @@
         <td title="Этап" 
             name="ЭтапПроизводства" 
             key="КодНовый" 
-            style="width: 60px;">
+            style="width: 75px;">
             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
@@ -162,7 +179,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
-            style="width: 55px;">
+            style="width: 65px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -171,7 +188,7 @@
                     style=""></td>
         <td title="Время маш." 
             name="МашинноеВремя" 
-            style="width: 65px;">
+            style="width: 75px;">
             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -181,7 +198,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Время полное" 
             name="ПолноеВремя" 
-            style="width: 65px;">
+            style="width: 80px;">
             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
@@ -191,7 +208,7 @@
                     class="dataCell textAlignCenter"></input></td>
         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 55px;">
+            style="width: 75px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -200,7 +217,7 @@
                     style=""></td>
         <td title="Время наладки" 
             name="НаладкаВремя" 
-            style="width: 75px;">
+            style="width: 90px;">
             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
@@ -208,7 +225,7 @@
                     class="dataCell textAlignEnd" 
                     style=""></td>
         <td title="" 
-            style="width: 140px;"><div class="groupBtnRow">
+            style="width: 200px;"><div class="groupBtnRow">
                 <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
                 <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
                 <i class="bi bi-trash btnDelete btnRow colorRed" name="ПометкаУдаления" style="display: none;"></i>
