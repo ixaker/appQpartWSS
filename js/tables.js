@@ -382,9 +382,23 @@ function initInputAutocompleteForTable(element) {
                 setValid(this, false);
             }
         }).on("blur"  , function() { 
-            if(($(element).attr('uid')||'') === ''){
-                $(element).val('');
+            const keyName = $(this).attr('name');
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+            const sync = $(this).attr('sync')||'auto';
+            const UID = $(this).attr('uid')||'';
+
+            if(UID === ''){
+                $(this).val('');
+            
+                data.edited[keyName] = {uid:''};
+                $(row).data('data', data);
+
+                if (sync === 'auto') {
+                    sendNotificationOnChangeRowTable(this);
+                }
             }
+
         }).on("focus", function() { 
 
         }).on("click", function() { 
@@ -401,6 +415,7 @@ function sendNotificationOnChangeRowTable(elementInput) {
     const row = $(elementInput).closest('tr');
     const data = $(row).data('data');
 
+    console.log('sendNotificationOnChangeRowTable', data);
     if (Object.keys(data.edited).length) {
         sendWSS('updateDataOnServer', docName, data);
     }
