@@ -357,13 +357,13 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
 
     if (result.finded.similarity > 0.72) {
       if(result.finded.similarity < 0.98){
-        const newEmbedding = {uid: result.user.uid, embedding: embedding};
+        const newEmbedding = {uid: req.body.uid, embedding: embedding};
         db.push(newEmbedding)
         embeddings = db.map((rec) => rec.embedding);
         saveDB();
         message += ", add foto";
       }
-
+      result.user = userInfo[req.body.uid];
       result.detectFace = true;
 
       message += `, ${result.user.name}`;
@@ -610,8 +610,14 @@ async function findUserOnFoto(body) {
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
         result.detectFace = true;
-        const uid = db[result.finded.index].uid;
-        result.user = userInfo[uid];
+        result.index = result.finded.index;
+        result.uid = db[result.index].uid||'';
+        if (result.uid === '') {
+          //result.detectFace = false;
+        }else{
+          result.user = userInfo[result.uid];
+        }
+        
       }else{
         result.error = true;
       }
@@ -673,8 +679,6 @@ async function initDB() {
       db = [];
       embeddings = [];
   }
-
-
 
   try {
       if (!fs.existsSync(userInfoDataPath)) {
