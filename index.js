@@ -351,7 +351,7 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
   try {
     let embedding = result.embedding;
     delete result.embedding;
-    
+
     log.data('saveFace', result);
 
     if (result.detectFace) {
@@ -372,7 +372,7 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
       }
     }
   } catch (error) {
-      
+      log.error(`Failed to process message: ${error}`);
   }
   sendTextMessageToTelegramBot(message);
 
