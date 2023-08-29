@@ -347,30 +347,33 @@ app.post('/token', authenticateToken, function(req, res) {
 
 app.post('/saveFace', authenticateToken, async (req, res) => {
   let result = await findUserOnFoto(req.body);
-  let embedding = result.embedding;
   let message = 'no face';
+  try {
+    let embedding = result.embedding;
+    delete result.embedding;
+    
+    log.data('saveFace', result);
 
-  delete result.embedding;
-  log.data('saveFace', result);
+    if (result.detectFace) {
+      message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-  if (result.detectFace) {
-    message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
+      if (result.finded.similarity > 0.72) {
+        if(result.finded.similarity < 0.98){
+          const newEmbedding = {uid: req.body.uid, embedding: embedding};
+          db.push(newEmbedding)
+          embeddings = db.map((rec) => rec.embedding);
+          saveDB();
+          message += ", add foto";
+        }
+        result.user = userInfo[req.body.uid];
+        result.detectFace = true;
 
-    if (result.finded.similarity > 0.72) {
-      if(result.finded.similarity < 0.98){
-        const newEmbedding = {uid: req.body.uid, embedding: embedding};
-        db.push(newEmbedding)
-        embeddings = db.map((rec) => rec.embedding);
-        saveDB();
-        message += ", add foto";
+        message += `, ${result.user.name}`;
       }
-      result.user = userInfo[req.body.uid];
-      result.detectFace = true;
-
-      message += `, ${result.user.name}`;
     }
+  } catch (error) {
+      
   }
-
   sendTextMessageToTelegramBot(message);
 
   res.send(result);
