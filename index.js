@@ -266,6 +266,7 @@ app.post('/detectFace', async (req, res) => {
         db.push(newEmbedding)
         embeddings = db.map((rec) => rec.embedding);
         saveDB();
+        message += ", add foto";
       }
 
       result.token = jwt.sign(result.user, secret, options);
@@ -360,6 +361,7 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
         db.push(newEmbedding)
         embeddings = db.map((rec) => rec.embedding);
         saveDB();
+        message += ", add foto";
       }
 
       result.detectFace = true;
