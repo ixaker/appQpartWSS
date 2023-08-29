@@ -260,25 +260,26 @@ app.post('/detectFace', async (req, res) => {
   if (result.detectFace) {
     message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-    if (result.finded.similarity > 0.72) {
-      if(result.finded.similarity < 0.98){
-        const newEmbedding = {uid: result.user.uid, embedding: embedding};
-        db.push(newEmbedding)
-        embeddings = db.map((rec) => rec.embedding);
-        saveDB();
-        message += ", add foto";
+    if (result.uid !== '') {
+      if (result.finded.similarity > 0.72) {
+        if(result.finded.similarity < 0.98){
+          const newEmbedding = {uid: result.user.uid, embedding: embedding};
+          db.push(newEmbedding)
+          embeddings = db.map((rec) => rec.embedding);
+          saveDB();
+          message += ", add foto";
+        }
+
+        result.token = jwt.sign(result.user, secret, options);
+        result.detectUser = true;
+
+        message += `, +++ Detected ${result.user.name}`;
+      }else{
+        const uid = db[result.finded.index].uid;
+        const user = userInfo[uid];
+        message += `, --- Detected ${user.name} - ${result.similarity} `;
       }
-
-      result.token = jwt.sign(result.user, secret, options);
-      result.detectUser = true;
-
-      message += `, +++ Detected ${result.user.name}`;
-    }else{
-      const uid = db[result.finded.index].uid;
-      const user = userInfo[uid];
-      message += `, --- Detected ${user.name} - ${result.similarity} `;
     }
-
   }
 
   sendTextMessageToTelegramBot(message);
