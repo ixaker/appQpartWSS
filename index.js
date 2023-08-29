@@ -250,49 +250,37 @@ app.get('/' + adminRoute, (req, res) => {
 });
 
 app.post('/detectFace', async (req, res) => {
-  //log.data(req.body);
-  //log.data(req.body.photo);
+  let result = await findUserOnFoto(req.body);
+  let embedding = result.embedding;
+  let message = 'no face';
 
-  let result = { detectUser: false };
+  delete result.embedding;
+  log.data('saveFace', result);
 
-  try {
-    if ('photo' in req.body) {
-      const detection = await detectFaceFromBase64(req.body.photo);
+  if (result.detectFace) {
+    message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-      log.data(`Detected:`, 'Face:', detection.face.length, 'Body:', detection.body.length, 'Hand:', detection.hand.length, 'Objects:', detection.object.length, 'Gestures:', detection.gesture.length, 'blurScore', detection.blurScore);
-
-      if(detection.face.length == 1){
-        const embedding = detection.face[0].embedding;
-        result.finded = await human.match.find(embedding, embeddings);
-        log.info('finded: ', result.finded);
-        result.similarity = result.finded.similarity.toFixed(2);
-        result.score = detection.face[0].score;
-
-        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${detection.face[0].score}, blurScore - ${detection.blurScore}`;
-        sendTextMessageToTelegramBot(message);
-
-        if(result.finded.index > -1){
-          if (result.finded.similarity > 0.72) {
-            const uid = db[result.finded.index].uid;
-            result.user = userInfo[uid];
-            log.info('user: ', result.user);
-            result.detectUser = true;
-            result.token = jwt.sign(result.user, secret, options);
-
-            message = `+ Detected ${result.user.name} - ${result.similarity} `;
-            sendTextMessageToTelegramBot(message);
-          }else{
-            const uid = db[result.finded.index].uid;
-            const user = userInfo[uid];
-            message = `Detected ${user.name} - ${result.similarity} `;
-            sendTextMessageToTelegramBot(message);
-          }
-        }
+    if (result.finded.similarity > 0.72) {
+      if(result.finded.similarity < 0.98){
+        const newEmbedding = {uid: result.user.uid, embedding: embedding};
+        db.push(newEmbedding)
+        embeddings = db.map((rec) => rec.embedding);
+        saveDB();
       }
+
+      result.token = jwt.sign(result.user, secret, options);
+      result.detectUser = true;
+
+      message += `, +++ Detected ${result.user.name}`;
+    }else{
+      const uid = db[result.finded.index].uid;
+      const user = userInfo[uid];
+      message += `, --- Detected ${user.name} - ${result.similarity} `;
     }
-  } catch (error) {
-    log.error(`Failed to process message: ${error}`);
+
   }
+
+  sendTextMessageToTelegramBot(message);
 
   res.send(result);
 });
@@ -356,41 +344,31 @@ app.post('/token', authenticateToken, function(req, res) {
 });
 
 app.post('/saveFace', authenticateToken, async (req, res) => {
-  let result = { detectFace: false };
+  let result = await findUserOnFoto(req.body);
+  let embedding = result.embedding;
+  let message = 'no face';
 
-  try {
-    if ('photo' in req.body) {
-      const detection = await detectFaceFromBase64(req.body.photo);
+  delete result.embedding;
+  log.data('saveFace', result);
 
-      log.data(`Detected:`, 'Face:', detection.face.length, 'Body:', detection.body.length, 'Hand:', detection.hand.length, 'Objects:', detection.object.length, 'Gestures:', detection.gesture.length);
+  if (result.detectFace) {
+    message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-      //log.data(Object.keys(detection));
-      //log.data('persons', detection.persons);
-
-      if(detection.face.length == 1){
-        result.detectFace = true;
-        const embedding = detection.face[0].embedding;
-        result.finded = await human.match.find(embedding, embeddings);
-        log.info('finded: ', result.finded);
-        result.similarity = result.finded.similarity.toFixed(2);
-        result.score = detection.face[0].score;
-
-        message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${detection.face[0].score}`;
-        sendTextMessageToTelegramBot(message);
-
-        if(result.finded.similarity < 1){
-          const newEmbedding = {uid: req.body.uid, embedding: embedding};
-          db.push(newEmbedding)
-          embeddings = db.map((rec) => rec.embedding);
-          saveDB();
-        }
-
-        result.user = userInfo[req.body.uid];
+    if (result.finded.similarity > 0.72) {
+      if(result.finded.similarity < 0.98){
+        const newEmbedding = {uid: result.user.uid, embedding: embedding};
+        db.push(newEmbedding)
+        embeddings = db.map((rec) => rec.embedding);
+        saveDB();
       }
+
+      result.detectFace = true;
+
+      message += `, ${result.user.name}`;
     }
-  } catch (error) {
-    log.error(`Failed to process message: ${error}`);
   }
+
+  sendTextMessageToTelegramBot(message);
 
   res.send(result);
 });
@@ -592,32 +570,6 @@ wss.on('error', (error) => {
 });
 
 //********************************************* human **********************************/
-async function getBlurScore (bufferImage) {
-  const image = sharp(bufferImage);
-
-  // Преобразуем изображение в grayscale
-  const grayscaleImage = await image.clone().grayscale().toBuffer();
-
-  // Вычисляем градиенты с использованием оператора Sobel
-  const gradients = await sharp(grayscaleImage)
-  .raw()
-  .toBuffer({ resolveWithObject: true });  
-
-  let totalGradient = 0;
-
-  // Вычисляем сумму квадратов градиентов
-  for (let i = 0; i < gradients.data.length; i++) {
-    totalGradient += gradients.data[i] * gradients.data[i];
-  }
-
-  log.info('getBlurScore', gradients.info, totalGradient)
-
-  // Нормализуем меру размытия
-  const blurScore = Math.sqrt(totalGradient) / (gradients.info.width * gradients.info.height);
-
-  return blurScore;
-}
-
 
 async function detectFaceFromBase64(img) {
   try {
@@ -626,9 +578,6 @@ async function detectFaceFromBase64(img) {
       const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
       const buffer = Buffer.from(base64Image, 'base64');
       const result = await detectFaceFromBuffer(buffer);
-
-      const blurScore = await getBlurScore(buffer);
-      result.blurScore = blurScore;
 
       return result;
   } catch (error) {
@@ -640,9 +589,37 @@ async function detectFaceFromBase64(img) {
 
 async function detectFaceFromBuffer(buffer) {
   const tensor = human.tf.node.decodeImage(buffer);
-  log.state('Loaded image:', tensor);
   const result = await human.detect(tensor, humanConfig);
   human.tf.dispose(tensor);
+
+  return result;
+}
+
+async function findUserOnFoto(body) {
+  let result = { detectFace: false, error: false, exception: false };
+
+  try {
+    if ('photo' in body) {
+      const detection = await detectFaceFromBase64(body.photo);
+
+      if(detection.face.length == 1){
+        result.embedding = detection.face[0].embedding;
+        result.finded = await human.match.find(result.embedding, embeddings);
+        result.similarity = result.finded.similarity.toFixed(2);
+        result.score = detection.face[0].score;
+        result.detectFace = true;
+        const uid = db[result.finded.index].uid;
+        result.user = userInfo[uid];
+      }else{
+        result.error = true;
+      }
+    }else{
+      result.error = true;
+    }
+  } catch (error) {
+    log.error(`Failed to process message: ${error}`);
+    result.exception = true;
+  }
 
   return result;
 }
