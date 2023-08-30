@@ -251,10 +251,8 @@ app.get('/' + adminRoute, (req, res) => {
 
 app.post('/detectFace', async (req, res) => {
   let result = await findUserOnFoto(req.body);
-  //let embedding = result.embedding;
   let message = 'no face';
-
-  //delete result.embedding;
+  
   log.data('saveFace', result);
 
   if (result.detectFace) {
@@ -262,16 +260,7 @@ app.post('/detectFace', async (req, res) => {
 
     if (result.uid !== '') {
       if (result.finded.similarity > 0.72) {
-/*         if(result.finded.similarity < 0.98){
-          const newEmbedding = {uid: result.user.uid, embedding: embedding};
-          db.push(newEmbedding)
-          embeddings = db.map((rec) => rec.embedding);
-          saveDB();
-          message += ", add foto";
-        } */
-
         result.token = jwt.sign(result.user, secret, options);
-        //result.detectUser = true;
 
         message += `, +++ Detected ${result.user.name}`;
       }else{
@@ -346,30 +335,19 @@ app.post('/token', authenticateToken, function(req, res) {
 });
 
 app.post('/saveFace', authenticateToken, async (req, res) => {
-  let result = await findUserOnFoto(req.body);
+  let result = await findUserOnFoto(req.body, req.body.uid);
   let message = 'no face';
   try {
-    //let embedding = result.embedding;
-    //delete result.embedding;
-
     log.data('saveFace', result);
-
+    result.user = userInfo[req.body.uid];
     if (result.detectFace) {
       message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
       if (result.finded.similarity > 0.72) {
-/*         if(result.finded.similarity < 0.98){
-          const newEmbedding = {uid: req.body.uid, embedding: embedding};
-          db.push(newEmbedding)
-          embeddings = db.map((rec) => rec.embedding);
-          saveDB();
-          message += ", add foto";
-        }
-        result.user = userInfo[req.body.uid];
-        result.detectFace = true; */
-
         message += `, ${result.user.name}`;
       }
+    }else{
+      result.user = userInfo[req.body.uid];
     }
   } catch (error) {
       log.error(`Failed to process message: ${error}`);
@@ -601,8 +579,8 @@ async function detectFaceFromBuffer(buffer) {
   return result;
 }
 
-async function findUserOnFoto(body) {
-  let result = { detectFace: false, error: false, exception: false, detectUser: false };
+async function findUserOnFoto(body, forUserUID = '') {
+  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false };
 
   try {
     if ('photo' in body) {
@@ -610,21 +588,33 @@ async function findUserOnFoto(body) {
 
       if(detection.face.length == 1){
         const embedding = detection.face[0].embedding;
-        result.finded = await human.match.find(result.embedding, embeddings);
+        result.finded = await human.match.find(embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
         result.detectFace = true;
         result.index = result.finded.index;
-        result.uid = db[result.index].uid||'';
+
+        if (result.index > -1) {
+          result.uid = db[result.index].uid||'';
+        }
+        
+        if (forUserUID !== '') {
+          if (result.uid === '') {
+            result.uid = forUserUID;
+            result.addedFoto = true;
+          }else{
+            if (result.uid !== forUserUID) {
+              result.uid = '';  
+            }
+          }
+        }
+
         if (result.uid === '') {
           
         }else{
           if (result.finded.similarity > 0.72) {
             if(result.finded.similarity < 0.98){
-              const newEmbedding = {uid: req.body.uid, embedding: embedding};
-              db.push(newEmbedding)
-              embeddings = db.map((rec) => rec.embedding);
-              saveDB();
+              result.addedFoto = true;
             }
 
             result.user = userInfo[result.uid];
@@ -632,6 +622,12 @@ async function findUserOnFoto(body) {
           }
         }
         
+        if (result.addedFoto) {
+          const newEmbedding = {uid: result.uid, embedding: embedding};
+          db.push(newEmbedding)
+          embeddings = db.map((rec) => rec.embedding);
+          saveDB();
+        }
       }else{
         result.error = true;
       }
@@ -639,7 +635,7 @@ async function findUserOnFoto(body) {
       result.error = true;
     }
   } catch (error) {
-    log.error(`Failed to process message: ${error}`);
+    log.error(`Failed to process findUserOnFoto: ${error}`, result);
     result.exception = true;
   }
 
