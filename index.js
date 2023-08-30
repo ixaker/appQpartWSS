@@ -602,7 +602,7 @@ async function detectFaceFromBuffer(buffer) {
 }
 
 async function findUserOnFoto(body) {
-  let result = { detectFace: false, error: false, exception: false };
+  let result = { detectFace: false, error: false, exception: false, detectFace: false };
 
   try {
     if ('photo' in body) {
@@ -620,6 +620,7 @@ async function findUserOnFoto(body) {
           //result.detectFace = false;
         }else{
           result.user = userInfo[result.uid];
+          result.detectFace = true
         }
         
       }else{
