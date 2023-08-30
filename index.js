@@ -252,8 +252,8 @@ app.get('/' + adminRoute, (req, res) => {
 app.post('/detectFace', async (req, res) => {
   let result = await findUserOnFoto(req.body);
   let message = 'no face';
-  
-  log.data('saveFace', result);
+
+  log.data('detectFace', result);
 
   if (result.detectFace) {
     message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
