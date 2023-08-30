@@ -599,12 +599,19 @@ async function findUserOnFoto(body, forUserUID = '') {
         }
         
         if (forUserUID !== '') {
+          result.forUser = userInfo[forUserUID];
+          //result.uid = forUserUID;
+
           if (result.uid === '') {
             result.uid = forUserUID;
             result.addedFoto = true;
           }else{
-            if (result.uid !== forUserUID) {
-              result.uid = '';  
+            if (result.uid !== forUserUID && result.finded.similarity < 0.6) {
+              result.userError = userInfo[result.uid];
+              result.uid = forUserUID;
+              result.comment = 'result.uid !== forUserUID';
+
+              result.addedFoto = true;
             }
           }
         }
