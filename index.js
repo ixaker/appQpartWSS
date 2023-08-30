@@ -251,10 +251,10 @@ app.get('/' + adminRoute, (req, res) => {
 
 app.post('/detectFace', async (req, res) => {
   let result = await findUserOnFoto(req.body);
-  let embedding = result.embedding;
+  //let embedding = result.embedding;
   let message = 'no face';
 
-  delete result.embedding;
+  //delete result.embedding;
   log.data('saveFace', result);
 
   if (result.detectFace) {
@@ -262,16 +262,16 @@ app.post('/detectFace', async (req, res) => {
 
     if (result.uid !== '') {
       if (result.finded.similarity > 0.72) {
-        if(result.finded.similarity < 0.98){
+/*         if(result.finded.similarity < 0.98){
           const newEmbedding = {uid: result.user.uid, embedding: embedding};
           db.push(newEmbedding)
           embeddings = db.map((rec) => rec.embedding);
           saveDB();
           message += ", add foto";
-        }
+        } */
 
         result.token = jwt.sign(result.user, secret, options);
-        result.detectUser = true;
+        //result.detectUser = true;
 
         message += `, +++ Detected ${result.user.name}`;
       }else{
@@ -349,8 +349,8 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
   let result = await findUserOnFoto(req.body);
   let message = 'no face';
   try {
-    let embedding = result.embedding;
-    delete result.embedding;
+    //let embedding = result.embedding;
+    //delete result.embedding;
 
     log.data('saveFace', result);
 
@@ -358,7 +358,7 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
       message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
       if (result.finded.similarity > 0.72) {
-        if(result.finded.similarity < 0.98){
+/*         if(result.finded.similarity < 0.98){
           const newEmbedding = {uid: req.body.uid, embedding: embedding};
           db.push(newEmbedding)
           embeddings = db.map((rec) => rec.embedding);
@@ -366,7 +366,7 @@ app.post('/saveFace', authenticateToken, async (req, res) => {
           message += ", add foto";
         }
         result.user = userInfo[req.body.uid];
-        result.detectFace = true;
+        result.detectFace = true; */
 
         message += `, ${result.user.name}`;
       }
@@ -609,7 +609,7 @@ async function findUserOnFoto(body) {
       const detection = await detectFaceFromBase64(body.photo);
 
       if(detection.face.length == 1){
-        result.embedding = detection.face[0].embedding;
+        const embedding = detection.face[0].embedding;
         result.finded = await human.match.find(result.embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
@@ -617,10 +617,19 @@ async function findUserOnFoto(body) {
         result.index = result.finded.index;
         result.uid = db[result.index].uid||'';
         if (result.uid === '') {
-          //result.detectFace = false;
+          
         }else{
-          result.user = userInfo[result.uid];
-          result.detectFace = true
+          if (result.finded.similarity > 0.72) {
+            if(result.finded.similarity < 0.98){
+              const newEmbedding = {uid: req.body.uid, embedding: embedding};
+              db.push(newEmbedding)
+              embeddings = db.map((rec) => rec.embedding);
+              saveDB();
+            }
+
+            result.user = userInfo[result.uid];
+            result.detectFace = true
+          }
         }
         
       }else{
