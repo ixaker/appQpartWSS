@@ -22,7 +22,7 @@
 
 <script>
     $(document).ready(function() {
-        initInputAutocomplete('#stanok');
+/*         initInputAutocomplete('#stanok');
 
         callbackSelect = function (selectedItem) {
             console.log('callbackSelect', selectedItem);
@@ -31,8 +31,38 @@
             $('#navbar_text_stanok').text(selectedItem.fullName);
             stanok = selectedItem;
             $('#navbar_text_stanok').show();
-        }
+        } */
 
+        function setAutocompleteStanok(element) {
+            const url = $(element).attr('url');
+            
+            $(element).autocomplete({ 
+                source:  function(req, res) { 
+                    const data = { term: req.term};
+
+                    $.ajax({method: 'POST', url: url, 
+                        dataType: "json", 
+                        data: JSON.stringify(data), 
+                        contentType: 'application/json',
+                        success: function(data) { res(data);}
+                    });
+                },
+                select: function(event, ui){ 
+                    $(this).attr('uid', ui.item.uid);
+                    $.cookie("stanok", JSON.stringify(ui.item), { expires: 365 });
+                    $('#navbar_text_stanok').text(ui.item.fullName);
+                    stanok = ui.item;
+                    $('#navbar_text_stanok').show();
+                },
+                minLength: parseInt($(element).attr('minLength'))
+            }).on("input", function(){
+                $(this).attr('uid', '');
+                $.cookie("stanok", '{"value":"","uid":"","fullName":""}', { expires: 365 });
+                $('#navbar_text_stanok').text('');
+                $('#navbar_text_stanok').hide();
+            }).on("blur" , function(){ if(($(this).attr('uid')||'') === ''){$(this).val('')}});
+        }
+        setAutocompleteStanok('#stanok');
         $('#stanok').attr('uid', stanok.uid);
         $('#stanok').val(stanok.value);
     });
