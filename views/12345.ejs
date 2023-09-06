@@ -1,0 +1,113 @@
+<style>
+    #commandPanel {
+        display: flex;
+        margin-top: -5px;
+    }
+    
+    #btnAdd {
+        margin-left: auto;
+        font-size: xxx-large;
+        color: #007431;
+        margin-right: 10px;
+    }
+
+    .titlePage {
+        line-height: 63px;
+    }
+
+</style>
+
+<div id="commandPanel">
+    <h4 class="titlePage">Список поступлений корпусов</h4>
+    <i class="bi bi-plus-circle" id="btnAdd"></i>
+</div>
+
+<table  id="аЗаказНаПроизводство" 
+        url="/app/zakaz" 
+        callbackBeforeInitTable="callbackBeforeInitTable" 
+        filter="filter" 
+        callbackAfterInitTable="callbackAfterInitTable" 
+        addNevRow="callbackAddNewRow"
+        callbackAfterWrite="callbackAfterWrite"
+        append="end" 
+        init header>
+
+    <tr class="config" style="display: none;">
+        <td title="Дата" 
+            name="Дата" 
+            style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM   HH:mm" typeData="date"></div></td>
+        <td title="МЛ"  
+            name="Номер" 
+            style="width: 65px;"><div class="dataCell textAlignCenter"></div></td>
+        <td title="Автор" 
+            name="Автор" 
+            style="width: 200px;"><div class="dataCell"></div></td>
+        <td title="Количество" 
+            name="Заказано" 
+            style="width: 75px; "><div class="dataCell textAlignEnd" style="padding: 5px;"></div></td>
+    </tr>
+</table>
+
+<script>
+    $(document).ready(function() {
+        let tableID = '#аЗаказНаПроизводство';
+
+        initTables();
+
+        // callback при получении данных от сервера по wss
+        callbackWSS = async function(data){callbackTable(data)};
+
+        // callback перед отрисовкой таблицы
+        callbackBeforeInitTable = function(data) {}
+
+        // callback при изменении данных в строке для определения показать или убрать строку
+        filter = function(data, result = true) {
+            console.log('filter', data);
+
+            return result;
+        }
+
+        // callback после отрисовки таблицы
+        callbackAfterInitTable = function(data) {}
+
+        // callback после вставки новой пустой строки, перед заполнением данными
+        callbackAddNewRow = function(data) {}
+
+        // callback после внесения изменений в строку с сервера
+        callbackAfterWrite = function(data) {
+            console.log('callbackAfterWrite', data);
+        }
+
+        // клик по кнопке Добавить отчет
+        $('#btnAdd').on('click', function(event){
+            clickAnimate(this);
+
+            var userInput = prompt("Сколько корпусов пришло?");
+
+            if (userInput === null) {
+                return;
+            } else if (userInput === "") {
+                alert("Вы не ввели значение.");
+                return;
+            }
+
+            const userNumber = parseInt(userInput); // Преобразование строки в число
+
+            NProgress.start();
+            highlight = false;
+
+            logToServer('Нажата кнопка "Добавить заказ"');
+
+            const data = { detal:'12345.2', count: userNumber};
+
+            $.ajax({url: '/app/createZakaz', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('logToServer', status, data); }
+            }).always(function() {
+                NProgress.done();
+                highlight = true;
+                initTables();
+            });
+        });
+    });    
+</script>
