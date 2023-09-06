@@ -422,6 +422,10 @@ app.get('/need', authenticateToken, async function(req, res){
   return res.render('need');
 });
 
+app.get('/12345', authenticateToken, async function(req, res){
+  return res.render('12345');
+});
+
 app.use((req, res) => {
   res.status(404).sendFile(createPath('error.html'));
 });
