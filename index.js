@@ -624,12 +624,14 @@ async function findUserOnFoto(body, forUserUID = '') {
           
         }else{
           if (result.finded.similarity > 0.72) {
-            if(result.finded.similarity < 0.98){
-              result.addedFoto = true;
-            }
-
             result.user = userInfo[result.uid];
             result.detectUser = true
+
+            if(result.finded.similarity < 0.98){
+              if (result.user.count < 40) {
+                result.addedFoto = true;
+              }
+            }
           }
         }
         
@@ -638,6 +640,9 @@ async function findUserOnFoto(body, forUserUID = '') {
           db.push(newEmbedding)
           embeddings = db.map((rec) => rec.embedding);
           saveDB();
+
+          let indexOfNewItem = db.length - 1;
+          saveUserFoto(result.uid, body.photo, indexOfNewItem);
         }
       }else{
         result.error = true;
@@ -781,6 +786,27 @@ function saveBase64Image(base64Data) {
   
   const fileName = `image_${Date.now()}.png`;
   const filePath = path.join(folderPath, fileName);
+
+  const base64Image = base64Data.split(';base64,').pop();
+  const binaryData = Buffer.from(base64Image, 'base64');
+
+  fs.writeFile(filePath, binaryData, 'binary', (err) => {
+    if (err) {
+      log.error(err);
+    } else {
+      log.info(`Изображение успешно сохранено в ${filePath}`);
+    }
+  });
+}
+
+function saveUserFoto(uid, base64Data, name) {
+  const folderRootPath = path.join(__dirname, 'foto');
+  if (!fs.existsSync(folderRootPath)) {fs.mkdirSync(folderRootPath);}
+  
+  const folderUserPath = path.join(folderRootPath, uid);
+  if (!fs.existsSync(folderUserPath)) {fs.mkdirSync(folderUserPath);}
+
+  const filePath = path.join(folderUserPath, `${name.toString()}.png`);
 
   const base64Image = base64Data.split(';base64,').pop();
   const binaryData = Buffer.from(base64Image, 'base64');
