@@ -1,4 +1,9 @@
 <style>
+    .userFoto {
+        width: 200px;
+        margin: 5px;
+    }
+
     #userListContent {
         max-width: 900px;
         margin: auto;
@@ -17,6 +22,12 @@
 
     #usersContainer {
         margin-top: 20px;
+    }
+
+    #userFoto {
+        width: 100%;
+        min-height: 50px;
+        padding: 5px;
     }
 
     .userCard { 
@@ -193,7 +204,6 @@
 </style>
 
 <div id="userListContent">
-    
 
     <div style="display: flex;">
         <button id="btnLoadUserList" type="button" class="btn btn-secondary btn-lg mainColor" onclick="loadUserListFrom1C()">Загрузить список из 1С</button>
@@ -205,7 +215,6 @@
             </span>
           </div>
     </div>
-
 
     <div id="usersContainer">
         <% users.forEach(function(user){ %>
@@ -230,6 +239,10 @@
                 </div>
             </div>
         <% }); %>
+    </div>
+
+    <div id="userFoto" style="display: none;">
+
     </div>
 </div>
 
@@ -419,6 +432,78 @@
                 $(this).toggleClass('hide', !found);
                 elements.forEach(element => { element.el.html(element.text)});
             });
+        });
+
+        // клик по количеству фото .userCountFaceID
+        $('.userCountFaceID').on('click', function(event){
+            clickAnimate(this);
+
+            const row = $(this).closest('.userCard');
+            const newUserID = row.attr('id');
+            const oldUserID = $('#userFoto').attr('UserID')||'';
+
+            if(newUserID !== oldUserID){
+                $('#userFoto').hide();
+            }
+
+            if ($('#userFoto').is(':visible')) {
+                $('#userFoto').hide(100);
+            } else {
+                $('#userFoto').children().remove();
+                $('#userFoto').appendTo(row);
+                $('#userFoto').show(100);
+                $('#userFoto').attr('UserID', newUserID);
+
+                NProgress.start();
+
+                try {
+                    $.ajax({ url: '/userListFoto', type: 'GET', dataType: 'json', data: {UserID:newUserID}, success: function(response) {
+                        console.log('response', response);
+
+                        if (response.length > 0) {
+                            response.forEach((item) => {
+                                console.log(item);
+
+                                let newFoto = $(`<img class="userFoto" src="/foto/${newUserID}/${item}" alt="${item}">`);
+                                $('#userFoto').append(newFoto);
+                            });
+                        }else{
+                            let newFoto = $(`<h6>Нет фотографий</h6>`);
+                            $('#userFoto').append(newFoto);
+                        }
+
+                        NProgress.done();
+                    }});
+                } catch (error) {
+                    NProgress.done();    
+                }
+            }
+        });
+
+
+        $('#userFoto').on('click', '.userFoto', function(event){
+            let deleteFoto = confirm("Вы уверены, что хотите удалить эту фотографию?");
+            let file = $(this).attr('alt');
+            let UserID = $(this).closest('.userCard').attr('id');
+
+            if (deleteFoto) {
+                // Здесь можно выполнить операцию, так как пользователь подтвердил
+                //alert("Операция выполнена успешно!");
+
+                NProgress.start();
+
+                try {
+                    $.ajax({ url: '/userListFoto', type: 'DELETE', dataType: 'json', data: {UserID:UserID, file:file}, complete: function() {
+                        console.log('on complete');
+                        $('.userFoto[alt="' + file + '"]').remove();
+                        NProgress.done();
+
+                    }});
+                } catch (error) {
+                    console.log('error', error);
+                    NProgress.done();    
+                }
+            }
         });
 
     });

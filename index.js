@@ -117,6 +117,7 @@ app.use(express.static('styles'));
 app.use(express.static('js'));
 app.use(express.static('img'));
 app.use(express.static('static'));
+app.use('/foto', express.static('foto'));
 
 app.use(cookieParser());
 
@@ -424,6 +425,43 @@ app.get('/need', authenticateToken, async function(req, res){
 
 app.get('/12345', authenticateToken, async function(req, res){
   return res.render('12345');
+});
+
+app.get('/userListFoto', authenticateToken, async function(req, res){
+  const userFolderPath = path.join(__dirname, 'foto', req.query.UserID);
+
+  fs.readdir(userFolderPath, (err, files) => {
+    if (err) {
+      res.send([]);
+    }else{
+      log.info('files', files);
+      res.send(files);
+    }
+  });
+});
+
+app.delete('/userListFoto', authenticateToken, async function(req, res){
+  log.info('delete userListFoto', req.body);
+  
+  const userFolderPath = path.join(__dirname, 'foto', req.body.UserID);
+  const userFotoPath = path.join(userFolderPath, req.body.file);
+
+  fs.unlink(userFotoPath, (err) => {
+    if (err) {
+      console.error('Ошибка при удалении файла:', err);
+      return res.sendStatus(401);
+    }else{
+
+      var indexEmbedding = parseInt(req.body.file.slice(0, req.body.file.lastIndexOf(".")));
+
+      db.splice(indexEmbedding, 1);
+      embeddings = db.map((rec) => rec.embedding);
+      saveDB();
+
+      console.log('Файл успешно удален');
+      return res.send('{result:"OK"}');
+    }
+  });
 });
 
 app.use((req, res) => {
