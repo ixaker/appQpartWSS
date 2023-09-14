@@ -380,7 +380,8 @@
 
         $.post('/deleteFaces', {uid: uid }, function(response) {
             console.log(response);
-            $('#' + response.user.uid + ' .userCountFaceID').text('' + response.user.count + ' шт');
+            $('#' + response.user.uid + ' .userCountFaceID').text('' + response.user.count + ' фото');
+            $('#userFoto').children().remove();
         });
     }
 

@@ -2,6 +2,7 @@ const https = require('https');
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
+const fsp = require('fs').promises;
 const WebSocket = require('ws');
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -13,7 +14,8 @@ const cookieParser = require('cookie-parser');
 const log = require('./loggerConfig');
 const { exec } = require('child_process');
 const envFilePath = path.join(__dirname, '.env');
-const sharp = require('sharp');
+//const sharp = require('sharp');
+//const imageType = require('image-type');
 
 exec('kill -9 $(lsof -t -i :443)');
 
@@ -239,7 +241,8 @@ app.use('/app', authenticateToken, createProxyMiddleware({
 }));
 
 app.use(express.urlencoded({  limit: '1mb', extended: true }));
-app.use(express.json());
+//app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Обработчик запроса главной страницы
 app.get('/', (req, res) => {
@@ -335,7 +338,10 @@ app.post('/token', authenticateToken, function(req, res) {
   res.send({token:token});
 });
 
-app.post('/saveFace', authenticateToken, async (req, res) => {
+//app.post('/saveFace', authenticateToken, async (req, res) => {
+app.post('/saveFace', async (req, res) => {
+  log.info('saveFace', req.body);
+  
   let result = await findUserOnFoto(req.body, req.body.uid);
   let message = 'no face';
   try {
@@ -368,6 +374,24 @@ app.post('/deleteFaces', authenticateToken, async (req, res) => {
     saveDB();
 
     result.user = userInfo[req.body.uid];
+
+    log.info('req.body.uid', req.body.uid);
+
+    const folderRootPath = path.join(__dirname, 'foto');
+    log.info('folderRootPath', folderRootPath);
+
+    const folderUserPath = path.join(folderRootPath, req.body.uid);
+    log.info('folderUserPath', folderUserPath);
+
+    const nameFiles = await fsp.readdir(folderUserPath);
+
+    log.info('nameFiles', nameFiles);
+
+    await Promise.all(nameFiles.map(async (nameFile) => {
+      const pathToFile = path.join(folderUserPath, nameFile);
+      await fsp.unlink(pathToFile);
+      console.log(`File ${pathToFile} deleted.`);
+    }));
 
   } catch (error) {
     log.error(`Failed to process message: ${error}`);
@@ -622,7 +646,7 @@ async function detectFaceFromBuffer(buffer) {
 }
 
 async function findUserOnFoto(body, forUserUID = '') {
-  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false };
+  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID:forUserUID };
 
   try {
     if ('photo' in body) {
@@ -636,13 +660,19 @@ async function findUserOnFoto(body, forUserUID = '') {
         result.detectFace = true;
         result.index = result.finded.index;
 
+        
         if (result.index > -1) {
           result.uid = db[result.index].uid||'';
+
+          //log.info(db[result.index]);
         }
         
         if (forUserUID !== '') {
           result.forUser = userInfo[forUserUID];
           //result.uid = forUserUID;
+          result.uid = '';
+
+          log.info('forUserUID !==', result.uid, forUserUID)
 
           if (result.uid === '') {
             result.uid = forUserUID;
@@ -737,6 +767,8 @@ async function initDB() {
 
       const loadedEmbeddingsData = fs.readFileSync(embeddingsDataPath);
       db = JSON.parse(loadedEmbeddingsData);
+      db = db.filter(obj => 'uid' in obj);
+
       embeddings = db.map((rec) => rec.embedding);
   } catch (error) {
       log.error(error);
@@ -894,7 +926,7 @@ function sendImageToTelegramBot(base64Data) {
     // Отправляем запрос POST с данными картинки
     axios(options)
       .then((response) => {
-        //console.log('Картинка успешно отправлена в Telegram бота');
+        console.log('Картинка успешно отправлена в Telegram бота');
       })
       .catch((error) => {
         console.error('Ошибка при отправке картинки в Telegram бота:');
