@@ -452,7 +452,17 @@ app.get('/12345', authenticateToken, async function(req, res){
 });
 
 app.get('/userListFoto', authenticateToken, async function(req, res){
-  const userFolderPath = path.join(__dirname, 'foto', req.query.UserID);
+  // Используем метод filter для фильтрации массива
+  const user = db.filter(user => user.uid === req.query.UserID);
+
+  // Теперь результат содержит массив объектов с нужным uid
+  //const files = user.map(user => user.file);
+  const files = user.map(user => (user.file ? user.file : "notFound.png"));
+
+  res.send(files);
+
+
+/*   const userFolderPath = path.join(__dirname, 'foto', req.query.UserID);
 
   fs.readdir(userFolderPath, (err, files) => {
     if (err) {
@@ -461,12 +471,38 @@ app.get('/userListFoto', authenticateToken, async function(req, res){
       log.info('files', files);
       res.send(files);
     }
-  });
+  }); */
 });
 
 app.delete('/userListFoto', authenticateToken, async function(req, res){
   log.info('delete userListFoto', req.body);
   
+  if (req.body.file === 'notFound.png') {
+    log.info('notFound.png');
+
+    let findedElements = 0;
+
+    for (let i = 0; i < db.length; i++) {
+      if (db[i].uid === req.body.UserID) {
+        
+        findedElements++;
+
+        log.info('findedElements', findedElements);
+
+        if (findedElements === parseInt(req.body.indexFoto)) {
+          log.info(db[i], db.length);
+          db.splice(i, 1);
+          embeddings = db.map((rec) => rec.embedding);
+          saveDB();
+          log.info('delete findedElements', i, db.length);
+          break;
+        }
+      }
+    }
+
+    return res.send('{result:"OK2"}');
+  }
+
   const userFolderPath = path.join(__dirname, 'foto', req.body.UserID);
   const userFotoPath = path.join(userFolderPath, req.body.file);
 
@@ -476,9 +512,12 @@ app.delete('/userListFoto', authenticateToken, async function(req, res){
       return res.sendStatus(401);
     }else{
 
-      var indexEmbedding = parseInt(req.body.file.slice(0, req.body.file.lastIndexOf(".")));
+      db = db.filter(user => !(user.uid === req.body.UserID && user.file === req.body.file));
 
-      db.splice(indexEmbedding, 1);
+
+      //var indexEmbedding = parseInt(req.body.file.slice(0, req.body.file.lastIndexOf(".")));
+
+      //db.splice(indexEmbedding, 1);
       embeddings = db.map((rec) => rec.embedding);
       saveDB();
 
@@ -704,13 +743,12 @@ async function findUserOnFoto(body, forUserUID = '') {
         }
         
         if (result.addedFoto) {
-          const newEmbedding = {uid: result.uid, embedding: embedding};
+          const file = `${Date.now()}.png`;
+          const newEmbedding = {uid: result.uid, embedding: embedding, file:file};
           db.push(newEmbedding)
           embeddings = db.map((rec) => rec.embedding);
           saveDB();
-
-          let indexOfNewItem = db.length - 1;
-          saveUserFoto(result.uid, body.photo, indexOfNewItem);
+          saveUserFoto(result.uid, body.photo, file);
         }
       }else{
         result.error = true;
@@ -876,7 +914,7 @@ function saveUserFoto(uid, base64Data, name) {
   const folderUserPath = path.join(folderRootPath, uid);
   if (!fs.existsSync(folderUserPath)) {fs.mkdirSync(folderUserPath);}
 
-  const filePath = path.join(folderUserPath, `${name.toString()}.png`);
+  const filePath = path.join(folderUserPath, name);
 
   const base64Image = base64Data.split(';base64,').pop();
   const binaryData = Buffer.from(base64Image, 'base64');

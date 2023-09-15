@@ -462,11 +462,22 @@
                         console.log('response', response);
 
                         if (response.length > 0) {
+                            let indexFoto = 1;
+
                             response.forEach((item) => {
                                 console.log(item);
 
-                                let newFoto = $(`<img class="userFoto" src="/foto/${newUserID}/${item}" alt="${item}">`);
+                                let newFoto = $(`<img class="userFoto" src="" alt="${item}" indexFoto="${indexFoto}">`);
+
+                                if (item === 'notFound.png') {
+                                    newFoto = $(`<img class="userFoto" src="${item}" alt="${item}" indexFoto="${indexFoto}">`);
+                                }else{
+                                    newFoto = $(`<img class="userFoto" src="/foto/${newUserID}/${item}" alt="${item}" indexFoto="${indexFoto}">`);
+                                }
+
                                 $('#userFoto').append(newFoto);
+
+                                indexFoto += 1;
                             });
                         }else{
                             let newFoto = $(`<h6>Нет фотографий</h6>`);
@@ -483,22 +494,35 @@
 
 
         $('#userFoto').on('click', '.userFoto', function(event){
-            let deleteFoto = confirm("Вы уверены, что хотите удалить эту фотографию?");
             let file = $(this).attr('alt');
+            let indexFoto = $(this).attr('indexFoto');
             let UserID = $(this).closest('.userCard').attr('id');
+            let fotoForDelete = this;
+            let deleteFoto = confirm("Вы уверены, что хотите удалить эту фотографию?");
 
             if (deleteFoto) {
-                // Здесь можно выполнить операцию, так как пользователь подтвердил
-                //alert("Операция выполнена успешно!");
-
                 NProgress.start();
 
                 try {
-                    $.ajax({ url: '/userListFoto', type: 'DELETE', dataType: 'json', data: {UserID:UserID, file:file}, complete: function() {
+                    $.ajax({ url: '/userListFoto', type: 'DELETE', dataType: 'json', data: {UserID:UserID, file:file, indexFoto:indexFoto}, complete: function(response) {
                         console.log('on complete');
-                        $('.userFoto[alt="' + file + '"]').remove();
+                        //$('.userFoto[alt="' + file + '"]').remove();
+                        
+                        console.log(fotoForDelete);
                         NProgress.done();
 
+                        let userCard = $(fotoForDelete).closest('.userCard');
+                        let userCountFaceID = $(userCard).find('.userCountFaceID');
+                        let text = $(userCountFaceID).text();
+                        let count = (parseInt(text) - 1).toString() + ' фото';
+                        $(userCountFaceID).text(count);
+                        
+                        console.log('userCard', userCard);
+                        console.log('userCountFaceID', userCountFaceID);
+                        console.log('text', text);
+                        console.log('count', count);
+
+                        $(fotoForDelete).remove();
                     }});
                 } catch (error) {
                     console.log('error', error);
@@ -506,6 +530,5 @@
                 }
             }
         });
-
     });
 </script>
