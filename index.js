@@ -931,6 +931,8 @@ function saveUserFoto(uid, base64Data, name) {
 //******************************************* Telegram *****************************************
 
 function sendImageToTelegramBot(base64Data) {
+  console.log('start sendImageToTelegramBot');
+
   try {
     // Удаляем префикс base64 из данных
     const base64Image = base64Data.split(';base64,').pop();
@@ -967,7 +969,7 @@ function sendImageToTelegramBot(base64Data) {
         console.log('Картинка успешно отправлена в Telegram бота');
       })
       .catch((error) => {
-        console.error('Ошибка при отправке картинки в Telegram бота:');
+        console.error('Ошибка при отправке картинки в Telegram бота:', error);
       });
   } catch (error) {
     console.error('Ошибка при отправке картинки в Telegram бота:', error);
