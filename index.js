@@ -970,7 +970,7 @@ function sendImageToTelegramBot(base64Data) {
         console.error('Ошибка при отправке картинки в Telegram бота:');
       });
   } catch (error) {
-    
+    console.error('Ошибка при отправке картинки в Telegram бота:', error);
   }
 }
 
