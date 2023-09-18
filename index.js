@@ -661,9 +661,11 @@ wss.on('error', (error) => {
 //********************************************* human **********************************/
 
 async function detectFaceFromBase64(img) {
+  log.info('start detectFaceFromBase64');
+
   try {
       //saveBase64Image(img);
-      sendImageToTelegramBot(img);
+      //sendImageToTelegramBot(img);
       const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
       const buffer = Buffer.from(base64Image, 'base64');
       const result = await detectFaceFromBuffer(buffer);
@@ -931,7 +933,7 @@ function saveUserFoto(uid, base64Data, name) {
 //******************************************* Telegram *****************************************
 
 function sendImageToTelegramBot(base64Data) {
-  console.log('start sendImageToTelegramBot');
+  log.info('start sendImageToTelegramBot');
 
   try {
     // Удаляем префикс base64 из данных
@@ -966,13 +968,15 @@ function sendImageToTelegramBot(base64Data) {
     // Отправляем запрос POST с данными картинки
     axios(options)
       .then((response) => {
-        console.log('Картинка успешно отправлена в Telegram бота');
+        log.info('Картинка успешно отправлена в Telegram бота');
       })
       .catch((error) => {
-        console.error('Ошибка при отправке картинки в Telegram бота:', error);
+        log.error('Ошибка при отправке картинки в Telegram бота:', error.message);
+        // Вывести статус ошибки (например, 404 или 500)
+        //log.error('Статус ошибки:', error.response.status);
       });
   } catch (error) {
-    console.error('Ошибка при отправке картинки в Telegram бота:', error);
+    log.error('Ошибка при отправке картинки в Telegram бота 2:', error);
   }
 }
 
@@ -994,7 +998,7 @@ function sendTextMessageToTelegramBot(message) {
         //console.log('Сообщение успешно отправлено в Telegram бота');
       })
       .catch((error) => {
-        console.error('Ошибка при отправке сообщения в Telegram бота:');
+        console.error('Ошибка при отправке сообщения в Telegram бота:', error.message);
       });
   } catch (error) {
     
