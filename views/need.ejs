@@ -197,6 +197,7 @@
             style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
     </tr>
 
+    <!-- Брак -->
     <tr class="DefectListMainRow" id="DefectListMainRow" style="display: none;">
         <td title="Код"  
             name="Код" 
@@ -210,9 +211,10 @@
     </tr>
 
     <tr id="DefectListRow" style="display: none;" class="selectedGroupEtap">
-        <td style="display: none;">01</td>
+        <td style="display: none;">00</td>
         <td colspan="3" style="padding-top: 5px; padding-bottom: 5px;">
             <table  id="ОтчетПоРаботе2022" 
+                    name="ОтчетПоРаботе2022" 
                     url="/app/getListDefect" 
                     filter="filterForDefectTable" 
                     append="end" 
@@ -297,7 +299,87 @@
         </td>
     </tr>
 
+    <!-- ОТК -->
 
+    <tr class="OTK_ListMainRow" id="OTK_ListMainRow" >
+        <td title="Код"  
+            name="Код" 
+            style="width: 30px;"><div class="dataCell textAlignCenter">20</div></td>
+        <td title="Групповой этап"  
+            name="Наименование" 
+            style="width: 160px;"><div class="dataCell">ОТК</div></td>
+        <td title="Количество работ" 
+            name="КоличествоРаботы" 
+            style="width: 100px;"><div id="countRowOTK" class="dataCell textAlignEnd">0</div></td>
+    </tr>
+
+    <tr id="OTK_ListRow" style="display: none;" class="selectedGroupEtap">
+        <td style="display: none;">20</td>
+        <td colspan="3" style="padding-top: 5px; padding-bottom: 5px;">
+            <table  id="OTK" 
+                    name="ОтчетПоРаботе2022" 
+                    url="/app/getCurrentReportForOTK" 
+                    filter="filterForOTK" 
+                    callbackAfterWrite="callbackAfterWriteListOTK" 
+                    append="end" 
+                    sort="0" init header>
+                <tr class="config" style="display: none;">
+                    <td title="Дата" 
+                        name="ДатаОтчета" 
+                        style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+                    <td title="Номер детали" 
+                        name="Заказ" 
+                        key="АртикулНаименование" 
+                        style="width: 100%;"><div class="dataCell"></div></td>
+                    <td title="МЛ"  
+                        name="Заказ" 
+                        key="Номер" 
+                        style="width: 65px;"><div class="dataCell textAlignCenter"></div></td>
+                    <td title="Оператор" 
+                        name="Сотрудник" 
+                        key="Наименование" 
+                        style="width: 200px;"><div class="dataCell"></div></td>
+                    <td title="Этап производства" 
+                        name="ЭтапПроизводства" 
+                        key="Наименование" 
+                        style="width: 200px;"><div class="dataCell"></div></td>
+                    <td title="Изгото влено" 
+                        name="КоличествоИзготовлено" 
+                        style="width: 75px; "><div class="dataCell textAlignEnd" style="padding: 5px;"></div></td>
+<!--                     <td title="Прове рено" 
+                        name="КоличествоПроверено" 
+                        style="width: 75px;">
+                        <input  type="number" 
+                                inputmode="numeric" 
+                                checkValid  
+                                min="0" 
+                                sync="none" 
+                                class="dataCell quantity textAlignEnd"></td>
+                    <td title="Брак" 
+                        name="КоличествоБрака" 
+                        style="width: 60px;">
+                        <input  type="number" 
+                                inputmode="numeric"  
+                                min="0" 
+                                sync="none" 
+                                class="dataCell quantity textAlignEnd"></td> -->
+<!--                     <td title="Готов" 
+                        name="СтатусОТК"
+                        style="width: 65px;"> 
+                        <input  type="checkbox" 
+                                name="Проведен" 
+                                sync="none" 
+                                class="dataCell checkboxInTable"></td> -->
+<!--                     <td title="" 
+                        style="width: 70px;"><div class="groupBtnRow">
+                            <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+                            <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i></div></td> -->
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- Надо -->
     <tr id="listWork" style="display: none;" class="selectedGroupEtap">
         <td style="display: none;" id="kod">01</td>
         <td colspan="3">
@@ -452,6 +534,7 @@
     var access = false;
 
     $(document).ready(function() {
+        let tableID = '#OTK';
         initTables();
 
         initInputProvider();
@@ -472,7 +555,8 @@
         initInputPrice();
 
         addSubscribeWSS('ОтчетПоРаботе2022_all');
-        callbackWSS = async function(data) {callbackTable(data)};
+
+        callbackWSS = async function(data) { callbackTable(data) };
 
         function initInputProvider() {
             const userInfo = $('#menu').data('userInfo');
@@ -539,6 +623,11 @@
                 if (data['КоличествоРаботы'] == "" || data['КоличествоРаботы'] == "0"){
                     result = false;
                 }
+
+                if (data['uid'] == 'bf73ce86-47af-11ec-8183-000c29006152'){
+                    result = false;
+                }
+
             } catch (error) { console.log(error) }
 
             return result;
@@ -925,6 +1014,7 @@
     
 // ************************************************** Брак ********************************************************
         filterForDefectTable = function(data, result = true) {
+            
             try {
                 if (!data['Проведен']) {
                     result = false;    
@@ -934,6 +1024,8 @@
                     result = false;
                 }
             } catch (error) {}
+
+            //console.log('filterForDefectTable', result);
 
             return result;
         }
@@ -952,7 +1044,7 @@
         }
         
         callbackAfterWriteListDefect = function(data) {
-            console.log('callbackAfterWriteListDefect', data);
+            //console.log('callbackAfterWriteListDefect', data);
             const countDefect = $('#ОтчетПоРаботе2022').children('tbody').children('.rowData').length;
             const visibleDefect = countDefect > 0;
             const currState = $('#DefectListMainRow').is(':visible');
@@ -967,7 +1059,7 @@
             }
 
             $('#countRowInDefectList').text(countDefect);
-            console.log('callbackAfterWriteListDefect', countDefect, visibleDefect, currState);
+            //console.log('callbackAfterWriteListDefect', countDefect, visibleDefect, currState);
         }
 
         $('#аГруппыЭтаповПроизводства').on('click', '.DefectListMainRow', function(event){
@@ -1051,5 +1143,62 @@
 
             setTimeout(() => { $('#fixReportRow').hide(300);}, 200);
         });
+    
+// **************************************************** ОТК ****************************************************
+
+        $('#аГруппыЭтаповПроизводства').on('click', '.OTK_ListMainRow', function(event){
+            if ($('#OTK_ListRow').is(':visible')) {
+                $('#OTK_ListRow').hide(200);
+            } else {
+                $('#OTK_ListRow').show(300);
+            }  
+        });
+
+        // callback при изменении данных в строке для определения показать или убрать строку
+        filterForOTK = function(data, result = true) {
+            //console.log('filterForOTK');
+            try {
+                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']){ result = false; }
+            } catch (error) { console.log(error) }
+
+            return result;
+        }
+
+        // клик по кнопке Редактировать
+        $(tableID).on('click', '.btnEdit', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+
+            $(tableID).find('.btnEdit').show();
+            $(tableID).find('.btnOk').hide();
+            $(tableID).find('input').prop('disabled', true);
+
+            $(row).find('.btnOk').show();
+            $(row).find('.btnEdit').hide();
+            $(row).find('input').prop('disabled', false);
+
+            clickAnimate($(row).find('.btnOk'));
+            logToServer('Нажата кнопка "Редактировать"', data);
+        });
+
+        // клик по кнопке Применить
+        $(tableID).on('click', '.btnOk', function(event){
+            const row = $(this).closest('tr');
+            const data = $(row).data('data');
+
+            $(row).find('.btnOk').hide();
+            $(row).find('.btnEdit').show();
+            $(row).find('input').prop('disabled', true);
+
+            clickAnimate($(row).find('.btnEdit'));
+            logToServer('Нажата кнопка "Применить"', data);
+            sendWSS('updateDataOnServer', '', data);
+        });
+
+        callbackAfterWriteListOTK = function(data) {
+            const countDefect = $(tableID).children('tbody').children('.rowData').length;
+            $('#countRowOTK').text(countDefect);
+        }
+
     });
 </script>

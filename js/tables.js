@@ -36,6 +36,7 @@ async function initTable(table) {
                 callbackFromAttr(table, 'callbackBeforeInitTable', response);
 
                 response.list.forEach(async (item) => {
+                    //console.log('response.list.forEach', item);
                     await callbackTable(item);
                 });
 
@@ -76,7 +77,7 @@ function createHeaderForTable(table) {
 
 // добавление новой строки
 async function addNewRow(table, newData) {
-    const tableID = $(table).attr('id')||'tableID';
+    const tableID = $(table).attr('name')||$(table).attr('id')||'tableID';
     let newRow = $(`<tr id="${newData.uid}" style="display:none"></tr>`);
 
     $(table).children('tbody').children('.config').children().each(function() {
@@ -127,7 +128,8 @@ async function addNewRow(table, newData) {
         initInputTimeMask(this);
     });
 
-    callbackTable(newData);
+    //console.log('addNewRow', newRow);
+    callbackTable2(newData);
 }
 
 async function reportChanged(row, newData) {
@@ -178,15 +180,45 @@ function disableHighlightElement() {
 
 // функция вызываемая для обновления данных в строке
 callbackTable = async function(data) {
-    const table = $(`#${data.topic}`);
-    const row = $('#' + data.uid);
+    //console.log('start callbackTable');
+
+    const listTablesForName = $('table[name="' + data.topic + '"]');
+
+    if (listTablesForName.length > 0) {
+        listTablesForName.each(function() {
+            const table = $(this);
+            const tableID = $(this).attr('id');
+            data['tableID'] = tableID;
+
+            //console.log('callbackTable name', tableID, table);
+
+            callbackTable2(data);
+        });
+    }else{
+        data['tableID'] = data['topic'];
+        callbackTable2(data);
+    }
+}
+
+// функция вызываемая для обновления данных в строке
+callbackTable2 = async function(data) {
+    const table = $(`#${data.tableID}`);
+
+    //console.log('callbackTable2', data.tableID, table, data);
+
+    //const table = $(`#${data.topic}`);
+    const row = $(table).find('#' + data.uid);
     const newData = data.data;
 
     if (row.length) {
         let visible = callbackFromAttr(table, 'filter', newData);
 
+        //console.log('callbackTable2 visible', visible);
+
         if (!visible) {
+            //console.log('$(row).remove()', row);
             $(row).remove();
+
         }
 
         data.edited = {};
@@ -411,7 +443,8 @@ function initInputAutocompleteForTable(element) {
 }
 
 function sendNotificationOnChangeRowTable(elementInput) {
-    const docName = $(elementInput).closest('table').attr('id');
+    const table = $(elementInput).closest('table');
+    const docName = $(table).attr('name')||$(table).attr('id');
     const row = $(elementInput).closest('tr');
     const data = $(row).data('data');
 
@@ -435,6 +468,6 @@ function callbackFromAttr(element, attr, param = null) {
             }
         }   
     } catch (error) {
-        console.log('callbackFromAttr', error);        
+        console.log('callbackFromAttr', error, attr);        
     } 
 }
