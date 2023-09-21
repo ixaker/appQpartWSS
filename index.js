@@ -665,7 +665,7 @@ async function detectFaceFromBase64(img) {
 
   try {
       //saveBase64Image(img);
-      //sendImageToTelegramBot(img);
+      sendImageToTelegramBot(img);
       const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
       const buffer = Buffer.from(base64Image, 'base64');
       const result = await detectFaceFromBuffer(buffer);
