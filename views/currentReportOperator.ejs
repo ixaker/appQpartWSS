@@ -370,6 +370,7 @@
         // callback при изменении данных в строке для определения показать или убрать строку
         callbackFilter = function(data, result = true) {
             console.log('callbackFilter', data);
+            console.log(data['Сотрудник']['uid'], user.uid);
 
             const reportDate = new Date(data['Дата']);
 
@@ -377,7 +378,7 @@
                 if ( reportDate < startTimeWork ){ result = false; }
                 if ( data['ПометкаУдаления'] )   { result = false; }
                 if ( !data['ЭтоОтчетОператора'] )   { result = false; }
-
+                if ( data['Сотрудник']['uid'] !== user.uid )   { result = false; }
                 $('#countDetalForCurrentReport').text(data['КоличествоИзготовлено']);
 
             } catch (error) { console.log(error) }
