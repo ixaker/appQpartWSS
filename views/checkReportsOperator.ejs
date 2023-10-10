@@ -166,10 +166,6 @@
         filter = function(data, result = true) {
             console.log('filter', data);
 
-            if (!data['СтатусОператора']) {
-                result = false;    
-            }
-
             if (data['Проведен']) {
                 result = false;    
             }
