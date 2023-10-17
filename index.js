@@ -253,6 +253,10 @@ app.get('/' + adminRoute, (req, res) => {
   res.sendFile(createPath('admin.html'));
 });
 
+app.get('/tabel', (req, res) => {
+  res.sendFile(createPath('tabel.html'));
+});
+
 app.post('/detectFace', async (req, res) => {
   let result = await findUserOnFoto(req.body);
   let message = 'no face';
