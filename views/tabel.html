@@ -163,29 +163,26 @@
                     refresh()   
                 });
 
-                $.get('/adminAuth', {}, function(response) {
-                    console.log('/adminAuth', response);
-                    $.cookie("token", response.token, { expires: 36500 });
-                }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
-                    console.log("error - /adminAuth");
-                });
+                function refreshToken() {
+                    $.get('/adminAuth', {}, function(response) {
+                        console.log('/adminAuth', response);
+                        $.cookie("token", response.token, { expires: 36500 });
+                    }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                        console.log("error - /adminAuth");
+                    });
+                }
 
                 function refresh() {
-
-/*                     NProgress.start();
-
-                    $.ajax({ url: $(table).attr('url'), type: 'GET', dataType: 'json', data: param, success: function(response) {
-                        console.log('initTable response', response);
-                    }, complete: function(response){
-                        NProgress.done();
-                    }}); */
-
                     GetInfo1C('/app/getListEventFaceID', 'date='+(date).toLocaleString("ru", options), function(result){
                         $('#containerTable').html(result.table);
                     });    
                 }
                 
-                refresh();
+                refreshToken()
+                setInterval(refreshToken, 5000000);
+
+                setTimeout(refresh, 200);
+                setInterval(refresh, 3000);
 
                 function GetInfo1C(url, param = '', callback, elem=false, type='GET') {     // получение информации с сервера
                     NProgress.start();
@@ -195,8 +192,6 @@
                         contentType: "application/json; charset=utf-8",
                         url: url,
                         data: param,
-                        username: 'tele',
-                        password: 'tele',
                         success: function (result) {
                             NProgress.done();
                             const obj = JSON.parse(result);
