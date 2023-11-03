@@ -88,7 +88,8 @@ function connectWebSocket(from = 'none') {
                     //console.log('msgData', msgData);
 
                     if (msgData.topic === 'notification') {
-                        toastr[msgData.type](msgData.text, msgData.title);    
+                        toastr[msgData.type](msgData.text, msgData.title); 
+                        $('#overlay').fadeOut();   
                     } else {
                         callbackWSS(msgData);
                     }

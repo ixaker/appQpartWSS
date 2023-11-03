@@ -37,6 +37,16 @@ body, html{
     padding-bottom: 10px;
 }
 
+#overlay {
+    display: none; /* Изначально оверлей скрыт */
+    position: fixed; /* Оверлей будет фиксированным независимо от прокрутки */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ширина и высота на всю страницу */
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    z-index: 1000; /* Z-index достаточно высок, чтобы быть над другими элементами */
+  }
 
 #btnStartVideo {
     position: fixed;

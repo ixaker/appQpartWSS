@@ -32,6 +32,16 @@ $(function() {
           'B': {pattern: /[0-2]/ }
         }
     };
+
+    // Функция для показа оверлея
+    function showOverlay() {
+        $('#overlay').fadeIn(); // Используйте fadeIn для плавного появления оверлея
+    }
+
+    // Функция для скрытия оверлея
+    function hideOverlay() {
+        $('#overlay').fadeOut(); // Используйте fadeOut для плавного исчезновения оверлея
+    }
 });
 
 function GetInfo1C(url, param = '', callback, elem=false, type='GET') { 

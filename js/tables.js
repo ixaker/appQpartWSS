@@ -450,6 +450,8 @@ function sendNotificationOnChangeRowTable(elementInput) {
 
     console.log('sendNotificationOnChangeRowTable', data);
     if (Object.keys(data.edited).length) {
+        $('#overlay').fadeIn();
+        console.log('fadeIn');
         sendWSS('updateDataOnServer', docName, data);
     }
 }
