@@ -198,7 +198,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  //log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
+  log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
   //log.data('cookies', req.cookies);
 
   //log.data('app.use Info', 'req.cookies.token', req.cookies.token.substring(0, 30));
@@ -286,8 +286,10 @@ app.post('/detectFace', async (req, res) => {
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
+  log.data('NodeJS_OK');
   res.send('NodeJS_OK');
   //log.data('body', req.body);
+  log.data('NodeJS_OK');
 
   const topic = req.body.topic;
   const uids = req.body.users;
@@ -602,7 +604,7 @@ wss.on('connection', (ws, request) => {
           }
         });
       } else if (action === 'updateDataOnServer') {
-        log.info(action, topic, payload);
+        //log.info(action, topic, payload);
 
         await axios.post(`${API_1C_URL}/app/updateData`, JSON.parse(message), {
           headers: {

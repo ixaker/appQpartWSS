@@ -155,7 +155,8 @@
         let tableID = '#ОтчетПоРаботе2022';
 
         initTables();
-
+        addSubscribeWSS('ОтчетПоРаботе2022_all');
+        
         // callback при получении данных от сервера по wss
         callbackWSS = async function(data){callbackTable(data)};
 
