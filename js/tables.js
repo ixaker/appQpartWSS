@@ -30,7 +30,7 @@ async function initTable(table) {
         NProgress.start();
 
         await $.ajax({ url: $(table).attr('url'), type: 'GET', dataType: 'json', data: param, success: function(response) {
-            console.log('initTable response', response);
+            //console.log('initTable response', response);
 
             if (!response.error) {
                 callbackFromAttr(table, 'callbackBeforeInitTable', response);
@@ -157,25 +157,25 @@ function getValueCell(element) {
 }
 
 function highlightElement(element) {
-    if (highlight) {
+/*     if (highlight) {
         $(element).addClass('highlight').delay(600).queue(function(next) {
             $(element).removeClass('highlight');
             next();
         });
-    }
+    } */
 }
 
 function enableHighlightElement(delay = 2000) {
-    clearTimeout(highlightTimerId);
+/*     clearTimeout(highlightTimerId);
 
     highlightTimerId = setTimeout(() => {
         highlight = true;
-    }, delay);
+    }, delay); */
 }
 
 function disableHighlightElement() {
-    clearTimeout(highlightTimerId);
-    highlight = false;
+/*     clearTimeout(highlightTimerId);
+    highlight = false; */
 }
 
 // функция вызываемая для обновления данных в строке
