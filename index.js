@@ -453,6 +453,10 @@ app.get('/need', authenticateToken, async function(req, res){
   return res.render('need');
 });
 
+app.get('/naladki', authenticateToken, async function(req, res){
+  return res.render('naladki');
+});
+
 app.get('/12345', authenticateToken, async function(req, res){
   return res.render('12345');
 });
