@@ -4,6 +4,12 @@
         font-size: 0.9em;
     }
 
+    #contentInfo {
+        width: 400px;
+        margin: auto;
+        margin-top: 5px;
+    }
+
     .groupHeader {
         display: flex; 
         padding: 0 5px;
@@ -67,6 +73,14 @@
         font-weight: 600;
         background-color: gold;
     }
+
+    #errorsInfo {
+        color: red;
+        margin-bottom: 10px;
+    }
+    
+
+
 
     @media (max-width: 650px) {
         #navbar-brand-text {
@@ -176,22 +190,32 @@
 </table>
 
 <script id="info-template" type="text/x-handlebars-template">
-    <table id="tableTechnology">
-        <thead>
-            <tr>
-                <th>Код</th>
-                <th>Этап производства</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each items}}
-            <tr id="{{uid}}">
-                <td class="textAlignCenter">{{КодНовый}}</td>
-                <td>{{ЭтапПроизводства}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
+
+    <div id="contentInfo">
+        <div class="input-group">
+            <label for="time" class="labelNewReport" style="width: 150px;">Название станка :</label>
+            <p style="font-weight: 600;">{{JSON.Станок.Наименование}} {{JSON.Станок.Модель}}</p>
+        </div>
+
+        <pre id="errorsInfo"></pre>
+
+        <table id="tableTechnology">
+            <thead>
+                <tr>
+                    <th>Код</th>
+                    <th>Этап производства</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each technology}}
+                <tr id="{{uid}}">
+                    <td class="textAlignCenter">{{КодНовый}}</td>
+                    <td>{{ЭтапПроизводства}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
 </script>
 
 <script>
@@ -208,7 +232,39 @@
         }
 
         addNevRow = function(data) { }
-        callbackAfterWrite = function(data) { }
+        callbackAfterWrite = function(data) {
+            //console.log('callbackAfterWrite', data);
+
+            const currNaladka = data.data; 
+            const lastReport = currNaladka.LastReport.data;
+
+            let curentRow = $('#' + currNaladka.uid);
+
+            if (!isSameObject(currNaladka['Деталь'], lastReport['Деталь'])) {
+                //console.log('Деталь не совпадает', curentRow);
+                $(curentRow).find('[name="Деталь"]').addClass('highlight');
+            }
+
+            if (!isSameObject(currNaladka['ЭтапПроизводства'], lastReport['ЭтапПроизводства'])) {
+                //console.log('Деталь не совпадает', curentRow);
+                $(curentRow).find('[name="ЭтапПроизводства"]').addClass('highlight');
+            }
+
+            if (lastReport['МашинноеВремя'] > currNaladka['МашинноеВремя']) {
+                $(curentRow).find('[name="МашинноеВремя"]').addClass('highlight');    
+            }
+
+            if (lastReport['ПолноеВремя'] > currNaladka['ПолноеВремя']) {
+                $(curentRow).find('[name="ПолноеВремя"]').addClass('highlight');    
+            }
+
+            if (lastReport['КоличествоДеталейЗаОднуУстановку'] !== currNaladka['КоличествоДеталейЗаОднуУстановку']) {
+                $(curentRow).find('[name="КоличествоДеталейЗаОднуУстановку"]').addClass('highlight');    
+            }
+
+            console.log('currNaladka', currNaladka);
+            console.log('lastReport', lastReport);
+         }
 
         $('#search').on("input", function() {
             let searchTerms = $(this).val().split(' ').filter(Boolean);
@@ -270,12 +326,28 @@
                     if (!response.error) {
                         const templateSource = $('#info-template').html();
                         const template = Handlebars.compile(templateSource);
-                        const tableHtml = template({ items: response.technology });
+                        const tableHtml = template(response);
 
                         $('#infoForm').html(tableHtml);
 
                         let rowEtap = $('#' + response.JSON['ЭтапПроизводства']['uid']);
-                        $(rowEtap).addClass('selectedEtap')
+                        $(rowEtap).addClass('selectedEtap');
+
+                        const currNaladka = response.JSON;
+                        const lastReport = response.LastReport.data;
+
+
+                        console.log('currNaladka', currNaladka);
+                        console.log('lastReport', lastReport);
+
+                        if (currNaladka['Деталь']['uid'] === lastReport['Деталь']['uid']) {
+                            
+                        }else{
+                            $('#errorsInfo').text(`По последнему отчету на этом станке делали 
+Деталь: ${lastReport['Деталь']['АртикулНаименование']}
+Этап производства : ${lastReport['ЭтапПроизводства']['Наименование']}
+Дата отчета : ${moment(lastReport['ДатаОтчета']).format("DD.MM.YYYY")}`);
+                        }
                     }
                 }, error: function (xhr, status, error) {
                     console.error("Ошибка:", error);
@@ -284,5 +356,9 @@
                 }});
             }
         });
+
+        function isSameObject(obj1, obj2) {
+            return obj1.uid === obj2.uid;
+        }
     });
 </script>

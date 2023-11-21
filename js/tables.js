@@ -128,7 +128,7 @@ async function addNewRow(table, newData) {
         initInputTimeMask(this);
     });
 
-    console.log('addNewRow', newRow, table);
+    //console.log('addNewRow', newRow, table);
     callbackTable2(newData);
 }
 
@@ -204,7 +204,7 @@ callbackTable = async function(data) {
 callbackTable2 = async function(data) {
     const table = $(`#${data.tableID}`);
 
-    console.log('callbackTable2', data.tableID, table, data);
+    //console.log('callbackTable2', data.tableID, table, data);
 
     //const table = $(`#${data.topic}`);
     const row = $(table).find('#' + data.uid);
