@@ -79,3 +79,30 @@
     npm run dev
 
 
+<h3>SSL сертификат</h3>
+
+sudo apt install certbot
+
+sudo systemctl stop webAppQpart
+
+// генерирование сертификата в первый раз
+sudo certbot certonly --standalone -d test.qpart.com.ua -d test.qpart.com.ua
+sudo certbot certonly --standalone -d wss.qpart.com.ua -d wss.qpart.com.ua
+
+//если выскочит ошибка из-за того что порт 80 занят то
+//смотрим кто занял порт
+sudo lsof -i :80
+
+// останавливаем службу если это nginx
+sudo systemctl stop nginx
+
+
+в папке /etc/letsencrypt/live/wss.qpart.com.ua
+ - privkey.pem
+ - fullchain.pem
+
+// перевыпуск сертификата
+sudo certbot renew --dry-run
+
+// полная команда перевыпуска сертификата
+systemctl stop webAppQpart  && certbot renew --dry-run && sudo systemctl start webAppQpart

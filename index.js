@@ -55,8 +55,11 @@ const app = express();
 
 app.set('view engine', 'ejs');
 
-const ssl_key = path.join(__dirname, "certificat", 'key.pem');
-const ssl_cert = path.join(__dirname, "certificat", 'cert.pem');
+//const ssl_key = path.join(__dirname, "certificat", 'key.pem');
+//const ssl_cert = path.join(__dirname, "certificat", 'cert.pem');
+
+const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
+const ssl_cert = path.join("/etc/letsencrypt/live", domian, 'fullchain.pem');
 
 const createPath = (page) => path.resolve(__dirname, 'views', `${page}`);
 
