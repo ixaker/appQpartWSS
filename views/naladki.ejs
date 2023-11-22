@@ -239,31 +239,59 @@
             const lastReport = currNaladka.LastReport.data;
 
             let curentRow = $('#' + currNaladka.uid);
+            let isProblem = false;
+            let listProblem = [];
 
             if (!isSameObject(currNaladka['Деталь'], lastReport['Деталь'])) {
                 //console.log('Деталь не совпадает', curentRow);
                 $(curentRow).find('[name="Деталь"]').addClass('highlight');
+                isProblem = true;
+                listProblem.push(`Деталь: ${lastReport['Деталь']['АртикулНаименование']}`);
             }
 
             if (!isSameObject(currNaladka['ЭтапПроизводства'], lastReport['ЭтапПроизводства'])) {
                 //console.log('Деталь не совпадает', curentRow);
                 $(curentRow).find('[name="ЭтапПроизводства"]').addClass('highlight');
+                isProblem = true;
+                listProblem.push(`Этап производства: ${lastReport['ЭтапПроизводства']['Наименование']}`);
             }
 
             if (lastReport['МашинноеВремя'] > currNaladka['МашинноеВремя']) {
-                $(curentRow).find('[name="МашинноеВремя"]').addClass('highlight');    
+                $(curentRow).find('[name="МашинноеВремя"]').addClass('highlight');
+                isProblem = true; 
+                listProblem.push(`Машинное время: ${lastReport['МашинноеВремя']}`);   
             }
 
             if (lastReport['ПолноеВремя'] > currNaladka['ПолноеВремя']) {
-                $(curentRow).find('[name="ПолноеВремя"]').addClass('highlight');    
+                $(curentRow).find('[name="ПолноеВремя"]').addClass('highlight');
+                isProblem = true;
+                listProblem.push(`Полное время: ${lastReport['ПолноеВремя']}`);    
             }
 
             if (lastReport['КоличествоДеталейЗаОднуУстановку'] !== currNaladka['КоличествоДеталейЗаОднуУстановку']) {
-                $(curentRow).find('[name="КоличествоДеталейЗаОднуУстановку"]').addClass('highlight');    
+                $(curentRow).find('[name="КоличествоДеталейЗаОднуУстановку"]').addClass('highlight');
+                isProblem = true;   
+                listProblem.push(`Кол-во дет за 1 уст: ${lastReport['КоличествоДеталейЗаОднуУстановку']}`); 
             }
 
-            console.log('currNaladka', currNaladka);
-            console.log('lastReport', lastReport);
+            if (isProblem) {
+                $(curentRow).attr("isProblem", isProblem);
+
+                let dateReport = `Дата отчета : ${moment(lastReport['ДатаОтчета']).format("DD.MM.YYYY")}`;
+                let sotrudnik = `Сотрудник : ${lastReport['Сотрудник']['Наименование']}`;
+
+                let textProblem = listProblem.join("\n");
+
+                textProblem = "Последний отчет отличается от наладки" + "\n" + dateReport + "\n" + sotrudnik + "\n" + textProblem;
+
+                $(curentRow).data("textProblem", textProblem);
+                console.log(textProblem);
+            }else{
+                $(curentRow).data("textProblem", "");
+            }
+
+            //console.log('currNaladka', currNaladka);
+            //console.log('lastReport', lastReport);
          }
 
         $('#search').on("input", function() {
@@ -337,17 +365,17 @@
                         const lastReport = response.LastReport.data;
 
 
-                        console.log('currNaladka', currNaladka);
-                        console.log('lastReport', lastReport);
+                        //console.log('currNaladka', currNaladka);
+                        //console.log('lastReport', lastReport);
 
-                        if (currNaladka['Деталь']['uid'] === lastReport['Деталь']['uid']) {
-                            
-                        }else{
-                            $('#errorsInfo').text(`По последнему отчету на этом станке делали 
-Деталь: ${lastReport['Деталь']['АртикулНаименование']}
-Этап производства : ${lastReport['ЭтапПроизводства']['Наименование']}
-Дата отчета : ${moment(lastReport['ДатаОтчета']).format("DD.MM.YYYY")}`);
-                        }
+                        let curentRow = $('#' + response.JSON.uid);
+                        let textProblem = $(curentRow).data("textProblem");
+
+                        $('#errorsInfo').text(textProblem);
+
+                        //console.log('curentRow', curentRow);
+                        //console.log('curentRow', curentRow);
+
                     }
                 }, error: function (xhr, status, error) {
                     console.error("Ошибка:", error);
