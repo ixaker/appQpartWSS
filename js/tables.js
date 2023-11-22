@@ -280,10 +280,20 @@ callbackTable2 = async function(data) {
      
             if ($(table)[0].hasAttribute('sort')) {
                 needSort = true;
+                $(table).trigger("update");
+
                 let columnSort = parseInt($(table).attr('sort'));
 
-                $(table).trigger("update");
-                $(table).trigger("sorton", [[[columnSort, 0]]]);
+                if ($(table)[0].hasAttribute('sort_2')) {
+                    let columnSort_2 = parseInt($(table).attr('sort_2'));
+
+                    $(table).trigger("sorton", [[[columnSort, 0],[columnSort_2, 0]]]);
+                    console.log("sort_2", [[[columnSort, 0],[columnSort_2, 0]]]);
+                }else{
+                    $(table).trigger("sorton", [[[columnSort, 0]]]);
+                }
+
+                
             } 
         }
         

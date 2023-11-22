@@ -3,6 +3,13 @@
         /* font-size: 0.9em; */
     }
 
+    .colunmForEdit{
+        color: gold;
+    }
+
+    .hiddenColumt {
+        display: none;
+    }
     @media (max-width: 800px) {
         #content {
             padding-left: 5px !important;
@@ -41,11 +48,11 @@
         addNevRow="callbackAddNewRow" 
         callbackAfterWrite="callbackAfterWrite" 
         append="end" 
-        init header>
+        sort="3" sort_2="5" init header>
     <tr class="config" style="display: none;">
         <td title="Дата" 
             name="ДатаОтчета" 
-            style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
+            style="width: 55px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
         <td title="Оператор" 
             name="Сотрудник" 
             key="Наименование" 
@@ -53,23 +60,23 @@
         <td title="Станок" 
             name="Станок" 
             key="ИнвентарныйНомер" 
-            style="width: 70px;">
-            <input  type="text" 
+            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
+<!--             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteStanok"   
                     checkValid  
                     class="dataCell textAlignCenter" 
-                    style="padding: 0px;"></td>
+                    style="padding: 0px;"></td> -->
         <td title="Номер детали" 
             name="Деталь" 
             key="АртикулНаименование" 
-            style="width: 100%;">
-            <input  type="text" 
+            style="width: 100%;"><div class="dataCell"></div></td>
+<!--             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteArticle"  
                     checkValid 
-                    class="dataCell"></input></td>
-        <td title="МЛ"  
+                    class="dataCell"></input></td> -->
+<!--         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
             style="width: 60px;">
@@ -78,48 +85,54 @@
                     minLength=0 
                     url="/app/autocompleteZakaz"  
                     checkValid 
-                    class="dataCell textAlignCenter"></input></td>
+                    class="dataCell textAlignCenter"></input></td> -->
         <td title="Этап" 
             name="ЭтапПроизводства" 
             key="КодНовый" 
-            style="width: 70px;">
-            <input  type="text" 
+            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
+        <td title="#" 
+            name="ПорядковыйНомерЭтапа" 
+            headerClass="hiddenColumt" 
+            class="hiddenColumt" 
+            style="width: 50px;"><div class="dataCell textAlignCenter"></div></td>
+<!--             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
                     url="/app/autocompleteCodeOperation"  
                     checkValid 
-                    class="dataCell textAlignCenter"></input></td>
+                    class="dataCell textAlignCenter"></input></td> -->
         <td title="Время маш." 
             name="МашинноеВремя" 
-            style="width: 70px;">
-            <input  type="text" 
+            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
+<!--             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
                     limitHourse="99" 
                     data-mask="99:A9"
-                    class="dataCell textAlignCenter"></input></td>
+                    class="dataCell textAlignCenter"></input></td> -->
         <td title="Время полное" 
             name="ПолноеВремя" 
-            style="width: 70px;">
-            <input  type="text" 
+            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
+<!--             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
                     limitHourse="99" 
                     data-mask="99:A9" 
-                    class="dataCell textAlignCenter"></input></td>
+                    class="dataCell textAlignCenter"></input></td> -->
         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 65px;">
-            <input  type="number" 
+            style="width: 65px;"><div class="dataCell textAlignEnd"></div></td>
+<!--             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
-                    style=""></td>
+                    style=""></td> -->
         <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
+            headerClass="colunmForEdit" 
             style="width: 55px;">
             <input  type="number" 
                     inputmode="numeric"  
@@ -127,7 +140,7 @@
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
                     style=""></td>
-        <td title="Кол-во остаток" 
+<!--         <td title="Кол-во остаток" 
             name="КоличествоОсталосьНаЭтапе" 
             style="width: 70px;">
             <input  type="number" 
@@ -135,9 +148,10 @@
                     checkValid  
                     min="0" 
                     class="dataCell textAlignEnd" 
-                    style=""></td>
+                    style=""></td> -->
         <td title="Готов" 
-            name="Проведен"
+            name="Проведен" 
+            headerClass="colunmForEdit" 
             style="width: 60px;"> 
             <input  type="checkbox" 
                     sync="none" 
@@ -176,6 +190,10 @@
             }
 
             if (!data['ЭтоОтчетОператора']) {
+                result = false;    
+            }
+
+            if (data['КоличествоИзготовлено'] == "0") {
                 result = false;    
             }
 
