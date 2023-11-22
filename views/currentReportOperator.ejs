@@ -154,6 +154,10 @@
         background-color: #FF0000 !important;
     }
 
+    .colunmForEdit{
+        color: gold;
+    }
+
     @media (max-width: 800px) {
         #content {
             padding-left: 5px !important;
@@ -247,6 +251,7 @@
         <td title="Станок" 
             name="Станок" 
             key="ИнвентарныйНомер" 
+            headerClass="colunmForEdit" 
             style="width: 90px;">
             <input  type="text" 
                     minLength=1 
@@ -254,7 +259,7 @@
                     checkValid  
                     class="dataCell textAlignCenter" 
                     style="padding: 0px;"></td>
-        <td title="Номер детали" 
+<!--         <td title="Номер детали" 
             name="Деталь" 
             key="АртикулНаименование" 
             style="width: 100%;">
@@ -263,8 +268,12 @@
                     url="/app/autocompleteArticle"  
                     checkValid 
                     style="min-width: 100px !important;" 
-                    class="dataCell"></input></td>
-        <td title="Этап" 
+                    class="dataCell"></input></td> -->
+        <td title="Деталь" 
+            name="Деталь" 
+            key="АртикулНаименование" 
+            style="width: 100%;"><div class="dataCell"></div></td>
+<!--         <td title="Этап" 
             name="ЭтапПроизводства" 
             key="КодНовый" 
             style="width: 75px;">
@@ -273,8 +282,12 @@
                     minLength=0 
                     url="/app/autocompleteCodeOperation"  
                     checkValid 
-                    class="dataCell textAlignCenter"></input></td>
-        <td title="МЛ"  
+                    class="dataCell textAlignCenter"></input></td> -->
+        <td title="Этап" 
+            name="ЭтапПроизводства" 
+            key="КодНовый" 
+            style="width: 75px;"><div class="dataCell textAlignCenter"></div></td>            
+<!--         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
             style="width: 65px;">
@@ -283,9 +296,10 @@
                     minLength=0 
                     url="/app/autocompleteZakaz"  
                     checkValid 
-                    class="dataCell textAlignCenter"></input></td>
+                    class="dataCell textAlignCenter"></input></td> -->
         <td title="К-во изгот" 
             name="КоличествоИзготовлено" 
+            headerClass="colunmForEdit" 
             style="width: 65px;">
             <input  type="number" 
                     inputmode="numeric"  
@@ -293,7 +307,7 @@
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
                     style=""></td>
-        <td title="Время маш." 
+<!--         <td title="Время маш." 
             name="МашинноеВремя" 
             style="width: 75px;">
             <input  type="text" 
@@ -302,8 +316,8 @@
                     placeholder="мм:сс"
                     limitHourse="99" 
                     data-mask="99:A9"  
-                    class="dataCell textAlignCenter"></input></td>
-        <td title="Время полное" 
+                    class="dataCell textAlignCenter"></input></td> -->
+<!--         <td title="Время полное" 
             name="ПолноеВремя" 
             style="width: 80px;">
             <input  type="text" 
@@ -312,8 +326,8 @@
                     placeholder="мм:сс"
                     limitHourse="99" 
                     data-mask="99:A9" 
-                    class="dataCell textAlignCenter"></input></td>
-        <td title="Дет за 1 уст" 
+                    class="dataCell textAlignCenter"></input></td> -->
+<!--         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
             style="width: 75px; ">
             <input  type="number" 
@@ -321,7 +335,16 @@
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
-                    style=""></td>
+                    style=""></td> -->
+        <td title="Время маш." 
+            name="МашинноеВремя"  
+            style="width: 75px;"><div class="dataCell textAlignCenter" ></div></td>
+        <td title="Время полное" 
+            name="ПолноеВремя" 
+            style="width: 80px;"><div class="dataCell textAlignCenter" ></div></td>
+        <td title="Дет за 1 уст" 
+            name="КоличествоДеталейЗаОднуУстановку" 
+            style="width: 75px;"><div class="dataCell textAlignCenter" ></div></td>
         <td title="Общее время" 
             name="ДлительностьВремя" 
             style="width: 75px;">
@@ -331,12 +354,12 @@
                     placeholder="мм:сс"
                     mask="00:A0" 
                     class="dataCell textAlignCenter"></div></td>
-        <td title="Готов" 
+<!--         <td title="Готов" 
             name="СтатусОператора"
             style="width: 65px;"> 
             <input  type="checkbox" 
                     sync="none" 
-                    class="dataCell checkboxInTable"></td>
+                    class="dataCell checkboxInTable"></td> -->
         <td title="" 
             style="width: 140px;"><div class="groupBtnRow">
                 <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
@@ -348,7 +371,7 @@
     </tr>
 
     <tr id="lastRowSumm">
-        <td colspan="8" class="labelfullTimeAll">Общее время выработки за смену, чч:мм : </td>  
+        <td colspan="7" class="labelfullTimeAll">Общее время выработки за смену, чч:мм : </td>  
         <td id="fullTimeAll">00:00</td> 
         <td colspan="2"></td> 
     </tr>
