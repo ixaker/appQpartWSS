@@ -130,7 +130,7 @@ $(function() {
 });
 
 function loadMenu(userInfo, token) {
-    console.log('start loadMenu', userInfo);
+    //console.log('start loadMenu', userInfo);
 
     user = userInfo;
     auth = true;
@@ -149,7 +149,7 @@ function loadMenu(userInfo, token) {
     reconectWebSocket();
 
     $.get('/app/getUserMenu', function(response) {
-        console.log('/app/getUserMenu', response);
+        //console.log('/app/getUserMenu', response);
 
         const userInfo = response.userInfo;
         //console.log('userInfo', userInfo);
@@ -158,6 +158,7 @@ function loadMenu(userInfo, token) {
         $('#menu').data('userInfo', userInfo);
 
         $('.nav-item a').on('click', function(){    //обработчик кликов меню
+            abortAllRequests();
             $('.navbar-collapse').collapse('hide');    // скрываем меню
             PageUID = $(this).attr("uid");
             PageURL = $(this).attr("url");

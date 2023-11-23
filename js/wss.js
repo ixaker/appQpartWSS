@@ -13,7 +13,7 @@ function sendWSS(action = '', topic = '', payload = '') {
             socket.send(JSON.stringify(msg));
         }
     } catch (error) {
-        console.log('ERROR func: sendWSS', error);
+        //console.log('ERROR func: sendWSS', error);
     }
     
 }
@@ -39,7 +39,7 @@ function addSubscribeWSS(topic){
 }
 
 function reconectWebSocket() {
-    console.log('reconectWebSocket');
+    //console.log('reconectWebSocket');
     disconectWebSocket();
 }
 
@@ -52,7 +52,7 @@ function disconectWebSocket() {
 }
 
 function connectWebSocket(from = 'none') {
-    console.log('start connectWebSocket', from, firstConnection, auth, socket);
+    //console.log('start connectWebSocket', from, firstConnection, auth, socket);
 
     try {
         if (auth) {
@@ -60,11 +60,11 @@ function connectWebSocket(from = 'none') {
                 disconectWebSocket();
             }
 
-            console.log('new WebSocket');
+            //console.log('new WebSocket');
             socket = new WebSocket("wss://" + window.location.host);
 
             socket.addEventListener('open', function(event) {
-                console.log("wss - open");
+                //console.log("wss - open");
                 $('#logo').removeClass('noColorImg');
                 WebSocketConnected = true;
 
@@ -94,12 +94,12 @@ function connectWebSocket(from = 'none') {
                         callbackWSS(msgData);
                     }
                 } catch (error) {
-                    console.log(error);
+                    //console.log(error);
                 }
             });
 
             socket.addEventListener('close', function(event) {
-                console.log("wss - close");
+                //console.log("wss - close");
                 $('#logo').addClass('noColorImg');
                 WebSocketConnected = false;
 

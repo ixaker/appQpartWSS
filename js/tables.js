@@ -26,6 +26,7 @@ async function initTable(table) {
 
     try {
         let param = $(table).data('param')||{};
+        let id_response = $(table).attr('id') + Date.now();
 
         NProgress.start();
 
@@ -47,9 +48,20 @@ async function initTable(table) {
             }
         }, complete: function(response){
             NProgress.done();
+            //console.log('initTable_complete', response, table);
+
+            delete activeRequests[id_response];
+
+        }, beforeSend: function(response) {
+            // Сохраняем объект запроса в глобальную переменную
+            //globalRequest = jqXHR;
+            //console.log('initTable_beforeSend', response, table);
+
+            activeRequests[id_response] = response;             
+
         }});
     } catch (error) {
-        toastr["error"]('Ошибка запроса к 1С'); 
+        //toastr["error"]('Ошибка запроса к 1С'); 
         NProgress.done();           
     }
     //console.log('end initTable');

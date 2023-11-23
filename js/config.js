@@ -4,6 +4,23 @@ let stanok = {};
 let currentMenu = '';
 let auth = false;
 
+// Глобальный объект для хранения активных запросов
+var activeRequests = {};
+
+// Функция для отмены всех активных запросов
+function abortAllRequests() {
+    console.log('********************** abortAllRequests *************************');
+
+    for (var requestId in activeRequests) {
+        if (activeRequests.hasOwnProperty(requestId)) {
+            console.log('abort', requestId);
+            activeRequests[requestId].abort();
+        }
+    }
+    activeRequests = {}; // Очищаем объект после отмены всех запросов
+
+    console.log('********************** abortAllRequests *************************');
+}
 
 $(function() { 
     toastr.options.timeOut = 2000;

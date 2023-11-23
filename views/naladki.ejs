@@ -194,7 +194,7 @@
     <div id="contentInfo">
         <div class="input-group">
             <label for="time" class="labelNewReport" style="width: 150px;">Название станка :</label>
-            <p style="font-weight: 600;">{{JSON.Станок.Наименование}} {{JSON.Станок.Модель}}</p>
+            <p style="font-weight: 600;">{{JSON.Станок.КодНовый}} {{JSON.Станок.Наименование}} {{JSON.Станок.Модель}}</p>
         </div>
 
         <pre id="errorsInfo"></pre>
@@ -226,7 +226,6 @@
         callbackWSS = async function(data){callbackTable(data)};
 
         filter = function(data, result = true) {
-            console.log('callback filter', data);
             try { if ( !data['Проведен'] || data['Станок']['НеРаботает'] ){ result = false; }} catch (error) { console.log(error) };
             return result;
         }
@@ -285,7 +284,7 @@
                 textProblem = "Последний отчет отличается от наладки" + "\n" + dateReport + "\n" + sotrudnik + "\n" + textProblem;
 
                 $(curentRow).data("textProblem", textProblem);
-                console.log(textProblem);
+                //console.log(textProblem);
             }else{
                 $(curentRow).data("textProblem", "");
             }
@@ -349,7 +348,7 @@
                 let rowData = JSON.stringify(data);
 
                 $.ajax({ url: '/app/naladkiInfo', type: 'POST', dataType: 'json', data: rowData, success: function(response) {
-                    console.log('response', response);
+                    //console.log('response', response);
 
                     if (!response.error) {
                         const templateSource = $('#info-template').html();
