@@ -423,6 +423,7 @@ function initInputAutocompleteForTable(element) {
                 }
 
                 if (sync === 'auto') {
+                    row.attr('MD5', '');
                     sendNotificationOnChangeRowTable(this);
                 }
 
