@@ -85,10 +85,17 @@ function connectWebSocket(from = 'none') {
 
                 try {
                     const msgData = JSON.parse(event.data);
-                    //console.log('msgData', msgData);
+                    console.log('msgData', msgData);
 
                     if (msgData.topic === 'notification') {
+                        if (msgData.type === "error") {
+                            toastr.options.positionClass = 'toast-center-error';
+                            toastr.options.timeOut = 10000;
+                        }
+
                         toastr[msgData.type](msgData.text, msgData.title); 
+                        toastr.options.positionClass = 'toast-top-left';
+                        toastr.options.timeOut = 3000;
                         $('#overlay').fadeOut();   
                     } else {
                         callbackWSS(msgData);
