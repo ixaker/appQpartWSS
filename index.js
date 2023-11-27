@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const https = require('https');
 const http = require('http');
 const url = require('url');
@@ -14,8 +16,9 @@ const cookieParser = require('cookie-parser');
 const log = require('./loggerConfig');
 const { exec } = require('child_process');
 const envFilePath = path.join(__dirname, '.env');
-//const sharp = require('sharp');
-//const imageType = require('image-type');
+
+const telegramBot = require('./services/telegramBot.js');
+
 
 exec('kill -9 $(lsof -t -i :443)');
 
@@ -31,11 +34,6 @@ if (!fs.existsSync(envFilePath)) {
   fs.writeFileSync(envFilePath, defaultEnvData);
 }
 
-
-require('dotenv').config();
-
-const botToken = process.env.botToken; // токен Telegram бота
-const chatId = process.env.chatId;
 
 const secret = 'my-secret-key';
 const options = { expiresIn: '1h' };
@@ -261,29 +259,36 @@ app.get('/tabel', (req, res) => {
 });
 
 app.post('/detectFace', async (req, res) => {
-  let result = await findUserOnFoto(req.body);
-  let message = 'no face';
+  let result = "error detectFace"
 
-  log.data('detectFace', result);
+  try {
+    let result = await findUserOnFoto(req.body);
+    let message = 'no face';
 
-  if (result.detectFace) {
-    message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
+    log.data('detectFace', result);
 
-    if (result.uid !== '') {
-      if (result.finded.similarity > 0.72) {
-        result.token = jwt.sign(result.user, secret, options);
+    if (result.detectFace) {
+      message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-        message += `, +++ Detected ${result.user.name}`;
-      }else{
-        const uid = db[result.finded.index].uid;
-        const user = userInfo[uid];
-        message += `, --- Detected ${user.name} - ${result.similarity} `;
+      if (result.uid !== '') {
+        if (result.finded.similarity > 0.72) {
+          result.token = jwt.sign(result.user, secret, options);
+
+          message += `, +++ Detected ${result.user.name}`;
+          telegramBot.sendImageAndMessage(req.body.photo, message);
+        }else{
+          const uid = db[result.finded.index].uid;
+          const user = userInfo[uid];
+          message += `, --- Detected ${user.name} - ${result.similarity} `;
+        }
       }
     }
+  
+    //telegramBot.sendImageAndMessage(req.body.photo, message); 
+  } catch (error) {
+    
   }
-
-  sendTextMessageToTelegramBot(message);
-
+  
   res.send(result);
 });
 
@@ -368,7 +373,6 @@ app.post('/saveFace', async (req, res) => {
   } catch (error) {
       log.error(`Failed to process message: ${error}`);
   }
-  sendTextMessageToTelegramBot(message);
 
   res.send(result);
 });
@@ -677,8 +681,6 @@ async function detectFaceFromBase64(img) {
   log.info('start detectFaceFromBase64');
 
   try {
-      //saveBase64Image(img);
-      sendImageToTelegramBot(img);
       const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
       const buffer = Buffer.from(base64Image, 'base64');
       const result = await detectFaceFromBuffer(buffer);
@@ -942,85 +944,6 @@ function saveUserFoto(uid, base64Data, name) {
     }
   });
 }
-
-//******************************************* Telegram *****************************************
-
-function sendImageToTelegramBot(base64Data) {
-  log.info('start sendImageToTelegramBot');
-
-  try {
-    // Удаляем префикс base64 из данных
-    const base64Image = base64Data.split(';base64,').pop();
-
-    // Преобразуем base64 данные в бинарный формат
-    const binaryData = Buffer.from(base64Image, 'base64');
-
-    // Создаем заголовок Content-Type для multipart/form-data
-    const boundary = '-----FormDataBoundary';
-    const contentType = `multipart/form-data; boundary=${boundary}`;
-
-    // Создаем тело запроса в формате multipart/form-data
-    const body = Buffer.concat([
-      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="chat_id"\r\n\r\n${chatId}\r\n`),
-      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="photo"; filename="image.png"\r\nContent-Type: image/png\r\n\r\n`),
-      binaryData,
-      Buffer.from(`\r\n--${boundary}--`),
-    ]);
-
-    // Опции запроса
-    const options = {
-      method: 'POST',
-      url: `https://api.telegram.org/bot${botToken}/sendPhoto`,
-      headers: {
-        'Content-Type': contentType,
-        'Content-Length': body.length,
-      },
-      data: body,
-    };
-
-    // Отправляем запрос POST с данными картинки
-    axios(options)
-      .then((response) => {
-        log.info('Картинка успешно отправлена в Telegram бота');
-      })
-      .catch((error) => {
-        log.error('Ошибка при отправке картинки в Telegram бота:', error.message);
-        // Вывести статус ошибки (например, 404 или 500)
-        //log.error('Статус ошибки:', error.response.status);
-      });
-  } catch (error) {
-    log.error('Ошибка при отправке картинки в Telegram бота 2:', error);
-  }
-}
-
-function sendTextMessageToTelegramBot(message) {
-  const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-
-  try {
-    const options = {
-      method: 'POST',
-      url: apiUrl,
-      data: {
-        chat_id: chatId,
-        text: message,
-      },
-    };
-  
-    axios(options)
-      .then((response) => {
-        //console.log('Сообщение успешно отправлено в Telegram бота');
-      })
-      .catch((error) => {
-        console.error('Ошибка при отправке сообщения в Telegram бота:', error.message);
-      });
-  } catch (error) {
-    
-  }
-  
-}
-
-// *********************************************************************************************
-
 
 
 

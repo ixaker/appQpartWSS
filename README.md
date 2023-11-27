@@ -106,3 +106,6 @@ sudo certbot renew --dry-run
 
 // полная команда перевыпуска сертификата
 systemctl stop webAppQpart  && certbot renew --dry-run && sudo systemctl start webAppQpart
+
+
+npm install node-telegram-bot-api --save
