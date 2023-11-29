@@ -1,26 +1,25 @@
 require('dotenv').config();
 
 const https = require('https');
-const http = require('http');
 const url = require('url');
 const fs = require('fs');
-const fsp = require('fs').promises;
 const WebSocket = require('ws');
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
-const Human = require('@vladmandic/human');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
-const log = require('./loggerConfig');
 const { exec } = require('child_process');
-const envFilePath = path.join(__dirname, '.env');
 
+// services
+const log         = require('./services/loggerConfig.js');
 const telegramBot = require('./services/telegramBot.js');
-
+const faceID      = require('./services/faceID.js');
 
 exec('kill -9 $(lsof -t -i :443)');
+
+const envFilePath = path.join(__dirname, '.env');
 
 if (!fs.existsSync(envFilePath)) {
   const defaultEnvData = `secret=my-secret-key
@@ -34,76 +33,30 @@ if (!fs.existsSync(envFilePath)) {
   fs.writeFileSync(envFilePath, defaultEnvData);
 }
 
-
 const secret = 'my-secret-key';
 const options = { expiresIn: '1h' };
 
-//const base = 'UTCRM_test';
 const base = process.env.base;
 const API_1C_URL = 'http://10.8.0.3/' + base + '/hs';
 const API_1C_LOGIN = process.env.API_1C_LOGIN;
 const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
 
 const adminRoute = process.env.adminRoute||'admin';
-
 const autoAuthorizationHolub = false;
-
 const domian = process.env.domian;
-const app = express();
-
-app.set('view engine', 'ejs');
-
-//const ssl_key = path.join(__dirname, "certificat", 'key.pem');
-//const ssl_cert = path.join(__dirname, "certificat", 'cert.pem');
 
 const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
 const ssl_cert = path.join("/etc/letsencrypt/live", domian, 'fullchain.pem');
 
 const createPath = (page) => path.resolve(__dirname, 'views', `${page}`);
 
-const embeddingsDataPath = path.join(__dirname, 'embeddings.json');
-const userInfoDataPath = path.join(__dirname, 'userInfoData.json');
-
-let embeddings = null;
-let userInfo = null;
-let human = null;
-let db = null;
-
 let clients = [];
 
-const humanConfig = { // user configuration for human, used to fine-tune behavior
-  cacheSensitivity: 0,
-  modelBasePath: 'file://models/',
-  filter: { 
-    enabled: true, 
-    equalization: true,
-    return: false
-  },
-  debug: true,
-  face: {
-    enabled: true,
-    detector: { 
-      rotation: true, 
-      return: false, 
-      mask: false,
-      minConfidence: 0.82
-     }, // return tensor is used to get detected face image
-    description: { enabled: true }, // default model for face descriptor extraction is faceres
-    // mobilefacenet: { enabled: true, modelPath: 'https://vladmandic.github.io/human-models/models/mobilefacenet.json' }, // alternative model
-    // insightface: { enabled: true, modelPath: 'https://vladmandic.github.io/insightface/models/insightface-mobilenet-swish.json' }, // alternative model
-    iris: { enabled: false }, // needed to determine gaze direction
-    emotion: { enabled: false }, // not needed
-    mesh: { enabled: false },   // not needed
-    antispoof: { enabled: false }, // enable optional antispoof module
-    liveness: { enabled: false }, // enable optional liveness module
-  },
-  body: { enabled: false },
-  hand: { enabled: false },
-  object: { enabled: false },
-  gesture: { enabled: false }, // parses face and iris gestures
-};
-
 // ******************************************* Web сервер *******************************************
+const app = express();
+app.set('view engine', 'ejs');
+//app.set('etag', false);
+
 const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert)}, app);
 
 app.use((req, res, next) => {
@@ -124,29 +77,19 @@ app.use('/foto', express.static('foto'));
 
 app.use(cookieParser());
 
+// Отключаем кэширование
+/* app.use(function(req, res, next) {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+}); */
 
-async function getDataFromMe(path, req, callback) {
-  log.info('getDataFromMe', `https://${domian}${path}`);
-  try {
-    const response = await axios.get(`https://${domian}${path}`, { 
-      headers: { Cookie: 'token=' + req.cookies.token } 
-    });
-    callback(response.data);
-  } catch (error) {
-    log.error('getDataFromMe - error', error);
-  }
-}
 
-// Обработчик запроса главной страницы
+// + Обработчик админского обхода авторизации
 app.get('/adminAuth', (req, res, next) => {
-  //console.log('admin', userInfo['f9c18a95-123c-11ed-81c1-000c29006152']);
-  req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
-  
-  let result = {};
-  result.detectUser = true;
-  result.user = userInfo[req.user.uid];
+  let result = {detectUser: true};
+  result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
   result.token = jwt.sign(result.user, secret, options);
-  //log.info(result);
+
   res.send(result);
 });
 
@@ -156,7 +99,7 @@ function authenticateToken(req, res, next) {
 
 
   if (autoAuthorizationHolub) {
-    req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
+    req.user = faceID.userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
     next();
     return;
   } else {
@@ -241,55 +184,117 @@ app.use('/app', authenticateToken, createProxyMiddleware({
   }
 }));
 
-app.use(express.urlencoded({  limit: '1mb', extended: true }));
-//app.use(express.json());
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
 app.use(express.json({ limit: '10mb' }));
 
-// Обработчик запроса главной страницы
+// + Страничка - Оболочка
 app.get('/', (req, res) => {
   res.sendFile(createPath('index.html'));
 });
 
+// + Страничка - Оболочка с автоматической авторизацией
 app.get('/' + adminRoute, (req, res) => {
   res.sendFile(createPath('admin.html'));
 });
 
-app.get('/tabel', (req, res) => {
-  res.sendFile(createPath('tabel.html'));
-});
+// *******************************************************************************************
 
 app.post('/detectFace', async (req, res) => {
-  let result = "error detectFace"
+  let result = await faceID.findUserOnFoto(req.body);
 
-  try {
-    let result = await findUserOnFoto(req.body);
-    let message = 'no face';
+  if (result.detectFace) {
+    let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-    log.data('detectFace', result);
+    if (result.uid !== '') {
+      if (result.finded.similarity > 0.72) {
+        result.token = jwt.sign(result.user, secret, options);
 
-    if (result.detectFace) {
-      message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
-
-      if (result.uid !== '') {
-        if (result.finded.similarity > 0.72) {
-          result.token = jwt.sign(result.user, secret, options);
-
-          message += `, +++ Detected ${result.user.name}`;
-          telegramBot.sendImageAndMessage(req.body.photo, message);
-        }else{
-          const uid = db[result.finded.index].uid;
-          const user = userInfo[uid];
-          message += `, --- Detected ${user.name} - ${result.similarity} `;
-        }
+        message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
+        telegramBot.sendImageAndMessage(req.body.photo, message);
       }
     }
-  
-    //telegramBot.sendImageAndMessage(req.body.photo, message); 
-  } catch (error) {
-    
-  }
+  } 
   
   res.send(result);
+});
+
+
+app.post('/saveFace', async (req, res) => {
+  log.info('saveFace', req.body);
+  
+  let result = await faceID.findUserOnFoto(req.body, req.body.uid);
+
+  res.send(result);
+});
+
+// Проверка авторизации
+app.post('/authentication', authenticateToken, async (req, res) => {
+  let result = {detectUser: true};
+  result.user = faceID.getUserInfoID(req.user.uid);
+  result.token = jwt.sign(result.user, secret, options);
+
+  res.send(result);
+});
+
+// + Страничка - Список пользователей
+app.get('/users', authenticateToken, function(req, res) {
+  let usersArray = Object.values(faceID.getUserInfo());
+  res.render('users', { users: usersArray });
+});
+
+app.post('/token', authenticateToken, function(req, res) {  
+  const user = faceID.getUserInfoID(req.body.user);
+  const token = jwt.sign(user, secret, options);
+
+  res.send({token:token});
+});
+
+app.post('/deleteFaces', authenticateToken, async (req, res) => {
+  let result = {};
+
+  try {
+    faceID.deleteFotosUserAll(req.body.uid);
+
+    result.user = faceID.getUserInfoID(req.body.uid);
+  } catch (error) {
+    log.error(`Failed to process message: ${error}`);
+  }
+
+  res.send(result);
+});
+
+app.get('/loadUserListFrom1C', authenticateToken, async (req, res) => {
+  let result = await GET_1C('getUserList');  
+
+  await faceID.updateUsersInfo(result.users);
+
+  let usersArray = Object.values(faceID.getUserInfo());
+  res.render('users', { users: usersArray });
+});
+
+app.get('/updateFaceID', authenticateToken, async (req, res) => {
+  let result = await GET_1C('getUserList');  
+
+  await faceID.updateFaceID(result.users);
+
+  let usersArray = Object.values(faceID.getUserInfo());
+  res.render('users', { users: usersArray });
+});
+
+app.get('/userListFoto', authenticateToken, async function(req, res){
+  let files = faceID.getUserFotoList(req.query.UserID);
+  res.send(files);
+});
+
+app.delete('/userListFoto', authenticateToken, async function(req, res){
+  faceID.deleteUserFoto(req.body.UserID, req.body.file);
+  return res.send('{result:"OK"}');
+});
+
+// ***********************************************************************************************
+
+app.get('/tabel', (req, res) => {
+  res.sendFile(createPath('tabel.html'));
 });
 
 // Обработчик запросов из 1С об изменениях данных
@@ -325,103 +330,6 @@ app.post('/dataUpdated', (req, res) => {
     client.socket.send(JSON.stringify(req.body));
   });
 
-});
-
-// Проверка авторизации
-app.post('/authentication', authenticateToken, async (req, res) => {
-  let result = {};
-  result.detectUser = true;
-  result.user = userInfo[req.user.uid];
-  result.token = jwt.sign(result.user, secret, options);
-  res.send(result);
-});
-
-app.get('/users', authenticateToken, function(req, res) {
-  let usersArray = Object.values(userInfo);
-  res.render('users', { users: usersArray });
-});
-
-app.post('/token', authenticateToken, function(req, res) {
-  log.data('body', req.body);
-
-  const uid = req.body.user;
-  
-  const user = userInfo[uid];
-  const token = jwt.sign(user, secret, options);
-
-  res.send({token:token});
-});
-
-//app.post('/saveFace', authenticateToken, async (req, res) => {
-app.post('/saveFace', async (req, res) => {
-  log.info('saveFace', req.body);
-  
-  let result = await findUserOnFoto(req.body, req.body.uid);
-  let message = 'no face';
-  try {
-    log.data('saveFace', result);
-    result.user = userInfo[req.body.uid];
-    if (result.detectFace) {
-      message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
-
-      if (result.finded.similarity > 0.72) {
-        message += `, ${result.user.name}`;
-      }
-    }else{
-      result.user = userInfo[req.body.uid];
-    }
-  } catch (error) {
-      log.error(`Failed to process message: ${error}`);
-  }
-
-  res.send(result);
-});
-
-app.post('/deleteFaces', authenticateToken, async (req, res) => {
-  let result = {};
-
-  try {
-
-    db = db.filter((obj) => obj.uid !== req.body.uid);
-    embeddings = db.map((rec) => rec.embedding);
-    saveDB();
-
-    result.user = userInfo[req.body.uid];
-
-    log.info('req.body.uid', req.body.uid);
-
-    const folderRootPath = path.join(__dirname, 'foto');
-    log.info('folderRootPath', folderRootPath);
-
-    const folderUserPath = path.join(folderRootPath, req.body.uid);
-    log.info('folderUserPath', folderUserPath);
-
-    const nameFiles = await fsp.readdir(folderUserPath);
-
-    log.info('nameFiles', nameFiles);
-
-    await Promise.all(nameFiles.map(async (nameFile) => {
-      const pathToFile = path.join(folderUserPath, nameFile);
-      await fsp.unlink(pathToFile);
-      console.log(`File ${pathToFile} deleted.`);
-    }));
-
-  } catch (error) {
-    log.error(`Failed to process message: ${error}`);
-  }
-
-  res.send(result);
-});
-
-app.get('/loadUserListFrom1C', authenticateToken, async (req, res) => {
-  await getDataFromMe('/app/getUserList', req, (data) => {
-    log.data('getUserList', data);
-    userInfo = data.users.reduce((acc, cur) => { acc[cur.uid] = { ...cur}; return acc; }, {});
-    saveDB();
-  });
-
-  let usersArray = Object.values(userInfo);
-  res.render('users', { users: usersArray });
 });
 
 app.get('/currentReportOperator', authenticateToken, async function(req, res){
@@ -468,93 +376,15 @@ app.get('/12345', authenticateToken, async function(req, res){
   return res.render('12345');
 });
 
-app.get('/userListFoto', authenticateToken, async function(req, res){
-  // Используем метод filter для фильтрации массива
-  const user = db.filter(user => user.uid === req.query.UserID);
-
-  // Теперь результат содержит массив объектов с нужным uid
-  //const files = user.map(user => user.file);
-  const files = user.map(user => (user.file ? user.file : "notFound.png"));
-
-  res.send(files);
-
-
-/*   const userFolderPath = path.join(__dirname, 'foto', req.query.UserID);
-
-  fs.readdir(userFolderPath, (err, files) => {
-    if (err) {
-      res.send([]);
-    }else{
-      log.info('files', files);
-      res.send(files);
-    }
-  }); */
-});
-
-app.delete('/userListFoto', authenticateToken, async function(req, res){
-  log.info('delete userListFoto', req.body);
-  
-  if (req.body.file === 'notFound.png') {
-    log.info('notFound.png');
-
-    let findedElements = 0;
-
-    for (let i = 0; i < db.length; i++) {
-      if (db[i].uid === req.body.UserID) {
-        
-        findedElements++;
-
-        log.info('findedElements', findedElements);
-
-        if (findedElements === parseInt(req.body.indexFoto)) {
-          log.info(db[i], db.length);
-          db.splice(i, 1);
-          embeddings = db.map((rec) => rec.embedding);
-          saveDB();
-          log.info('delete findedElements', i, db.length);
-          break;
-        }
-      }
-    }
-
-    return res.send('{result:"OK2"}');
-  }
-
-  const userFolderPath = path.join(__dirname, 'foto', req.body.UserID);
-  const userFotoPath = path.join(userFolderPath, req.body.file);
-
-  fs.unlink(userFotoPath, (err) => {
-    if (err) {
-      console.error('Ошибка при удалении файла:', err);
-      return res.sendStatus(401);
-    }else{
-
-      db = db.filter(user => !(user.uid === req.body.UserID && user.file === req.body.file));
-
-
-      //var indexEmbedding = parseInt(req.body.file.slice(0, req.body.file.lastIndexOf(".")));
-
-      //db.splice(indexEmbedding, 1);
-      embeddings = db.map((rec) => rec.embedding);
-      saveDB();
-
-      console.log('Файл успешно удален');
-      return res.send('{result:"OK"}');
-    }
-  });
-});
-
+// Error
 app.use((req, res) => {
   res.status(404).sendFile(createPath('error.html'));
 });
 
 app.use((err, req, res, next) => {
-  // Обработка ошибки
-  console.error(err);
-
-  // Отправка клиенту сообщения об ошибке
   res.status(500).send("Произошла ошибка на сервере.");
 });
+
 
 // ******************************************* WebSocket *******************************************
 const wss = new WebSocket.Server({ server: httpsServer });
@@ -667,233 +497,46 @@ wss.on('connection', (ws, request) => {
   ws.on('error', (error) => {
     log.error(`WebSocket error: ${error}`);
   });
-  // Пример отправки сообщения клиенту
-  //ws.send('Welcome to the WSS server!');
 });
 
 wss.on('error', (error) => {
   log.error(`WebSocket server error: ${error}`);
 });
 
-//********************************************* human **********************************/
-
-async function detectFaceFromBase64(img) {
-  log.info('start detectFaceFromBase64');
-
-  try {
-      const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
-      const buffer = Buffer.from(base64Image, 'base64');
-      const result = await detectFaceFromBuffer(buffer);
-
-      return result;
-  } catch (error) {
-      log.error(error);
-  }
-  
-  return {};
-}
-
-async function detectFaceFromBuffer(buffer) {
-  const tensor = human.tf.node.decodeImage(buffer);
-  const result = await human.detect(tensor, humanConfig);
-  human.tf.dispose(tensor);
-
-  return result;
-}
-
-async function findUserOnFoto(body, forUserUID = '') {
-  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID:forUserUID };
-
-  try {
-    if ('photo' in body) {
-      const detection = await detectFaceFromBase64(body.photo);
-
-      if(detection.face.length == 1){
-        const embedding = detection.face[0].embedding;
-        result.finded = await human.match.find(embedding, embeddings);
-        result.similarity = result.finded.similarity.toFixed(2);
-        result.score = detection.face[0].score;
-        result.detectFace = true;
-        result.index = result.finded.index;
-
-        
-        if (result.index > -1) {
-          result.uid = db[result.index].uid||'';
-
-          //log.info(db[result.index]);
-        }
-        
-        if (forUserUID !== '') {
-          result.forUser = userInfo[forUserUID];
-          //result.uid = forUserUID;
-          result.uid = '';
-
-          log.info('forUserUID !==', result.uid, forUserUID)
-
-          if (result.uid === '') {
-            result.uid = forUserUID;
-            result.addedFoto = true;
-          }else{
-            if (result.uid !== forUserUID && result.finded.similarity < 0.6) {
-              result.userError = userInfo[result.uid];
-              result.uid = forUserUID;
-              result.comment = 'result.uid !== forUserUID';
-
-              result.addedFoto = true;
-            }
-          }
-        }
-
-        if (result.uid === '') {
-          
-        }else{
-          if (result.finded.similarity > 0.72) {
-            result.user = userInfo[result.uid];
-            result.detectUser = true
-
-            if(result.finded.similarity < 0.98){
-              if (result.user.count < 40) {
-                result.addedFoto = true;
-              }
-            }
-          }
-        }
-        
-        if (result.addedFoto) {
-          const file = `${Date.now()}.png`;
-          const newEmbedding = {uid: result.uid, embedding: embedding, file:file};
-          db.push(newEmbedding)
-          embeddings = db.map((rec) => rec.embedding);
-          saveDB();
-          saveUserFoto(result.uid, body.photo, file);
-        }
-      }else{
-        result.error = true;
-      }
-    }else{
-      result.error = true;
-    }
-  } catch (error) {
-    log.error(`Failed to process findUserOnFoto: ${error}`, result);
-    result.exception = true;
-  }
-
-  return result;
-}
-
 //********************************************* main ******************************************/
 
+async function GET_1C(path) {
+  try {
+    const response = await axios.get(`${API_1C_URL}/app/${path}`, {
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data; // Возвращаем данные ответа
+  } catch (error) {
+    console.error('Ошибка при выполнении GET_1C:', error); // Логирование ошибки
+    return {}; // Возвращаем пустой объект в случае ошибки
+  }
+}
+
 async function main() {
-  human = new Human.Human(humanConfig); // create instance of human
+  await faceID.initHuman();
 
-  await human.tf.ready();
-  await human.load();
-  await human.warmup();
-
-  await initDB();
-  
   // Запуск сервера
   httpsServer.listen(443, () => {
     log.info('Secure server is running on port 443');
   });
-
-  log.info('human.config', human.config);
 }
 
-async function calcCount() {
-  for (let key in userInfo) {
-    userInfo[key].count = 0;
-
-    db.forEach((info) => {
-      if (info.uid == key) {
-        userInfo[key].count += 1;
-      }
-    });
-  }
-}
-
-async function initDB() {
-  try {
-      if (!fs.existsSync(embeddingsDataPath)) {
-        const DataDB = JSON.stringify([], null, 2);
-        fs.writeFileSync(embeddingsDataPath, DataDB);
-      }
-
-
-      const loadedEmbeddingsData = fs.readFileSync(embeddingsDataPath);
-      db = JSON.parse(loadedEmbeddingsData);
-      db = db.filter(obj => 'uid' in obj);
-
-      embeddings = db.map((rec) => rec.embedding);
-  } catch (error) {
-      log.error(error);
-      db = [];
-      embeddings = [];
-  }
-
-  try {
-      if (!fs.existsSync(userInfoDataPath)) {
-        const DataUserInfo = JSON.stringify([], null, 2);
-        fs.writeFileSync(userInfoDataPath, DataUserInfo);
-      }
-
-      const loadedUserInfoData = fs.readFileSync(userInfoDataPath); // Чтение данных из файла
-      userInfo = JSON.parse(loadedUserInfoData);
-  } catch (error) {
-      log.error(error);
-      userInfo = {};
-  }
-
-
-  if (Object.keys(userInfo).length == 0) {
-    userInfo['f9c18a95-123c-11ed-81c1-000c29006152'] = {
-      "name": "Голуб Виталий",
-      "uid": "f9c18a95-123c-11ed-81c1-000c29006152",
-      "count": 0,
-      "isAdmin": false,
-      "profa": "Программист",
-      "menu": ""
-    };
-  }
-
-  calcCount();
-
-  log.data(`Loaded from file :`, 'userInfo:', Object.keys(userInfo).length, 'embeddings:', embeddings.length);
-}
-
-async function saveDB() {
-  log.info('start - saveDB()');
-  try {
-      calcCount();
-
-      const DataDB = JSON.stringify(db, null, 2);
-      fs.writeFileSync(embeddingsDataPath, DataDB);
-
-      const userInfoData = JSON.stringify(userInfo, null, 2);
-      fs.writeFileSync(userInfoDataPath, userInfoData);
-
-      log.data(`Saved to file`, 'userInfo:', Object.keys(userInfo).length, 'embeddings:', embeddings.length);
-  } catch (error) {
-      log.error(error);
-  }
-}
-
-main();
 
 // Проверка соединений на "живость"
 setInterval(() => {
   let clientsForLog = clients.map(c => {
-    // Создаем новый объект с теми же свойствами, что и c
     let clientCopy = {...c};
-  
-    // Удаляем свойство socket
     delete clientCopy.socket;
-  
     return clientCopy;
   });
-
-  //log.data('clients', clientsForLog);
-  //log.info('Check wss connections', wss.clients.size);
 
   wss.clients.forEach((ws) => {
     if (!ws.isAlive){
@@ -905,45 +548,5 @@ setInterval(() => {
   });
 }, 10000);
 
-function saveBase64Image(base64Data) {
-  const folderPath = path.join(__dirname, 'foto');
-  if (!fs.existsSync(folderPath)) {fs.mkdirSync(folderPath);}
-  
-  const fileName = `image_${Date.now()}.png`;
-  const filePath = path.join(folderPath, fileName);
 
-  const base64Image = base64Data.split(';base64,').pop();
-  const binaryData = Buffer.from(base64Image, 'base64');
-
-  fs.writeFile(filePath, binaryData, 'binary', (err) => {
-    if (err) {
-      log.error(err);
-    } else {
-      log.info(`Изображение успешно сохранено в ${filePath}`);
-    }
-  });
-}
-
-function saveUserFoto(uid, base64Data, name) {
-  const folderRootPath = path.join(__dirname, 'foto');
-  if (!fs.existsSync(folderRootPath)) {fs.mkdirSync(folderRootPath);}
-  
-  const folderUserPath = path.join(folderRootPath, uid);
-  if (!fs.existsSync(folderUserPath)) {fs.mkdirSync(folderUserPath);}
-
-  const filePath = path.join(folderUserPath, name);
-
-  const base64Image = base64Data.split(';base64,').pop();
-  const binaryData = Buffer.from(base64Image, 'base64');
-
-  fs.writeFile(filePath, binaryData, 'binary', (err) => {
-    if (err) {
-      log.error(err);
-    } else {
-      log.info(`Изображение успешно сохранено в ${filePath}`);
-    }
-  });
-}
-
-
-
+main();

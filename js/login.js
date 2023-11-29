@@ -4,12 +4,16 @@ let oldPageUID = localStorage.getItem('PageUID')||false;
 
 let loadedDataListeners = true;
 
+var couterRequest = 0;
+
 function startCamera() {
     console.log("start startCamera");
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
             video.srcObject = stream;
+
+            couterRequest = 0;
 
             $('#btnStartVideo').hide();
             $('#video').show();
@@ -78,16 +82,21 @@ function uploadPhoto() {
         canvas.toBlob(function(blob) {
             const reader = new FileReader();
             reader.onloadend = function() {
-                $.post('/detectFace', { photo: reader.result }, function(response) {
+                couterRequest += 1;
+                $.post('/detectFace', { photo: reader.result, counter:couterRequest }, function(response) {
                     console.log('/detectFace', response);
+
+                    toastr.success(response.similarity);
 
                     if(response.detectUser){
                         loadMenu(response.user, response.token);
                     }
                 }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
                     console.log("error - /detectFace");
+                    toastr.error(textStatus);
                 }).always(function() {
                     NProgress.done();
+
 
                     setTimeout(() => {
                         uploadPhoto();    

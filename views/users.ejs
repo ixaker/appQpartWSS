@@ -20,6 +20,13 @@
         margin-right: 10px;
     }
 
+    #btnUpdateFaceID {
+        margin: auto;
+        white-space: nowrap;
+        margin-left: 0px;
+        margin-right: 10px;
+    }
+
     #usersContainer {
         margin-top: 20px;
     }
@@ -162,12 +169,25 @@
     }
 
     @media (max-width: 650px) {
+        #content {
+            min-width: 375px;
+        }
+
         #userListContent {
-            max-width: 600px;
+            max-width: 350px;
+            margin-left: 5px;
+        }
+
+        .userFoto{
+            width: 144px;
+        }
+
+        .userNameText{
+            display: block !important;
         }
 
         .groupSearch {
-            width: 300px;
+            width: 100%;
         }
 
         .userMenuFaceID {
@@ -180,8 +200,13 @@
         }
 
         .btn {
-            font-size: 0.9em;
-            padding: 3px;
+            /* font-size: 0.9em; */
+            padding: 5px;
+            margin-bottom: 10px !important;
+        }
+
+        #groupBtn {
+            display: block !important;
         }
     }
 
@@ -201,12 +226,19 @@
         border-radius: 5px;
         margin-top: 18px;
     }
+
+    #groupBtn {
+        display: flex;
+    }
+
+
 </style>
 
 <div id="userListContent">
 
-    <div style="display: flex;">
+    <div id="groupBtn">
         <button id="btnLoadUserList" type="button" class="btn btn-secondary btn-lg mainColor" onclick="loadUserListFrom1C()">Загрузить список из 1С</button>
+        <button id="btnUpdateFaceID" type="button" class="btn btn-secondary btn-lg mainColor" onclick="updateFaceID()">Обновить FaceID</button>
 
         <div class="input-group rounded groupSearch">
             <input type="search" id="search" class="form-control rounded" placeholder="Поиск по ФИО и должности" aria-label="Search" aria-describedby="search-addon" />
@@ -229,9 +261,9 @@
                 </div>
                 <div class="userActions">
                     <div class="work"   <% if (user.work) { %>
-                                            style="background-color: lightgrey;"   
+                                            style="background-color: chartreuse;"   
                                         <% } else { %>
-                                            style="background-color: chartreuse;" 
+                                            style="background-color: lightgrey;" 
                                         <% } %>></div>
                     <button class="btn btn-outline-dark btnUserEdit" onclick="loginUser('<%= user.uid %>')">Залогиниться</button>
                     <button class="btn btn-outline-dark btnUserEdit" onclick="deletePhotos('<%= user.uid %>')">Удалить все фото</button>
@@ -388,9 +420,44 @@
     function loadUserListFrom1C() {
         NProgress.start();
 
-        $.get('/loadUserListFrom1C', function(response) {
-            NProgress.done();
-            $('#content').html(response);
+        $.ajax({
+            url: '/loadUserListFrom1C',
+            type: 'GET',
+            timeout: 5000, // 30 секунд
+            success: function(response) {
+                NProgress.done();
+                $('#content').html(response);
+            },
+            error: function(xhr, status, error) {
+                NProgress.done();
+                if(status === "timeout") {
+                    console.log("Запрос превысил максимальное время ожидания");
+                } else {
+                    console.log("Произошла ошибка: " + error);
+                }
+            }
+        });
+    }
+
+    function updateFaceID() {
+        NProgress.start();
+
+        $.ajax({
+            url: '/updateFaceID',
+            type: 'GET',
+            timeout: 200000, // 30 секунд
+            success: function(response) {
+                NProgress.done();
+                $('#content').html(response);
+            },
+            error: function(xhr, status, error) {
+                NProgress.done();
+                if(status === "timeout") {
+                    console.log("Запрос превысил максимальное время ожидания");
+                } else {
+                    console.log("Произошла ошибка: " + error);
+                }
+            }
         });
     }
 
@@ -470,9 +537,9 @@
                                 let newFoto = $(`<img class="userFoto" src="" alt="${item}" indexFoto="${indexFoto}">`);
 
                                 if (item === 'notFound.png') {
-                                    newFoto = $(`<img class="userFoto" src="${item}" alt="${item}" indexFoto="${indexFoto}">`);
+                                    newFoto = $(`<img class="userFoto" src="${item}" alt="${item}" title="${item}" indexFoto="${indexFoto}">`);
                                 }else{
-                                    newFoto = $(`<img class="userFoto" src="/foto/${newUserID}/${item}" alt="${item}" indexFoto="${indexFoto}">`);
+                                    newFoto = $(`<img class="userFoto" src="/foto/${newUserID}/${item}" alt="${item}" title="${item}" indexFoto="${indexFoto}">`);
                                 }
 
                                 $('#userFoto').append(newFoto);

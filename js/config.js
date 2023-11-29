@@ -23,7 +23,7 @@ function abortAllRequests() {
 }
 
 $(function() { 
-    toastr.options.timeOut = 400000;
+    toastr.options.timeOut = 3000;
     toastr.options.positionClass = 'toast-top-left';
     NProgress.configure({ showSpinner: false });
 
