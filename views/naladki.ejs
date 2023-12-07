@@ -79,7 +79,9 @@
         margin-bottom: 10px;
     }
     
-
+    .stanokON {
+        background-color: chartreuse;
+    }
 
 
     @media (max-width: 650px) {
@@ -147,7 +149,13 @@
             name="Станок"
             key="ИнвентарныйНомер" 
             rowspan="1" 
+            class="stanok"
             style="width: 25px;"><div class="dataCell textAlignCenter"></div></td>
+<!--         <td title="Вкл" 
+            name="Станок"
+            key="Включен" 
+            rowspan="1" 
+            style="width: 25px;"><div class="dataCell textAlignCenter"></div></td> -->
         <td title="Деталь" 
             name="Деталь" 
             key="АртикулНаименование" 
@@ -232,7 +240,7 @@
 
         addNevRow = function(data) { }
         callbackAfterWrite = function(data) {
-            //console.log('callbackAfterWrite', data);
+            console.log('callbackAfterWrite', data);
 
             const currNaladka = data.data; 
             const lastReport = currNaladka.LastReport.data;
@@ -287,6 +295,14 @@
                 //console.log(textProblem);
             }else{
                 $(curentRow).data("textProblem", "");
+            }
+
+            if(data.data['Станок']['Включен']){
+                let stanok = $(curentRow).find('.stanok');
+                console.log(stanok);
+                $(curentRow).find('.stanok').addClass('stanokON');
+            }else{
+                $(curentRow).find('.stanok').addClass('stanokOFF');
             }
 
             //console.log('currNaladka', currNaladka);
