@@ -90,11 +90,13 @@ app.get('/adminAuth', (req, res, next) => {
   result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
   result.token = jwt.sign(result.user, secret, options);
 
+  log.data('/adminAuth', result);
+
   res.send(result);
 });
 
 function authenticateToken(req, res, next) {
-  //log.info('authenticateToken', 'req', req);
+  log.info('authenticateToken', 'req', req.user);
 
 
 
@@ -104,9 +106,9 @@ function authenticateToken(req, res, next) {
     return;
   } else {
     const token = req.cookies.token;
-/*     log.data('authenticateToken', token);
+    log.data('authenticateToken', token);
     log.data('authenticateToken', req.user);
-    log.data('authenticateToken', req.cookies); */
+    log.data('authenticateToken', req.cookies);
 
     if (token == null) {
       //req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
@@ -202,19 +204,22 @@ app.get('/' + adminRoute, (req, res) => {
 app.post('/detectFace', async (req, res) => {
   let result = await faceID.findUserOnFoto(req.body);
 
-  if (result.detectFace) {
-    let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
+  try {
+    if (result.detectFace) {
+      let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
-    if (result.uid !== '') {
-      if (result.finded.similarity > 0.72) {
-        result.token = jwt.sign(result.user, secret, options);
+      if (result.uid !== '') {
+        if (result.finded.similarity > 0.72) {
+          result.token = jwt.sign(result.user, secret, options);
 
-        message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
-        telegramBot.sendImageAndMessage(req.body.photo, message);
+          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
+          telegramBot.sendImageAndMessage(req.body.photo, message);
+        }
       }
-    }
-  } 
-  
+    } 
+  } catch (error) {
+      
+  }
   res.send(result);
 });
 
@@ -229,6 +234,7 @@ app.post('/saveFace', async (req, res) => {
 
 // Проверка авторизации
 app.post('/authentication', authenticateToken, async (req, res) => {
+  log.info('/authentication', req.user);
   let result = {detectUser: true};
   result.user = faceID.getUserInfoID(req.user.uid);
   result.token = jwt.sign(result.user, secret, options);
@@ -413,7 +419,7 @@ wss.on('connection', (ws, request) => {
       let client = clients.find(c => c.socket === ws);
       let { action, topic, payload, user } = JSON.parse(message);
 
-      //log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
+      log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
 
       if (action === 'subscribe') {
         client.subscriptions.push(topic);

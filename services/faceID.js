@@ -270,6 +270,7 @@ function getUserInfo() {
 }
 
 function getUserInfoID(id) {
+    log.info('getUserInfoID ()', id, userInfo[id]);
     return userInfo[id];
 }
 
