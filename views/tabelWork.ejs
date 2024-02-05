@@ -124,11 +124,13 @@
 
                 $('#date').val(response['Период']);     
 
+                /* <div class="workTime">${day['ВремяПрихода']} - ${day['ВремяУхода']}</div> */
+
                 response.days.forEach((day) => {
                     console.log('day', day);
                     let elemDay = $(`<h3 style="display: flex;">
-                                        <div class="workDay">${day.dateLabel}</div>
-                                        <div class="workTime">${day['ВремяПрихода']} - ${day['ВремяУхода']}</div>
+                                        <div class="workDay">${day.dateLabel}</div> 
+                                        <div class="workTime"></div>
                                         <div class="reportsTime">${day['ВремяВыработкиЗаДеньПоОтчетамСтрокой']}</div>
                                         <div class="tabelTime">${day['ИтогЧасовЗаДеньПоТабелюСтрокой']}</div>
                                     </h3>`);
