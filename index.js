@@ -83,6 +83,13 @@ app.use(cookieParser());
   next();
 }); */
 
+// + Обработчик админского обхода авторизации
+app.get('/uploadPhoto', (req, res, next) => {
+  log.info('get uploadPhoto');
+  res.sendFile(createPath('uploadPhoto.html'));  
+});
+
+
 
 // + Обработчик админского обхода авторизации
 app.get('/adminAuth', (req, res, next) => {
@@ -143,6 +150,8 @@ app.use((err, req, res, next) => {
 	next();
 });
 
+
+
 app.use((req, res, next) => {
   log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
   //log.data('cookies', req.cookies);
@@ -199,6 +208,22 @@ app.get('/' + adminRoute, (req, res) => {
   res.sendFile(createPath('admin.html'));
 });
 
+app.post('/uploadPhoto', async (req, res) => {
+  log.info('post uploadPhoto', req.body);
+
+  await axios.post(`${API_1C_URL}/app/uploadPhotoNomenklatura`, req.body, {
+    headers: {
+      'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
+      'Content-Type': 'application/json'
+    }
+  }).then((response) => {
+    log.data('uploadPhoto response', response.data);
+  }).catch((error) => {
+    log.error('catch uploadPhoto error', error);
+  });
+
+  res.send("OK");  
+});
 // *******************************************************************************************
 
 app.post('/detectFace', async (req, res) => {
