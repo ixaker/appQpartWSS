@@ -27,7 +27,7 @@
 
     .reportsTime {
         margin-left: 50px;
-        width: 140px;
+        width: 170px;
     }
 
     .tabelTime {
@@ -162,8 +162,8 @@
 
                         day.reports.forEach((report) => {
                             //console.log('report', report, report['Деталь']['Артикул']);
-                            let количествоГодных = Number(report['КоличествоГодных']); // Преобразование в число, если это строка
-                            let суммаОплатыЗаДетальНаЭтапе = Number(report['СуммаОплатыЗаДетальНаЭтапе']); // То же самое здесь
+                            let количествоГодных = Number(report['КоличествоГодных'].replace(',', '.')); // Преобразование в число, если это строка
+                            let суммаОплатыЗаДетальНаЭтапе = Number(report['СуммаОплатыЗаДетальНаЭтапе'].replace(',', '.')); // То же самое здесь
                             let результатУмножения = количествоГодных * суммаОплатыЗаДетальНаЭтапе; // Математическая операция
                             summForDay += результатУмножения;
                             результатУмножения = результатУмножения.toFixed(2);
@@ -176,7 +176,7 @@
                                 <td class="textAlignEnd">${report['КоличествоИзготовлено']}</td>
                                 <td class="textAlignEnd">${report['КоличествоБрака']}</td>
                                 <td class="textAlignEnd">${report['КоличествоГодных']}</td>
-                                <td class="textAlignEnd">${суммаОплатыЗаДетальНаЭтапе}</td>
+                                <td class="textAlignEnd">${report['СуммаОплатыЗаДетальНаЭтапе']}</td>
                                 <td class="textAlignEnd">${результатУмножения}</td>
                             </tr>`);
 
