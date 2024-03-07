@@ -36,7 +36,7 @@
     }
 
     .totalInfo {
-        margin-top: 15px;
+        margin-top: 8px;
     }
 </style>
 
@@ -99,6 +99,8 @@
         })
 
         function updateInfo() {
+            console.log('updateInfo');
+
             NProgress.start();
 
             $.ajax({ url: '/app/tabelWork', type: 'GET', data: {week:week}, dataType: 'json', success: function(response) {
@@ -106,6 +108,7 @@
 
                 if(accordion){
                     try {
+                        console.log('destroy');
                         $( "#containerResult" ).accordion("destroy");
                     } catch (error) {
                         
@@ -126,8 +129,10 @@
 
                 /* <div class="workTime">${day['ВремяПрихода']} - ${day['ВремяУхода']}</div> */
 
+                let summForWeek = 0;
+
                 response.days.forEach((day) => {
-                    console.log('day', day);
+                    //console.log('day', day);
                     let elemDay = $(`<h3 style="display: flex;">
                                         <div class="workDay">${day.dateLabel}</div> 
                                         <div class="workTime"></div>
@@ -140,31 +145,56 @@
 
                     if (day.reports.length > 0) {
                         let elemDayReports = $(`<table><thead><tr>
+                                                    <th style="width:70px;">Станок</th>
                                                     <th>Деталь</th>
-                                                    <th style="width:90px;">Станок</th>
-                                                    <th style="width:115px;">Кол-во изготовлено</th>
-                                                    <th style="width:90px;">Кол-во годных</th>
-                                                    <th style="width:135px;">Полное время, мм:сс</th>
-                                                    <th style="width:130px;">Общее время, чч:мм</th>
+                                                    <th style="width:70px;">Этап</th>
+                                                    <th style="width:75px;">Кол-во сделано</th>
+                                                    <th style="width:70px;">Кол-во брака</th>
+                                                    <th style="width:70px;">Кол-во годных</th>
+                                                    <th style="width:70px;">Цена</th>
+                                                    <th style="width:70px;">Сумма</th>
                                                 </tr></thead><tbody></tbody></table>`);
 
                         $(elemDayInfo).append(elemDayReports);
 
                         let elemTbody = $(elemDayInfo).find('tbody');
+                        let summForDay = 0;
 
                         day.reports.forEach((report) => {
-                            console.log('report', report, report['Деталь']['Артикул']);
+                            //console.log('report', report, report['Деталь']['Артикул']);
+                            let количествоГодных = Number(report['КоличествоГодных']); // Преобразование в число, если это строка
+                            let суммаОплатыЗаДетальНаЭтапе = Number(report['СуммаОплатыЗаДетальНаЭтапе']); // То же самое здесь
+                            let результатУмножения = количествоГодных * суммаОплатыЗаДетальНаЭтапе; // Математическая операция
+                            summForDay += результатУмножения;
+                            результатУмножения = результатУмножения.toFixed(2);
+                            суммаОплатыЗаДетальНаЭтапе = суммаОплатыЗаДетальНаЭтапе.toFixed(2);
+
                             let elemDataRow = $(`<tr>
-                                <td>${report['Деталь']['Артикул']}</td>
                                 <td class="textAlignCenter">${report['Станок']['ИнвентарныйНомер']}</td>
+                                <td>${report['Деталь']['Артикул']}</td>
+                                <td class="textAlignCenter">${report['ЭтапПроизводства']['КодНовый']}</td>
                                 <td class="textAlignEnd">${report['КоличествоИзготовлено']}</td>
+                                <td class="textAlignEnd">${report['КоличествоБрака']}</td>
                                 <td class="textAlignEnd">${report['КоличествоГодных']}</td>
-                                <td class="textAlignCenter">${report['ПолноеВремя']}</td>
-                                <td class="textAlignCenter">${report['ДлительностьВремя']}</td>
+                                <td class="textAlignEnd">${суммаОплатыЗаДетальНаЭтапе}</td>
+                                <td class="textAlignEnd">${результатУмножения}</td>
                             </tr>`);
-                            console.log('elemDataRow', elemDataRow);
+
+                            //<td class="textAlignEnd">${report['СуммаЗаВсеДетали']}</td>
+                            //console.log('elemDataRow', elemDataRow);
                             $(elemTbody).append(elemDataRow);
                         })
+
+                        summForWeek += summForDay;
+                        summForDay = summForDay.toFixed(2);
+                        let elemDataRow = $(`<tr class="lastRowSumm">
+                            <td colspan="7" class="textAlignEnd" style="border: none;">Всего:</td>
+                            <td class="textAlignEnd" style="border: none;">${summForDay}</td>
+                        </tr>`);
+
+                        $(elemTbody).append(elemDataRow);
+
+                        $(elemDay).find('.reportsTime').text('По отчетам : ' + summForDay);
                     }
                     
                 });
@@ -175,9 +205,15 @@
                     active: false
                 });
 
+                let summForWeekStr = summForWeek.toFixed(2);
 
-                let elemTotal = $(`<h4 class="totalInfo">${response['ИтоговаяСтрока']}</h4>`);
+                $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Премия']}</h4>`));
+                $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Удержано']}</h4>`));
+
+                let elemTotal = $(`<h4 class="totalInfo textAlignEnd">${response['ИтоговаяСтрока']}</h4>`);
                 $('#containerResult').append(elemTotal);
+
+                $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Долг']}</h4>`));
 
                 accordion = true;
             },complete: function(xhr, status) {
