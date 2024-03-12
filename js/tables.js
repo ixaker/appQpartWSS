@@ -237,6 +237,8 @@ callbackTable2 = async function(data) {
         $(row).data('data', data);
 
         if (await reportChanged(row, newData) && visible) {
+            callbackFromAttr(table, 'callbackAddNewRow', row);
+
             $(row).children().children().each(function() {
                 let dataCell = this;
                 let name = $(dataCell).attr('name');

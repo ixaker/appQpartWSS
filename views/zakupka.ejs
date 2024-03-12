@@ -1,5 +1,455 @@
 <style>
+    #ЗаявкаНаЗакупку {
+        font-size: 0.9em;
+    }
 
+    td {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    #commandPanel {
+        display: flex;
+        margin-top: -5px;
+    }
+
+    .titlePage {
+        line-height: 64px;
+    }
+
+    #addNew {
+        margin-left: auto;
+        font-size: xxx-large;
+        color: #007431;
+        margin-right: 10px;
+    }
+
+    #formNew {
+        max-width: 400px;
+        margin: auto;
+        margin-bottom: 30px;
+        background-color: aliceblue;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+    }
+
+    #saveNew {
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .itemComent{
+        border: 1px solid #aaa;
+        border-radius: 10px;
+        /* margin: 10px; */
+        margin: 5px 0;
+        padding: 5px 10px;
+        background-color: white;
+    }
+
+    #infoForm{
+        max-width: 500px;
+        margin: auto;
+        padding: 0px 5px;
+        user-select: text;
+    }
+
+    #textFull{
+        margin: 5px 0;
+        white-space: break-spaces;
+    }
+
+    #kod{
+/*         border: 1px solid #aaa;
+        border-radius: 3px;
+        padding: 1px 5px; */
+        margin-right: 30px;
+        font-weight: 600;
+        margin-left: 5px;
+    }
+
+    #status{
+/*         border: 1px solid #aaa;
+        border-radius: 3px;
+        padding: 1px 5px; */
+        margin-right: 30px;
+        font-weight: 600;
+        margin-left: 5px;
+    }
+
+    #priority{
+        /* margin-right: 30px; */
+        font-weight: 600;
+        /* margin-left: 5px; */
+    }
+
+    .srochno{
+        color: red;
+        margin-left: auto;
+    }
+
+    #cancelZayavka{
+        margin-left: auto;
+    }
+
+    #doneZayavka{
+        margin-left: 30px;
+    }
 </style>
 
-<h3 class="titlePage" >Заявки на закупку</h3>
+<div id="commandPanel">
+    <h3 class="titlePage" >Заявки на закупку</h3>
+    <i class="bi bi-plus-circle" id="addNew"></i>
+</div>
+
+<div id="formNew" style="display: none;">
+    <h5 style="margin-bottom: 20px; font-weight: bold; text-align: center;">Новая заявка на закупку</h5>
+
+    <textarea id="textNew" style="width: 100%;"></textarea>
+
+    <div style="display: flex; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" id="setPriority">Срочно</button>
+        <button type="button" class="btn btn-success" id="saveNew">Сохранить</button>
+        <button type="button" class="btn btn-secondary" id="cancelNew">Отмена</button>
+    </div>
+</div>
+
+<table  id="ЗаявкаНаЗакупку" 
+        url="/app/zakupka" 
+        callbackBeforeInitTable="callbackBeforeDone" 
+        filter="callbackFilter" 
+        callbackAfterInitTable="callbackAfterDone" 
+        addNevRow="callbackAddNewRow"
+        callbackAfterWrite="callbackAfterWrite"
+        append="up" 
+        init header>
+
+    <tr class="config" style="display: none;">
+        <td title="Дата" 
+            name="Дата" 
+            headerClass="colunmDate" 
+            class="colunmDate" 
+            style="width: 25%;white-space: normal;"><div class="dataCell textAlignCenter" mask="DD.MM HH:mm" typeData="date"></div></td>
+        <td title="Текст заявки" 
+            name="ТекстЗаявки" 
+            style="width: 55%;"><div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis;"></div></td>
+        <td title="Автор" 
+            name="АвторЗаявки" 
+            headerClass="colunmAuthor" 
+            class="colunmAuthor" 
+            style="width: 30%;"><div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis;"></div></td>
+        <td title="Статус" 
+            name="СтатусЗаявки" 
+            headerClass="colunmStatus" 
+            class="colunmStatus"
+            style="width: 15%;"><div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis;"></div></td>
+    </tr>
+
+    <tr id="infoRow" class="hide">
+        <td colspan="3" style="background-color: aliceblue;">
+            <div id="infoForm">
+                <div style="display: flex;margin: 5px 0;padding: 5px 0px;">
+                    Номер:<div id="kod"></div>
+                    Статус:<div id="status"></div>
+                    <div id="priority"></div>
+                </div>
+                <div id="textFull"></div>
+                <div id="buttons" style="display: flex;margin-bottom: 20px;">
+                    <button type="button" class="btn btn-secondary" id="cancelZayavka">Отменить</button>
+                    <button type="button" class="btn btn-success" id="doneZayavka">Готово</button>
+                    
+                </div>
+                <div id="historyComment"></div>
+                <div id="blockNewComment" style="display: flex;margin: 5px 0;">
+                    <input id="newComment" type="text" class="form-control" placeholder="новый комментарий..." aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button id="btnAddNewComment" class="btn btn-success" type="button">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+
+<script>
+    $(document).ready(function() {
+        var viewRowAllUsers = false;
+
+        initTables();
+
+        addSubscribeWSS('ЗаявкаНаЗакупку_all');
+
+        // callback при получении данных от сервера по wss
+        callbackWSS = async function(data){callbackTable(data)};
+
+        // callback при изменении данных в строке для определения показать или убрать строку
+        callbackFilter = function(data, result = true) {
+            console.log('callbackFilter', data);
+
+            if (!viewRowAllUsers) {
+                console.log('check access');
+
+                if ( data['Сотрудник']['uid'] !== user.uid ){
+                    result = false; 
+                }
+            }
+
+            if (data['СтатусЗаявки'] === 'Готово') {
+                result = false;
+            }
+
+            if (data['СтатусЗаявки'] === 'Отменена') {
+                result = false;
+            }
+
+            return result;
+        }
+
+        // callback перед отрисовкой таблицы
+        callbackBeforeDone = function(data) {
+            console.log('callbackBeforeDone', data);
+
+            if (data.hasOwnProperty('full')) {
+                viewRowAllUsers = data.full;
+            }
+
+            console.log('viewRowAllUsers', viewRowAllUsers);
+
+            if(viewRowAllUsers){
+                $('.colunmAuthor').show();
+                $('.colunmStatus').hide();
+            }else{
+                $('.colunmAuthor').hide();
+                $('.colunmStatus').show();
+            }
+        }
+
+        // callback после отрисовки таблицы
+        callbackAfterDone = function(data) {
+            console.log('callbackAfterDone', data);
+        }
+
+        // callback после вставки новой пустой строки, перед заполнением данными
+        callbackAddNewRow = function(data) {
+            console.log('callbackAddNewRow', data);
+        }
+
+        // callback после внесения изменений в строку с сервера
+        callbackAfterWrite = function(data) {
+            console.log('callbackAfterWrite', data);
+
+            const table = $(`#${data.tableID}`);
+            const row = $(table).find('#' + data.uid);
+            const cell = $(row).find('div[name="АвторЗаявки"]');
+
+            $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
+
+            updateHistory();
+        }
+
+        $('#textNew').on("change" , function() {
+            const value = $(this).val();
+
+            if (value === '') {
+                setValid(this, false);    
+            } else {
+                setValid(this, true); 
+            }
+        });
+
+        // клик по кнопке Добавить отчет
+        $('#addNew').on('click', function(event){
+            clickAnimate(this);
+
+            setTimeout(() => { $('#formNew').show(300);}, 200);
+            setTimeout(() => { $('#addNew').hide(300);}, 200);
+
+            $('#textNew').val('');
+            setValid('#textNew', false);
+
+            $('#setPriority').removeClass('btn-danger');
+            $('#setPriority').addClass('btn-secondary');
+        });
+
+        $('#saveNew').on('click', function(event){
+            clickAnimate(this);
+
+            const textNew = $('#textNew');
+
+            if (textNew.hasClass('invalid')) {
+                toastr.error('Напишите что нужно купить!')
+                return;
+            }
+
+            const srochno = $('#setPriority').hasClass('btn-danger');
+
+            setTimeout(() => { $('#formNew').hide(300);}, 200);
+            setTimeout(() => { $('#addNew').show(300);}, 200);
+
+            const data = {};
+            data.textNew = textNew.val();
+            data.srochno = srochno;
+
+            NProgress.start();
+
+            $.ajax({url: '/app/zakupka', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('success POST', status, data); }
+            }).always(function() {
+                NProgress.done();
+            });
+        });
+
+        $('#cancelNew').on('click', function(event){
+            clickAnimate(this);
+
+            setTimeout(() => { $('#formNew').hide(300);}, 200);
+            setTimeout(() => { $('#addNew').show(300);}, 200);
+        });
+
+        $('#ЗаявкаНаЗакупку').on('click', '.rowData', function(event){
+            console.log('click rowData');
+
+            let curentRowID = $(this).attr('id');
+            let prevRowID = $('#infoRow').attr('curentRow')||'';
+
+            if (curentRowID === prevRowID) {
+                $('#infoRow').toggleClass('hide', true);
+                $('#infoRow').attr('curentRow', '');    
+            } else {
+                $('#infoRow').toggleClass('hide', false);
+                $('#infoRow').attr('curentRow', curentRowID);
+                $('#infoRow').insertAfter(this); 
+
+                let data = $(this).data('data').data;
+
+                $('#kod').text(data['Номер']);
+                $('#status').text(data['СтатусЗаявки']);
+
+                if (data['Приоритет'] === 'Срочно') {
+                    $('#priority').text('Срочно');
+                    $('#priority').addClass('srochno');
+                }else{
+                    $('#priority').text('');
+                    $('#priority').removeClass('srochno');
+                }
+
+                $('#newComment').val('');
+                setValid('#newComment', false);
+
+                $('#textFull').text(data['ТекстЗаявки']);
+                updateHistory();
+
+            }
+        });
+
+        function updateHistory() {
+            let curentrow = $('#infoRow').attr('curentrow')||'';
+
+            if (curentrow === '') {
+                return;
+            }
+
+            let currRow = $('#' + curentrow);
+
+            if( $(currRow).is(":visible")) {
+                let data = $(currRow).data('data').data;
+                let history = data['ИсторияКомментариев'];
+                console.log(history);
+
+                $('#historyComment').html('');
+
+                $.each(history, function(index, item) {
+                    let dateRow = moment(item['Дата']).format('DD.MM HH:mm');
+                    let sotrudnik = item['Сотрудник']['Наименование'];
+
+                    let row = $('<div class="itemComent">');
+                    row.append(`<a style='white-space: break-spaces;'>${item['НомерСтроки']}. <strong>${dateRow} - ${sotrudnik}</strong> : ${item.Комментарий}</a>`);
+                    $('#historyComment').append(row);
+                });
+            }
+        }
+
+        // клик по кнопке Добавить новый комментарий
+        $('#btnAddNewComment').on('click', function(event){
+            clickAnimate(this);
+
+            const data = {};
+            data.textNew = $('#newComment').val();
+            data.curentrow = $('#infoRow').attr('curentrow');
+
+            if (data.textNew === '') {
+                toastr.error('Пустой комментарий');
+                return;
+            }
+
+            NProgress.start();
+
+            $.ajax({url: '/app/zakupka', method: 'PUT', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('success PUT', status, data); }
+            }).always(function() {
+                NProgress.done();
+                $('#newComment').val('');
+                setTimeout(updateHistory, 1000);
+            });
+        });
+
+        $('#setPriority').on('click', function(event){
+            if ($('#setPriority').hasClass('btn-secondary')) {
+                $('#setPriority').removeClass('btn-secondary');
+                $('#setPriority').addClass('btn-danger');
+            } else {
+                $('#setPriority').removeClass('btn-danger');
+                $('#setPriority').addClass('btn-secondary');
+            }
+
+        });
+
+        $('#cancelZayavka').on('click', function(event){
+            clickAnimate(this);
+
+            const data = {};
+            data.change = [{key:"СтатусЗаявки", value:"Отменена"}];
+            data.curentrow = $('#infoRow').attr('curentrow');
+
+            NProgress.start();
+
+            $.ajax({url: '/app/zakupka', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('success POST', status, data); }
+            }).always(function() {
+                NProgress.done();
+                $('#infoRow').toggleClass('hide', true);
+                $('#infoRow').attr('curentRow', '');
+            });
+        });
+
+        $('#doneZayavka').on('click', function(event){
+            clickAnimate(this);
+
+            const data = {};
+            data.change = [{key:"СтатусЗаявки", value:"Готово"}];
+            data.curentrow = $('#infoRow').attr('curentrow');
+
+            NProgress.start();
+
+            $.ajax({url: '/app/zakupka', method: 'POST', contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function(data, status) { console.log('success POST', status, data); }
+            }).always(function() {
+                NProgress.done();
+                $('#infoRow').toggleClass('hide', true);
+                $('#infoRow').attr('curentRow', '');
+            });
+        });
+    });
+</script>

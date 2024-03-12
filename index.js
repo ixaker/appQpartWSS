@@ -339,6 +339,12 @@ app.post('/dataUpdated', (req, res) => {
   const uids = req.body.users;
 
   log.data('/dataUpdated', req.body.topic, req.body.users);
+  
+
+  clients.forEach(client => {
+    log.data('user', client.user); 
+    log.data('subscriptions', client.subscriptions); 
+  });
 
   //const subscribedClients = clients.filter(c => c.subscriptions.includes(topic));
 
@@ -354,7 +360,7 @@ app.post('/dataUpdated', (req, res) => {
   subscribedClients = [...new Set(subscribedClients)];
 
   log.data('subscribedClients', subscribedClients.length);
-  //log.data('arr ', subscribedClients);
+  log.data('arr ', subscribedClients);
 
   subscribedClients.forEach(function(client) {
     log.data('client', Object.keys(client));
@@ -405,6 +411,10 @@ app.get('/naladki', authenticateToken, async function(req, res){
 
 app.get('/12345', authenticateToken, async function(req, res){
   return res.render('12345');
+});
+
+app.get('/zakupka', authenticateToken, async function(req, res){
+  return res.render('zakupka');
 });
 
 // Error
