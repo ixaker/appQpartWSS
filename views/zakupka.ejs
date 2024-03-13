@@ -272,6 +272,8 @@
             setTimeout(() => { $('#formNew').show(300);}, 200);
             setTimeout(() => { $('#addNew').hide(300);}, 200);
 
+            $(this).prop('disabled', false);
+
             $('#textNew').val('');
             setValid('#textNew', false);
 
@@ -281,6 +283,8 @@
 
         $('#saveNew').on('click', function(event){
             clickAnimate(this);
+
+            $(this).prop('disabled', true);
 
             const textNew = $('#textNew');
 
