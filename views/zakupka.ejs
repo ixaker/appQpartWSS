@@ -279,6 +279,8 @@
 
             $('#setPriority').removeClass('btn-danger');
             $('#setPriority').addClass('btn-secondary');
+
+            setTimeout(() => { $('#textNew').focus(); }, 500);
         });
 
         $('#saveNew').on('click', function(event){
