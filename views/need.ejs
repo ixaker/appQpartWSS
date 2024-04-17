@@ -841,6 +841,8 @@
             const price = $('#price');
             const priceForOne = $('#priceForOne');
             const info = $('#newReportRow').data('data')||{};
+            const etapID = info.data['ИД'];
+
 
             if (provider.hasClass('invalid') && provider.is(':visible')) {
                 toastr.error('Укажите подрядчика')
@@ -868,11 +870,23 @@
             }
 
             if (count.hasClass('invalid')) {
-                toastr.error('Укажите сколько штук изготовлено');
+                
 
-                console.log('info', info);
+                console.log('info', etapID, info);
 
-                return;
+                if (etapID === '22001') {
+                    const inputCountValue = parseInt($(count).val());
+                    
+                    if (inputCountValue > 0) {
+                        
+                    }else{
+                        toastr.error('Укажите сколько штук изготовлено');
+                        return;
+                    }
+                }else{
+                    toastr.error('Укажите сколько штук изготовлено');
+                    return;
+                }
             }
 
             if (weight.hasClass('invalid') && weight.is(':visible')) {
