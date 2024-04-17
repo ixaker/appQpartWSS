@@ -840,6 +840,7 @@
             const weight = $('#weight');
             const price = $('#price');
             const priceForOne = $('#priceForOne');
+            const info = $('#newReportRow').data('data')||{};
 
             if (provider.hasClass('invalid') && provider.is(':visible')) {
                 toastr.error('Укажите подрядчика')
@@ -867,7 +868,10 @@
             }
 
             if (count.hasClass('invalid')) {
-                toastr.error('Укажите сколько штук изготовлено')
+                toastr.error('Укажите сколько штук изготовлено');
+
+                console.log('info', info);
+
                 return;
             }
 
@@ -897,7 +901,7 @@
             data.weight = parseInt($(weight).val()||0);
             data.price = parseInt($(price).val()||0);
             data.priceForOne = parseInt($(priceForOne).val()||0);
-            data.data = $('#newReportRow').data('data')||{};
+            data.data = info;
 
             NProgress.start();
 
