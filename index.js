@@ -134,6 +134,28 @@ app.post('/dataUpdated', (req, res) => {
   return;
 });
 
+app.post('/detectFace', async (req, res) => {
+  let result = await faceID.findUserOnFoto(req.body);
+
+  try {
+    if (result.detectFace) {
+      let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
+
+      if (result.uid !== '') {
+        if (result.finded.similarity > 0.72) {
+          result.token = jwt.sign(result.user, secret, options);
+
+          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
+          telegramBot.sendImageAndMessage(req.body.photo, message);
+        }
+      }
+    }
+  } catch (error) {
+
+  }
+  res.send(result);
+});
+
 // Мідлвар для перевірки авторизації
 app.use((req, res, next) => {
   log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
@@ -163,6 +185,8 @@ app.use('/appPOST', async (req, res) => {
   console.log('appPOST', response);
   res.send(response.data);
 })
+
+
 
 // Проверка авторизации
 app.post('/authentication', async (req, res) => {
@@ -195,27 +219,7 @@ app.post('/uploadPhoto', async (req, res) => {
 });
 // *******************************************************************************************
 
-app.post('/detectFace', async (req, res) => {
-  let result = await faceID.findUserOnFoto(req.body);
 
-  try {
-    if (result.detectFace) {
-      let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
-
-      if (result.uid !== '') {
-        if (result.finded.similarity > 0.72) {
-          result.token = jwt.sign(result.user, secret, options);
-
-          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
-          telegramBot.sendImageAndMessage(req.body.photo, message);
-        }
-      }
-    }
-  } catch (error) {
-
-  }
-  res.send(result);
-});
 
 
 app.post('/saveFace', async (req, res) => {
