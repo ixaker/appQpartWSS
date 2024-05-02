@@ -158,7 +158,7 @@ function loadMenu(userInfo, token) {
     reconectWebSocket();
 
     $.get('/app/getUserMenu', function(response) {
-        //console.log('/app/getUserMenu', response);
+        console.log('/app/getUserMenu', response);
 
         const userInfo = response.userInfo;
         //console.log('userInfo', userInfo);

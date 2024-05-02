@@ -220,7 +220,7 @@
                     append="end" 
                     addNevRow="callbackAddNewRowForListDefect" 
                     callbackAfterWrite="callbackAfterWriteListDefect" 
-                    init header>
+                    header>
                 <tr class="config" style="display: none;">
                     <td title="Дата" 
                         name="ДатаОтчета" 
@@ -636,6 +636,8 @@
         // callback придобавлении строки группового этапа в атрибут пишем есть ли право вносить отчеты
         callbackAddNewRowForListGroupEtapNeed = function (data) {
             try {
+                $(`#${data.data.uid}`).attr('access', data.data['edit']);
+
                 data.data['ДоступApp'].forEach(function(element) {
                     const uidSotr = element['Сотрудник'].uid||'';
 

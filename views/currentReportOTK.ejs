@@ -115,9 +115,10 @@
         // callback при изменении данных в строке для определения показать или убрать строку
         filterForOTK = function(data, result = true) {
             try {
-                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']){ result = false; }
+                //console.log('filter', data);
+                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']){ result = false; }            
             } catch (error) { console.log(error) }
-
+            //console.log('filter result ', result,data);
             return result;
         }
 

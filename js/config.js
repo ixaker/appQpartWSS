@@ -101,6 +101,26 @@ function setValid(elem, valid){             // подсветка неправи
     }
 };
 
+function setValidFast(element, valid){             // подсветка неправильно заполненых полей красным
+    //console.log('setValid', valid, elem);
+
+    // if ($(elem).is(':input')) {
+    //     if(valid){
+    //         $(elem).removeClass('invalid');
+    //     }else{
+    //         $(elem).addClass('invalid');
+    //     } 
+    // }
+
+    if (element.nodeName === 'input') {
+        if (valid) {
+            element.classList.remove('invalid'); // Видаляємо клас 'invalid', якщо valid === true
+        } else {
+            element.classList.add('invalid'); // Додаємо клас 'invalid', якщо valid === false
+        }
+    }
+};
+
 async function getHash(obj) {
     const msgUint8 = new TextEncoder().encode(JSON.stringify(obj));                           // encode as (utf-8) Uint8Array
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);                       // hash the message
@@ -129,11 +149,11 @@ function convertToTime(decimalHours) {
 }
 
 async function logToServer(msg, data = {}) {
-    $.ajax({url: '/app/log', method: 'POST', contentType: 'application/json',
-        data: JSON.stringify({msg:msg, user:user, stanok:stanok, currentMenu:currentMenu, data:data}), 
-        success: function(data, status) { //console.log('logToServer', status); 
-        }
-    });
+    // $.ajax({url: '/app/log', method: 'POST', contentType: 'application/json',
+    //     data: JSON.stringify({msg:msg, user:user, stanok:stanok, currentMenu:currentMenu, data:data}), 
+    //     success: function(data, status) { //console.log('logToServer', status); 
+    //     }
+    // });
 }
 
 function initInputAutocomplete(element) {

@@ -3,5 +3,7 @@
 /log/
 /node_modules/
 .env
+.envCopy
 embeddings.json
 userInfoData.json
+ .prettierrc

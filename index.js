@@ -1,21 +1,20 @@
 require('dotenv').config();
 
 const https = require('https');
-const url = require('url');
 const fs = require('fs');
 const WebSocket = require('ws');
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const { exec } = require('child_process');
+const url = require('url');
 
 // services
-const log         = require('./services/loggerConfig.js');
+const log = require('./services/loggerConfig.js');
 const telegramBot = require('./services/telegramBot.js');
-const faceID      = require('./services/faceID.js');
+const faceID = require('./services/faceID.js');
+const func1C = require('./services/1C.js');
 
 exec('kill -9 $(lsof -t -i :443)');
 
@@ -36,13 +35,7 @@ if (!fs.existsSync(envFilePath)) {
 const secret = 'my-secret-key';
 const options = { expiresIn: '1h' };
 
-const base = process.env.base;
-const API_1C_URL = 'http://10.8.0.3/' + base + '/hs';
-const API_1C_LOGIN = process.env.API_1C_LOGIN;
-const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
-
-const adminRoute = process.env.adminRoute||'admin';
-const autoAuthorizationHolub = false;
+const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
 
 const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
@@ -55,145 +48,34 @@ let clients = [];
 // ******************************************* Web сервер *******************************************
 const app = express();
 app.set('view engine', 'ejs');
-//app.set('etag', false);
 
-const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert)}, app);
-
-app.use((req, res, next) => {
-  // Если протокол запроса https, продолжаем дальше
-  if (req.secure) {
-    next();
-  } else {
-    // Если протокол запроса http, перенаправляем на https
-    res.redirect('https://' + req.headers.host + req.url);
-  }
-});
+const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
 
 app.use(express.static('styles'));
 app.use(express.static('js'));
 app.use(express.static('img'));
 app.use(express.static('static'));
 app.use('/foto', express.static('foto'));
-
 app.use(cookieParser());
-
-// Отключаем кэширование
-/* app.use(function(req, res, next) {
-  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-  next();
-}); */
 
 // + Обработчик админского обхода авторизации
 app.get('/uploadPhoto', (req, res, next) => {
   log.info('get uploadPhoto');
-  res.sendFile(createPath('uploadPhoto.html'));  
+  res.sendFile(createPath('uploadPhoto.html'));
 });
-
-
 
 // + Обработчик админского обхода авторизации
 app.get('/adminAuth', (req, res, next) => {
-  let result = {detectUser: true};
+  let result = { detectUser: true };
   result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
   result.token = jwt.sign(result.user, secret, options);
 
-  log.data('/adminAuth', result);
+  // log.data('/adminAuth', result);
 
   res.send(result);
 });
 
-function authenticateToken(req, res, next) {
-  log.info('authenticateToken', 'req', req.user);
 
-
-
-  if (autoAuthorizationHolub) {
-    req.user = faceID.userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
-    next();
-    return;
-  } else {
-    const token = req.cookies.token;
-    log.data('authenticateToken', token);
-    log.data('authenticateToken', req.user);
-    log.data('authenticateToken', req.cookies);
-
-    if (token == null) {
-      //req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
-      //next();
-      //log.info('authenticateToken', 'token == null');
-      return res.sendStatus(401);
-    }
-
-    jwt.verify(token, secret, (err, user) => {
-      if (err) {
-        //req.user = userInfo['f9c18a95-123c-11ed-81c1-000c29006152'];
-        //next();
-        //return;
-        return res.sendStatus(403);
-      }
-
-      //log.data('authenticateToken user', user);
-      
-      let {iat, exp, ...userClear} = user;
-      //log.data('authenticateToken user', user, userClear);
-      req.user = userClear;
-      next();
-    });
-  }
-}
-
-// Обработчик ошибок разбора JSON
-app.use((err, req, res, next) => {
-	if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-		console.log("Invalid JSON");  
-	}
-	next();
-});
-
-
-
-app.use((req, res, next) => {
-  log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
-  //log.data('cookies', req.cookies);
-
-  //log.data('app.use Info', 'req.cookies.token', req.cookies.token.substring(0, 30));
-  //log.data('app.use Info', 'req.cookies.token', req.cookies);
-
-  jwt.verify(req.cookies.token, secret, (err, user) => {
-    if (err) {
-      //log.error('app.use Info', 'token ERROR');
-    }else{
-      let {iat, exp, ...userClear} = user;
-      req.user = userClear;
-      //log.data('app.use Info', 'user', req.user);
-    }
-  });
-
-  //req.body = {};
-  //log.data('app.use body', req.body);
-
-  next();
-});
-
-// Middleware для переадресации запросов с базовой авторизацией /app
-app.use('/app', (req, res, next) => {
-  //log.info('/app', req.path);
-  next();  
-});
-
-app.use('/app', authenticateToken, createProxyMiddleware({
-  target: API_1C_URL, // здесь ваше целевое значение
-  changeOrigin: true,
-  onProxyReq: function (proxyReq, req, res) {
-    proxyReq.setHeader('Authorization', `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`);
-
-    const newTarget = new url.URL(proxyReq.path, 'http://localhost');
-    newTarget.searchParams.set('uid', req.user.uid); // добавляем новый параметр
-    proxyReq.path = newTarget.toString().replace('http://localhost', '');
-
-    log.warn('proxyReq.path', API_1C_URL, proxyReq.path);
-  }
-}));
 
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 app.use(express.json({ limit: '10mb' }));
@@ -208,21 +90,108 @@ app.get('/' + adminRoute, (req, res) => {
   res.sendFile(createPath('admin.html'));
 });
 
+
+// Обработчик запросов из 1С об изменениях данных
+app.post('/dataUpdated', (req, res) => {
+  log.data('NodeJS_OK');
+  res.send('NodeJS_OK');
+  // log.data('body', req.body);
+  // log.data('NodeJS_OK');
+
+  const topic = req.body.topic;
+  const uids = req.body.users;
+
+  // log.data('/dataUpdated', req.body.topic, req.body.users);
+
+
+  // clients.forEach(client => {
+  //   log.data('user', client.user);
+  //   log.data('subscriptions', client.subscriptions);
+  // });
+
+  //const subscribedClients = clients.filter(c => c.subscriptions.includes(topic));
+
+  let subscribedClients = clients.filter(function (client) {
+    return client.user && client.user.uid && client.subscriptions.includes(topic) && uids.includes(client.user.uid);
+  });
+
+  let subscribedClients2 = clients.filter(function (client) {
+    return client.subscriptions.includes(topic + '_all');
+  });
+
+  subscribedClients = [...subscribedClients, ...subscribedClients2];
+  subscribedClients = [...new Set(subscribedClients)];
+
+  // log.data('subscribedClients', subscribedClients.length);
+  // log.data('arr ', subscribedClients);
+
+  subscribedClients.forEach(function (client) {
+    // log.data('client', Object.keys(client));
+    client.socket.send(JSON.stringify(req.body));
+  });
+
+  //res.sentStatus(200);
+  return;
+});
+
+// Мідлвар для перевірки авторизації
+app.use((req, res, next) => {
+  log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
+
+  jwt.verify(req.cookies.token, secret, (err, user) => {
+    if (err) {
+      log.info('jwt.verify error');
+      res.status(403).send({textError: 'jwt.verify error'});
+      return
+    } else {
+      let { iat, exp, ...userClear } = user;
+      req.user = userClear;
+      next();
+    }
+  });
+});
+
+app.use('/app', func1C.ProxyMiddleware1C);
+
+app.use('/appPOST', async (req, res) => {
+  const newTarget = new url.URL(req.path, 'http://localhost');
+  newTarget.searchParams.set('uid', req.user.uid); // добавляем новый параметр
+  const path = newTarget.toString().replace('http://localhost', '');
+
+  log.data('path', path, req.body);
+  const response = await func1C.request1C('POST', path, {}, req.body);
+  console.log('appPOST', response);
+  res.send(response.data);
+})
+
+// Проверка авторизации
+app.post('/authentication', async (req, res) => {
+  log.info('/authentication', req.user);
+  let result = { detectUser: true };
+  result.user = faceID.getUserInfoID(req.user.uid);
+  result.token = jwt.sign(result.user, secret, options);
+
+  res.send(result);
+});
+
 app.post('/uploadPhoto', async (req, res) => {
   log.info('post uploadPhoto', req.body);
 
-  await axios.post(`${API_1C_URL}/app/uploadPhotoNomenklatura`, req.body, {
-    headers: {
-      'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
-      'Content-Type': 'application/json'
-    }
-  }).then((response) => {
-    log.data('uploadPhoto response', response.data);
-  }).catch((error) => {
-    log.error('catch uploadPhoto error', error);
-  });
 
-  res.send("OK");  
+  await func1C.request1C('POST', '/uploadPhotoNomenklatura', req.body);
+
+  // await axios.post(`${API_1C_URL}/uploadPhotoNomenklatura`, req.body, {
+  //   headers: {
+  //     'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
+  //     'Content-Type': 'application/json'
+  //   }
+  // }).then((response) => {
+  //   log.data('uploadPhoto response', response.data);
+  // }).catch((error) => {
+  //   log.error('catch uploadPhoto error', error);
+  // });
+
+  res.send("OK");
 });
 // *******************************************************************************************
 
@@ -241,9 +210,9 @@ app.post('/detectFace', async (req, res) => {
           telegramBot.sendImageAndMessage(req.body.photo, message);
         }
       }
-    } 
+    }
   } catch (error) {
-      
+
   }
   res.send(result);
 });
@@ -251,36 +220,28 @@ app.post('/detectFace', async (req, res) => {
 
 app.post('/saveFace', async (req, res) => {
   log.info('saveFace', req.body);
-  
+
   let result = await faceID.findUserOnFoto(req.body, req.body.uid);
 
   res.send(result);
 });
 
-// Проверка авторизации
-app.post('/authentication', authenticateToken, async (req, res) => {
-  log.info('/authentication', req.user);
-  let result = {detectUser: true};
-  result.user = faceID.getUserInfoID(req.user.uid);
-  result.token = jwt.sign(result.user, secret, options);
 
-  res.send(result);
-});
 
 // + Страничка - Список пользователей
-app.get('/users', authenticateToken, function(req, res) {
+app.get('/users', function (req, res) {
   let usersArray = Object.values(faceID.getUserInfo());
   res.render('users', { users: usersArray });
 });
 
-app.post('/token', authenticateToken, function(req, res) {  
+app.post('/token', function (req, res) {
   const user = faceID.getUserInfoID(req.body.user);
   const token = jwt.sign(user, secret, options);
 
-  res.send({token:token});
+  res.send({ token: token });
 });
 
-app.post('/deleteFaces', authenticateToken, async (req, res) => {
+app.post('/deleteFaces', async (req, res) => {
   let result = {};
 
   try {
@@ -294,8 +255,8 @@ app.post('/deleteFaces', authenticateToken, async (req, res) => {
   res.send(result);
 });
 
-app.get('/loadUserListFrom1C', authenticateToken, async (req, res) => {
-  let result = await GET_1C('getUserList');  
+app.get('/loadUserListFrom1C', async (req, res) => {
+  let result = await func1C.GET('/getUserList');
 
   await faceID.updateUsersInfo(result.users);
 
@@ -303,8 +264,8 @@ app.get('/loadUserListFrom1C', authenticateToken, async (req, res) => {
   res.render('users', { users: usersArray });
 });
 
-app.get('/updateFaceID', authenticateToken, async (req, res) => {
-  let result = await GET_1C('getUserList');  
+app.get('/updateFaceID', async (req, res) => {
+  let result = await func1C.GET('/getUserList');
 
   await faceID.updateFaceID(result.users);
 
@@ -312,12 +273,12 @@ app.get('/updateFaceID', authenticateToken, async (req, res) => {
   res.render('users', { users: usersArray });
 });
 
-app.get('/userListFoto', authenticateToken, async function(req, res){
+app.get('/userListFoto', async function (req, res) {
   let files = faceID.getUserFotoList(req.query.UserID);
   res.send(files);
 });
 
-app.delete('/userListFoto', authenticateToken, async function(req, res){
+app.delete('/userListFoto', async function (req, res) {
   faceID.deleteUserFoto(req.body.UserID, req.body.file);
   return res.send('{result:"OK"}');
 });
@@ -328,92 +289,51 @@ app.get('/tabel', (req, res) => {
   res.sendFile(createPath('tabel.html'));
 });
 
-// Обработчик запросов из 1С об изменениях данных
-app.post('/dataUpdated', (req, res) => {
-  log.data('NodeJS_OK');
-  res.send('NodeJS_OK');
-  //log.data('body', req.body);
-  log.data('NodeJS_OK');
-
-  const topic = req.body.topic;
-  const uids = req.body.users;
-
-  log.data('/dataUpdated', req.body.topic, req.body.users);
-  
-
-  clients.forEach(client => {
-    log.data('user', client.user); 
-    log.data('subscriptions', client.subscriptions); 
-  });
-
-  //const subscribedClients = clients.filter(c => c.subscriptions.includes(topic));
-
-  let subscribedClients = clients.filter(function(client) {
-    return client.user && client.user.uid && client.subscriptions.includes(topic) && uids.includes(client.user.uid);
-  });
-
-  let subscribedClients2 = clients.filter(function(client) {
-    return client.subscriptions.includes(topic + '_all');
-  });
-
-  subscribedClients = [...subscribedClients, ...subscribedClients2];
-  subscribedClients = [...new Set(subscribedClients)];
-
-  log.data('subscribedClients', subscribedClients.length);
-  log.data('arr ', subscribedClients);
-
-  subscribedClients.forEach(function(client) {
-    log.data('client', Object.keys(client));
-    client.socket.send(JSON.stringify(req.body));
-  });
-
-});
-
-app.get('/currentReportOperator', authenticateToken, async function(req, res){
+app.get('/currentReportOperator', async function (req, res) {
   return res.render('currentReportOperator');
 });
 
-app.get('/currentReportNaladka', authenticateToken, async function(req, res){
+app.get('/currentReportNaladka', async function (req, res) {
   return res.render('currentReportNaladka');
 });
 
-app.get('/currentReportOTK', authenticateToken, async function(req, res){
+app.get('/currentReportOTK', async function (req, res) {
   return res.render('currentReportOTK');
 });
 
-app.get('/checkReportsOperator', authenticateToken, async function(req, res){
+app.get('/checkReportsOperator', async function (req, res) {
   return res.render('checkReportsOperator');
 });
 
-app.get('/settings', authenticateToken, async function(req, res){
+app.get('/settings', async function (req, res) {
   return res.render('settings');
 });
 
-app.get('/listDefect', authenticateToken, async function(req, res){
+app.get('/listDefect', async function (req, res) {
   return res.render('listDefect');
 });
 
-app.get('/listDefectUser', authenticateToken, async function(req, res){
+app.get('/listDefectUser', async function (req, res) {
   return res.render('listDefectUser');
 });
 
-app.get('/tabelWork', authenticateToken, async function(req, res){
+app.get('/tabelWork', async function (req, res) {
   return res.render('tabelWork');
 });
 
-app.get('/need', authenticateToken, async function(req, res){
+app.get('/need', async function (req, res) {
   return res.render('need');
 });
 
-app.get('/naladki', authenticateToken, async function(req, res){
+app.get('/naladki', async function (req, res) {
   return res.render('naladki');
 });
 
-app.get('/12345', authenticateToken, async function(req, res){
+app.get('/12345', async function (req, res) {
   return res.render('12345');
 });
 
-app.get('/zakupka', authenticateToken, async function(req, res){
+app.get('/zakupka', async function (req, res) {
   return res.render('zakupka');
 });
 
@@ -437,7 +357,7 @@ wss.on('connection', (ws, request) => {
   let client = {
     socket: ws,
     subscriptions: [],
-    user:{}
+    user: {}
   };
 
   clients.push(client);
@@ -454,7 +374,7 @@ wss.on('connection', (ws, request) => {
       let client = clients.find(c => c.socket === ws);
       let { action, topic, payload, user } = JSON.parse(message);
 
-      log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
+      // log.data('action', action, 'topic', topic, 'payload', payload, 'user', user);
 
       if (action === 'subscribe') {
         client.subscriptions.push(topic);
@@ -472,28 +392,27 @@ wss.on('connection', (ws, request) => {
               const decoded_token = jwt.decode(payload, secret);
               //log.info('decoded_token', decoded_token);
 
-              if (!decoded_token) { throw new Error('Empty token');}
+              if (!decoded_token) { throw new Error('Empty token'); }
               if (typeof decoded_token !== 'object') { throw new Error('Invalid token format'); }
 
               client.user = userFromToken;
-              
+
             } catch (error) {
               log.error(error);
               ws.close();
             }
-          }else{
+          } else {
             client.user = userFromToken;
           }
         });
       } else if (action === 'updateDataOnServer') {
         //log.info(action, topic, payload);
 
-        await axios.post(`${API_1C_URL}/app/updateData`, JSON.parse(message), {
-          headers: {
-            'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
-            'Content-Type': 'application/json'
-          }
-        }).then((response) => {
+        
+        const data = JSON.parse(message);
+        const response = await func1C.request1C('POST', '/updateData', {}, data);
+
+        if (response.status === 200) {
           log.data('updateData response', response.data);
 
           if (!response.data.result) {
@@ -507,7 +426,7 @@ wss.on('connection', (ws, request) => {
             }
 
             ws.send(JSON.stringify(msg));
-          }else{
+          } else {
             const msg = {
               topic: 'notification',
               type: 'success',           // success, error, warning, info.
@@ -518,17 +437,51 @@ wss.on('connection', (ws, request) => {
             response.topic = 'notification'
             ws.send(JSON.stringify(msg));
           }
+        } else {
+          log.error("updateData error", response.data['Причина']);
+        }
 
-        }).catch((error) => {
-          log.error('catch updateData error');
-        });
+        // await axios.post(`${API_1C_URL}/updateData`, JSON.parse(message), {
+        //   headers: {
+        //     'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
+        //     'Content-Type': 'application/json'
+        //   }
+        // }).then((response) => {
+        //   log.data('updateData response', response.data);
+
+        //   if (!response.data.result) {
+        //     log.error("updateData error", response.data['Причина']);
+
+        //     const msg = {
+        //       topic: 'notification',
+        //       type: 'error',           // success, error, warning, info.
+        //       text: response.data['Причина'],
+        //       title: ''
+        //     }
+
+        //     ws.send(JSON.stringify(msg));
+        //   } else {
+        //     const msg = {
+        //       topic: 'notification',
+        //       type: 'success',           // success, error, warning, info.
+        //       text: 'Сохранено',
+        //       title: ''
+        //     }
+
+        //     response.topic = 'notification'
+        //     ws.send(JSON.stringify(msg));
+        //   }
+
+        // }).catch((error) => {
+        //   log.error('catch updateData error');
+        // });
       }
 
 
     } catch (error) {
       log.error('Error wss');
     }
-	});
+  });
 
   ws.on('close', () => {
     log.info('Client disconnected');
@@ -546,48 +499,25 @@ wss.on('error', (error) => {
 
 //********************************************* main ******************************************/
 
-async function GET_1C(path) {
-  try {
-    const response = await axios.get(`${API_1C_URL}/app/${path}`, {
-      headers: {
-        'Authorization': `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data; // Возвращаем данные ответа
-  } catch (error) {
-    console.error('Ошибка при выполнении GET_1C:', error); // Логирование ошибки
-    return {}; // Возвращаем пустой объект в случае ошибки
-  }
-}
-
 async function main() {
   await faceID.initHuman();
-
+  func1C.init();
   // Запуск сервера
   httpsServer.listen(443, () => {
     log.info('Secure server is running on port 443');
   });
 }
 
-
 // Проверка соединений на "живость"
 setInterval(() => {
-  let clientsForLog = clients.map(c => {
-    let clientCopy = {...c};
-    delete clientCopy.socket;
-    return clientCopy;
-  });
-
   wss.clients.forEach((ws) => {
-    if (!ws.isAlive){
+    if (!ws.isAlive) {
       return ws.terminate();
-    } 
+    }
 
     ws.isAlive = false;
     ws.ping(null, false);
   });
 }, 10000);
-
 
 main();

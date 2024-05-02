@@ -6,6 +6,7 @@ table {
 
 tr {
     height: 50px;
+    background-color: white;
 }
 
 th, td {
@@ -29,7 +30,6 @@ td {
     white-space: nowrap;  /* запрещает перенос текста на новую строку */
     font-size: 1em;
     /* font-size: 20px; */
-    background-color: #FFFFFF;
     padding: 0 5px;
 }
 

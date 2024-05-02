@@ -275,6 +275,7 @@
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
+                    sync="none"
                     class="dataCell quantity textAlignEnd"></td>
 <!--         <td title="Время маш." 
             name="МашинноеВремя"  
@@ -451,6 +452,7 @@
 
         // клик по кнопке Добавить отчет
         $('#btnAdd').on('click', function(event){
+            console.log('кнопка натиснута')
             clickAnimate(this);
             NProgress.start();
             highlight = false;
@@ -459,7 +461,7 @@
 
             const data = { operator:true };
             if(stanok.uid !== ''){ data.stanok = stanok; }
-
+            console.log('Дані, що будуть відправлені на сервер:', data);
             $.ajax({url: '/app/createReport', method: 'POST', contentType: 'application/json',
                 data: JSON.stringify(data), 
                 success: function(data, status) { console.log('logToServer', status, data); }
