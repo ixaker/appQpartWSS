@@ -141,7 +141,7 @@ const ProxyMiddleware1C = createProxyMiddleware({
                 newTarget.searchParams.set('uid', req.user.uid); // добавляем новый параметр
                 proxyReq.path = newTarget.toString().replace('http://localhost', '');
                 log.info('proxyReq', proxyReq.path);
-                log.info('middleware req.body', req.method, req.headers, req.body)
+                log.info('middleware req.body', req.method)
                 const writeBody = (bodyData) => {
                     proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
                     proxyReq.write(bodyData)

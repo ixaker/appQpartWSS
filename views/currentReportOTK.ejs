@@ -1,156 +1,205 @@
 <style>
-    table {
-        font-size: 1.1em;
+  table {
+    font-size: 1.1em;
+    table-layout: auto;
+  }
+
+  .thead th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  th {
+    /* text-align: center; */
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
+    
+  }
+
+  i.btnRow {
+    margin-right: 18px;
+    font-size: xxx-large;
+  }
+
+  @media (max-width: 800px) {
+    #ОтчетПоРаботе2022 th {
+      width: auto !important;
     }
 
-    i.btnRow {
-        margin-right: 18px;
-        font-size: xxx-large;
+    #ОтчетПоРаботе2022 {
+      font-size: 0.5em !important;
     }
 
-    @media (max-width: 800px) {
-        #ОтчетПоРаботе2022 th {
-            width: auto !important;  
-        }
-
-        #ОтчетПоРаботе2022 {
-            font-size: 0.5em !important;  
-        }
-
-        #ОтчетПоРаботе2022 th:nth-child(2) {
-            width: 15% !important;
-        }
-
-        #ОтчетПоРаботе2022 th:nth-child(4) {
-            width: 12% !important;
-        }
-
-        #ОтчетПоРаботе2022 .dataCell {
-            text-wrap: wrap;  
-        }
-        
-        #ОтчетПоРаботе2022 td:nth-child(2) {
-            font-size: 0.9em !important;
-        }
-
-        #ОтчетПоРаботе2022 .btnRow {
-            font-size: medium !important;  
-        }
-
-        #ОтчетПоРаботе2022 .checkboxInTable {
-            height: 20px !important;  
-        }
+    #ОтчетПоРаботе2022 th:nth-child(2) {
+      width: 15% !important;
     }
+
+    #ОтчетПоРаботе2022 th:nth-child(4) {
+      width: 12% !important;
+    }
+
+    #ОтчетПоРаботе2022 .dataCell {
+      text-wrap: wrap;
+    }
+
+    #ОтчетПоРаботе2022 td:nth-child(2) {
+      font-size: 0.9em !important;
+    }
+
+    #ОтчетПоРаботе2022 .btnRow {
+      font-size: medium !important;
+    }
+
+    #ОтчетПоРаботе2022 .checkboxInTable {
+      height: 20px !important;
+    }
+  }
 </style>
 
-<h3 class="titlePage" >Список отчетов на проверку ОТК</h3>
+<h3 class="titlePage">Список отчетов на проверку ОТК</h3>
 
-<table  id="ОтчетПоРаботе2022" 
-        url="/app/getCurrentReportForOTK" 
-        filter="filterForOTK" 
-        append="end" 
-        sort="0" init header>
-    <tr class="config" style="display: none;">
-        <td title="Дата" 
-            name="ДатаОтчета" 
-            style="width: 60px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
-        <td title="Номер детали" 
-            name="Заказ" 
-            key="АртикулНаименование" 
-            style="width: 100%;"><div class="dataCell"></div></td>
-        <td title="МЛ"  
-            name="Заказ" 
-            key="Номер" 
-            style="width: 65px;"><div class="dataCell textAlignCenter"></div></td>
-        <td title="Оператор" 
-            name="Сотрудник" 
-            key="Наименование" 
-            style="width: 200px;"><div class="dataCell"></div></td>
-        <td title="Этап производства" 
-            name="ЭтапПроизводства" 
-            key="Наименование" 
-            style="width: 200px;"><div class="dataCell"></div></td>
-        <td title="Изгото влено" 
-            name="КоличествоИзготовлено" 
-            style="width: 75px; "><div class="dataCell textAlignEnd" style="padding: 5px;"></div></td>
-        <td title="Прове рено" 
-            name="КоличествоПроверено" 
-            style="width: 75px;">
-            <input  type="number" 
-                    inputmode="numeric" 
-                    checkValid  
-                    min="0" 
-                    sync="none" 
-                    class="dataCell quantity textAlignEnd"></td>
-        <td title="Брак" 
-            name="КоличествоБрака" 
-            style="width: 60px;">
-            <input  type="number" 
-                    inputmode="numeric"  
-                    min="0" 
-                    sync="none" 
-                    class="dataCell quantity textAlignEnd"></td>
-        <td title="Готов" 
-            name="СтатусОТК"
-            style="width: 65px;"> 
-            <input  type="checkbox" 
-                    name="Проведен" 
-                    sync="none" 
-                    class="dataCell checkboxInTable"></td>
-        <td title="" 
-            style="width: 70px;"><div class="groupBtnRow">
-                <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
-                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i></div></td>
-    </tr>
+<table
+  id="ОтчетПоРаботе2022"
+  url="/app/getCurrentReportForOTK"
+  filter="filterForOTK"
+  append="end"
+  sort="0"
+  init
+  header
+>
+  <tr class="config" style="display: none">
+    <td title="Дата" name="ДатаОтчета" style="width: 60px; white-space: nowrap">
+      <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
+    </td>
+    <td
+      title="Номер детали"
+      name="Заказ"
+      key="АртикулНаименование"
+      style="min-width: 60px; width: 30%;"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <td title="МЛ" name="Заказ" key="Номер" style="width: 65px">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td
+      title="Оператор"
+      name="Сотрудник"
+      key="Наименование"
+      style="width: 180px"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <td
+      title="Этап производства"
+      name="ЭтапПроизводства"
+      key="Наименование"
+      style="width: 180px"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <td title="Изгото влено" name="КоличествоИзготовлено" style="width: 60px; hyphens: auto;">
+      <div class="dataCell textAlignEnd" style="padding: 5px;"></div>
+    </td>
+    <td title="Прове рено" name="КоличествоПроверено" style="width: 60px">
+      <input
+        type="number"
+        inputmode="numeric"
+        checkValid
+        min="0"
+        sync="none"
+        class="dataCell quantity textAlignEnd"
+      />
+    </td>
+    <td title="Брак" name="КоличествоБрака" style="width: 60px">
+      <input
+        type="number"
+        inputmode="numeric"
+        min="0"
+        sync="none"
+        class="dataCell quantity textAlignEnd"
+      />
+    </td>
+    <td title="Готов" name="СтатусОТК" style="width: 65px">
+      <input
+        type="checkbox"
+        name="Проведен"
+        sync="none"
+        class="dataCell checkboxInTable"
+      />
+    </td>
+    <td title="" style="width: 70px">
+      <div class="groupBtnRow">
+        <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+        <i
+          class="bi bi-check-circle btnRow btnOk colorGreen"
+          style="display: none"
+        ></i>
+      </div>
+    </td>
+  </tr>
 </table>
 
 <script>
-    $(document).ready(function() {
-        let tableID = '#ОтчетПоРаботе2022';
-        initTables();
-        addSubscribeWSS('ОтчетПоРаботе2022_all');
+  $(document).ready(function () {
+    let tableID = '#ОтчетПоРаботе2022';
+    initTables();
+    addSubscribeWSS('ОтчетПоРаботе2022_all');
 
-        callbackWSS = async function(data){callbackTable(data)};
+    callbackWSS = async function (data) {
+      callbackTable(data);
+    };
 
-        // callback при изменении данных в строке для определения показать или убрать строку
-        filterForOTK = function(data, result = true) {
-            try {
-                //console.log('filter', data);
-                if ( !data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']){ result = false; }            
-            } catch (error) { console.log(error) }
-            //console.log('filter result ', result,data);
-            return result;
+    // callback при изменении данных в строке для определения показать или убрать строку
+    filterForOTK = function (data, result = true) {
+      try {
+        //console.log('filter', data);
+        if (
+          !data['Проведен'] ||
+          data['СтатусОТК'] ||
+          !data['Заказ']['Активен'] ||
+          !data['ЭтапПроизводства']['ОТК']
+        ) {
+          result = false;
         }
+      } catch (error) {
+        console.log(error);
+      }
+      //console.log('filter result ', result,data);
+      return result;
+    };
 
-        // клик по кнопке Редактировать
-        $(tableID).on('click', '.btnEdit', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
+    // клик по кнопке Редактировать
+    $(tableID).on('click', '.btnEdit', function (event) {
+      const row = $(this).closest('tr');
+      const data = $(row).data('data');
 
-            $(tableID).find('.btnEdit').show();
-            $(tableID).find('.btnOk').hide();
-            $(tableID).find('input').prop('disabled', true);
+      $(tableID).find('.btnEdit').show();
+      $(tableID).find('.btnOk').hide();
+      $(tableID).find('input').prop('disabled', true);
 
-            $(row).find('.btnOk').show();
-            $(row).find('.btnEdit').hide();
-            $(row).find('input').prop('disabled', false);
+      $(row).find('.btnOk').show();
+      $(row).find('.btnEdit').hide();
+      $(row).find('input').prop('disabled', false);
 
-            clickAnimate($(row).find('.btnOk'));
-            logToServer('Нажата кнопка "Редактировать"', data);
-        });
-
-        // клик по кнопке Применить
-        $(tableID).on('click', '.btnOk', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
-
-            $(row).find('.btnOk').hide();
-            $(row).find('.btnEdit').show();
-            $(row).find('input').prop('disabled', true);
-
-            clickAnimate($(row).find('.btnEdit'));
-            logToServer('Нажата кнопка "Применить"', data);
-            sendWSS('updateDataOnServer', '', data);
-        });
+      clickAnimate($(row).find('.btnOk'));
+      logToServer('Нажата кнопка "Редактировать"', data);
     });
+
+    // клик по кнопке Применить
+    $(tableID).on('click', '.btnOk', function (event) {
+      const row = $(this).closest('tr');
+      const data = $(row).data('data');
+
+      $(row).find('.btnOk').hide();
+      $(row).find('.btnEdit').show();
+      $(row).find('input').prop('disabled', true);
+
+      clickAnimate($(row).find('.btnEdit'));
+      logToServer('Нажата кнопка "Применить"', data);
+      sendWSS('updateDataOnServer', '', data);
+    });
+  });
 </script>

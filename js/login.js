@@ -146,10 +146,10 @@ function loadMenu(userInfo, token) {
 
     $.cookie("token", token, { expires: 36500 });
 
-    $('#navbar-brand-text').text(user.profa);
+    $('#navbar-brand-text').text(userInfo.name+ ' - ' +user.profa);
 
     $('#group-navbar').show();
-    $('#navbar_text').text(userInfo.name);
+    $('#navbar_text').text('');
     $('#login').hide();
     $('#btnStartVideo').hide();
     $('#video').hide();
@@ -181,7 +181,14 @@ function loadMenu(userInfo, token) {
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 exit();
             });
-        }); 
+        });
+
+        $(document).on('click', function(event) {
+            console.log('event click', event.target)
+            if (!$(event.target).closest('.navbar-collapse').length && !$(event.target).is('.navbar-collapse')) {
+                $('.navbar-collapse').collapse('hide');
+            }
+        });
 
         if(!oldPageUID){
             $('#menu .nav-item:nth-child(1) a').click();     // кликаем по первому пункту меню

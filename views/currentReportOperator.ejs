@@ -363,7 +363,7 @@
 
         // callback перед отрисовкой таблицы
         callbackBeforeDone = function(data) { 
-            if (data.startTimeWork == '0001-01-01T00:00:00Z') {
+            if (data.startTimeWork == '0001-01-01T00:00:00') {
                 $('.titlePage').text('Смена еще не начата');
                 $('#btnAdd').hide();
                 $(tableID).hide();

@@ -102,7 +102,7 @@ app.post('/dataUpdated', (req, res) => {
   const topic = req.body.data['Имя'];
   const uids = req.body.users;
 
-  log.data('/dataUpdated', req.body, req.body.users);
+  // log.data('/dataUpdated', req.body, req.body.users);
 
 
   // clients.forEach(client => {
@@ -124,10 +124,10 @@ app.post('/dataUpdated', (req, res) => {
   subscribedClients = [...new Set(subscribedClients)];
 
   // log.data('subscribedClients', subscribedClients.length);
-  log.data('arr ', subscribedClients);
+  // log.data('arr ', subscribedClients);
 
   subscribedClients.forEach(function (client) {
-    log.data('client', Object.keys(client));
+    // log.data('client', Object.keys(client));
     client.socket.send(JSON.stringify(req.body));
   });
 

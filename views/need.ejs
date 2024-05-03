@@ -638,14 +638,14 @@
             try {
                 $(`#${data.data.uid}`).attr('access', data.data['edit']);
 
-                data.data['ДоступApp'].forEach(function(element) {
-                    const uidSotr = element['Сотрудник'].uid||'';
+                // data.data['ДоступApp'].forEach(function(element) {
+                //     const uidSotr = element['Сотрудник'].uid||'';
 
-                    if (uidSotr === user.uid) {
-                        $(`#${data.data.uid}`).attr('access', element['РазрешеноВноситьОтчеты']);
-                        return;
-                    }
-                });
+                //     if (uidSotr === user.uid) {
+                //         $(`#${data.data.uid}`).attr('access', element['РазрешеноВноситьОтчеты']);
+                //         return;
+                //     }
+                // });
             } catch (error) { console.log(error) }
         }
 
