@@ -1,223 +1,247 @@
 body {
-    margin: 0px;
-    padding: 0px;
-    background-color: #eee;
-    font-family: arial, sans-serif;
-    user-select: none;
+  margin: 0px;
+  padding: 0px;
+  background-color: #eee;
+  font-family: arial, sans-serif;
+  user-select: none;
 }
 
-body, html{
-    max-width: 100%;
+body,
+html {
+  max-width: 100%;
 }
 
 #container {
-    max-width: 1280px;
-    margin: auto;
+  max-width: 1280px;
+  margin: auto;
 }
 
 #login {
-    max-width: 450px;
-    margin: auto;
-    min-width: 200px;
-    padding-top: 50px;
+  max-width: 450px;
+  margin: auto;
+  min-width: 200px;
+  padding-top: 50px;
 }
 
-.spinner{
-    position: absolute;
-    top: 8px;
-    right: calc(3.0em);
-    z-index: 4;
+.spinner {
+  position: absolute;
+  top: 8px;
+  right: calc(3em);
+  z-index: 4;
 }
 
 #content {
-    /* overflow: scroll; */
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
+  /* overflow: scroll; */
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
 }
 
 #overlay {
-    display: none; /* Изначально оверлей скрыт */
-    position: fixed; /* Оверлей будет фиксированным независимо от прокрутки */
-    top: 0;
-    left: 0;
-    width: 100%; /* Ширина и высота на всю страницу */
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
-    z-index: 1000; /* Z-index достаточно высок, чтобы быть над другими элементами */
-  }
+  display: none; /* Изначально оверлей скрыт */
+  position: fixed; /* Оверлей будет фиксированным независимо от прокрутки */
+  top: 0;
+  left: 0;
+  width: 100%; /* Ширина и высота на всю страницу */
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+  z-index: 1000; /* Z-index достаточно высок, чтобы быть над другими элементами */
+}
 
 #btnStartVideo {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 250px;
-    height: 50px;
-    transform: translate(-50%, -50%);
-    background-color: darkgreen;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 250px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  background-color: darkgreen;
 }
 
 #video {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 56px);
-    object-fit: contain;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 56px);
+  object-fit: contain;
 }
 
 .noColorImg {
-    filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 
 #group-navbar {
-    display: inherit;
+  display: inherit;
 }
 
 #navbar_text_stanok {
-    padding-right: 10px;
-    color: #eee;
-    text-align: end;
-    font-size: 1.6em;
-    background-color: darkgoldenrod;
-    padding-left: 10px;
-    margin-right: 20px;
-    text-overflow: ellipsis;
-    max-width: 300px;
-    white-space: nowrap;
-    overflow: hidden;
+  padding-right: 10px;
+  color: #eee;
+  text-align: end;
+  font-size: 1.6em;
+  background-color: darkgoldenrod;
+  padding-left: 10px;
+  margin-right: 20px;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 #navbar_text {
-    margin-left: auto;
-    padding-right: 15px;
-    color: #eee;
-    text-align: end;
-    font-size: 1.6em;
-    background-color: darkgreen;
-    padding-left: 15px;
+  margin-left: auto;
+  padding-right: 15px;
+  color: #eee;
+  text-align: end;
+  font-size: 1.6em;
+  background-color: darkgreen;
+  padding-left: 15px;
 }
 
 #exit {
-    margin-right: 15px;
-    color: rgba(255,255,255,.5);
-    border-color: rgba(255,255,255,.1);
+  margin-right: 15px;
+  color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 #navbarText {
-    text-align: end;
+  text-align: end;
 }
 
 .nav-link {
-    padding: 0.8rem 1rem;
-    font-size: 1.3em;
+  padding: 0.8rem 1rem;
+  font-size: 1.3em;
 }
 
 .mainColor {
-    background-color: darkgreen !important; 
+  background-color: darkgreen !important;
 }
 
 .color {
-    color: darkgreen !important; 
+  color: darkgreen !important;
 }
 
 .rightAlign {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 #nprogress .bar {
-    height: 5px;
+  height: 5px;
 }
 
 .invalid {
-    box-shadow: 0px -6px 5px -5px red inset;
+  box-shadow: 0px -6px 5px -5px red inset;
+}
+
+#navbar-brand-text {
+  overflow: hidden;
+  display: inline-flex;
+  font-size: medium;
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  white-space: nowrap; 
+  max-width: 100%;
+  flex-shrink: 1;
+  min-width: 0;
+  margin-left: 5px;
+}
+
+.navbar-brand {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 1; 
+    flex-shrink: 1; /* Блок може стискатися */
+    max-width: 100%; /* Максимальна ширина блока */
+    width: 10%;
 }
 
 @media (max-width: 450px) {
-    #navbar_text {
-        width: 80px;
-        display: none;
-    }
+  #navbar_text {
+    width: 80px;
+    display: none;
+  }
 }
 
 @media (max-width: 650px) {
-    #navbar_text_stanok {
-        display: none;
-    }
+  #navbar_text_stanok {
+    display: none;
+  }
 }
 
 .highlight {
-    font-weight: bold;
-    color: red;
-    transition: all 300ms ease;
+  font-weight: bold;
+  color: red;
+  transition: all 300ms ease;
 }
 
 @keyframes clickAnimation {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(0.85);
-    }
-    100% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-  
+
 .clicked {
-    animation: clickAnimation 0.2s ease;
+  animation: clickAnimation 0.2s ease;
 }
 
 .textAlignCenter {
-    text-align: center;
+  text-align: center;
 }
 
 .textAlignEnd {
-    text-align: end;
+  text-align: end;
 }
 
 .btnRow {
-    font-size: xx-large;
-    display: block;
-    margin-right: 10px;
+  font-size: xx-large;
+  display: block;
+  margin-right: 10px;
 }
 
 .colorGreen {
-    color: #007431;
+  color: #007431;
 }
 
 .colorRed {
-    color: #FF0000;
+  color: #ff0000;
 }
 
 .checkboxInTable {
-    height: 25px;
-    margin-top: 7px;
+  height: 25px;
+  margin-top: 7px;
 }
 
 .titlePage {
-    line-height: 40px;
-    font-weight: bold;
+  line-height: 40px;
+  font-weight: bold;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    appearance: none;
-    margin: 0;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 .toast-center-error {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: fixed;
-    width: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  width: 500px;
 }
 
-#toast-container>.toast-error {
-    font-size: 1.5em;
-    width: 500px;
-    max-width: 500px;
+#toast-container > .toast-error {
+  font-size: 1.5em;
+  width: 500px;
+  max-width: 500px;
 }
