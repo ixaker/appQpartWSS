@@ -98,10 +98,11 @@ app.post('/dataUpdated', (req, res) => {
   // log.data('body', req.body);
   // log.data('NodeJS_OK');
 
-  const topic = req.body.topic;
+  // const topic = req.body.topic;
+  const topic = req.body.data['Имя'];
   const uids = req.body.users;
 
-  // log.data('/dataUpdated', req.body.topic, req.body.users);
+  log.data('/dataUpdated', req.body, req.body.users);
 
 
   // clients.forEach(client => {
@@ -123,10 +124,10 @@ app.post('/dataUpdated', (req, res) => {
   subscribedClients = [...new Set(subscribedClients)];
 
   // log.data('subscribedClients', subscribedClients.length);
-  // log.data('arr ', subscribedClients);
+  log.data('arr ', subscribedClients);
 
   subscribedClients.forEach(function (client) {
-    // log.data('client', Object.keys(client));
+    log.data('client', Object.keys(client));
     client.socket.send(JSON.stringify(req.body));
   });
 
@@ -223,7 +224,7 @@ app.post('/uploadPhoto', async (req, res) => {
 
 
 app.post('/saveFace', async (req, res) => {
-  log.info('saveFace', req.body);
+  // log.info('saveFace', req.body);
 
   let result = await faceID.findUserOnFoto(req.body, req.body.uid);
 
