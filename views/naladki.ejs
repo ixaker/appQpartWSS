@@ -361,19 +361,22 @@
                 NProgress.start();
 
                 let data = $(this).data('data').data;
-                let rowData = JSON.stringify(data);
+                let rowData = {"Деталь": {"uid": data["Деталь"]["uid"]}, "Станок": {"uid": data['Станок']['uid']} };
+                // console.log('rowData from naladki', data, data["Деталь"], data['Станок'] );
+                // console.log('rowData from naladki', rowData );
 
                 $.ajax({ url: '/app/naladkiInfo', type: 'POST', dataType: 'json', data: rowData, success: function(response) {
-                    //console.log('response', response);
-
+                    console.log('response', response);
+                    console.log('rowData from naladki', data);
                     if (!response.error) {
+
                         const templateSource = $('#info-template').html();
                         const template = Handlebars.compile(templateSource);
                         const tableHtml = template(response);
 
                         $('#infoForm').html(tableHtml);
 
-                        let rowEtap = $('#' + response.JSON['ЭтапПроизводства']['uid']);
+                        let rowEtap = $('#' + data['ЭтапПроизводства']['uid']);
                         $(rowEtap).addClass('selectedEtap');
 
                         const currNaladka = response.JSON;

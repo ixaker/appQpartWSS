@@ -184,7 +184,6 @@ function loadMenu(userInfo, token) {
         });
 
         $(document).on('click', function(event) {
-            console.log('event click', event.target)
             if (!$(event.target).closest('.navbar-collapse').length && !$(event.target).is('.navbar-collapse')) {
                 $('.navbar-collapse').collapse('hide');
             }
