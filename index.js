@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const { exec } = require('child_process');
 const url = require('url');
+const axios = require('axios');
 
 // services
 const log = require('./services/loggerConfig.js');
@@ -70,7 +71,7 @@ app.get('/adminAuth', (req, res, next) => {
   result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
   result.token = jwt.sign(result.user, secret, options);
 
-  // log.data('/adminAuth', result);
+  log.data('/adminAuth', result);
 
   res.send(result);
 });
@@ -88,10 +89,32 @@ app.get('/', (req, res) => {
 
 // + Страничка - Оболочка с автоматической авторизацией
 app.get('/' + adminRoute, (req, res) => {
-  log.info('app.get to admin part');
+  log.info('----------- app.get to admin part -------------');
   res.sendFile(createPath('admin.html'));
 });
 
+// app.get('/' + adminRoute, async (req, res) => {
+//   log.info('----------- app.get to admin part -------------');
+//   try {
+//     await requestAdminTokenAndSetCookie(req, res);
+//   } catch (error) {
+//     log.error('Error occurred:', error);
+//     res.redirect('/error');
+//   }
+// });
+
+
+// async function requestAdminTokenAndSetCookie(req, res) {
+//   try {
+//     const response = await axios.get('/adminAuth');
+//     console.log('/adminAuth');
+//     res.cookie("token");
+//     res.sendFile(createPath('admin.html'));
+//   } catch (error) {
+//     console.error('Error fetching token:', error);
+//     throw error;
+//   }
+// }
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
@@ -166,11 +189,9 @@ app.use((req, res, next) => {
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
       log.info('jwt.verify error');
-      
-      // res.status(403).send({ textError: 'jwt.verify error' }); // Відправити помилку користувачеві
-      // res.redirect('/'); // Перенаправлення на базову сторінку
-      res.redirect('/'); 
-      // res.status(403).send({textError: 'jwt.verify error'});
+      res.redirect('/');
+      // res.status(403).send({ textError: 'jwt.verify error' });
+
       return
     } else {
       let { iat, exp, ...userClear } = user;
@@ -419,7 +440,7 @@ wss.on('connection', (ws, request) => {
       } else if (action === 'updateDataOnServer') {
         //log.info(action, topic, payload);
 
-        
+
         const data = JSON.parse(message);
         const response = await func1C.request1C('POST', '/updateData', {}, data);
 
