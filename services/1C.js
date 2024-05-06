@@ -12,15 +12,15 @@ const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
 const Authorization1C = `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`;
 
 let ibSession = '';
-const periodOfPing1C = 60 * 10 * 1000;
+const periodOfPing1C = 1 * 10 * 1000;
 
 async function GET(path) {
     try {
         const response = await request1C('GET', path);
-        return response.data; // Возвращаем данные ответа
+        return response.data;
     } catch (error) {
-        console.error('Ошибка при выполнении GET_1C:', error); // Логирование ошибки
-        return {}; // Возвращаем пустой объект в случае ошибки
+        console.error('Ошибка при выполнении GET_1C:', error);
+        return {};
     }
 
 }
@@ -28,7 +28,8 @@ async function GET(path) {
 async function pingRequest() {
     log.info('pingRequestStart');
     const response = await request1C('GET', '/ping');
-    log.info('pingRequest', response.status, ibSession);
+    // funcIbSession.writeSessionToFile('ibsession.txt', ibSession);
+    log.info('pingRequest', response, ibSession);
 }
 
 async function init() {
@@ -43,6 +44,7 @@ async function init() {
 }
 
 async function request1C(method, path, headers = {}, data = {}) {
+    log.info('-- request1C start --- ')
     try {
         let needStartSession = true;
 
@@ -59,16 +61,12 @@ async function request1C(method, path, headers = {}, data = {}) {
             if (response.status === 200) {
                 return response;
             }
-
             if (response.status === 400 || response.status === 404) {
                 needStartSession = true;
             }
         }
-
         if (needStartSession) {
-
             log.info('needStartSession2', needStartSession)
-
             authHeaders = {
                 'IBSession': 'start',
                 'Authorization': Authorization1C,
@@ -85,7 +83,6 @@ async function request1C(method, path, headers = {}, data = {}) {
 
             return responseStart;
         }
-
         throw (`request1C - ${method} : ${path} - error`)
 
     } catch (error) {
@@ -96,8 +93,6 @@ async function request1C(method, path, headers = {}, data = {}) {
         };
     }
 }
-
-
 
 async function axios1C(method, path, headers, data) {
     log.info('axios1C start')
@@ -138,7 +133,7 @@ const ProxyMiddleware1C = createProxyMiddleware({
                 proxyReq.setHeader('Cookie', ibSession);
                 // proxyReq.setHeader('Authorization', Authorization1C);
                 const newTarget = new url.URL(proxyReq.path, 'http://localhost');
-                newTarget.searchParams.set('uid', req.user.uid); // добавляем новый параметр
+                newTarget.searchParams.set('uid', req.user.uid);
                 proxyReq.path = newTarget.toString().replace('http://localhost', '');
                 log.info('proxyReq', proxyReq.path);
                 log.info('middleware req.body', req.method)
@@ -146,20 +141,20 @@ const ProxyMiddleware1C = createProxyMiddleware({
                     proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
                     proxyReq.write(bodyData)
                 }
-                
+
                 const contentType = req.headers['content-type'];
-                log.info('contentType', contentType)
+                // log.info('contentType', contentType)
                 if (contentType && (contentType.includes('application/json') || contentType.includes('application/x-www-form-urlencoded'))) {
                     writeBody(JSON.stringify(req.body))
                 } else {
                     // Обробка випадку, коли contentType відсутній або не має підтримуваних типів
                 }
             } catch (error) {
-                log.error('ProxyMiddleware1C proxyReq', error);
+                log.error('ProxyMiddleware1C proxyReq error', error);
             }
         },
         error: (err, req, res) => {
-            log.error('ProxyMiddleware1C', err);
+            log.error('ProxyMiddleware1C error', err);
         },
     },
 })

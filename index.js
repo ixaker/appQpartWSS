@@ -76,8 +76,6 @@ app.get('/adminAuth', (req, res, next) => {
   res.send(result);
 });
 
-
-
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 app.use(express.json({ limit: '10mb' }));
 
@@ -93,29 +91,6 @@ app.get('/' + adminRoute, (req, res) => {
   res.sendFile(createPath('admin.html'));
 });
 
-// app.get('/' + adminRoute, async (req, res) => {
-//   log.info('----------- app.get to admin part -------------');
-//   try {
-//     await requestAdminTokenAndSetCookie(req, res);
-//   } catch (error) {
-//     log.error('Error occurred:', error);
-//     res.redirect('/error');
-//   }
-// });
-
-
-// async function requestAdminTokenAndSetCookie(req, res) {
-//   try {
-//     const response = await axios.get('/adminAuth');
-//     console.log('/adminAuth');
-//     res.cookie("token");
-//     res.sendFile(createPath('admin.html'));
-//   } catch (error) {
-//     console.error('Error fetching token:', error);
-//     throw error;
-//   }
-// }
-
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
   log.data('app.post /dataUpdated');
@@ -128,7 +103,6 @@ app.post('/dataUpdated', (req, res) => {
   const uids = req.body.users;
 
   // log.data('/dataUpdated', req.body, req.body.users);
-
 
   // clients.forEach(client => {
   //   log.data('user', client.user);
@@ -205,7 +179,7 @@ app.use('/app', func1C.ProxyMiddleware1C);
 
 app.use('/appPOST', async (req, res) => {
   const newTarget = new url.URL(req.path, 'http://localhost');
-  newTarget.searchParams.set('uid', req.user.uid); // добавляем новый параметр
+  newTarget.searchParams.set('uid', req.user.uid);
   const path = newTarget.toString().replace('http://localhost', '');
 
   log.data('path', path, req.body);
