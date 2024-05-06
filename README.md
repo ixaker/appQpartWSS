@@ -109,3 +109,6 @@ systemctl stop webAppQpart  && certbot renew --dry-run && sudo systemctl start w
 
 
 npm install node-telegram-bot-api --save
+
+Розмір планшета
+1208 800

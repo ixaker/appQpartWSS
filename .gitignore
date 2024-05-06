@@ -6,5 +6,5 @@
 .envCopy
 embeddings.json
 userInfoData.json
- .prettierrc
- .ibsession.txt
+.prettierrc
+.ibsession.txt
