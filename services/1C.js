@@ -12,7 +12,7 @@ const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
 const Authorization1C = `Basic ${Buffer.from(`${API_1C_LOGIN}:${API_1C_PASSWORD}`).toString('base64')}`;
 
 let ibSession = '';
-const periodOfPing1C = 1 * 10 * 1000;
+const periodOfPing1C = 30 * 10 * 1000;
 
 async function GET(path) {
     try {
@@ -57,7 +57,7 @@ async function request1C(method, path, headers = {}, data = {}) {
                 ...headers
             }
             const response = await axios1C(method, path, authHeaders, data);
-            log.info('request1C', response)
+            // log.info('request1C', response)
             if (response.status === 200) {
                 return response;
             }
@@ -135,8 +135,8 @@ const ProxyMiddleware1C = createProxyMiddleware({
                 const newTarget = new url.URL(proxyReq.path, 'http://localhost');
                 newTarget.searchParams.set('uid', req.user.uid);
                 proxyReq.path = newTarget.toString().replace('http://localhost', '');
-                log.info('proxyReq', proxyReq.path);
-                log.info('middleware req.body', req.method)
+                log.info(' --- proxyReq path', proxyReq.path);
+                log.info('createProxyMiddleware req.method', req.method)
                 const writeBody = (bodyData) => {
                     proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
                     proxyReq.write(bodyData)
@@ -151,6 +151,19 @@ const ProxyMiddleware1C = createProxyMiddleware({
                 }
             } catch (error) {
                 log.error('ProxyMiddleware1C proxyReq error', error);
+            }
+        },
+        proxyRes: (proxyRes, req, res) => {
+            log.info('- proxyRes-')
+            try {
+                const status = proxyRes.statusCode;
+                log.info('proxyRes in proxyMiddleware', status)
+                if (status === 400 || status === 404) {
+                    log.info('-- pingRequest from proxyRes')
+                    pingRequest();
+                }
+            } catch (error) {
+                log.error('ProxyMiddleware1C proxyRes error', error);
             }
         },
         error: (err, req, res) => {

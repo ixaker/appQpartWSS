@@ -28,7 +28,8 @@ if (!fs.existsSync(envFilePath)) {
   API_1C_PASSWORD=tele
   domian=wss.qpart.com.ua
   botToken=5963182008:AAEAaqku-cJbC6Er7GHgYtVOZuR-8QO1fps
-  chatId=672754822`;
+  chatId=672754822
+  version = 1.0.0`;
 
   fs.writeFileSync(envFilePath, defaultEnvData);
 }
@@ -38,6 +39,9 @@ const options = { expiresIn: '3h' };
 
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
+const version = process.env.version || '1.0.0';
+// const version = '1.0.12111111111111'
+const maxAge = 31536000;
 
 const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
 const ssl_cert = path.join("/etc/letsencrypt/live", domian, 'fullchain.pem');
@@ -52,10 +56,18 @@ app.set('view engine', 'ejs');
 
 const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
 
-app.use(express.static('styles'));
-app.use(express.static('js'));
-app.use(express.static('img'));
-app.use(express.static('static'));
+// app.use(express.static('styles'));
+// app.use(express.static('js'));
+// app.use(express.static('img'));
+// app.use(express.static('static'));
+app.use(express.static('static', {
+  setHeaders: function (res, path) {
+    // Установка Cache-Control для всех статических файлов
+    res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+    // Дополнительные заголовки для поддержки валидации кэша
+    res.setHeader('ETag', true);
+  }
+}));
 app.use('/foto', express.static('foto'));
 app.use(cookieParser());
 
@@ -85,7 +97,7 @@ app.get('/', (req, res) => {
   // res.sendFile(createPath('index.html'));
 
   res.render('index', {
-    version: '5555',
+    version: version,
     token: ''
   });
 });
@@ -98,7 +110,7 @@ app.get('/' + adminRoute, (req, res) => {
   const token = jwt.sign(user, secret, options);
 
   res.render('index', {
-    version: '5555',
+    version: version,
     token: token
   });
   // res.sendFile(createPath('admin.html'));
@@ -190,6 +202,7 @@ app.use((req, res, next) => {
 
 app.use('/app', func1C.ProxyMiddleware1C);
 
+
 app.use('/appPOST', async (req, res) => {
   const newTarget = new url.URL(req.path, 'http://localhost');
   newTarget.searchParams.set('uid', req.user.uid);
@@ -212,6 +225,9 @@ app.post('/authentication', async (req, res) => {
 
   res.send(result);
 });
+
+// add headers for cache
+
 
 app.post('/uploadPhoto', async (req, res) => {
   log.info('post uploadPhoto', req.body);
@@ -302,8 +318,10 @@ app.delete('/userListFoto', async function (req, res) {
 
 // ***********************************************************************************************
 
-app.get('/tabel', (req, res) => {
-  res.sendFile(createPath('tabel.html'));
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+  res.setHeader('ETag', true);
+  next();
 });
 
 app.get('/currentReportOperator', async function (req, res) {
@@ -353,6 +371,8 @@ app.get('/12345', async function (req, res) {
 app.get('/zakupka', async function (req, res) {
   return res.render('zakupka');
 });
+
+
 
 // Error
 app.use((req, res) => {

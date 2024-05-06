@@ -1,410 +1,494 @@
 <style>
+  #content {
+    font-size: 0.9rem;
+  }
 
-    #content {
-        font-size: 0.9em;
+  #contentInfo {
+    width: 400px;
+    margin: auto;
+    margin-top: 5px;
+  }
+
+  .groupHeader {
+    display: flex;
+    padding: 0 5px;
+    margin-bottom: 5px;
+  }
+
+  .titlePage {
+    font-size: 1.5em;
+  }
+
+  .groupSearch {
+    margin-left: auto;
+    width: 300px;
+    margin-top: 6px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    height: 40px;
+  }
+
+  #search {
+    border: none;
+    line-height: 100%;
+    height: 100%;
+  }
+
+  #search:focus {
+    box-shadow: none;
+  }
+
+  #search-addon {
+    background-color: #fff;
+  }
+
+  .hide {
+    display: none;
+  }
+
+  mark {
+    background: yellow;
+    padding: 0;
+  }
+
+  tr {
+    height: 40px !important;
+  }
+
+  #tableTechnology {
+    width: 300px;
+    margin: auto;
+  }
+
+  #tableTechnology tr {
+    height: 25px !important;
+  }
+
+  #tableTechnology th:nth-child(1) {
+    width: 60px;
+  }
+
+  .selectedEtap td {
+    font-weight: 600;
+    background-color: gold;
+  }
+
+  #errorsInfo {
+    color: red;
+    margin-bottom: 10px;
+  }
+
+  .stanokON {
+    background-color: chartreuse;
+  }
+
+  @media (max-width: 800px) {
+    #navbar-brand-text {
+      max-width: 600px;
+      overflow: hidden;
+      display: inline-flex;
+      font-size: medium;
     }
 
-    #contentInfo {
-        width: 400px;
-        margin: auto;
-        margin-top: 5px;
+    #navbar_text {
+      text-align: left;
+      overflow: hidden;
+      text-wrap: nowrap;
+      font-size: medium;
+      line-height: 50px;
+    }
+
+    #content {
+      font-size: 0.8em;
+      padding-left: 0px;
+      padding-right: 0px;
     }
 
     .groupHeader {
-        display: flex; 
-        padding: 0 5px;
-        margin-bottom: 5px;
+      display: block;
     }
 
-    .titlePage{
-        font-size: 1.5em;
+    .titlePage {
+      font-size: 2.8em;
     }
 
     .groupSearch {
-        margin-left: auto;
-        width: 300px;
-        margin-top: 6px;
-        border: 1px solid #AAA;
-        background-color: #FFF;
-        height: 40px;
+      width: 100%;
     }
 
-    #search {
-        border: none;
-        line-height: 100%;
-        height: 100%;
-    }
-
-    #search:focus {
-        box-shadow:none
-    }
-
-    #search-addon {
-        background-color: #FFF;
-    }
-
-    .hide {
-        display: none;
-    }
-
-    mark {
-        background: yellow;
-        padding: 0;
-    }
-
-    tr {
-        height: 40px !important;
-    }
-
-    #tableTechnology {
-        width:300px;
-        margin:auto;
-    }
-
-    #tableTechnology tr {
-        height: 25px !important;
-    }
-
-    #tableTechnology th:nth-child(1) {
-        width:60px;
-    }
-
-    .selectedEtap td{
-        font-weight: 600;
-        background-color: gold;
-    }
-
-    #errorsInfo {
-        color: red;
-        margin-bottom: 10px;
-    }
-    
-    .stanokON {
-        background-color: chartreuse;
-    }
-
-
-    @media (max-width: 650px) {
-        #navbar-brand-text {
-            max-width: 130px;
-            overflow: hidden;
-            display: inline-flex;
-            font-size: medium;
-        }
-
-        #navbar_text{
-            text-align: left;
-            overflow: hidden;
-            text-wrap: nowrap;
-            font-size: medium;
-            line-height: 50px;
-        }
-
-        #content {
-            font-size: 0.5em;
-            padding-left: 0px;
-            padding-right: 0px;
-        }
-
-        .groupHeader {
-            display: block; 
-        }
-
-        .titlePage{
-            font-size: 2.8em;
-        }
-
-        .groupSearch {
-            width: 100%;
-        }
-
-/*         .forHide {
+    /*         .forHide {
             display: none;
         } */
-
-    }
+  }
 </style>
 
 <div class="groupHeader">
-    <h3 class="titlePage" style="line-height: 50px;">Текущие наладки на станках</h3>
+  <h3 class="titlePage" style="line-height: 50px">
+    Текущие наладки на станках
+  </h3>
 
-    <div class="input-group rounded groupSearch">
-        <input type="search" id="search" class="form-control rounded" placeholder="поиск" aria-label="Search" aria-describedby="search-addon" />
-        <span class="input-group-text border-0" id="search-addon">
-            <i class="bi bi-search"></i>
-        </span>
-    </div>
+  <div class="input-group rounded groupSearch">
+    <input
+      type="search"
+      id="search"
+      class="form-control rounded"
+      placeholder="поиск"
+      aria-label="Search"
+      aria-describedby="search-addon"
+    />
+    <span class="input-group-text border-0" id="search-addon">
+      <i class="bi bi-search"></i>
+    </span>
+  </div>
 </div>
 
-
-<table  id="НаладкаСтанковЧПУ"
-        url="/app/naladki"
-        filter="filter"
-        addNevRow="addNevRow" 
-        callbackAfterWrite="callbackAfterWrite" 
-        append="end"
-        sort="0" init header>
-    <tr class="config" style="display: none;">
-        <td title="Станок" 
-            name="Станок"
-            key="ИнвентарныйНомер" 
-            rowspan="1" 
-            class="stanok"
-            style="width: 25px;"><div class="dataCell textAlignCenter"></div></td>
-<!--         <td title="Вкл" 
+<table
+  id="НаладкаСтанковЧПУ"
+  url="/app/naladki"
+  filter="filter"
+  addNevRow="addNevRow"
+  callbackAfterWrite="callbackAfterWrite"
+  append="end"
+  sort="0"
+  init
+  header
+>
+  <tr class="config" style="display: none">
+    <td
+      title="Станок"
+      name="Станок"
+      key="ИнвентарныйНомер"
+      rowspan="1"
+      class="stanok"
+      style="width: 25px"
+    >
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <!--         <td title="Вкл" 
             name="Станок"
             key="Включен" 
             rowspan="1" 
             style="width: 25px;"><div class="dataCell textAlignCenter"></div></td> -->
-        <td title="Деталь" 
-            name="Деталь" 
-            key="АртикулНаименование" 
-            style="width: 100px;"><div class="dataCell"></div></td>
-        <td title="Этап производства" 
-            name="ЭтапПроизводства" 
-            key="Наименование" 
-            style="width: 70px;"><div class="dataCell"></div></td>
-        <td title="Код" 
-            name="ЭтапПроизводства" 
-            key="КодНовый" 
-            style="width: 22px;"><div class="dataCell textAlignCenter"></div></td>
-        <td title="Маш. время" 
-            name="МашинноеВремя"  
-            style="width: 22px;"><div class="dataCell textAlignCenter" ></div></td>
-        <td title="Полное время" 
-            name="ПолноеВремя" 
-            style="width: 25px;"><div class="dataCell textAlignCenter" ></div></td>
-        <td title="Деталей за 1 уст" 
-            name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 27px;"><div class="dataCell textAlignCenter" ></div></td>
-        <td title="Дата наладки" 
-            name="ДатаНаладки" 
-            class="forHide" 
-            headerClass="forHide" 
-            style="width: 35px; text-wrap: balance;"><div class="dataCell textAlignCenter" mask="DD.MM.YYYY" typeData="date"></div></td>
-        <td title="Наладчик" 
-            name="Наладчик"
-            key="Наименование" 
-            class="forHide" 
-            headerClass="forHide" 
-            style="width: 60px;"><div class="dataCell textAlignCenter" ></div></td>
-    </tr>
+    <td
+      title="Деталь"
+      name="Деталь"
+      key="АртикулНаименование"
+      style="width: 100px"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <td
+      title="Этап производства"
+      name="ЭтапПроизводства"
+      key="Наименование"
+      style="width: 70px"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <td title="Маш. время" name="МашинноеВремя" style="width: 22px">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td title="Полное время" name="ПолноеВремя" style="width: 25px">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td
+      title="Деталей за 1 уст"
+      name="КоличествоДеталейЗаОднуУстановку"
+      style="width: 27px"
+    >
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td
+      title="Дата наладки"
+      name="ДатаНаладки"
+      class="forHide"
+      headerClass="forHide"
+      style="width: 35px; text-wrap: balance"
+    >
+      <div
+        class="dataCell textAlignCenter"
+        mask="DD.MM.YYYY"
+        typeData="date"
+      ></div>
+    </td>
+    <td
+      title="Наладчик"
+      name="Наладчик"
+      key="Наименование"
+      class="forHide"
+      headerClass="forHide"
+      style="width: 60px"
+    >
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+  </tr>
 
-    <tr id="infoRow" class="hide">
-        <td colspan="9" style="background-color: aliceblue;">
-            <div id="infoForm">Загрузка...</div>
-        </td>
-    </tr>
+  <tr id="infoRow" class="hide">
+    <td colspan="8" style="background-color: aliceblue">
+      <div id="infoForm">Загрузка...</div>
+    </td>
+  </tr>
 </table>
 
 <script id="info-template" type="text/x-handlebars-template">
-
-    <div id="contentInfo">
-        <div class="input-group">
-            <label for="time" class="labelNewReport" style="width: 150px;">Название станка :</label>
-            <p style="font-weight: 600;">{{JSON.Станок.КодНовый}} {{JSON.Станок.Наименование}} {{JSON.Станок.Модель}}</p>
-        </div>
-
-        <pre id="errorsInfo"></pre>
-
-        <table id="tableTechnology">
-            <thead>
-                <tr>
-                    <th>Код</th>
-                    <th>Этап производства</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each technology}}
-                <tr id="{{uid}}">
-                    <td class="textAlignCenter">{{КодНовый}}</td>
-                    <td>{{ЭтапПроизводства}}</td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
+  <div id='contentInfo'>
+    <div class='input-group'>
+      <label for='time' class='labelNewReport' style='width: 150px;'>Название
+        станка :</label>
+      <p style='font-weight: 600;'>{{JSON.Станок.КодНовый}}
+        {{JSON.Станок.Наименование}}
+        {{JSON.Станок.Модель}}</p>
     </div>
+
+    <pre id='errorsInfo'></pre>
+
+    <table id='tableTechnology'>
+      <thead>
+        <tr>
+          <th>Код</th>
+          <th>Этап производства</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each technology}}
+          <tr id='{{uid}}'>
+            <td class='textAlignCenter'>{{КодНовый}}</td>
+            <td>{{ЭтапПроизводства}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
 </script>
 
 <script>
-    $(document).ready(function() {
-        initTables();
-        addSubscribeWSS('НаладкаСтанковЧПУ_all');
+  $(document).ready(function () {
+    initTables();
+    addSubscribeWSS('НаладкаСтанковЧПУ_all');
 
-        callbackWSS = async function(data){callbackTable(data)};
+    callbackWSS = async function (data) {
+      callbackTable(data);
+    };
 
-        filter = function(data, result = true) {
-            try { if ( !data['Проведен'] || data['Станок']['НеРаботает'] ){ result = false; }} catch (error) { console.log(error) };
-            return result;
+    filter = function (data, result = true) {
+      try {
+        if (!data['Проведен'] || data['Станок']['НеРаботает']) {
+          result = false;
         }
+      } catch (error) {
+        console.log(error);
+      }
+      return result;
+    };
 
-        addNevRow = function(data) { }
-        callbackAfterWrite = function(data) {
-            console.log('callbackAfterWrite', data);
+    addNevRow = function (data) {};
+    callbackAfterWrite = function (data) {
+      console.log('callbackAfterWrite', data);
 
-            const currNaladka = data.data; 
-            const lastReport = currNaladka.LastReport.data;
+      const currNaladka = data.data;
+      const lastReport = currNaladka.LastReport.data;
 
-            let curentRow = $('#' + currNaladka.uid);
-            let isProblem = false;
-            let listProblem = [];
+      let curentRow = $('#' + currNaladka.uid);
+      let isProblem = false;
+      let listProblem = [];
 
-            if (!isSameObject(currNaladka['Деталь'], lastReport['Деталь'])) {
-                //console.log('Деталь не совпадает', curentRow);
-                $(curentRow).find('[name="Деталь"]').addClass('highlight');
-                isProblem = true;
-                listProblem.push(`Деталь: ${lastReport['Деталь']['АртикулНаименование']}`);
-            }
+      if (!isSameObject(currNaladka['Деталь'], lastReport['Деталь'])) {
+        //console.log('Деталь не совпадает', curentRow);
+        $(curentRow).find('[name="Деталь"]').addClass('highlight');
+        isProblem = true;
+        listProblem.push(
+          `Деталь: ${lastReport['Деталь']['АртикулНаименование']}`
+        );
+      }
 
-            if (!isSameObject(currNaladka['ЭтапПроизводства'], lastReport['ЭтапПроизводства'])) {
-                //console.log('Деталь не совпадает', curentRow);
-                $(curentRow).find('[name="ЭтапПроизводства"]').addClass('highlight');
-                isProblem = true;
-                listProblem.push(`Этап производства: ${lastReport['ЭтапПроизводства']['Наименование']}`);
-            }
+      if (
+        !isSameObject(
+          currNaladka['ЭтапПроизводства'],
+          lastReport['ЭтапПроизводства']
+        )
+      ) {
+        //console.log('Деталь не совпадает', curentRow);
+        $(curentRow).find('[name="ЭтапПроизводства"]').addClass('highlight');
+        isProblem = true;
+        listProblem.push(
+          `Этап производства: ${lastReport['ЭтапПроизводства']['Наименование']}`
+        );
+      }
 
-            if (lastReport['МашинноеВремя'] > currNaladka['МашинноеВремя']) {
-                $(curentRow).find('[name="МашинноеВремя"]').addClass('highlight');
-                isProblem = true; 
-                listProblem.push(`Машинное время: ${lastReport['МашинноеВремя']}`);   
-            }
+      if (lastReport['МашинноеВремя'] > currNaladka['МашинноеВремя']) {
+        $(curentRow).find('[name="МашинноеВремя"]').addClass('highlight');
+        isProblem = true;
+        listProblem.push(`Машинное время: ${lastReport['МашинноеВремя']}`);
+      }
 
-            if (lastReport['ПолноеВремя'] > currNaladka['ПолноеВремя']) {
-                $(curentRow).find('[name="ПолноеВремя"]').addClass('highlight');
-                isProblem = true;
-                listProblem.push(`Полное время: ${lastReport['ПолноеВремя']}`);    
-            }
+      if (lastReport['ПолноеВремя'] > currNaladka['ПолноеВремя']) {
+        $(curentRow).find('[name="ПолноеВремя"]').addClass('highlight');
+        isProblem = true;
+        listProblem.push(`Полное время: ${lastReport['ПолноеВремя']}`);
+      }
 
-            if (lastReport['КоличествоДеталейЗаОднуУстановку'] !== currNaladka['КоличествоДеталейЗаОднуУстановку']) {
-                $(curentRow).find('[name="КоличествоДеталейЗаОднуУстановку"]').addClass('highlight');
-                isProblem = true;   
-                listProblem.push(`Кол-во дет за 1 уст: ${lastReport['КоличествоДеталейЗаОднуУстановку']}`); 
-            }
+      if (
+        lastReport['КоличествоДеталейЗаОднуУстановку'] !==
+        currNaladka['КоличествоДеталейЗаОднуУстановку']
+      ) {
+        $(curentRow)
+          .find('[name="КоличествоДеталейЗаОднуУстановку"]')
+          .addClass('highlight');
+        isProblem = true;
+        listProblem.push(
+          `Кол-во дет за 1 уст: ${lastReport['КоличествоДеталейЗаОднуУстановку']}`
+        );
+      }
 
-            if (isProblem) {
-                $(curentRow).attr("isProblem", isProblem);
+      if (isProblem) {
+        $(curentRow).attr('isProblem', isProblem);
 
-                let dateReport = `Дата отчета : ${moment(lastReport['ДатаОтчета']).format("DD.MM.YYYY")}`;
-                let sotrudnik = `Сотрудник : ${lastReport['Сотрудник']['Наименование']}`;
+        let dateReport = `Дата отчета : ${moment(
+          lastReport['ДатаОтчета']
+        ).format('DD.MM.YYYY')}`;
+        let sotrudnik = `Сотрудник : ${lastReport['Сотрудник']['Наименование']}`;
 
-                let textProblem = listProblem.join("\n");
+        let textProblem = listProblem.join('\n');
 
-                textProblem = "Последний отчет отличается от наладки" + "\n" + dateReport + "\n" + sotrudnik + "\n" + textProblem;
+        textProblem =
+          'Последний отчет отличается от наладки' +
+          '\n' +
+          dateReport +
+          '\n' +
+          sotrudnik +
+          '\n' +
+          textProblem;
 
-                $(curentRow).data("textProblem", textProblem);
-                //console.log(textProblem);
-            }else{
-                $(curentRow).data("textProblem", "");
-            }
+        $(curentRow).data('textProblem', textProblem);
+        //console.log(textProblem);
+      } else {
+        $(curentRow).data('textProblem', '');
+      }
 
-            if(data.data['Станок']['Включен']){
-                let stanok = $(curentRow).find('.stanok');
-                console.log(stanok);
-                $(curentRow).find('.stanok').addClass('stanokON');
-            }else{
-                $(curentRow).find('.stanok').addClass('stanokOFF');
-            }
+      if (data.data['Станок']['Включен']) {
+        let stanok = $(curentRow).find('.stanok');
+        console.log(stanok);
+        $(curentRow).find('.stanok').addClass('stanokON');
+      } else {
+        $(curentRow).find('.stanok').addClass('stanokOFF');
+      }
 
-            //console.log('currNaladka', currNaladka);
-            //console.log('lastReport', lastReport);
-         }
+      //console.log('currNaladka', currNaladka);
+      //console.log('lastReport', lastReport);
+    };
 
-        $('#search').on("input", function() {
-            let searchTerms = $(this).val().split(' ').filter(Boolean);
+    $('#search').on('input', function () {
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
 
-            $('.rowData').each(function() {
-                let elements = $(this).children().map(function() { 
-                    return { 
-                        el: $(this), 
-                        originalText: $(this).text(), // Сохраняем оригинальный текст
-                        text: $(this).text() 
-                    }; 
-                }).get();
+      $('.rowData').each(function () {
+        let elements = $(this)
+          .children()
+          .map(function () {
+            return {
+              el: $(this),
+              originalText: $(this).text(), // Сохраняем оригинальный текст
+              text: $(this).text()
+            };
+          })
+          .get();
 
-                let foundAllTerms = searchTerms.every(term => {
-                    let regex = new RegExp(`(${term})`, 'gi');
-                    return elements.some(element => element.text.match(regex));
-                });
+        let foundAllTerms = searchTerms.every((term) => {
+          let regex = new RegExp(`(${term})`, 'gi');
+          return elements.some((element) => element.text.match(regex));
+        });
 
-                if (foundAllTerms) {
-                    elements.forEach(element => {
-                        searchTerms.forEach(term => {
-                            let regex = new RegExp(`(${term})`, 'gi');
-                            element.text = element.text.replace(regex, '<mark>$1</mark>');
-                        });
-                        element.el.html(element.text);
-                    });
-                } else {
-                    elements.forEach(element => element.el.text(element.originalText)); // Восстанавливаем оригинальный текст
-                }
-
-                $(this).toggleClass('hide', !foundAllTerms);
+        if (foundAllTerms) {
+          elements.forEach((element) => {
+            searchTerms.forEach((term) => {
+              let regex = new RegExp(`(${term})`, 'gi');
+              element.text = element.text.replace(regex, '<mark>$1</mark>');
             });
-        });
-
-        $('#НаладкаСтанковЧПУ').on('click', '.rowData', function(event){
-            console.log('click rowData');
-
-            let curentRowID = $(this).attr('id');
-            let prevRowID = $('#infoRow').attr('curentRow')||'';
-
-            $('#infoForm').html('Загрузка...');
-
-            if (curentRowID === prevRowID) {
-                $('#infoRow').toggleClass('hide', true);
-                $('#infoRow').attr('curentRow', '');    
-            } else {
-                $('#infoRow').toggleClass('hide', false);
-                $('#infoRow').attr('curentRow', curentRowID);
-                $('#infoRow').insertAfter(this); 
-
-                NProgress.start();
-
-                let data = $(this).data('data').data;
-                let rowData = {"Деталь": {"uid": data["Деталь"]["uid"]}, "Станок": {"uid": data['Станок']['uid']} };
-                // console.log('rowData from naladki', data, data["Деталь"], data['Станок'] );
-                // console.log('rowData from naladki', rowData );
-
-                $.ajax({ url: '/app/naladkiInfo', type: 'POST', dataType: 'json', data: rowData, success: function(response) {
-                    console.log('response', response);
-                    console.log('rowData from naladki', data);
-                    if (!response.error) {
-
-                        const templateSource = $('#info-template').html();
-                        const template = Handlebars.compile(templateSource);
-                        const tableHtml = template(response);
-
-                        $('#infoForm').html(tableHtml);
-
-                        let rowEtap = $('#' + data['ЭтапПроизводства']['uid']);
-                        $(rowEtap).addClass('selectedEtap');
-
-                        const currNaladka = response.JSON;
-                        const lastReport = response.LastReport.data;
-
-
-                        //console.log('currNaladka', currNaladka);
-                        //console.log('lastReport', lastReport);
-
-                        let curentRow = $('#' + response.JSON.uid);
-                        let textProblem = $(curentRow).data("textProblem");
-
-                        $('#errorsInfo').text(textProblem);
-
-                        //console.log('curentRow', curentRow);
-                        //console.log('curentRow', curentRow);
-
-                    }
-                }, error: function (xhr, status, error) {
-                    console.error("Ошибка:", error);
-                }, complete: function(response){
-                    NProgress.done();
-                }});
-            }
-        });
-
-        function isSameObject(obj1, obj2) {
-            return obj1.uid === obj2.uid;
+            element.el.html(element.text);
+          });
+        } else {
+          elements.forEach((element) => element.el.text(element.originalText)); // Восстанавливаем оригинальный текст
         }
+
+        $(this).toggleClass('hide', !foundAllTerms);
+      });
     });
+
+    $('#НаладкаСтанковЧПУ').on('click', '.rowData', function (event) {
+      console.log('click rowData');
+
+      let curentRowID = $(this).attr('id');
+      let prevRowID = $('#infoRow').attr('curentRow') || '';
+
+      $('#infoForm').html('Загрузка...');
+
+      if (curentRowID === prevRowID) {
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
+      } else {
+        $('#infoRow').toggleClass('hide', false);
+        $('#infoRow').attr('curentRow', curentRowID);
+        $('#infoRow').insertAfter(this);
+
+        NProgress.start();
+
+        let data = $(this).data('data').data;
+        // console.log('data['Деталь']['uid']', data['Деталь']['uid']);
+        // console.log('data['Станок']['uid']', data['Деталь']['uid']);
+        let rowData = {
+          Деталь: { uid: data['Деталь']['uid'] },
+          Станок: { uid: data['Станок']['uid'] }
+        };
+        // console.log('rowData from naladki', data, data["Деталь"], data['Станок'] );
+        // console.log('rowData from naladki', rowData );
+
+        $.ajax({
+          url: '/app/naladkiInfo',
+          type: 'POST',
+          dataType: 'json',
+          data: rowData,
+          success: function (response) {
+            console.log('response', response);
+            console.log('rowData from naladki', data);
+            if (!response.error) {
+              const templateSource = $('#info-template').html();
+              const template = Handlebars.compile(templateSource);
+              const tableHtml = template(response);
+
+              $('#infoForm').html(tableHtml);
+              // --------------------------------------------------------------------------------
+              console.log('---- data --- ', data['ЭтапПроизводства']['uid']);
+              let rowEtap = $('#' + data['ЭтапПроизводства']['uid']);
+              $(rowEtap).addClass('selectedEtap');
+
+              // const currNaladka = response.JSON;
+              // const lastReport = response.LastReport.data;
+
+              //console.log('currNaladka', currNaladka);
+              //console.log('lastReport', lastReport);
+
+              let curentRow = $('#' + curentRowID);
+              let textProblem = $(curentRow).data('textProblem');
+
+              $('#errorsInfo').text(textProblem);
+
+              //console.log('curentRow', curentRow);
+              //console.log('curentRow', curentRow);
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error('Ошибка:', error);
+          },
+          complete: function (response) {
+            console.log('copmlete naladki info');
+            NProgress.done();
+          }
+        });
+      }
+    });
+
+    function isSameObject(obj1, obj2) {
+      console.log('isSameObject', obj1, obj2);
+      return obj1.uid === obj2.uid;
+    }
+  });
 </script>

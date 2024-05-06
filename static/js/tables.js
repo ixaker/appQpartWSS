@@ -297,7 +297,7 @@ callbackTable2 = async function (data) {
             // row.css("background-color", "lightgreen");
             // row.fadeOut();
             // setTimeout(() => {
-                row.remove();
+            row.remove();
             // }, 3000);
 
         }
@@ -337,7 +337,7 @@ callbackTable2 = async function (data) {
 
                         // if (newUid !== '') {
                         //     const oldUid = dataCellJQ.attr('uid') || '-';
-                            
+
 
                         //     if (newUid !== oldUid) {
                         //         if (key.length) {
@@ -414,11 +414,12 @@ function sort(table) {
 }
 
 function formatDate(dateString) {
+    console.log('formateDate', dateString)
     return `${dateString.substring(8, 10)}.${dateString.substring(5, 7)}`;
 }
 
 function setEventOnChange(element, newData) {
-    
+
     $(element).attr('rowID', newData.data.uid);
 
     $(element).on('change', function () {
@@ -520,7 +521,7 @@ function initInputAutocompleteForTable(element) {
                 const item = JSON.parse(JSON.stringify(ui.item));
                 data.edited[keyName] = {};
                 data.edited[keyName] = item;
-                console.log('data.edited',item, data);
+                console.log('data.edited', item, data);
                 console.log('on select 2', ui.item, keyName, JSON.parse(JSON.stringify(data)));
                 $(row).data('data', data);
 
