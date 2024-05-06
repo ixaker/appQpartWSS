@@ -34,7 +34,7 @@ if (!fs.existsSync(envFilePath)) {
 }
 
 const secret = 'my-secret-key';
-const options = { expiresIn: '1h' };
+const options = { expiresIn: '3h' };
 
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
@@ -82,13 +82,26 @@ app.use(express.json({ limit: '10mb' }));
 // + Страничка - Оболочка
 app.get('/', (req, res) => {
   log.info('app.get send index.html')
-  res.sendFile(createPath('index.html'));
+  // res.sendFile(createPath('index.html'));
+
+  res.render('index', {
+    version: '5555',
+    token: ''
+  });
 });
 
 // + Страничка - Оболочка с автоматической авторизацией
 app.get('/' + adminRoute, (req, res) => {
   log.info('----------- app.get to admin part -------------');
-  res.sendFile(createPath('admin.html'));
+
+  const user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
+  const token = jwt.sign(user, secret, options);
+
+  res.render('index', {
+    version: '5555',
+    token: token
+  });
+  // res.sendFile(createPath('admin.html'));
 });
 
 // Обработчик запросов из 1С об изменениях данных
