@@ -256,7 +256,8 @@
             $.ajax({url: '/app/createZakaz', method: 'POST', contentType: 'application/json',
                 data: JSON.stringify(data), 
                 success: function(data, status) { console.log('success POST', status, data); }
-            }).always(function() {
+            }).always(function() 
+            {
                 NProgress.done();
 
                 initTables();

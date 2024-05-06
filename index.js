@@ -82,18 +82,20 @@ app.use(express.json({ limit: '10mb' }));
 
 // + Страничка - Оболочка
 app.get('/', (req, res) => {
+  log.info('app.get send index.html')
   res.sendFile(createPath('index.html'));
 });
 
 // + Страничка - Оболочка с автоматической авторизацией
 app.get('/' + adminRoute, (req, res) => {
+  log.info('app.get to admin part');
   res.sendFile(createPath('admin.html'));
 });
 
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
-  log.data('NodeJS_OK');
+  log.data('app.post /dataUpdated');
   res.send('NodeJS_OK');
   // log.data('body', req.body);
   // log.data('NodeJS_OK');
@@ -159,12 +161,16 @@ app.post('/detectFace', async (req, res) => {
 
 // Мідлвар для перевірки авторизації
 app.use((req, res, next) => {
-  log.warn('app.use Info', `Request - method: ${req.method}  path: ${req.path}`);
+  log.warn('app.use verify', `Request - method: ${req.method}  path: ${req.path}`);
 
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
       log.info('jwt.verify error');
-      res.status(403).send({textError: 'jwt.verify error'});
+      
+      // res.status(403).send({ textError: 'jwt.verify error' }); // Відправити помилку користувачеві
+      // res.redirect('/'); // Перенаправлення на базову сторінку
+      res.redirect('/'); 
+      // res.status(403).send({textError: 'jwt.verify error'});
       return
     } else {
       let { iat, exp, ...userClear } = user;
@@ -219,8 +225,6 @@ app.post('/uploadPhoto', async (req, res) => {
   res.send("OK");
 });
 // *******************************************************************************************
-
-
 
 
 app.post('/saveFace', async (req, res) => {
@@ -344,7 +348,9 @@ app.get('/zakupka', async function (req, res) {
 
 // Error
 app.use((req, res) => {
-  res.status(404).sendFile(createPath('error.html'));
+  log.warn('error path')
+  res.redirect('/');
+  // res.status(404).sendFile(createPath('error.html'));
 });
 
 app.use((err, req, res, next) => {
