@@ -34,6 +34,7 @@ if (!fs.existsSync(envFilePath)) {
   fs.writeFileSync(envFilePath, defaultEnvData);
 }
 
+
 const secret = 'my-secret-key';
 const options = { expiresIn: '3h' };
 
