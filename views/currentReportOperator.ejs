@@ -1,292 +1,292 @@
 <style>
+  i.btnRow {
+    font-size: 2em;
+  }
 
-    .titlePage {
-        line-height: 63px;
-    }
+  #btnAdd {
+    margin-left: auto;
+    font-size: 3em;
+    color: #007431;
+    margin-right: 10px;
+  }
 
-    #ОтчетПоРаботе2022 {
-        font-size: 1.2em;
-    }
+  .ui-autocomplete {
+    font-size: xx-large;
+  }
 
-    i.btnRow {
-        margin-right: 18px;
-        font-size: xxx-large;
-    }
+  #lastRowSumm .labelfullTimeAll {
+    text-align: end;
+    padding-right: 5px;
+  }
 
-    #commandPanel {
-        display: flex;
-        margin-top: -5px;
-    }
-    
-    #btnAdd {
-        margin-left: auto;
-        font-size: xxx-large;
-        color: #007431;
-        margin-right: 10px;
-    }
+  #lastRowSumm {
+    font-weight: bold;
+  }
 
-    .ui-autocomplete {
-        font-size: xx-large;
-    }
+  #lastRowSumm td {
+    background-color: transparent;
+    border: 0;
+    text-align: end;
+  }
 
-    #lastRowSumm .labelfullTimeAll{
-        text-align: end;
-        padding-right: 5px;
-    }
+  #groupCurrentReport {
+    font-size: xxx-large;
+    margin-bottom: 70px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 
-    #lastRowSumm {
-        font-weight: bold;
-    }
+  #countDetalForCurrentReport {
+    width: 140px;
+    border: 1px solid #777;
+    border-radius: 10px;
+    line-height: 1.2em;
+    height: 1.2em;
+    margin: 5px 20px 0px 20px;
+    text-align: center;
+    background-color: #ffffff;
+    color: crimson;
+  }
 
-    #lastRowSumm td {
-        background-color: transparent;
-        border: 0;
-        text-align: end;
-    }
+  #nameDetalForCurrentReport {
+    border: 1px solid #777;
+    border-radius: 10px;
+    line-height: 1.2em;
+    height: 1.2em;
+    text-align: center;
+    background-color: #ffffff;
+    padding: 0 15px;
+    width: 410px;
+    overflow: hidden;
+  }
+  .labelForCountCurrentDetal {
+    line-height: 1.7em;
+    margin: 5px 10px 0px 10px;
+    font-size: xx-large;
+    width: 150px;
+  }
 
-    #groupCurrentReport {
-        font-size: xxx-large;
-        margin-bottom: 70px;
-        padding-left: 5px;
-        padding-right: 5px;
-    }
+  fieldset {
+    border: 1px solid #aaa;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: aliceblue;
+  }
 
-    #countDetalForCurrentReport {
-        width: 140px;
-        border: 1px solid #777;
-        border-radius: 10px;
-        line-height: 1.2em;
-        height: 1.2em;
-        margin: 5px 20px 0px 20px;
-        text-align: center;
-        background-color: #FFFFFF;
-        color: crimson;
-    }
+  legend {
+    width: auto;
+    margin-left: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 0px;
+  }
 
-    #nameDetalForCurrentReport {
-        border: 1px solid #777;
-        border-radius: 10px;
-        line-height: 1.2em;
-        height: 1.2em;
-        text-align: center;
-        background-color: #FFFFFF;
-        padding: 0 15px;
-        width: 410px;
-        overflow: hidden;
-    }
-    .labelForCountCurrentDetal{
-        line-height: 1.7em;
-        margin: 5px 10px 0px 10px;
-        font-size: xx-large;
-        width: 150px;
-    }
+  .historyCurrentReport {
+    width: 100%;
+    top: -17px;
+    position: relative;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 15px;
+    background-color: #ffffff;
+    padding: 0 10px 0 10px;
+  }
 
-    fieldset { 
-        border: 1px solid #AAA;
-        padding: 10px;
-        border-radius: 10px;
-        background-color: aliceblue;
-    }
+  .timerDetalForCurrentReport {
+    border: 1px solid #777;
+    border-radius: 10px;
+    text-align: center;
+    background-color: #ffffff;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 130px;
+  }
 
-    legend {
-        width: auto;
-        margin-left: 10px;
-        padding-left: 15px;
-        padding-right: 15px;
-        margin-bottom: 0px;
-    }
+  #textHistory {
+    font-size: 0.3em;
+    max-height: 230px;
+    margin-bottom: 0;
+    overflow-x: hidden;
+  }
 
-    .historyCurrentReport {
-        width: 100%;
-        top: -17px;
-        position: relative;
-        height: auto;
-        margin-left: 10px;
-        margin-right: 15px;
-        background-color: #FFFFFF;
-        padding: 0 10px 0 10px;
-    }
+  .disabledBtnIncrement {
+    color: #777 !important;
+    background-color: aliceblue !important;
+  }
 
-    .timerDetalForCurrentReport {
-        border: 1px solid #777;
-        border-radius: 10px;
-        text-align: center;
-        background-color: #FFFFFF;
-        padding-left: 10px;
-        padding-right: 10px;
-        width: 130px;
-    }
+  #groupBtnWorkCurrentReport {
+    text-align: right;
+  }
 
-    #textHistory {
-        font-size: 0.3em;
-        max-height: 230px;
-        margin-bottom: 0;
-        overflow-x: hidden;
-    }
+  .btnWorkCurrentReport {
+    width: 180px;
+    border: 1px solid #aaa;
+    font-size: xx-large;
+    margin-right: 15px;
+    margin-left: 10px;
+  }
 
-    .disabledBtnIncrement {
-        color: #777 !important;
-        background-color: aliceblue !important;
-    }
+  #btnPauseCurrentReport {
+    background-color: bisque;
+  }
 
-    #groupBtnWorkCurrentReport {
-        text-align: right;
-    }
+  #btnAvariaCurrentReport {
+    background-color: coral;
+  }
 
-    .btnWorkCurrentReport {
-        width: 180px;
-        border: 1px solid #AAA;
-        font-size: xx-large;
-        margin-right: 15px;
-        margin-left: 10px;
-    }
+  .timeLimit {
+    color: #ffffff !important;
+    background-color: #ff0000 !important;
+  }
 
-    #btnPauseCurrentReport {
-        background-color: bisque;
-    }
+  .colunmForEdit {
+    color: gold;
+  }
 
-    #btnAvariaCurrentReport {
-        background-color: coral;
-    }
-
-    .timeLimit {
-        color: #FFFFFF !important;
-        background-color: #FF0000 !important;
-    }
-
-    .colunmForEdit{
-        color: gold;
-    }
-
-    @media (max-width: 800px) {
-        #content {
-            padding-left: 5px !important;
-            padding-right: 5px !important;
-        }
-
-        .titlePage {
-            font-size: 0.7em !important;
-        }
-
-        #ОтчетПоРаботе2022 th {
-            width: auto !important;  
-        }
-
-        #ОтчетПоРаботе2022 th:nth-child(1) {
-            width: 35px !important;
-        }
-
-        #ОтчетПоРаботе2022 th:nth-child(2) {
-            width: 20% !important;
-        }
-
-        #ОтчетПоРаботе2022 {
-            font-size: 0.5em !important;  
-        }
-
-        .checkboxInTable {
-            height: 15px !important; 
-        }
-
-        .btnRow {
-            font-size: initial !important; 
-        }
-    }
+  .checkboxInTable {
+    height: 15px !important;
+  }
 </style>
 
-<div id="groupCurrentReport" report="" style="display: none;">
-    <fieldset style="padding-top: 10px; padding-bottom: 20px;">
-        <legend style="font-size: xx-large;">Сейчас в работе</legend>
-        <div style="display: flex;">
-            <div>
-                <div style="display: flex;">
-                    <div class="labelForCountCurrentDetal">Деталь : </div>
-                    <div id="nameDetalForCurrentReport"></div>
-                </div>
-                <div style="display: flex; margin-top: 20px; margin-bottom: 10px;">
-                    <div class="labelForCountCurrentDetal" style="line-height: 3em;">Cделано : </div>
-                    <div style="display: flex; font-size: 1.5em;">
-                        <i class="bi bi-dash-circle color btnIncrementCount" increment="-1"></i>
-                        <div id="countDetalForCurrentReport" name="КоличествоИзготовлено" report=""></div>
-                        <i class="bi bi-plus-circle color btnIncrementCount" increment="1"></i>
-                        <div class="labelForCountCurrentDetal" style="margin-left: 15px; width: auto; font-size: 0.7em;">шт</div>
-                    </div>
-                </div>
-                <div style="display: flex; font-size: 0.9em; margin-bottom: 19px;">
-                    <div class="labelForCountCurrentDetal">Таймер : </div>
-                    <div class="timerDetalForCurrentReport" seconds="0" id="timer">00:00</div>
-                    <div class="labelForCountCurrentDetal" style="width: auto; margin-left: 22px;">Норма : </div>
-                    <div class="timerDetalForCurrentReport" id="timerNorma">00:00</div>
-                </div>
+<div id="groupCurrentReport" report="" style="display: none">
+  <fieldset style="padding-top: 10px; padding-bottom: 20px">
+    <legend style="font-size: xx-large">Сейчас в работе</legend>
+    <div style="display: flex">
+      <div>
+        <div style="display: flex">
+          <div class="labelForCountCurrentDetal">Деталь :</div>
+          <div id="nameDetalForCurrentReport"></div>
+        </div>
+        <div style="display: flex; margin-top: 20px; margin-bottom: 10px">
+          <div class="labelForCountCurrentDetal" style="line-height: 3em">
+            Cделано :
+          </div>
+          <div style="display: flex; font-size: 1.5em">
+            <i
+              class="bi bi-dash-circle color btnIncrementCount"
+              increment="-1"
+            ></i>
+            <div
+              id="countDetalForCurrentReport"
+              name="КоличествоИзготовлено"
+              report=""
+            ></div>
+            <i
+              class="bi bi-plus-circle color btnIncrementCount"
+              increment="1"
+            ></i>
+            <div
+              class="labelForCountCurrentDetal"
+              style="margin-left: 15px; width: auto; font-size: 0.7em"
+            >
+              шт
             </div>
-            <fieldset class="historyCurrentReport">
-                <legend>История</legend>
-                <pre id="textHistory"></pre>
-            </fieldset>  
+          </div>
         </div>
-        <div id="groupBtnWorkCurrentReport">
-            <div class="btn btnWorkCurrentReport" id="btnCloseCurrentReport">Закрыть</div>
-            <div class="btn btnWorkCurrentReport" id="btnPauseCurrentReport">Пауза</div>
-            <div class="btn btnWorkCurrentReport" id="btnAvariaCurrentReport">Авария</div>
+        <div style="display: flex; font-size: 0.9em; margin-bottom: 19px">
+          <div class="labelForCountCurrentDetal">Таймер :</div>
+          <div class="timerDetalForCurrentReport" seconds="0" id="timer">
+            00:00
+          </div>
+          <div
+            class="labelForCountCurrentDetal"
+            style="width: auto; margin-left: 22px"
+          >
+            Норма :
+          </div>
+          <div class="timerDetalForCurrentReport" id="timerNorma">00:00</div>
         </div>
-    </fieldset>
+      </div>
+      <fieldset class="historyCurrentReport">
+        <legend>История</legend>
+        <pre id="textHistory"></pre>
+      </fieldset>
+    </div>
+    <div id="groupBtnWorkCurrentReport">
+      <div class="btn btnWorkCurrentReport" id="btnCloseCurrentReport">
+        Закрыть
+      </div>
+      <div class="btn btnWorkCurrentReport" id="btnPauseCurrentReport">
+        Пауза
+      </div>
+      <div class="btn btnWorkCurrentReport" id="btnAvariaCurrentReport">
+        Авария
+      </div>
+    </div>
+  </fieldset>
 </div>
 
 <div id="commandPanel">
-    <h4 class="titlePage" >Список работ за текущую смену</h4>
-    <i class="bi bi-plus-circle" id="btnAdd"></i>
+  <h4 class="titlePage">Список работ за текущую смену</h4>
+  <i class="bi bi-plus-circle" id="btnAdd"></i>
 </div>
 
-<table  id="ОтчетПоРаботе2022" 
-        url="/app/getCurrentReportOperator" 
-        callbackBeforeInitTable="callbackBeforeDone" 
-        filter="callbackFilter" 
-        callbackAfterInitTable="callbackAfterDone" 
-        addNevRow="callbackAddNewRow"
-        callbackAfterWrite="callbackAfterWrite"
-        append="up" 
-        style="display: none;"
-        init header>
-    <tr class="config" style="display: none;">
-        <td title="Станок" 
-            name="Станок" 
-            key="ИнвентарныйНомер" 
-            headerClass="colunmForEdit" 
-            style="width: 90px;">
-            <input  type="text" 
-                    minLength=1 
-                    url="/app/autocompleteStanok"   
-                    checkValid  
-                    class="dataCell textAlignCenter" 
-                    style="padding: 0px;"></td>
-        <td title="Деталь" 
-            name="Деталь" 
-            key="АртикулНаименование" 
-            style="width: 100%;"><div class="dataCell"></div></td>
-        <td title="Этап" 
-            name="ЭтапПроизводства" 
-            key="КодНовый" 
-            style="width: 75px;"><div class="dataCell textAlignCenter"></div></td>            
-        <td title="Кол-во" 
-            name="КоличествоИзготовлено" 
-            headerClass="colunmForEdit" 
-            style="width: 75px;">
-            <input  type="number" 
-                    inputmode="numeric"  
-                    checkValid  
-                    min="0" 
-                    sync="none"
-                    class="dataCell quantity textAlignEnd"></td>
-<!--         <td title="Время маш." 
+<table
+  id="ОтчетПоРаботе2022"
+  url="/app/getCurrentReportOperator"
+  callbackBeforeInitTable="callbackBeforeDone"
+  filter="callbackFilter"
+  callbackAfterInitTable="callbackAfterDone"
+  addNevRow="callbackAddNewRow"
+  callbackAfterWrite="callbackAfterWrite"
+  append="up"
+  style="display: none"
+  init
+  header
+>
+  <tr class="config" style="display: none">
+    <td
+      title="Станок"
+      name="Станок"
+      key="ИнвентарныйНомер"
+      headerClass="colunmForEdit"
+      style="width: 10%"
+    >
+      <input
+        type="text"
+        minLength="1"
+        url="/app/autocompleteStanok"
+        checkValid
+        class="dataCell textAlignCenter"
+        style="padding: 0px"
+      />
+    </td>
+    <td
+      title="Деталь"
+      name="Деталь"
+      key="АртикулНаименование"
+      style="width: 44%"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <td title="Этап" name="ЭтапПроизводства" key="КодНовый" style="width: 8%">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td
+      title="Кол-во"
+      name="КоличествоИзготовлено"
+      headerClass="colunmForEdit"
+      style="width: 8%"
+    >
+      <input
+        type="number"
+        inputmode="numeric"
+        checkValid
+        min="0"
+        sync="none"
+        class="dataCell quantity textAlignEnd"
+      />
+    </td>
+    <!--         <td title="Время маш." 
             name="МашинноеВремя"  
             style="width: 75px;"><div class="dataCell textAlignCenter" ></div></td> -->
-<!--         <td title="Время полное" 
+    <!--         <td title="Время полное" 
             name="ПолноеВремя" 
             style="width: 80px;"><div class="dataCell textAlignCenter" ></div></td> -->
-<!--         <td title="Дет за 1 уст" 
+    <!--         <td title="Дет за 1 уст" 
             name="КоличествоДеталейЗаОднуУстановку" 
             style="width: 75px;"><div class="dataCell textAlignCenter" ></div></td> -->
-<!--         <td title="Общее время" 
+    <!--         <td title="Общее время" 
             name="ДлительностьВремя" 
             style="width: 75px;">
             <div  type="text" 
@@ -295,360 +295,407 @@
                     placeholder="мм:сс"
                     mask="00:A0" 
                     class="dataCell textAlignCenter"></div></td> -->
-        <td title="Цена" 
-            name="СуммаОплатыЗаДетальНаЭтапе" 
-            style="width: 70px;"><div class="dataCell textAlignEnd" ></div></td>
-        <td title="Сумма" 
-            name="СуммаЗаВсеДетали" 
-            style="width: 70px;"><div class="dataCell textAlignEnd" ></div></td>
-<!--         <td title="Готов" 
+    <td title="Цена" name="СуммаОплатыЗаДетальНаЭтапе" style="width: 8%">
+      <div class="dataCell textAlignEnd"></div>
+    </td>
+    <td title="Сумма" name="СуммаЗаВсеДетали" style="width: 8%">
+      <div class="dataCell textAlignEnd"></div>
+    </td>
+    <!--         <td title="Готов" 
             name="СтатусОператора"
             style="width: 65px;"> 
             <input  type="checkbox" 
                     sync="none" 
                     class="dataCell checkboxInTable"></td> -->
-        <td title="" 
-            style="width: 140px;"><div class="groupBtnRow">
-                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
-                <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
-                <i class="bi bi-trash btnDelete btnRow colorRed" name="ПометкаУдаления" style="display: none;"></i>
-                <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
-                <i class="bi bi-pause-circle btnPause btnRow colorRed" style="display: none;"></i>
-            </div></td>
-    </tr>
+    <td title="" style="width: 14%">
+      <div class="groupBtnRow">
+        <i
+          class="bi bi-check-circle btnRow btnOk colorGreen"
+          style="display: none"
+        ></i>
+        <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+        <i
+          class="bi bi-trash btnDelete btnRow colorRed"
+          name="ПометкаУдаления"
+          style="display: none"
+        ></i>
+        <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+        <i
+          class="bi bi-pause-circle btnPause btnRow colorRed"
+          style="display: none"
+        ></i>
+      </div>
+    </td>
+  </tr>
 
-<!--     <tr id="lastRowSumm">
+  <!--     <tr id="lastRowSumm">
         <td colspan="5" class="labelfullTimeAll">Общее время выработки за смену, чч:мм : </td>  
         <td id="fullTimeAll">00:00</td> 
         <td colspan="2"></td> 
     </tr> -->
-    <tr id="lastRowSumm">
-        <td colspan="5" class="labelfullTimeAll">Всего : </td>   
-        <td id="fullTimeAll" class="textAlignEnd">0</td> 
-        <td colspan="2"></td> 
-    </tr>
+  <tr id="lastRowSumm">
+    <td colspan="5" class="labelfullTimeAll">Всего :</td>
+    <td id="fullTimeAll" class="textAlignEnd">0</td>
+    <td colspan="2"></td>
+  </tr>
 </table>
 
 <script>
-    $(document).ready(function() {
-        let tableID = '#ОтчетПоРаботе2022';
-        let startTimeWork = new Date();
-        let timerWork = false;
-        let disableBtnIncrement = false;
-        let avaria = false
+  $(document).ready(function () {
+    let tableID = "#ОтчетПоРаботе2022";
+    let startTimeWork = new Date();
+    let timerWork = false;
+    let disableBtnIncrement = false;
+    let avaria = false;
 
-        initTables();
+    initTables();
 
-        // callback при получении данных от сервера по wss
-        callbackWSS = async function(data){callbackTable(data)};
+    // callback при получении данных от сервера по wss
+    callbackWSS = async function (data) {
+      callbackTable(data);
+    };
 
-        // callback при изменении данных в строке для определения показать или убрать строку
-        callbackFilter = function(data, result = true) {
-            console.log('callbackFilter', data);
-            console.log(data['Сотрудник']['uid'], user.uid);
+    // callback при изменении данных в строке для определения показать или убрать строку
+    callbackFilter = function (data, result = true) {
+      console.log("callbackFilter", data);
+      console.log(data["Сотрудник"]["uid"], user.uid);
 
-            const reportDate = new Date(data['Дата']);
+      const reportDate = new Date(data["Дата"]);
 
-            try {
-                if ( reportDate < startTimeWork ){ result = false; }
-                if ( data['ПометкаУдаления'] )   { result = false; }
-                if ( !data['ЭтоОтчетОператора'] )   { result = false; }
-                if ( data['Сотрудник']['uid'] !== user.uid )   { result = false; }
-                $('#countDetalForCurrentReport').text(data['КоличествоИзготовлено']);
-
-            } catch (error) { console.log(error) }
-
-            return result;
+      try {
+        if (reportDate < startTimeWork) {
+          result = false;
         }
-
-        // callback перед отрисовкой таблицы
-        callbackBeforeDone = function(data) { 
-            if (data.startTimeWork == '0001-01-01T00:00:00') {
-                $('.titlePage').text('Смена еще не начата');
-                $('#btnAdd').hide();
-                $(tableID).hide();
-            }else{
-                startTimeWork = new Date(data.startTimeWork);
-                $('.titlePage').text('Список работ за текущую смену с ' + startTimeWork.toLocaleString());
-                $('#btnAdd').show();
-                $(tableID).show();
-            }
+        if (data["ПометкаУдаления"]) {
+          result = false;
         }
-
-        // callback после отрисовки таблицы
-        callbackAfterDone = function(data) {}
-
-        // callback после вставки новой пустой строки, перед заполнением данными
-        callbackAddNewRow = function(data) {
-            console.log('callbackAddNewRow', data);
+        if (!data["ЭтоОтчетОператора"]) {
+          result = false;
         }
-
-        // callback после внесения изменений в строку с сервера
-        callbackAfterWrite = function(data) {
-            console.log('callbackAfterWrite', data);
-            updateFullTimeAll();
-
-            if (data.data['Проведен']) {
-                console.log('eeeeeeeeeeeeeeeeeeee');
-
-                let row = $('#' + data['uid']);
-                $(row).find('.btnRow ').remove();
-
-            }
-
+        if (data["Сотрудник"]["uid"] !== user.uid) {
+          result = false;
         }
+        $("#countDetalForCurrentReport").text(data["КоличествоИзготовлено"]);
+      } catch (error) {
+        console.log(error);
+      }
 
-        // клик по кнопке Редактировать
-        $(tableID).on('click', '.btnEdit', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
+      return result;
+    };
 
-            $(tableID).find('.btnDelete').hide();
-            $(tableID).find('.btnPlay').show();
-            $(tableID).find('.btnEdit').show();
-            $(tableID).find('.btnOk').hide();
-            $(tableID).find('input').prop('disabled', true);
+    // callback перед отрисовкой таблицы
+    callbackBeforeDone = function (data) {
+      if (data.startTimeWork == "0001-01-01T00:00:00") {
+        $(".titlePage").text("Смена еще не начата");
+        $("#btnAdd").hide();
+        $(tableID).hide();
+      } else {
+        startTimeWork = new Date(data.startTimeWork);
+        $(".titlePage").text(
+          "Список работ за текущую смену с " + startTimeWork.toLocaleString()
+        );
+        $("#btnAdd").show();
+        $(tableID).show();
+      }
+    };
 
-            $(row).find('.btnOk').show();
-            $(row).find('.btnDelete').show();
-            $(row).find('.btnEdit').hide();
-            $(row).find('.btnPlay').hide();
-            $(row).find('input').prop('disabled', false);
+    // callback после отрисовки таблицы
+    callbackAfterDone = function (data) {};
 
-            clickAnimate($(row).find('.btnOk'));
-            logToServer('Нажата кнопка "Редактировать"', data);
-        });
+    // callback после вставки новой пустой строки, перед заполнением данными
+    callbackAddNewRow = function (data) {
+      console.log("callbackAddNewRow", data);
+    };
 
-        // клик по кнопке Применить
-        $(tableID).on('click', '.btnOk', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
+    // callback после внесения изменений в строку с сервера
+    callbackAfterWrite = function (data) {
+      console.log("callbackAfterWrite", data);
+      updateFullTimeAll();
 
-            $(row).find('.btnOk').hide();
-            $(row).find('.btnEdit').show();
-            $(row).find('.btnPlay').show();
-            $(row).find('.btnDelete').hide(); 
-            $(row).find('input').prop('disabled', true);
+      if (data.data["Проведен"]) {
+        console.log("eeeeeeeeeeeeeeeeeeee");
 
-            clickAnimate($(row).find('.btnEdit'));
-            logToServer('Нажата кнопка "Применить"', data);
-            sendNotificationOnChangeRowTable(this);
-        });
+        let row = $("#" + data["uid"]);
+        $(row).find(".btnRow ").remove();
+      }
+    };
 
-        // клик по кнопке Удалить
-        $(tableID).on('click', '.btnDelete', function(event){
-            clickAnimate(this);
-            if (confirm("Вы уверены, что хотите удалить отчет?")) {
-                const row = $(this).closest('tr');
-                const data = $(row).data('data');
+    // клик по кнопке Редактировать
+    $(tableID).on("click", ".btnEdit", function (event) {
+      const row = $(this).closest("tr");
+      const data = $(row).data("data");
 
-                data.edited['ПометкаУдаления'] = true;
-                $(row).data('data', data);
+      $(tableID).find(".btnDelete").hide();
+      $(tableID).find(".btnPlay").show();
+      $(tableID).find(".btnEdit").show();
+      $(tableID).find(".btnOk").hide();
+      $(tableID).find("input").prop("disabled", true);
 
-                logToServer('Нажата кнопка "Удалить"', data);
-                sendNotificationOnChangeRowTable(this);
-            }
-        });
+      $(row).find(".btnOk").show();
+      $(row).find(".btnDelete").show();
+      $(row).find(".btnEdit").hide();
+      $(row).find(".btnPlay").hide();
+      $(row).find("input").prop("disabled", false);
 
-        // клик по кнопке Добавить отчет
-        $('#btnAdd').on('click', function(event){
-            console.log('кнопка натиснута')
-            clickAnimate(this);
-            NProgress.start();
-            highlight = false;
-
-            logToServer('Нажата кнопка "Добавить отчет"');
-
-            const data = { operator:true };
-            if(stanok.uid !== ''){ data.stanok = stanok; }
-            console.log('Дані, що будуть відправлені на сервер:', data);
-            $.ajax({url: '/app/createReport', method: 'POST', contentType: 'application/json',
-                data: JSON.stringify(data), 
-                success: function(data, status) { console.log('logToServer', status, data); }
-            }).always(function() {
-                NProgress.done();
-                highlight = true;
-            });
-        });
-
-
-        $(tableID).on('click', '.btnPlay', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
-
-            console.log('btnPlay', data, row);
-
-            $('#countDetalForCurrentReport').text(data.data['КоличествоИзготовлено']);
-            $('#countDetalForCurrentReport').attr('report', data.data['uid']);
-            $('#timerNorma').text(data.data['ПолноеВремя']);
-            $('#timerNorma').attr('seconds', convertTimeToSeconds(data.data['ПолноеВремя']));
-            $('#nameDetalForCurrentReport').text(data.data['Деталь']['АртикулНаименование']);
-
-            $('#groupCurrentReport').show();
-            setStateBtnPause(timerWork);
-
-            clickAnimate(this);
-            disableBtnIncrement = false;
-
-            logToHistory(data.data['Деталь']['АртикулНаименование'])
-        });
-
-        function convertTimeToSeconds(timeString) {
-            const [minutes, seconds] = timeString.split(':').map(Number);
-
-            if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) {
-                console.log('Ошибка: Недопустимое значение времени.');
-                return 0;
-            }
-
-            return (minutes * 60) + seconds;
-        }
-
-        $('.btnIncrementCount').on('click', function(event){
-            const report = $('#countDetalForCurrentReport').attr('report');
-
-            console.log('btnIncrementCount click', disableBtnIncrement, report);
-
-            if (disableBtnIncrement) { return; }
-            if (report === '') { return; }
-
-            $('.btnIncrementCount').addClass('disabledBtnIncrement');
-            disableBtnIncrement = true;
-
-            setTimeout(() => {
-                $('.btnIncrementCount').removeClass('disabledBtnIncrement');
-                disableBtnIncrement = false;
-            }, 5000);
-
-            clickAnimate(this); 
-            resetTimer();
-            setStateBtnPause(true);
-
-            const row = $('#' + report);
-            const dataRow = $(row).data('data');
-            const keyName = 'КоличествоИзготовлено';
-            const input = $(row).find('.dataCell[name="' + keyName + '"]')
-            const incrementCount = parseInt($(this).attr('increment')); 
-            const incrementCountString = (incrementCount > 0) ? "+" + incrementCount : incrementCount.toString();
-            logToHistory('изготовлено ' + incrementCountString);
-
-            dataRow.edited[keyName] = parseInt(dataRow.data[keyName]) + incrementCount;
-            $(row).data('data', dataRow);
-
-            sendNotificationOnChangeRowTable(input);
-
-            console.log('IncrementCount', row, dataRow, input);
-        })
-        
-        function resetTimer() {
-            $('#timer').attr('seconds', '0');
-            $('#timer').text('00:00');
-        }
-
-        function convertSecondsToTime(convertSecondsToTime) {
-            const firstPart = Math.floor(convertSecondsToTime / 60);
-            const secondPart = convertSecondsToTime - firstPart * 60;
-        
-            var firstPartString = (firstPart < 10) ? '0' + firstPart : firstPart;
-            var secondPartString = (secondPart < 10) ? '0' + secondPart : secondPart;
-        
-            return firstPartString + ':' + secondPartString;
-        }
-
-        $('#btnPauseCurrentReport').on('click', function(event){
-            if (avaria == true) {
-                return;
-            }
-            clickAnimate(this);
-            setStateBtnPause(!timerWork);
-
-            if (timerWork == true) {
-                logToHistory('Пуск');
-            } else {
-                logToHistory('Пауза');
-            }
-        })
-        
-        function setStateBtnPause(state) {
-            timerWork = state;
-
-            if (timerWork == true) {
-                $('#btnPauseCurrentReport').text('Пауза');
-            } else {
-                $('#btnPauseCurrentReport').text('Пуск');
-            }
-        }
-
-        $('#btnAvariaCurrentReport').on('click', function(event){
-            clickAnimate(this); 
-            avaria = !avaria;
-            
-            if (avaria == true) {
-                setStateBtnPause(false);
-                $(this).text('Запущен');
-                logToHistory('Авария');
-                $('.btnIncrementCount').addClass('disabledBtnIncrement');
-                $('#btnPauseCurrentReport').addClass('disabledBtnIncrement');
-                disableBtnIncrement = true;
-            } else {
-                $(this).text('Авария');
-                logToHistory('Запущен');
-                $('.btnIncrementCount').removeClass('disabledBtnIncrement');
-                $('#btnPauseCurrentReport').removeClass('disabledBtnIncrement');
-                disableBtnIncrement = false;
-            }
-
-        })
-
-        $('#btnCloseCurrentReport').on('click', function(event) {
-            logToServer('Нажата кнопка "Закрыть"');
-            $('#groupCurrentReport').hide();
-            setStateBtnPause(false);
-            resetTimer();   
-        })
-
-        callbackFuncSecondInterval = function() {
-            if (timerWork) {
-                const currentSeconds = parseInt($('#timer').attr('seconds')); 
-                const newSeconds = currentSeconds + 1;
-                const normaSeconds = parseInt($('#timerNorma').attr('seconds')||0);
-                const timeStr = convertSecondsToTime(newSeconds);
-
-                $('#timer').attr('seconds', newSeconds);
-                $('#timer').text(timeStr);
-
-                if (newSeconds > normaSeconds) {
-                    $('#timer').addClass('timeLimit');
-
-                    setTimeout(() => {
-                        $('#timer').removeClass('timeLimit');    
-                    }, 500);
-                }
-            }
-        }
-
-        function logToHistory(msg) {
-            const currentTime = new Date();
-            var timeString = currentTime.toLocaleTimeString('en-US', { hour12: false });
-            const newRowHistory = timeString + ' ' + msg;
-            $('#textHistory').text(newRowHistory + '\n' + $('#textHistory').text());
-        }
-
-        function updateFullTimeAll() {
-            var sum = 0.0;
-
-            $(tableID).find('.rowData ').each(function() {
-                const data = $(this).data('data');
-                const hoursString = data.data['СуммаЗаВсеДетали']||'0';
-                const hoursStringConv = hoursString.replace(',', '.');
-                const hours = parseFloat(hoursStringConv);
-
-                sum += hours;
-            });
-
-            // var timeString = convertToTime(sum);
-            $('#fullTimeAll').text(sum);
-        }
+      clickAnimate($(row).find(".btnOk"));
+      logToServer('Нажата кнопка "Редактировать"', data);
     });
-</script>
 
+    // клик по кнопке Применить
+    $(tableID).on("click", ".btnOk", function (event) {
+      const row = $(this).closest("tr");
+      const data = $(row).data("data");
+
+      $(row).find(".btnOk").hide();
+      $(row).find(".btnEdit").show();
+      $(row).find(".btnPlay").show();
+      $(row).find(".btnDelete").hide();
+      $(row).find("input").prop("disabled", true);
+
+      clickAnimate($(row).find(".btnEdit"));
+      logToServer('Нажата кнопка "Применить"', data);
+      sendNotificationOnChangeRowTable(this);
+    });
+
+    // клик по кнопке Удалить
+    $(tableID).on("click", ".btnDelete", function (event) {
+      clickAnimate(this);
+      if (confirm("Вы уверены, что хотите удалить отчет?")) {
+        const row = $(this).closest("tr");
+        const data = $(row).data("data");
+
+        data.edited["ПометкаУдаления"] = true;
+        $(row).data("data", data);
+
+        logToServer('Нажата кнопка "Удалить"', data);
+        sendNotificationOnChangeRowTable(this);
+      }
+    });
+
+    // клик по кнопке Добавить отчет
+    $("#btnAdd").on("click", function (event) {
+      console.log("кнопка натиснута");
+      clickAnimate(this);
+      NProgress.start();
+      highlight = false;
+
+      logToServer('Нажата кнопка "Добавить отчет"');
+
+      const data = { operator: true };
+      if (stanok.uid !== "") {
+        data.stanok = stanok;
+      }
+      console.log("Дані, що будуть відправлені на сервер:", data);
+      $.ajax({
+        url: "/app/createReport",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (data, status) {
+          console.log("logToServer", status, data);
+        },
+      }).always(function () {
+        NProgress.done();
+        highlight = true;
+      });
+    });
+
+    $(tableID).on("click", ".btnPlay", function (event) {
+      const row = $(this).closest("tr");
+      const data = $(row).data("data");
+
+      console.log("btnPlay", data, row);
+
+      $("#countDetalForCurrentReport").text(data.data["КоличествоИзготовлено"]);
+      $("#countDetalForCurrentReport").attr("report", data.data["uid"]);
+      $("#timerNorma").text(data.data["ПолноеВремя"]);
+      $("#timerNorma").attr(
+        "seconds",
+        convertTimeToSeconds(data.data["ПолноеВремя"])
+      );
+      $("#nameDetalForCurrentReport").text(
+        data.data["Деталь"]["АртикулНаименование"]
+      );
+
+      $("#groupCurrentReport").show();
+      setStateBtnPause(timerWork);
+
+      clickAnimate(this);
+      disableBtnIncrement = false;
+
+      logToHistory(data.data["Деталь"]["АртикулНаименование"]);
+    });
+
+    function convertTimeToSeconds(timeString) {
+      const [minutes, seconds] = timeString.split(":").map(Number);
+
+      if (
+        isNaN(minutes) ||
+        isNaN(seconds) ||
+        minutes < 0 ||
+        seconds < 0 ||
+        seconds >= 60
+      ) {
+        console.log("Ошибка: Недопустимое значение времени.");
+        return 0;
+      }
+
+      return minutes * 60 + seconds;
+    }
+
+    $(".btnIncrementCount").on("click", function (event) {
+      const report = $("#countDetalForCurrentReport").attr("report");
+
+      console.log("btnIncrementCount click", disableBtnIncrement, report);
+
+      if (disableBtnIncrement) {
+        return;
+      }
+      if (report === "") {
+        return;
+      }
+
+      $(".btnIncrementCount").addClass("disabledBtnIncrement");
+      disableBtnIncrement = true;
+
+      setTimeout(() => {
+        $(".btnIncrementCount").removeClass("disabledBtnIncrement");
+        disableBtnIncrement = false;
+      }, 5000);
+
+      clickAnimate(this);
+      resetTimer();
+      setStateBtnPause(true);
+
+      const row = $("#" + report);
+      const dataRow = $(row).data("data");
+      const keyName = "КоличествоИзготовлено";
+      const input = $(row).find('.dataCell[name="' + keyName + '"]');
+      const incrementCount = parseInt($(this).attr("increment"));
+      const incrementCountString =
+        incrementCount > 0 ? "+" + incrementCount : incrementCount.toString();
+      logToHistory("изготовлено " + incrementCountString);
+
+      dataRow.edited[keyName] =
+        parseInt(dataRow.data[keyName]) + incrementCount;
+      $(row).data("data", dataRow);
+
+      sendNotificationOnChangeRowTable(input);
+
+      console.log("IncrementCount", row, dataRow, input);
+    });
+
+    function resetTimer() {
+      $("#timer").attr("seconds", "0");
+      $("#timer").text("00:00");
+    }
+
+    function convertSecondsToTime(convertSecondsToTime) {
+      const firstPart = Math.floor(convertSecondsToTime / 60);
+      const secondPart = convertSecondsToTime - firstPart * 60;
+
+      var firstPartString = firstPart < 10 ? "0" + firstPart : firstPart;
+      var secondPartString = secondPart < 10 ? "0" + secondPart : secondPart;
+
+      return firstPartString + ":" + secondPartString;
+    }
+
+    $("#btnPauseCurrentReport").on("click", function (event) {
+      if (avaria == true) {
+        return;
+      }
+      clickAnimate(this);
+      setStateBtnPause(!timerWork);
+
+      if (timerWork == true) {
+        logToHistory("Пуск");
+      } else {
+        logToHistory("Пауза");
+      }
+    });
+
+    function setStateBtnPause(state) {
+      timerWork = state;
+
+      if (timerWork == true) {
+        $("#btnPauseCurrentReport").text("Пауза");
+      } else {
+        $("#btnPauseCurrentReport").text("Пуск");
+      }
+    }
+
+    $("#btnAvariaCurrentReport").on("click", function (event) {
+      clickAnimate(this);
+      avaria = !avaria;
+
+      if (avaria == true) {
+        setStateBtnPause(false);
+        $(this).text("Запущен");
+        logToHistory("Авария");
+        $(".btnIncrementCount").addClass("disabledBtnIncrement");
+        $("#btnPauseCurrentReport").addClass("disabledBtnIncrement");
+        disableBtnIncrement = true;
+      } else {
+        $(this).text("Авария");
+        logToHistory("Запущен");
+        $(".btnIncrementCount").removeClass("disabledBtnIncrement");
+        $("#btnPauseCurrentReport").removeClass("disabledBtnIncrement");
+        disableBtnIncrement = false;
+      }
+    });
+
+    $("#btnCloseCurrentReport").on("click", function (event) {
+      logToServer('Нажата кнопка "Закрыть"');
+      $("#groupCurrentReport").hide();
+      setStateBtnPause(false);
+      resetTimer();
+    });
+
+    callbackFuncSecondInterval = function () {
+      if (timerWork) {
+        const currentSeconds = parseInt($("#timer").attr("seconds"));
+        const newSeconds = currentSeconds + 1;
+        const normaSeconds = parseInt($("#timerNorma").attr("seconds") || 0);
+        const timeStr = convertSecondsToTime(newSeconds);
+
+        $("#timer").attr("seconds", newSeconds);
+        $("#timer").text(timeStr);
+
+        if (newSeconds > normaSeconds) {
+          $("#timer").addClass("timeLimit");
+
+          setTimeout(() => {
+            $("#timer").removeClass("timeLimit");
+          }, 500);
+        }
+      }
+    };
+
+    function logToHistory(msg) {
+      const currentTime = new Date();
+      var timeString = currentTime.toLocaleTimeString("en-US", {
+        hour12: false,
+      });
+      const newRowHistory = timeString + " " + msg;
+      $("#textHistory").text(newRowHistory + "\n" + $("#textHistory").text());
+    }
+
+    function updateFullTimeAll() {
+      var sum = 0.0;
+
+      $(tableID)
+        .find(".rowData ")
+        .each(function () {
+          const data = $(this).data("data");
+          const hoursString = data.data["СуммаЗаВсеДетали"] || "0";
+          const hoursStringConv = hoursString.replace(",", ".");
+          const hours = parseFloat(hoursStringConv);
+
+          sum += hours;
+        });
+
+      // var timeString = convertToTime(sum);
+      $("#fullTimeAll").text(sum);
+    }
+  });
+</script>

@@ -1,46 +1,48 @@
 table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse; /* Это объединяет границы ячеек в одну линию */
+  background-color: white;
+  font-size: 1em;
 }
 
-tr {
-    height: 50px;
-    background-color: white;
-}
-
-th, td {
-    overflow: hidden;  /* прячет содержимое, если оно не умещается в ячейку */
-    text-overflow: ellipsis;  /* добавляет многоточие, если содержимое не умещается в ячейку */
-    border: 1px solid rgb(202, 202, 202);
+th,
+td {
+  overflow: hidden; /* прячет содержимое, если оно не умещается в ячейку */
+  text-overflow: ellipsis; /* добавляет многоточие, если содержимое не умещается в ячейку */
+  border: 1px solid rgb(202, 202, 202);
 }
 
 th {
-    background-color: darkgreen;
-    color: white;
-    border: 1px solid white;
-    text-align: center;
-    /* text-wrap: wrap; */
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    white-space: normal;
+  background-color: darkgreen;
+  color: white;
+  border: 1px solid white;
+  text-align: center;
+  /* text-wrap: wrap; */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  white-space: normal;
+  padding: 5px 0 5px 0;
 }
 
 td {
-    white-space: nowrap;  /* запрещает перенос текста на новую строку */
-    font-size: 1em;
-    /* font-size: 20px; */
-    padding: 0 5px;
+  white-space: nowrap; /* запрещает перенос текста на новую строку */
+  padding: 0 0.3vw;
 }
 
 td input {
-    width: 100%;
-    box-sizing: border-box;  /* Учитывает padding и border в общей ширине */
-    border: 0;
+  width: 100%;
+  box-sizing: border-box; /* Учитывает padding и border в общей ширине */
+  border: 1px solid darkgrey;
+  background-color: #ffd70063;
 }
 
 .groupBtnRow {
-    display: flex;
-    padding-left: 5px;
+  display: flex;
+  justify-content: space-around;
 }
 
+input:disabled {
+  background-color: white !important;
+  border: none !important;
+}

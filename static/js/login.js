@@ -156,7 +156,7 @@ function loadMenu(userInfo, token) {
     $('#content').show();
 
     reconectWebSocket();
-
+    // alert('display width: ' + window.innerWidth + ', display height: ' + window.innerHeight);
     $.get('/app/getUserMenu', function (response) {
         console.log('/app/getUserMenu', response);
 

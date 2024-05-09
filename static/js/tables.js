@@ -33,7 +33,7 @@ async function initTable(table) {
 
         await $.ajax({
             url: `${tableJQ.attr('url')}`, type: 'GET', dataType: 'json', data: param, success: async function (response) {
-                console.log('initTable response', response.list[0]);
+                console.log('initTable response', tableJQ, response);
 
                 if (!response.error) {
                     callbackFromAttr(table, 'callbackBeforeInitTable', response);
@@ -53,8 +53,23 @@ async function initTable(table) {
                         // Створюємо масив обіцянок для кожного виклику callbackTable
                         const promises = response.list.map(item => {
                             console.log('call callbackTable', item);
-                            item['tableID'] = item.data['Имя'];
-                            callbackTable2(item);
+
+                            const name = item.data['Имя'];
+                            //item['tableID'] = item.data['Имя'];
+
+                            const listTablesForName = $('table[name="' + name + '"]');
+                            console.log('listTablesForName', listTablesForName);
+
+                            // callbackTable2(item);
+
+                            listTablesForName.each(function () {
+                                const table = $(this);
+                                const tableID = $(this).attr('id');
+                                item['tableID'] = tableID;
+
+                                callbackTable2(item);
+                            });
+
                         })
 
                         // Розв'язуємо всі обіцянки і чекаємо їхнього завершення
@@ -134,6 +149,7 @@ async function addNewRow(table, newData) {
     table.children('tbody').children('.config').children().each(function () {
         const cell = $(this).clone();
         const children = cell.find('.dataCell');
+        // cell.css("width", "");
 
         if (children.length) {
             children.attr('name', cell.attr('name'));
@@ -253,7 +269,7 @@ callbackTable = async function (data) {
     console.log('callbackTable start');
     //data.MD5 = await getHash(data);
     const listTablesForName = $('table[name="' + data.data['Имя'] + '"]');
-
+    console.log('listTablesForName ', listTablesForName);
     if (listTablesForName.length > 0) {
         listTablesForName.each(function () {
             const table = $(this);
@@ -276,7 +292,7 @@ callbackTable2 = async function (data) {
     const newData = data.data;
     // console.log('has attr in callbacktable2', $(table)[0].hasAttribute('sort'));
 
-    // console.log('callbackTable2', data.tableID);
+    console.log('callbackTable2', data.tableID);
 
     //const table = $(`#${data.topic}`);
     const row = table.find('#' + newData.uid);

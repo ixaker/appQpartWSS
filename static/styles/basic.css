@@ -33,10 +33,23 @@ html {
 #content {
   /* overflow: scroll; */
   padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
   padding-bottom: 10px;
+  font-size: 2vw;
 }
+
+@media screen and (min-width: 1280px) {
+  #content {
+    font-size: 25.6px;
+  }
+}
+
+/* @media (max-width: 800px) {
+  #content {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  } */
 
 #overlay {
   display: none; /* Изначально оверлей скрыт */
@@ -139,9 +152,9 @@ html {
   overflow: hidden;
   display: inline-flex;
   font-size: medium;
-  overflow: hidden; 
+  overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; 
+  white-space: nowrap;
   max-width: 100%;
   flex-shrink: 1;
   min-width: 0;
@@ -149,13 +162,13 @@ html {
 }
 
 .navbar-brand {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-grow: 1; 
-    flex-shrink: 1; /* Блок може стискатися */
-    max-width: 100%; /* Максимальна ширина блока */
-    width: 10%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1; /* Блок може стискатися */
+  max-width: 100%; /* Максимальна ширина блока */
+  width: 10%;
 }
 
 @media (max-width: 450px) {
@@ -202,9 +215,9 @@ html {
 }
 
 .btnRow {
-  font-size: xx-large;
+  font-size: 2em;
   display: block;
-  margin-right: 10px;
+  line-height: 1.2em;
 }
 
 .colorGreen {
@@ -216,17 +229,18 @@ html {
 }
 
 .checkboxInTable {
-  height: 25px;
-  margin-top: 7px;
+  height: 1.5em;
+  margin-top: 0.51em;
 }
 
-.titlePage {
-  line-height: 40px;
-  font-weight: bold;
-}
+/* tr.rowData td:has(input[type="checkbox"]) {
+  vertical-align: middle;
+  text-align: center;
+  line-height: normal;
+} */
 
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
@@ -244,4 +258,23 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: 1.5em;
   width: 500px;
   max-width: 500px;
+}
+
+#commandPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titlePage {
+  line-height: 2em;
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 0;
+}
+
+#btnAdd {
+  font-size: 3em;
+  color: #007431;
+  margin-right: 10px;
 }

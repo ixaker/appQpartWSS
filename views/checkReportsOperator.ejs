@@ -1,82 +1,64 @@
 <style>
-    #ОтчетПоРаботе2022 {
-        /* font-size: 0.9em; */
-    }
+  table {
+    font-size: 0.7em;
+  }
 
-    .colunmForEdit{
-        color: gold;
-    }
+  .colunmForEdit {
+    color: gold;
+  }
 
-    .hiddenColumt {
-        display: none;
-    }
-    @media (max-width: 800px) {
-        #content {
-            padding-left: 5px !important;
-            padding-right: 5px !important;
-        }
-
-        .titlePage {
-            font-size: 0.7em !important;
-        }
-
-        #ОтчетПоРаботе2022 th {
-            width: auto !important;  
-        }
-
-        #ОтчетПоРаботе2022 {
-            font-size: 0.5em !important;  
-        }
-
-        .checkboxInTable {
-            height: 15px !important; 
-        }
-
-        .btnRow {
-            font-size: initial !important; 
-        }
-    }
+  .hiddenColumt {
+    display: none;
+  }
 </style>
 
-<h3 class="titlePage" >Список отчетов операторов которые надо проверить</h3>
+<h3 class="titlePage">Список отчетов операторов которые надо проверить</h3>
 
-<table  id="ОтчетПоРаботе2022" 
-        url="/app/getCurrentReportOperatorForCheck" 
-        callbackBeforeInitTable="callbackBeforeInitTable" 
-        filter="filter" 
-        callbackAfterInitTable="callbackAfterInitTable" 
-        addNevRow="callbackAddNewRow" 
-        callbackAfterWrite="callbackAfterWrite" 
-        append="end" 
-        sort="3" sort_2="5" init header>
-    <tr class="config" style="display: none;">
-        <td title="Дата" 
-            name="ДатаОтчета" 
-            style="width: 55px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
-        <td title="Оператор" 
-            name="Сотрудник" 
-            key="Наименование" 
-            style="width: 200px;"><div class="dataCell"></div></td>
-        <td title="Станок" 
-            name="Станок" 
-            key="ИнвентарныйНомер" 
-            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
-<!--             <input  type="text" 
+<table
+  id="ОтчетПоРаботе2022"
+  name="ОтчетПоРаботе2022"
+  url="/app/getCurrentReportOperatorForCheck"
+  callbackBeforeInitTable="callbackBeforeInitTable"
+  filter="filter"
+  callbackAfterInitTable="callbackAfterInitTable"
+  addNevRow="callbackAddNewRow"
+  callbackAfterWrite="callbackAfterWrite"
+  append="end"
+  sort="3"
+  sort_2="5"
+  init
+  header
+>
+  <tr class="config" style="display: none">
+    <td title="Дата" name="ДатаОтчета" style="width: 6%">
+      <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
+    </td>
+    <td title="Оператор" name="Сотрудник" key="Наименование" style="width: 20%">
+      <div class="dataCell"></div>
+    </td>
+    <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 7%">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <!--             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteStanok"   
                     checkValid  
                     class="dataCell textAlignCenter" 
                     style="padding: 0px;"></td> -->
-        <td title="Номер детали" 
-            name="Деталь" 
-            key="АртикулНаименование" 
-            style="width: 100%;"><div class="dataCell"></div></td>
-<!--             <input  type="text" 
+    <td
+      title="Номер детали"
+      name="Деталь"
+      key="АртикулНаименование"
+      style="width: 30%"
+    >
+      <div class="dataCell"></div>
+    </td>
+    <!--             <input  type="text" 
                     minLength=1 
                     url="/app/autocompleteArticle"  
                     checkValid 
                     class="dataCell"></input></td> -->
-<!--         <td title="МЛ"  
+    <!--         <td title="МЛ"  
             name="Заказ" 
             key="Номер" 
             style="width: 60px;">
@@ -86,61 +68,73 @@
                     url="/app/autocompleteZakaz"  
                     checkValid 
                     class="dataCell textAlignCenter"></input></td> -->
-        <td title="Этап" 
-            name="ЭтапПроизводства" 
-            key="КодНовый" 
-            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
-        <td title="#" 
-            name="ПорядковыйНомерЭтапа" 
-            headerClass="hiddenColumt" 
-            class="hiddenColumt" 
-            style="width: 50px;"><div class="dataCell textAlignCenter"></div></td>
-<!--             <input  type="text" 
+    <td title="Этап" name="ЭтапПроизводства" key="КодНовый" style="width: 7%">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td
+      title="#"
+      name="ПорядковыйНомерЭтапа"
+      headerClass="hiddenColumt"
+      class="hiddenColumt"
+      style="width: 7%"
+    >
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <!--             <input  type="text" 
                     inputmode="numeric" 
                     minLength=0 
                     url="/app/autocompleteCodeOperation"  
                     checkValid 
                     class="dataCell textAlignCenter"></input></td> -->
-        <td title="Время маш." 
-            name="МашинноеВремя" 
-            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
-<!--             <input  type="text" 
+    <td title="Время маш." name="МашинноеВремя" style="width: 7%">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <!--             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
                     limitHourse="99" 
                     data-mask="99:A9"
                     class="dataCell textAlignCenter"></input></td> -->
-        <td title="Время полное" 
-            name="ПолноеВремя" 
-            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
-<!--             <input  type="text" 
+    <td title="Время полное" name="ПолноеВремя" style="width: 7%">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <!--             <input  type="text" 
                     inputmode="numeric" 
                     checkValid 
                     placeholder="мм:сс"
                     limitHourse="99" 
                     data-mask="99:A9" 
                     class="dataCell textAlignCenter"></input></td> -->
-        <td title="Дет за 1 уст" 
-            name="КоличествоДеталейЗаОднуУстановку" 
-            style="width: 65px;"><div class="dataCell textAlignEnd"></div></td>
-<!--             <input  type="number" 
+    <td
+      title="Дет за 1 уст"
+      name="КоличествоДеталейЗаОднуУстановку"
+      style="width: 7%"
+    >
+      <div class="dataCell textAlignEnd"></div>
+    </td>
+    <!--             <input  type="number" 
                     inputmode="numeric"  
                     checkValid  
                     min="0" 
                     class="dataCell quantity textAlignEnd" 
                     style=""></td> -->
-        <td title="К-во изгот" 
-            name="КоличествоИзготовлено" 
-            headerClass="colunmForEdit" 
-            style="width: 55px;">
-            <input  type="number" 
-                    inputmode="numeric"  
-                    checkValid  
-                    min="0" 
-                    class="dataCell quantity textAlignEnd" 
-                    style=""></td>
-<!--         <td title="Кол-во остаток" 
+    <td
+      title="К-во изгот"
+      name="КоличествоИзготовлено"
+      headerClass="colunmForEdit"
+      style="width: 7%"
+    >
+      <input
+        type="number"
+        inputmode="numeric"
+        checkValid
+        min="0"
+        class="dataCell quantity textAlignEnd"
+        style=""
+      />
+    </td>
+    <!--         <td title="Кол-во остаток" 
             name="КоличествоОсталосьНаЭтапе" 
             style="width: 70px;">
             <input  type="number" 
@@ -149,103 +143,107 @@
                     min="0" 
                     class="dataCell textAlignEnd" 
                     style=""></td> -->
-        <td title="Готов" 
-            name="Проведен" 
-            headerClass="colunmForEdit" 
-            style="width: 60px;"> 
-            <input  type="checkbox" 
-                    sync="none" 
-                    class="dataCell checkboxInTable"></td>
-        <td title="" 
-            style="width: 55px;"><div class="groupBtnRow">
-                <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none;"></i>
-                <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
-            </div></td>
-    </tr>
+    <td
+      title="Готов"
+      name="Проведен"
+      headerClass="colunmForEdit"
+      style="width: 7%"
+    >
+      <input type="checkbox" sync="none" class="dataCell checkboxInTable" />
+    </td>
+    <td title="" style="width: 7%">
+      <div class="groupBtnRow">
+        <i
+          class="bi bi-check-circle btnRow btnOk colorGreen"
+          style="display: none"
+        ></i>
+        <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
+      </div>
+    </td>
+  </tr>
 </table>
 
 <script>
-    $(document).ready(function() {
-        let tableID = '#ОтчетПоРаботе2022';
+  $(document).ready(function () {
+    let tableID = "#ОтчетПоРаботе2022";
 
-        initTables();
-        addSubscribeWSS('ОтчетПоРаботе2022_all');
-        
-        // callback при получении данных от сервера по wss
-        callbackWSS = async function(data){callbackTable(data)};
+    initTables();
+    addSubscribeWSS("ОтчетПоРаботе2022_all");
 
-        // callback перед отрисовкой таблицы
-        callbackBeforeInitTable = function(data) {}
+    // callback при получении данных от сервера по wss
+    callbackWSS = async function (data) {
+      callbackTable(data);
+    };
 
-        // callback при изменении данных в строке для определения показать или убрать строку
-        filter = function(data, result = true) {
-            console.log('filter', data);
+    // callback перед отрисовкой таблицы
+    callbackBeforeInitTable = function (data) {};
 
-            if (data['Проведен']) {
-                result = false;    
-            }
+    // callback при изменении данных в строке для определения показать или убрать строку
+    filter = function (data, result = true) {
+      console.log("filter", data);
 
-            if (data['ПометкаУдаления']) {
-                result = false;    
-            }
+      if (data["Проведен"]) {
+        result = false;
+      }
 
-            if (!data['ЭтоОтчетОператора']) {
-                result = false;    
-            }
+      if (data["ПометкаУдаления"]) {
+        result = false;
+      }
 
-            if(Object.keys(data['Станок']).length === 0){
-                result = false;
-            }
-/*             if (data['КоличествоИзготовлено'] == "0") {
+      if (!data["ЭтоОтчетОператора"]) {
+        result = false;
+      }
+
+      if (Object.keys(data["Станок"]).length === 0) {
+        result = false;
+      }
+      /*             if (data['КоличествоИзготовлено'] == "0") {
                 result = false;    
             } */
 
-            return result;
-        }
+      return result;
+    };
 
-        // callback после отрисовки таблицы
-        callbackAfterInitTable = function(data) {}
+    // callback после отрисовки таблицы
+    callbackAfterInitTable = function (data) {};
 
-        // callback после вставки новой пустой строки, перед заполнением данными
-        callbackAddNewRow = function(data) {}
+    // callback после вставки новой пустой строки, перед заполнением данными
+    callbackAddNewRow = function (data) {};
 
-        // callback после внесения изменений в строку с сервера
-        callbackAfterWrite = function(data) {
-            console.log('callbackAfterWrite', data);
+    // callback после внесения изменений в строку с сервера
+    callbackAfterWrite = function (data) {
+      console.log("callbackAfterWrite", data);
+    };
 
+    // клик по кнопке Редактировать
+    $(tableID).on("click", ".btnEdit", function (event) {
+      const row = $(this).closest("tr");
+      const data = $(row).data("data");
 
-        }
+      $(tableID).find(".btnEdit").show();
+      $(tableID).find(".btnOk").hide();
+      $(tableID).find("input").prop("disabled", true);
 
-        // клик по кнопке Редактировать
-        $(tableID).on('click', '.btnEdit', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
+      $(row).find(".btnOk").show();
+      $(row).find(".btnEdit").hide();
+      $(row).find("input").prop("disabled", false);
 
-            $(tableID).find('.btnEdit').show();
-            $(tableID).find('.btnOk').hide();
-            $(tableID).find('input').prop('disabled', true);
-
-            $(row).find('.btnOk').show();
-            $(row).find('.btnEdit').hide();
-            $(row).find('input').prop('disabled', false);
-
-            clickAnimate($(row).find('.btnOk'));
-            logToServer('Нажата кнопка "Редактировать"', data);
-        });
-
-        // клик по кнопке Применить
-        $(tableID).on('click', '.btnOk', function(event){
-            const row = $(this).closest('tr');
-            const data = $(row).data('data');
-
-            $(row).find('.btnOk').hide();
-            $(row).find('.btnEdit').show();
-            $(row).find('input').prop('disabled', true);
-
-            clickAnimate($(row).find('.btnEdit'));
-            logToServer('Нажата кнопка "Применить"', data);
-            sendNotificationOnChangeRowTable(this);
-        });
-
+      clickAnimate($(row).find(".btnOk"));
+      logToServer('Нажата кнопка "Редактировать"', data);
     });
+
+    // клик по кнопке Применить
+    $(tableID).on("click", ".btnOk", function (event) {
+      const row = $(this).closest("tr");
+      const data = $(row).data("data");
+
+      $(row).find(".btnOk").hide();
+      $(row).find(".btnEdit").show();
+      $(row).find("input").prop("disabled", true);
+
+      clickAnimate($(row).find(".btnEdit"));
+      logToServer('Нажата кнопка "Применить"', data);
+      sendNotificationOnChangeRowTable(this);
+    });
+  });
 </script>
