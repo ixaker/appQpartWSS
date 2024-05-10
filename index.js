@@ -41,7 +41,7 @@ const options = { expiresIn: '3h' };
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
 // const version = process.env.version || '1.0.0';
-const version = '1.0.133d3вв'
+const version = '1.0.43433dd3433d333334233в43433443d3333234433333433343433223324343324333333433444333332333444'
 const maxAge = 31536000;
 
 const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');

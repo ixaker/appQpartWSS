@@ -1,7 +1,10 @@
 <style>
   .userFoto {
-    width: 200px;
-    margin: 5px;
+    width: 100%;
+    height: auto;
+    max-width: 220px;
+    /* width: 200px;
+    margin: 5px; */
   }
 
   #userListContent {
@@ -48,9 +51,12 @@
   }
 
   #userFoto {
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px; /* проміжок між зображеннями */
+    /* width: 100%;
     min-height: 50px;
-    padding: 5px;
+    padding: 5px; */
   }
 
   .userCard {
@@ -62,27 +68,11 @@
     padding: 10px 10px;
   }
 
-  .userName {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    column-gap: 10px;
-  }
-
-  .userCountFaceID {
-    /* margin-left: auto; */
-    width: 20%;
-    text-align: end;
-  }
-
-  .userActionButton {
-    font-size: 2em;
-  }
-
   .userActions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    margin-bottom: 5px;
   }
   .countFaceID {
     margin-left: auto;
@@ -178,28 +168,48 @@
   .work {
     margin-right: 5px;
   }
-
-  .userProfaFaceID {
-    line-height: 1.7em;
-    /* margin-left: auto; */
-  }
-
+  /* Блок з даними користувача */
   .userNameText {
     display: flex;
-
     justify-content: space-between;
-    column-gap: 15px;
+    align-items: center;
+  }
+
+  /* Ім'я  */
+  .userNameFaceID {
+    width: 34%;
+    font-size: 1.2em;
+    display: flex;
+    gap: 5px;
   }
 
   .userMenuFaceID {
-    line-height: 1.7em;
-
+    width: 23%;
+    font-size: 0.8em;
+    padding: 5px;
     /* margin-left: 20px; */
   }
 
-  .userNameFaceID {
-    text-wrap: nowrap;
-    /* width: 40%; */
+  /* Посада */
+  .userProfaFaceID {
+    width: 23%;
+    font-size: 0.8em;
+    padding: 5px;
+    /* margin-left: auto; */
+  }
+
+  .userCountFaceID {
+    /* margin-left: auto; */
+    width: 12%;
+    text-align: center;
+    font-size: 1.2em;
+  }
+
+  .userActionButton {
+    width: 8%;
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
   }
 
   @media only screen and (min-width: 700px) and (orientation: landscape) {
@@ -218,28 +228,51 @@
       /* margin-left: 5px; */
     }
 
-    .userFoto {
-      width: 144px;
-    }
+    /* .userFoto {
+      width: 100%;
+      height: auto;
+      max-width: 150px;
+      /* width: 144px; */
+    */
 
+    /* Блок з даними про людину */
     .userNameText {
       width: auto;
-      column-gap: 3vw;
       flex-wrap: wrap;
     }
 
+    /* Ім'я  */
+    .userNameFaceID {
+      font-size: 2.2em;
+      width: 48%;
+    }
+
+    /* Меню на планшет */
     .userMenuFaceID {
       display: none;
       text-wrap: nowrap;
     }
 
+    /* Посада */
     .userProfaFaceID {
+      font-size: 1.5em;
+      width: 30%;
+    }
+
+    /* Фото */
+    .userCountFaceID {
+      width: 12%;
+      font-size: 1.8em;
+    }
+
+    /* Кнопка розкрити */
+    .userActionButton {
+      width: 8%;
+      font-size: 2em;
     }
 
     .btn {
-      /* font-size: 0.9em; */
       padding: 5px;
-      /* margin-bottom: 10px !important; */
     }
 
     #groupBtn {
@@ -253,21 +286,6 @@
       font-size: 1.7em;
       padding: 12px;
       width: 48%;
-    }
-
-    #btnLoadUserList {
-      /* font-size: 1.8em;
-      width: 48%;
-      white-space: nowrap;
-      padding: 15px;
-      margin: 0 !important; */
-    }
-
-    #btnUpdateFaceID {
-      /* font-size: 1.8em;
-      width: 48%;
-      padding: 15px;
-      margin: 0 !important; */
     }
 
     .groupSearch {
@@ -287,14 +305,6 @@
   mark {
     background: yellow;
     padding: 0;
-  }
-
-  .work {
-    /* width: 10px;
-    height: 10px; */
-    /*         background-color: gray; */
-    /* border-radius: 5px; */
-    /* margin-top: 18px; */
   }
 </style>
 
@@ -335,22 +345,24 @@
   <div id="usersContainer">
     <% users.forEach(function(user){ %>
     <div class="userCard" id="<%= user.uid %>">
-      <div class="userName">
-        <div class="userNameText">
-          <h4 class="userNameFaceID">
-            <i class="bi bi-record-fill" <% if (user.work) { %>
-              style="color: chartreuse;" <% } else { %> style="color:
-              lightgrey;" <% } %> > </i
-            ><%= user.name %>
-          </h4>
-          <h6 class="userMenuFaceID"><%= user.menu %></h6>
-          <h6 class="userProfaFaceID"><%= user.profa %></h6>
-        </div>
-        <h4 class="userCountFaceID"><%= user.count %> фото</h4>
+      <div class="userNameText">
+        <h4 class="userNameFaceID">
+          <i class="bi bi-record-fill" <% if (user.work) { %>
+            style="color: chartreuse;" <% } else { %> style="color: lightgrey;"
+            <% } %> >
+          </i>
+          <%= user.name %>
+        </h4>
+        <h6 class="userMenuFaceID"><%= user.menu %></h6>
+        <h6 class="userProfaFaceID"><%= user.profa %></h6>
+        <h4 class="userCountFaceID btn btn-outline-dark btnUserEdit">
+          <%= user.count %> фото
+        </h4>
         <h4 class="userActionButton">
           <i class="bi bi-chevron-down"></i>
         </h4>
       </div>
+
       <div class="userActions">
         <button
           class="btn btn-outline-dark btnUserEdit"
@@ -766,10 +778,7 @@
         }
       }
     });
-  });
 
-  $(document).ready(function () {
-    // Приховуємо блок userActions при завантаженні сторінки
     $(".userActions").hide();
 
     // Керування показом та приховуванням блоку userActions та зміна значення кнопки
@@ -779,11 +788,7 @@
 
       // Зміна значення кнопки на відповідну іконку в залежності від стану блоку userActions
       var $icon = $(this).find("i");
-      if ($userActions.is(":visible")) {
-        $icon.removeClass("bi bi-chevron-down").addClass("bi bi-chevron-up");
-      } else {
-        $icon.removeClass("bi bi-chevron-up").addClass("bi bi-chevron-down");
-      }
+      $icon.toggleClass("bi-chevron-down bi-chevron-up");
     });
   });
 </script>

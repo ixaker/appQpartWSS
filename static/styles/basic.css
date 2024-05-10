@@ -92,15 +92,17 @@ html {
 #navbar_text_stanok {
   padding-right: 10px;
   color: #eee;
-  text-align: end;
-  font-size: 1.6em;
+  font-size: 1.4em;
   background-color: darkgoldenrod;
   padding-left: 10px;
   margin-right: 20px;
   text-overflow: ellipsis;
-  max-width: 300px;
+  max-width: 500px;
   white-space: nowrap;
   overflow: hidden;
+  display: none;
+  /* display: flex !important; */
+  align-items: center;
 }
 
 #navbar_text {
@@ -180,7 +182,7 @@ html {
 
 @media (max-width: 650px) {
   #navbar_text_stanok {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -274,6 +276,12 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 #btnAdd {
+  font-size: 3em;
+  color: #007431;
+  margin-right: 10px;
+}
+
+.btnAdd {
   font-size: 3em;
   color: #007431;
   margin-right: 10px;

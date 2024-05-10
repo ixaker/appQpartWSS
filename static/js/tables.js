@@ -55,6 +55,7 @@ async function initTable(table) {
                             console.log('call callbackTable', item);
 
                             const name = item.data['Имя'];
+                            console.log('table name', name);
                             //item['tableID'] = item.data['Имя'];
 
                             const listTablesForName = $('table[name="' + name + '"]');
