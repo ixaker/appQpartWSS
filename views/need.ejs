@@ -780,6 +780,7 @@
   var access = false;
 
   $(document).ready(function () {
+    console.log("need.ejs $(document).ready");
     let tableID = "#OTK";
     initTables();
 
@@ -807,11 +808,11 @@
     };
 
     function initInputProvider() {
-      const userInfo = $("#menu").data("userInfo");
-
-      if (!userInfo.data["ПравоВноситьПодряды"]) {
-        $("#workInProvider").hide();
-      }
+      // console.log("=== initInputProvider");
+      // const userInfo = $("#menu").data("userInfo");
+      // if (!userInfo.data["ПравоВноситьПодряды"]) {
+      //   $("#workInProvider").hide();
+      // }
     }
 
     function initInputDate(element) {
