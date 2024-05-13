@@ -1,5 +1,3 @@
-const { log } = require("@tensorflow/tfjs-node");
-
 const video = document.getElementById('video');
 const canvas = document.createElement('canvas');
 let oldPageUID = localStorage.getItem('PageUID') || false;
@@ -151,10 +149,9 @@ function loadMenu(userInfo, token, version) {
     $.cookie("token", token, { expires: 36500 });
 
     const versionFromLocalStorage = $.cookie("version");
-    console.log('versionFromLocalStorage', versionFromLocalStorage);
-    console.log('version', version);
+
     if (version !== versionFromLocalStorage) {
-        log('version is not actual. rewrite version in localStorage')
+        console.log('update version because version in cookie is not actual')
         $.cookie("version", version);
         location.reload();
     }
@@ -174,8 +171,12 @@ function loadMenu(userInfo, token, version) {
     $.get('/app/getUserMenu', function (response) {
         console.log('/app/getUserMenu', response);
 
-        const userInfo = response.userInfo;
-        //console.log('userInfo', userInfo);
+        const elements = document.querySelectorAll('.bg-dark');
+        elements.forEach(element => {
+            element.classList.remove('bg-dark');
+            element.classList.add('test');
+        });
+        console.log('userInfo', userInfo);
 
         $('#menu').html(response.menu);   // загружаем меню
         $('#menu').data('userInfo', userInfo);
