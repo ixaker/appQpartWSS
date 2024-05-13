@@ -34,14 +34,28 @@ if (!fs.existsSync(envFilePath)) {
   fs.writeFileSync(envFilePath, defaultEnvData);
 }
 
-
 const secret = 'my-secret-key';
 const options = { expiresIn: '3h' };
 
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
-// const version = process.env.version || '1.0.0';
-const version = '1.0.43433dd3433d333334233в43433443d3333234433333433343433223324343324333333433444333332333444'
+
+const test = process.env.TEST;
+log.warn('test: ', test);
+let version;
+if (test === 'true') {
+  const currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, '0'); // Додаємо ведущий нуль, якщо година складається з однієї цифри
+  const minutes = currentDate.getMinutes().toString().padStart(2, '0'); // Додаємо ведущий нуль, якщо хвилина складається з однієї цифри
+  const seconds = currentDate.getSeconds().toString().padStart(2, '0'); // Додаємо ведущий нуль, якщо секунда складається з однієї цифри
+
+  version = `${hours}${minutes}${seconds}`;
+  log.info('test version: ', version);
+} else {
+  version = process.env.version || '1.0.0';
+  log.info('production version: ', version);
+}
+
 const maxAge = 31536000;
 
 const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
@@ -63,9 +77,7 @@ const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs
 // app.use(express.static('static'));
 app.use(express.static('static', {
   setHeaders: function (res, path) {
-    // Установка Cache-Control для всех статических файлов
     res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
-    // Дополнительные заголовки для поддержки валидации кэша
     res.setHeader('ETag', true);
   }
 }));
@@ -99,7 +111,8 @@ app.get('/', (req, res) => {
 
   res.render('index', {
     version: version,
-    token: ''
+    token: '',
+    test: test,
   });
 });
 

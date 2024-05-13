@@ -173,6 +173,10 @@ html {
   width: 10%;
 }
 
+.ui-autocomplete {
+  font-size: 2em;
+}
+
 @media (max-width: 450px) {
   #navbar_text {
     width: 80px;
@@ -180,9 +184,13 @@ html {
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 750px) {
   #navbar_text_stanok {
     display: none !important;
+  }
+
+  .ui-autocomplete {
+    font-size: 1.3em;
   }
 }
 
@@ -217,9 +225,21 @@ html {
 }
 
 .btnRow {
-  font-size: 2em;
+  font-size: 3.5rem;
   display: block;
   line-height: 1.2em;
+}
+
+@media (orientation: portrait) {
+  .btnRow {
+    font-size: 3.5em;
+  }
+}
+
+@media (max-width: 850px) and (orientation: landscape) {
+  .btnRow {
+    font-size: 3em;
+  }
 }
 
 .colorGreen {

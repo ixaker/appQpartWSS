@@ -6,6 +6,12 @@ table {
   font-size: 1em;
 }
 
+@media (orientation: portrait) {
+  table {
+    font-size: 1.1em;
+  }
+}
+
 th,
 td {
   overflow: hidden; /* прячет содержимое, если оно не умещается в ячейку */
@@ -28,11 +34,12 @@ th {
 td {
   white-space: nowrap; /* запрещает перенос текста на новую строку */
   padding: 0 0.3vw;
+  height: 2em;
 }
 
 td input {
   width: 100%;
-  box-sizing: border-box; /* Учитывает padding и border в общей ширине */
+  box-sizing: border-box;
   border: 1px solid darkgrey;
   background-color: #ffd70063;
 }
@@ -42,7 +49,7 @@ td input {
   justify-content: space-around;
 }
 
-input:disabled {
+td input:disabled {
   background-color: white !important;
   border: none !important;
 }

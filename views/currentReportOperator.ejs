@@ -1,8 +1,4 @@
 <style>
-  i.btnRow {
-    font-size: 2em;
-  }
-
   #btnAdd {
     margin-left: auto;
     font-size: 3em;
@@ -10,9 +6,10 @@
     margin-right: 10px;
   }
 
-  .ui-autocomplete {
-    font-size: xx-large;
-  }
+  /* .ui-autocomplete {
+    font-size: 2em;
+    color: blue;
+  } */
 
   #lastRowSumm .labelfullTimeAll {
     text-align: end;
@@ -417,6 +414,7 @@
         console.log("eeeeeeeeeeeeeeeeeeee");
 
         let row = $("#" + data["uid"]);
+        console.log("row Проведен", row);
         $(row).find(".btnRow ").remove();
       }
     };

@@ -1,82 +1,89 @@
-<style>
-    
-
-</style>
+<style></style>
 
 <h3 class="titlePage">Список брака</h3>
 
-<table id="ОтчетПоРаботе2022" url="/app/getListDefect" filter="filterForDefectUserTable" append="end">
-    <tr class="config" style="display: none;">
-        <td title="Дата брака" 
-            name="ДатаОтчета" 
-            style="width: 70px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
-        <td title="Исправить до" 
-            name="ДатаДедлайнДляИсправленияБрака" 
-            style="width: 100px;"><div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div></td>
-        <td title="Номер детали" 
-            name="Деталь" 
-            key="Артикул" 
-            style="width: 100%;"><div class="dataCell"></div></td>
-        <td title="Станок" 
-            name="Станок" 
-            key="ИнвентарныйНомер" 
-            style="width: 70px;"><div class="dataCell textAlignCenter"></div></td>
-        <td title="МЛ"  
-            name="Заказ" 
-            key="Номер" 
-            style="width: 60px;"><div class="dataCell textAlignCenter"></div></td>
-        <td title="Код операции" 
-            name="ЭтапПроизводства" 
-            key="КодНовый" 
-            style="width: 90px;"><div class="dataCell textAlignCenter"></div></td>
-        <td title="Кол-во брака" 
-            name="КоличествоБрака" 
-            style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
-        <td title="К-во надо исправить" 
-            name="КоличествоОсталосьИсправить" 
-            style="width: 100px;"><div class="dataCell textAlignEnd"></div></td>
-        <td title="Цена брака за 1 шт, грн" 
-            name="ЦенаБрака" 
-            style="width: 110px;"><div class="dataCell textAlignEnd"></div></td>
-    </tr>
+<table
+  id="ОтчетПоРаботе2022"
+  name="ОтчетПоРаботе2022"
+  url="/app/getListDefect"
+  filter="filterForDefectUserTable"
+  append="end"
+>
+  <tr class="config" style="display: none">
+    <td title="Дата брака" name="ДатаОтчета" style="width: 70px">
+      <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
+    </td>
+    <td
+      title="Исправить до"
+      name="ДатаДедлайнДляИсправленияБрака"
+      style="width: 100px"
+    >
+      <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
+    </td>
+    <td title="Номер детали" name="Деталь" key="Артикул" style="width: 100%">
+      <div class="dataCell"></div>
+    </td>
+    <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 70px">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td title="МЛ" name="Заказ" key="Номер" style="width: 60px">
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td
+      title="Код операции"
+      name="ЭтапПроизводства"
+      key="КодНовый"
+      style="width: 90px"
+    >
+      <div class="dataCell textAlignCenter"></div>
+    </td>
+    <td title="Кол-во брака" name="КоличествоБрака" style="width: 100px">
+      <div class="dataCell textAlignEnd"></div>
+    </td>
+    <td
+      title="К-во надо исправить"
+      name="КоличествоОсталосьИсправить"
+      style="width: 100px"
+    >
+      <div class="dataCell textAlignEnd"></div>
+    </td>
+    <td title="Цена брака за 1 шт, грн" name="ЦенаБрака" style="width: 110px">
+      <div class="dataCell textAlignEnd"></div>
+    </td>
+  </tr>
 </table>
 
 <script>
-    $(document).ready(function() {
-        initTables();
+  $(document).ready(function () {
+    initTables();
 
-        $('#ОтчетПоРаботе2022').on('click', '.btnPlay', function(event){
-            const rowID = $(this).attr('rowID');
-            var row = $('#' + rowID);
+    $("#ОтчетПоРаботе2022").on("click", ".btnPlay", function (event) {
+      const rowID = $(this).attr("rowID");
+      var row = $("#" + rowID);
 
-            console.log("btnPlay", "row", row);
+      console.log("btnPlay", "row", row);
 
-
-            toastr.info("Создан отчет на исправление брака")
-        });
-
-        filterForDefectUserTable = function(data) {
-            console.log('func filterForDefectUserTable', data, user);  
-            
-            var result = true;
-
-            try {
-                if (!data['Проведен']) {
-                    result = false;    
-                }else if (data['КоличествоБрака'] == 0) {
-                    result = false;
-                }else if ((data['КоличествоОсталосьИсправить']||0) == 0) {
-                    result = false;
-                }else if (data['Сотрудник']['uid'] !== user['uid']) {
-                    result = false;
-                }
-            } catch (error) {
-                
-            }
-
-            return result;
-        }
-
-        
+      toastr.info("Создан отчет на исправление брака");
     });
+
+    filterForDefectUserTable = function (data) {
+      console.log("func filterForDefectUserTable", data, user);
+
+      var result = true;
+
+      try {
+        if (!data["Проведен"]) {
+          result = false;
+        } else if (data["КоличествоБрака"] == 0) {
+          result = false;
+        } else if ((data["КоличествоОсталосьИсправить"] || 0) == 0) {
+          result = false;
+        } else if (data["Сотрудник"]["uid"] !== user["uid"]) {
+          result = false;
+        }
+      } catch (error) {}
+
+      return result;
+    };
+  });
 </script>

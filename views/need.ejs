@@ -9,11 +9,17 @@
 
   #listWork .dataCell,
   #listWork th {
-    height: 7vw;
+    /* height: 5vw; */
     min-height: 50px;
     max-height: 70px;
     font-size: 1.2em;
     align-content: center;
+  }
+
+  @media (orientation: portrait) {
+    #listWork th {
+      font-size: 1em;
+    }
   }
 
   #listWork td:nth-child(1) {
@@ -141,8 +147,8 @@
 
 <table
   id="аГруппыЭтаповПроизводства"
-  class="mainTable"
   name="аГруппыЭтаповПроизводства"
+  class="mainTable"
   url="/app/getListGroupEtapNeed"
   filter="filterForListGroupEtapNeed"
   addNevRow="callbackAddNewRowForListGroupEtapNeed"
