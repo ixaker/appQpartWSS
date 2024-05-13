@@ -171,11 +171,11 @@ function loadMenu(userInfo, token, version) {
     $.get('/app/getUserMenu', function (response) {
         console.log('/app/getUserMenu', response);
 
-        const elements = document.querySelectorAll('.bg-dark');
-        elements.forEach(element => {
-            element.classList.remove('bg-dark');
-            element.classList.add('test');
-        });
+        // const elements = document.querySelectorAll('.bg-dark');
+        // elements.forEach(element => {
+        //     element.classList.remove('bg-dark');
+        //     element.classList.add('test');
+        // });
         console.log('userInfo', userInfo);
 
         $('#menu').html(response.menu);   // загружаем меню
