@@ -1,3 +1,5 @@
+const { log } = require("@tensorflow/tfjs-node");
+
 const video = document.getElementById('video');
 const canvas = document.createElement('canvas');
 let oldPageUID = localStorage.getItem('PageUID') || false;
@@ -85,11 +87,13 @@ function uploadPhoto() {
                 couterRequest += 1;
                 $.post('/detectFace', { photo: reader.result, counter: couterRequest }, function (response) {
                     console.log('/detectFace', response);
+                    console.log('response.version', response.version);
 
                     toastr.success(response.similarity);
 
                     if (response.detectUser) {
-                        loadMenu(response.user, response.token);
+                        loadMenu(response.user, response.token, response.version);
+
                     }
                 }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
                     console.log("error - /detectFace");
@@ -110,11 +114,11 @@ function uploadPhoto() {
 }
 
 function authentication() {
-    //console.log("start authentication");
+    console.log("--- start authentication --- ");
 
     $.post('/authentication', {}, function (response) {
-        //console.log('/authentication', response);
-        loadMenu(response.user, response.token);
+        console.log('/authentication', response);
+        loadMenu(response.user, response.token, response.version);
         $.cookie("token", response.token);
     }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
         console.log("error - /authentication");
@@ -138,13 +142,23 @@ $(function () {
 
 });
 
-function loadMenu(userInfo, token) {
-    //console.log('start loadMenu', userInfo);
+function loadMenu(userInfo, token, version) {
+    console.log('start loadMenu userInfo, version', userInfo);
 
     user = userInfo;
     auth = true;
 
     $.cookie("token", token, { expires: 36500 });
+
+    const versionFromLocalStorage = $.cookie("version");
+    console.log('versionFromLocalStorage', versionFromLocalStorage);
+    console.log('version', version);
+    if (version !== versionFromLocalStorage) {
+        log('version is not actual. rewrite version in localStorage')
+        $.cookie("version", version);
+        location.reload();
+    }
+
 
     $('#navbar-brand-text').text(userInfo.name + ' - ' + user.profa);
 

@@ -20,14 +20,14 @@
     [Unit]
     Description=webAppQpart
     After=network.target
-    
+
     [Service]
     Type=simple
     WorkingDirectory=/root/dev/wss
     ExecStart=/usr/bin/node index.js
     Restart=always
     RestartSec=10
-    
+
     [Install]
     WantedBy=multi-user.target
 
@@ -37,20 +37,20 @@
     sudo systemctl disable webAppQpart
     sudo systemctl stop webAppQpart
     sudo systemctl restart webAppQpart
-    
+
  <hr>
 
 <h3>Установка NodeJS на чистую систему:</h3>
 
     sudo apt update
     sudo apt install curl
-    
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - 
+
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
     sudo apt-get install -y nodejs
-    
+
     node -v
     v18.17.0
-    
+
     sudo apt install git
     git config --global user.email "xaker.dnepr@gmail.com"
     git config --global user.name "xaker"
@@ -78,7 +78,6 @@
     npm install
     npm run dev
 
-
 <h3>SSL сертификат</h3>
 
 sudo apt install certbot
@@ -96,19 +95,18 @@ sudo lsof -i :80
 // останавливаем службу если это nginx
 sudo systemctl stop nginx
 
-
 в папке /etc/letsencrypt/live/wss.qpart.com.ua
- - privkey.pem
- - fullchain.pem
+
+- privkey.pem
+- fullchain.pem
 
 // перевыпуск сертификата
 sudo certbot renew --dry-run
 
 // полная команда перевыпуска сертификата
-systemctl stop webAppQpart  && certbot renew --dry-run && sudo systemctl start webAppQpart
-
+systemctl stop webAppQpart && certbot renew --dry-run && sudo systemctl start webAppQpart
 
 npm install node-telegram-bot-api --save
 
-Розмір планшета
-1208 800
+// Зміна версії додатка
+При публікації нової версії додатка на Production для автоматичного оновлення клієнтської частини необхідно оновити змінну version в .env

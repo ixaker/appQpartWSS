@@ -183,7 +183,7 @@ app.post('/detectFace', async (req, res) => {
       if (result.uid !== '') {
         if (result.finded.similarity > 0.72) {
           result.token = jwt.sign(result.user, secret, options);
-
+          result.version = version;
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
           telegramBot.sendImageAndMessage(req.body.photo, message);
         }
@@ -236,6 +236,7 @@ app.post('/authentication', async (req, res) => {
   let result = { detectUser: true };
   result.user = faceID.getUserInfoID(req.user.uid);
   result.token = jwt.sign(result.user, secret, options);
+  result.version = version;
 
   res.send(result);
 });
