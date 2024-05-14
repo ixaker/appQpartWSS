@@ -6,6 +6,10 @@ body {
   user-select: none;
 }
 
+.test {
+  background-color: darkblue;
+}
+
 body,
 html {
   max-width: 100%;

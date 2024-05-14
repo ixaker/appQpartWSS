@@ -112,7 +112,18 @@
     <script>
       const version = "<%= version %>";
       const token = "<%= token %>";
-      const test1 = "<%= version %>";
+      const test1 = "<%= test %>";
+      console.log("test", test1);
+
+      if (test1) {
+        console.log("this is test environment");
+        const elements = document.querySelectorAll(".bg-dark");
+        elements.forEach((element) => {
+          element.classList.remove("bg-dark");
+          element.classList.add("test");
+        });
+      }
+
       if (token !== "") {
         $.cookie("token", token);
       }

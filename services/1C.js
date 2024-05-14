@@ -29,7 +29,7 @@ async function pingRequest() {
     log.info('pingRequestStart');
     const response = await request1C('GET', '/ping');
     // funcIbSession.writeSessionToFile('ibsession.txt', ibSession);
-    log.info('pingRequest', response, ibSession);
+    log.info('pingRequest', ibSession);
 }
 
 async function init() {

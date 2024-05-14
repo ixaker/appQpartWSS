@@ -171,12 +171,7 @@ function loadMenu(userInfo, token, version) {
     $.get('/app/getUserMenu', function (response) {
         console.log('/app/getUserMenu', response);
 
-        // const elements = document.querySelectorAll('.bg-dark');
-        // elements.forEach(element => {
-        //     element.classList.remove('bg-dark');
-        //     element.classList.add('test');
-        // });
-        console.log('userInfo', userInfo);
+        console.log('test from login ', test)
 
         $('#menu').html(response.menu);   // загружаем меню
         $('#menu').data('userInfo', userInfo);

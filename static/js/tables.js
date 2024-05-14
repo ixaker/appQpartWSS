@@ -3,6 +3,7 @@ var highlightTimerId;
 
 // инициализация всех таблиц на форме
 async function initTables() {
+    console.log('--- initTables')
     disableHighlightElement();
 
     await $('#content table[init]').each(async function () {
@@ -14,6 +15,7 @@ async function initTables() {
 
 // инициализация таблицы
 async function initTable(table) {
+    console.log('--- initTable one')
     console.log('initTable', table);
     const tableJQ = $(table);
 
@@ -123,6 +125,7 @@ async function initTable(table) {
 
 // создание стороки заголовков таблицы
 function createHeaderForTable(tableJQ) {
+    console.log('--- createHeaderForTable')
     let header = tableJQ.children('thead');
 
     if (header.length > 0) {
@@ -297,10 +300,12 @@ callbackTable2 = async function (data) {
 
     //const table = $(`#${data.topic}`);
     const row = table.find('#' + newData.uid);
+    console.log('newData: ', newData);
+    console.log('row: ', row);
     if (row.length) {
         let visible = callbackFromAttr(table, 'filter', newData);
         const oldData = row.data('data');
-        //console.log('callbackTable2 visible', visible);
+        console.log('callbackTable2 visible', visible);
         if (!visible) {
             //console.log('$(row).remove()', row);
             // row.animate({

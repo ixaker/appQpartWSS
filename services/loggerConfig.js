@@ -10,6 +10,10 @@ const options = {
   logFile: './log/application.log',
   accessFile: './log/accesss.log',
   clientFile: './log/client.log',
+  logRotate: {
+    size: '10MB',
+    count: 1,
+  },
   inspect: {
     showHidden: true,
     depth: 5,

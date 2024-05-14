@@ -125,7 +125,8 @@ app.get('/' + adminRoute, (req, res) => {
 
   res.render('index', {
     version: version,
-    token: token
+    token: token,
+    test: test
   });
   // res.sendFile(createPath('admin.html'));
 });
