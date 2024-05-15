@@ -30,6 +30,7 @@ async function initTable(table) {
     try {
         let param = tableJQ.data('param') || {};
         let id_response = tableJQ.attr('id') + Date.now();
+        console.log('param', param)
 
         NProgress.start();
 

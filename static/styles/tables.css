@@ -28,7 +28,7 @@ th {
   overflow-wrap: break-word;
   word-wrap: break-word;
   white-space: normal;
-  padding: 5px 0 5px 0;
+  /* padding: 5px 0 5px 0; */
 }
 
 td {

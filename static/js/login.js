@@ -117,6 +117,7 @@ function authentication() {
     $.post('/authentication', {}, function (response) {
         console.log('/authentication', response);
         loadMenu(response.user, response.token, response.version);
+        makeNavbarTextMove();
         $.cookie("token", response.token);
     }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
         console.log("error - /authentication");
@@ -141,7 +142,7 @@ $(function () {
 });
 
 function loadMenu(userInfo, token, version) {
-    console.log('start loadMenu userInfo, version', userInfo);
+    console.log('start loadMenu userInfo', userInfo);
 
     user = userInfo;
     auth = true;
@@ -171,17 +172,17 @@ function loadMenu(userInfo, token, version) {
     $.get('/app/getUserMenu', function (response) {
         console.log('/app/getUserMenu', response);
 
-        console.log('test from login ', test)
+        console.log('getUserMenu response ---- ', response)
 
         $('#menu').html(response.menu);   // загружаем меню
         $('#menu').data('userInfo', userInfo);
 
         $('.nav-item a').each((index, element) => {
-            console.log('element old url', element);
+            // console.log('element old url', element);
             const newUrl = $(element).attr("url") + '?v=' + version;
-            console.log(newUrl);
+            // console.log(newUrl);
             $(element).attr("url", newUrl);
-            console.log('element new url', element);
+            // console.log('element new url', element);
         });
 
         $('.nav-item a').on('click', function () {    //обработчик кликов меню
@@ -219,4 +220,31 @@ function loadMenu(userInfo, token, version) {
     }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
         exit();
     });
+
+}
+
+function makeNavbarTextMove() {
+    console.log('makeNavbarTextMove')
+    const navbarBrand = document.querySelector(".navbar-brand");
+    const navbarBrandText = document.querySelector("#navbar-brand-text");
+
+    let navbarBrandWidth = navbarBrand.offsetWidth;
+    let navbarBrandTextWidth = navbarBrandText.offsetWidth;
+
+    console.log("Ширина блоку .navbar-brand:", navbarBrandWidth);
+    console.log("Ширина блоку #navbar-brand-text:", navbarBrandTextWidth);
+
+    function isOverflowing() {
+        return navbarBrandText.scrollWidth > navbarBrandWidth;
+    }
+
+    console.log("isOverflowing", isOverflowing());
+
+    // Перевірити наявність переповнення і застосувати анімацію
+
+    if (isOverflowing()) {
+        navbarBrandText.classList.add("text-animation");
+    } else {
+        navbarBrandText.classList.remove("text-animation");
+    }
 }

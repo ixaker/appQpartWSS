@@ -179,8 +179,6 @@
   .userNameFaceID {
     width: 34%;
     font-size: 1.2em;
-    display: flex;
-    gap: 5px;
   }
 
   .userMenuFaceID {
@@ -351,7 +349,7 @@
             style="color: chartreuse;" <% } else { %> style="color: lightgrey;"
             <% } %> >
           </i>
-          <%= user.name %>
+          <span class="userName"><%= user.name %></span>
         </h4>
         <h6 class="userMenuFaceID"><%= user.menu %></h6>
         <h6 class="userProfaFaceID"><%= user.profa %></h6>
@@ -635,13 +633,14 @@
       $(".userCard").each(function () {
         let found = true;
         let elements = $(this)
-          .find(".userNameFaceID, .userProfaFaceID")
+          .find(".userName, .userProfaFaceID")
           .map(function () {
             return { el: $(this) };
           })
           .get();
         elements.forEach((element) => {
           element.text = element.el.text().replace(/<mark>|<\/mark>/g, "");
+          console.log("element.text", element.text);
         });
 
         if (searchTerms.length > 0) {
@@ -650,6 +649,7 @@
             return elements.some((element) => {
               if (element.text.match(regex)) {
                 element.text = element.text.replace(regex, "<mark>$1</mark>");
+                console.log("element.text", element.text);
                 return true;
               }
               return false;

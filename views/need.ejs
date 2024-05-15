@@ -7,6 +7,12 @@
     padding: 0 5px;
   }
 
+  @media (max-width: 600px) {
+    td {
+      padding: 0 3px;
+    }
+  }
+
   #listWork .dataCell,
   #listWork th {
     /* height: 5vw; */
@@ -376,7 +382,7 @@
         header
       >
         <tr class="config" style="display: none">
-          <td title="Дата" name="ДатаОтчета" style="width: 7%">
+          <td title="Дата" name="ДатаОтчета" style="width: 8%">
             <div
               class="dataCell textAlignCenter"
               mask="DD.MM"
@@ -387,11 +393,11 @@
             title="Номер детали"
             name="Заказ"
             key="АртикулНаименование"
-            style="width: 35%"
+            style="width: 34%"
           >
             <div class="dataCell"></div>
           </td>
-          <td title="МЛ" name="Заказ" key="Номер" style="width: 6%">
+          <td title="МЛ" name="Заказ" key="Номер" style="width: 7%">
             <div class="dataCell textAlignCenter"></div>
           </td>
           <td
@@ -413,7 +419,7 @@
           <td
             title="Изгото влено"
             name="КоличествоИзготовлено"
-            style="width: 9%"
+            style="width: 8%"
           >
             <div class="dataCell textAlignEnd" style="padding: 5px"></div>
           </td>
@@ -471,7 +477,7 @@
               name="Заказ"
               key="Номер"
               class="zakaz"
-              style="width: 7%"
+              style="width: 8%"
             >
               <div class="dataCell textAlignCenter"></div>
             </td>
@@ -479,7 +485,7 @@
               title="Номер детали"
               name="Заказ"
               key="АртикулНаименование"
-              style="width: 34%"
+              style="width: 35%"
             >
               <div class="dataCell"></div>
             </td>
@@ -498,11 +504,11 @@
               key="Наименование"
               class="etapInfo"
               headerClass="etapInfo"
-              style="width: 36%"
+              style="width: 35%"
             >
               <div class="dataCell textAlignStart"></div>
             </td>
-            <td title="Надо" name="МожноДелать" style="width: 7%">
+            <td title="Надо" name="МожноДелать" style="width: 8%">
               <div class="dataCell textAlignEnd"></div>
             </td>
             <td

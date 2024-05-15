@@ -1,45 +1,78 @@
-<style>
-  #commandPanel {
-    display: flex;
-    margin-top: -5px;
-  }
-</style>
+<style></style>
 
 <style>
   #addZakaz {
-    max-width: 300px;
+    max-width: 600px;
+    width: fit-content;
     margin: auto;
-    margin-bottom: 30px;
+    margin-bottom: 1em;
     background-color: aliceblue;
-    padding: 10px;
+    padding: 0.6em;
     border: 1px solid #ddd;
     border-radius: 10px;
+    font-size: 30px;
   }
 
-  #saveNewZakaz {
-    margin-left: auto;
-    margin-right: 20px;
+  .zakazTitle {
+    font-size: 1em;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1em;
+  }
+
+  .input-group {
+    margin-bottom: 0.4em !important;
+  }
+
+  .zakazInput {
+    font-size: 0.8em;
+    height: 2em;
+    padding: 0 10px 0 10px;
+    width: 60%;
+    border-radius: 5px !important;
   }
 
   .labelNewZakaz {
-    width: 150px;
+    width: 250px;
+    font-size: 0.8em;
     margin-top: 10px;
+    width: 40%;
   }
 
   #selectSize {
-    width: 128px;
     background-color: white;
     border: 1px solid #ced4da;
     text-align: right;
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
-    height: 38px;
-    padding-right: 10px;
   }
 
-  option {
+  .buttonContainer {
+    display: flex;
+    justify-content: end;
+    width: 60%;
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .zakazButton {
+    font-size: 0.8em;
+    margin-left: 0.8em;
+  }
+
+  #selectSize option {
     text-align: left;
+    font-size: 1em;
+  }
+
+  @media (max-width: 600px) {
+    #addZakaz {
+      font-size: 18px;
+    }
+
+    .labelNewZakaz {
+      margin: 5px 0 0 0;
+    }
   }
 </style>
 
@@ -49,32 +82,19 @@
 </div>
 
 <div id="addZakaz" style="display: none">
-  <h5 style="margin-bottom: 20px; font-weight: bold; text-align: center">
-    Новый приход корпусов
-  </h5>
+  <div class="zakazTitle">Новый приход корпусов</div>
 
   <div class="input-group mb-2">
     <label for="time" class="labelNewZakaz">Размер:</label>
-    <select id="selectSize">
-      <option selected disabled style="display: none"></option>
-      <option value="152">152</option>
-      <option value="1521">1521 с базой</option>
-      <option value="1522">1522 база и конус</option>
-      <option value="1523">1523 под канавку</option>
-      <option value="1524">1524 под чистовую</option>
-      <option value="12345.2">120</option>
-      <option value="12345-80">80</option>
-      <option value="900">900</option>
-    </select>
+    <select id="selectSize" class="zakazSelect zakazInput"></select>
   </div>
 
   <div class="input-group mb-2">
     <label for="time" class="labelNewZakaz">Количество, шт:</label>
     <input
       type="number"
-      class="form-control inputFixBrak textAlignEnd"
+      class="form-control inputFixBrak textAlignEnd zakazInput"
       inputmode="numeric"
-      style="width: 100px"
       id="count"
       aria-describedby="basic-addon3"
     />
@@ -91,11 +111,15 @@
     />
   </div>
 
-  <div style="display: flex; margin-top: 20px">
-    <button type="button" class="btn btn-success" id="saveNewZakaz">
+  <div class="buttonContainer">
+    <button type="button" class="btn btn-success zakazButton" id="saveNewZakaz">
       Сохранить
     </button>
-    <button type="button" class="btn btn-secondary" id="cancelNewZakaz">
+    <button
+      type="button"
+      class="btn btn-secondary zakazButton"
+      id="cancelNewZakaz"
+    >
       Отмена
     </button>
   </div>
@@ -143,6 +167,31 @@
 <script>
   $(document).ready(function () {
     let tableID = "#аЗаказНаПроизводство";
+
+    const listArticules = [
+      { name: "152", articul: "152" },
+      { name: "1521 с базой", articul: "1521" },
+      { name: "1522 база и конус", articul: "1522" },
+      { name: "1523 под канавку", articul: "1523" },
+      { name: "1524 под чистовую", articul: "1524" },
+      { name: "120", articul: "12345.2" },
+      { name: "80", articul: "12345-80" },
+      { name: "900", articul: "900" },
+    ];
+
+    if ($("#selectSize").length) {
+      listArticules.forEach(function (item) {
+        const option = $("<option>", {
+          value: item.articul,
+          text: item.name,
+        });
+        $("#selectSize").append(option);
+      });
+    }
+
+    const articules = listArticules.map((item) => item.articul).join(",");
+    console.log("articules from 12345", articules);
+    $("#аЗаказНаПроизводство").data("param", articules);
 
     initTables();
 
@@ -210,7 +259,7 @@
             const data = { detal:'12345.2', count: userNumber};
 
             $.ajax({url: '/app/createZakaz', method: 'POST', contentType: 'application/json',
-                data: JSON.stringify(data), 
+                data: JSON.stringify(data),
                 success: function(data, status) { console.log('logToServer', status, data); }
             }).always(function() {
                 NProgress.done();

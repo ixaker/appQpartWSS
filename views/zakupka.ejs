@@ -9,11 +9,6 @@
     text-overflow: ellipsis;
   }
 
-  #commandPanel {
-    display: flex;
-    margin-top: -5px;
-  }
-
   /* #addNew {
     margin-left: auto;
     font-size: xxx-large;
@@ -22,13 +17,6 @@
   } */
 
   #formNew {
-    max-width: 400px;
-    margin: auto;
-    margin-bottom: 30px;
-    background-color: aliceblue;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
   }
 
   #saveNew {
@@ -104,8 +92,11 @@
   <i class="bi bi-plus-circle btnAdd" id="addNew"></i>
 </div>
 
-<div id="formNew" style="display: none">
-  <h5 style="margin-bottom: 20px; font-weight: bold; text-align: center">
+<div id="formNew" class="formContainer" style="display: none">
+  <h5
+    class="formTitle"
+    style="margin-bottom: 20px; font-weight: bold; text-align: center"
+  >
     Новая заявка на закупку
   </h5>
 

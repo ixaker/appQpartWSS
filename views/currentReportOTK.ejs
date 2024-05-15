@@ -67,6 +67,9 @@
   header
 >
   <tr class="config" style="display: none">
+    <td title="ДатаДляСортировки" name="ДатаОтчета" style="display: none">
+      <div class="dataCell"></div>
+    </td>
     <td title="Дата" name="ДатаОтчета" style="width: 5%">
       <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
     </td>
@@ -147,13 +150,14 @@
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForOTK = function (data, result = true) {
       try {
-        //console.log('filter', data);
+        console.log("filter", data);
         if (
           !data["Проведен"] ||
           data["СтатусОТК"] ||
           !data["Заказ"]["Активен"] ||
           !data["ЭтапПроизводства"]["ОТК"]
         ) {
+          cosole.log("filter result false");
           result = false;
         }
       } catch (error) {
@@ -185,7 +189,7 @@
       const row = $(this).closest("tr");
       const data = $(row).data("data");
 
-      $(row).find(".btnOk").hide();
+      // $(row).find(".btnOk").hide();
       $(row).find(".btnEdit").show();
       $(row).find("input").prop("disabled", true);
 
