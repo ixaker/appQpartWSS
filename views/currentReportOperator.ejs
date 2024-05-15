@@ -228,7 +228,6 @@
   addNevRow="callbackAddNewRow"
   callbackAfterWrite="callbackAfterWrite"
   append="up"
-  style="display: none"
   init
   header
 >
@@ -385,23 +384,23 @@
     callbackBeforeDone = function (data) {
       console.log("callbackBeforeDone user.isAdmin", user, data);
       startTimeWork = new Date(data.startTimeWork);
-
+      q;
       if (user.isAdmin === true) {
         data.startTimeWork = "1   ";
       }
-      if (data.startTimeWork == "0001-01-01T00:00:00") {
-        $(".titlePage").text("Смена еще не начата");
-        $("#btnAdd").hide();
-        $(tableID).hide();
-      } else {
-        startTimeWork = new Date(data.startTimeWork);
+      // if (data.startTimeWork == "0001-01-01T00:00:00") {
+      //   $(".titlePage").text("Смена еще не начата");
+      //   $("#btnAdd").hide();
+      //   $(tableID).hide();
+      // } else {
+      startTimeWork = new Date(data.startTimeWork);
 
-        $(".titlePage").text(
-          "Список работ за текущую смену с " + startTimeWork.toLocaleString()
-        );
-        $("#btnAdd").show();
-        $(tableID).show();
-      }
+      $(".titlePage").text(
+        "Список работ за текущую смену с " + startTimeWork.toLocaleString()
+      );
+      $("#btnAdd").show();
+      $(tableID).show();
+      // }
     };
 
     // callback после отрисовки таблицы
