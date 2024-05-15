@@ -383,7 +383,9 @@
 
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {
-      console.log("callbackBeforeDone user.isAdmin", user);
+      console.log("callbackBeforeDone user.isAdmin", user, data);
+      startTimeWork = new Date(data.startTimeWork);
+
       if (user.isAdmin === true) {
         data.startTimeWork = "1   ";
       }
@@ -393,6 +395,7 @@
         $(tableID).hide();
       } else {
         startTimeWork = new Date(data.startTimeWork);
+
         $(".titlePage").text(
           "Список работ за текущую смену с " + startTimeWork.toLocaleString()
         );

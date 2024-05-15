@@ -1,0 +1,188 @@
+<style>
+  #newReportForm {
+    padding: 20px;
+  }
+
+  #groupNewReport {
+    width: 430px;
+    margin: auto;
+    background-color: aliceblue;
+    padding: 15px;
+    border-radius: 10px;
+    /* border: 1px solid #d7e7f5; */
+  }
+
+  .labelNewReport {
+    margin-left: 10px;
+    margin-top: 3px;
+    width: 180px;
+    font-size: 1em;
+  }
+
+  @media (max-width: 600px) {
+    #groupNewReport {
+      width: 320px;
+    }
+  }
+
+  #workInProviderInput {
+    height: 25px;
+    margin-top: 7px;
+  }
+</style>
+
+<div id="newReportForm">
+  <div id="groupNewReport">
+    <h5 style="margin-bottom: 20px; font-weight: bold; text-align: center">
+      Создание отчета
+    </h5>
+
+    <div class="input-group mb-2" id="workInProvider">
+      <label for="date" class="labelNewReport">Сделано у подрядчика :</label>
+      <input
+        class=""
+        type="checkbox"
+        style="width: 200px"
+        value=""
+        id="workInProviderInput"
+      />
+    </div>
+
+    <div class="input-group mb-2" id="groupInputProvider" style="display: none">
+      <label for="provider" class="labelNewReport">Подрядчик :</label>
+      <input
+        type="text"
+        class="form-control inputFixBrak"
+        id="provider"
+        url="/app/autocompleteProvider"
+        style="width: 200px"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2" id="groupInputSotrudnik">
+      <label for="sotrudnik" class="labelNewReport">Сотрудник :</label>
+      <input
+        type="text"
+        class="form-control inputFixBrak"
+        id="sotrudnik"
+        url="/app/autocompleteSotrydnik"
+        style="width: 200px"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2">
+      <label for="date" class="labelNewReport">Дата :</label>
+      <input
+        type="date"
+        class="form-control inputFixBrak"
+        style="width: 200px"
+        id="date"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2" id="workTimePeriod">
+      <label for="time" class="labelNewReport" style="width: 150px"
+        >Время работы</label
+      >
+      <label
+        for="time"
+        class="labelNewReport textAlignEnd"
+        style="width: 20px; padding-right: 3px"
+        >с:</label
+      >
+      <input
+        type="text"
+        class="form-control inputFixBrak textAlignCenter"
+        inputmode="numeric"
+        limitHourse="23"
+        data-mask="B9:A9"
+        style="width: 80px"
+        id="timeStart"
+        placeholder="чч:мм"
+        aria-describedby="basic-addon3"
+      />
+      <label for="time" class="labelNewReport textAlignEnd" style="width: 30px"
+        >по:</label
+      >
+      <input
+        type="text"
+        class="form-control inputFixBrak textAlignCenter"
+        inputmode="numeric"
+        limitHourse="23"
+        data-mask="B9:A9"
+        style="width: 80px"
+        id="timeStop"
+        placeholder="чч:мм"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2">
+      <label for="time" class="labelNewReport" style="width: 280px"
+        >Количество изготовлено, шт:</label
+      >
+      <input
+        type="number"
+        class="form-control inputFixBrak textAlignEnd"
+        inputmode="numeric"
+        style="width: 100px"
+        id="count"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2 termoobrabotkaProvider">
+      <label for="time" class="labelNewReport" style="width: 280px"
+        >Вес одной детали, кг:</label
+      >
+      <input
+        type="number"
+        class="form-control inputFixBrak textAlignEnd"
+        inputmode="numeric"
+        style="width: 100px"
+        id="weight"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2 termoobrabotkaProvider">
+      <label for="time" class="labelNewReport" style="width: 280px"
+        >Цена обработки 1кг, грн:</label
+      >
+      <input
+        type="number"
+        class="form-control inputFixBrak textAlignEnd"
+        inputmode="numeric"
+        style="width: 100px"
+        id="price"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group mb-2 obrabotkaProviderPrice">
+      <label for="time" class="labelNewReport" style="width: 280px"
+        >Цена обработки 1шт, грн:</label
+      >
+      <input
+        type="number"
+        class="form-control inputFixBrak textAlignEnd"
+        inputmode="numeric"
+        style="width: 100px"
+        id="priceForOne"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div style="display: flex; margin-top: 20px">
+      <button type="button" class="btn btn-success" id="saveNewReport">
+        Сохранить
+      </button>
+      <button type="button" class="btn btn-secondary" id="cancelNewReport">
+        Отмена
+      </button>
+    </div>
+  </div>
+</div>

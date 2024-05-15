@@ -7,6 +7,12 @@
     padding: 0 5px;
   }
 
+  @media (max-width: 600px) {
+    td {
+      padding: 0 3px;
+    }
+  }
+
   #listWork .dataCell,
   #listWork th {
     /* height: 5vw; */
@@ -50,6 +56,7 @@
   .labelNewReport {
     margin-left: 10px;
     margin-top: 3px;
+    width: 180px;
   }
 
   #groupNewReport {
@@ -59,6 +66,12 @@
     padding: 15px;
     border-radius: 10px;
     /* border: 1px solid #d7e7f5; */
+  }
+
+  @media (max-width: 600px) {
+    #groupNewReport {
+      width: 320px;
+    }
   }
 
   #saveNewReport {
@@ -376,7 +389,7 @@
         header
       >
         <tr class="config" style="display: none">
-          <td title="Дата" name="ДатаОтчета" style="width: 7%">
+          <td title="Дата" name="ДатаОтчета" style="width: 8%">
             <div
               class="dataCell textAlignCenter"
               mask="DD.MM"
@@ -387,11 +400,11 @@
             title="Номер детали"
             name="Заказ"
             key="АртикулНаименование"
-            style="width: 35%"
+            style="width: 34%"
           >
             <div class="dataCell"></div>
           </td>
-          <td title="МЛ" name="Заказ" key="Номер" style="width: 6%">
+          <td title="МЛ" name="Заказ" key="Номер" style="width: 7%">
             <div class="dataCell textAlignCenter"></div>
           </td>
           <td
@@ -413,7 +426,7 @@
           <td
             title="Изгото влено"
             name="КоличествоИзготовлено"
-            style="width: 9%"
+            style="width: 8%"
           >
             <div class="dataCell textAlignEnd" style="padding: 5px"></div>
           </td>
@@ -471,7 +484,7 @@
               name="Заказ"
               key="Номер"
               class="zakaz"
-              style="width: 7%"
+              style="width: 8%"
             >
               <div class="dataCell textAlignCenter"></div>
             </td>
@@ -479,7 +492,7 @@
               title="Номер детали"
               name="Заказ"
               key="АртикулНаименование"
-              style="width: 34%"
+              style="width: 35%"
             >
               <div class="dataCell"></div>
             </td>
@@ -498,11 +511,11 @@
               key="Наименование"
               class="etapInfo"
               headerClass="etapInfo"
-              style="width: 36%"
+              style="width: 33%"
             >
               <div class="dataCell textAlignStart"></div>
             </td>
-            <td title="Надо" name="МожноДелать" style="width: 7%">
+            <td title="Надо" name="МожноДелать" style="width: 8%">
               <div class="dataCell textAlignEnd"></div>
             </td>
             <td
@@ -512,7 +525,7 @@
             >
               <div class="dataCell textAlignEnd"></div>
             </td>
-            <td title="" style="width: 7%">
+            <td title="" style="width: 9%">
               <div class="groupBtnRow">
                 <i
                   class="bi bi-play-circle btnPlay btnRow colorGreen"
@@ -537,10 +550,7 @@
                   </h5>
 
                   <div class="input-group mb-2" id="workInProvider">
-                    <label
-                      for="date"
-                      class="labelNewReport"
-                      style="width: 180px"
+                    <label for="date" class="labelNewReport"
                       >Сделано у подрядчика :</label
                     >
                     <input
@@ -557,10 +567,7 @@
                     id="groupInputProvider"
                     style="display: none"
                   >
-                    <label
-                      for="provider"
-                      class="labelNewReport"
-                      style="width: 180px"
+                    <label for="provider" class="labelNewReport"
                       >Подрядчик :</label
                     >
                     <input
@@ -574,10 +581,7 @@
                   </div>
 
                   <div class="input-group mb-2" id="groupInputSotrudnik">
-                    <label
-                      for="sotrudnik"
-                      class="labelNewReport"
-                      style="width: 180px"
+                    <label for="sotrudnik" class="labelNewReport"
                       >Сотрудник :</label
                     >
                     <input
