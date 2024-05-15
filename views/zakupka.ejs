@@ -16,12 +16,43 @@
     margin-right: 10px;
   } */
 
+  /* #formNew {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  } */
   #formNew {
+    width: 80%;
+    font-size: 30px;
   }
 
   #saveNew {
     margin-left: auto;
-    margin-right: 20px;
+    margin-right: 0.6em;
+  }
+
+  .buttonContainer {
+    display: flex;
+    margin-top: 0.5em;
+    justify-content: space-between;
+  }
+
+  .rightButtons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 600px) {
+    #formNew {
+      font-size: 18px;
+      width: 90%;
+    }
+
+    #saveNew {
+      margin-right: 3%;
+    }
   }
 
   .hide {
@@ -93,12 +124,7 @@
 </div>
 
 <div id="formNew" class="formContainer" style="display: none">
-  <h5
-    class="formTitle"
-    style="margin-bottom: 20px; font-weight: bold; text-align: center"
-  >
-    Новая заявка на закупку
-  </h5>
+  <h5 class="formTitle">Новая заявка на закупку</h5>
 
   <textarea
     id="textNew"
@@ -106,16 +132,18 @@
     placeholder="Напишите что и сколько нужно..."
   ></textarea>
 
-  <div style="display: flex; margin-top: 20px">
-    <button type="button" class="btn btn-secondary" id="setPriority">
+  <div class="buttonContainer">
+    <button type="button" class="btn btn-secondary formButton" id="setPriority">
       Срочно
     </button>
-    <button type="button" class="btn btn-success" id="saveNew">
-      Сохранить
-    </button>
-    <button type="button" class="btn btn-secondary" id="cancelNew">
-      Отмена
-    </button>
+    <div class="rightButtons">
+      <button type="button" class="btn btn-success formButton" id="saveNew">
+        Сохранить
+      </button>
+      <button type="button" class="btn btn-secondary formButton" id="cancelNew">
+        Отмена
+      </button>
+    </div>
   </div>
 </div>
 
@@ -329,6 +357,7 @@
       setTimeout(() => {
         $("#textNew").focus();
       }, 500);
+      window.scrollBy(0, 80);
     });
 
     $("#saveNew").on("click", function (event) {

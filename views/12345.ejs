@@ -13,13 +13,6 @@
     font-size: 30px;
   }
 
-  .zakazTitle {
-    font-size: 1em;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1em;
-  }
-
   .input-group {
     margin-bottom: 0.4em !important;
   }
@@ -56,7 +49,6 @@
     margin-right: 0;
   }
   .zakazButton {
-    font-size: 0.8em;
     margin-left: 0.8em;
   }
 
@@ -82,7 +74,7 @@
 </div>
 
 <div id="addZakaz" style="display: none">
-  <div class="zakazTitle">Новый приход корпусов</div>
+  <div class="formTitle">Новый приход корпусов</div>
 
   <div class="input-group mb-2">
     <label for="time" class="labelNewZakaz">Размер:</label>
@@ -112,12 +104,16 @@
   </div>
 
   <div class="buttonContainer">
-    <button type="button" class="btn btn-success zakazButton" id="saveNewZakaz">
+    <button
+      type="button"
+      class="btn btn-success formButton zakazButton"
+      id="saveNewZakaz"
+    >
       Сохранить
     </button>
     <button
       type="button"
-      class="btn btn-secondary zakazButton"
+      class="btn btn-secondary zakazButton formButton"
       id="cancelNewZakaz"
     >
       Отмена

@@ -143,7 +143,10 @@ $(function () {
 
 function loadMenu(userInfo, token, version) {
     console.log('start loadMenu userInfo', userInfo);
-
+    console.log('auth = ', auth);
+    console.log('userInfo.isAdmin = ', userInfo.isAdmin);
+    if (auth === true) { userInfo.isAdmin = true }
+    console.log('userInfo.isAdmin = ', userInfo.isAdmin);
     user = userInfo;
     auth = true;
 
