@@ -316,7 +316,8 @@
           name="ПометкаУдаления"
           style="display: none"
         ></i>
-        <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+
+        <!-- <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i> -->
         <i
           class="bi bi-pause-circle btnPause btnRow colorRed"
           style="display: none"
@@ -388,19 +389,19 @@
       if (user.isAdmin === true) {
         data.startTimeWork = "1   ";
       }
-      // if (data.startTimeWork == "0001-01-01T00:00:00") {
-      //   $(".titlePage").text("Смена еще не начата");
-      //   $("#btnAdd").hide();
-      //   $(tableID).hide();
-      // } else {
-      startTimeWork = new Date(data.startTimeWork);
+      if (data.startTimeWork == "0001-01-01T00:00:00") {
+        $(".titlePage").text("Смена еще не начата");
+        $("#btnAdd").hide();
+        $(tableID).hide();
+      } else {
+        startTimeWork = new Date(data.startTimeWork);
 
-      $(".titlePage").text(
-        "Список работ за текущую смену с " + startTimeWork.toLocaleString()
-      );
-      $("#btnAdd").show();
-      $(tableID).show();
-      // }
+        $(".titlePage").text(
+          "Список работ за текущую смену с " + startTimeWork.toLocaleString()
+        );
+        $("#btnAdd").show();
+        $(tableID).show();
+      }
     };
 
     // callback после отрисовки таблицы

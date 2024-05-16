@@ -7,10 +7,16 @@
     padding: 0 5px;
   }
 
+  @media (max-width: 600px) {
+    td {
+      padding: 0 3px;
+    }
+  }
+
   #listWork .dataCell,
   #listWork th {
     /* height: 5vw; */
-    min-height: 50px;
+    min-height: 30px;
     max-height: 70px;
     font-size: 1.2em;
     align-content: center;
@@ -53,11 +59,12 @@
   }
 
   #groupNewReport {
-    width: 430px;
+    width: 500px;
     margin: auto;
     background-color: aliceblue;
     padding: 15px;
     border-radius: 10px;
+    font-size: 0.9em;
     /* border: 1px solid #d7e7f5; */
   }
 
@@ -75,7 +82,8 @@
   }
 
   .divAddingInfo {
-    font-size: 0.8em;
+    font-size: 0.8em !important;
+    line-height: 1.2em;
     white-space: pre;
   }
 
@@ -471,7 +479,7 @@
               name="Заказ"
               key="Номер"
               class="zakaz"
-              style="width: 7%"
+              style="width: 8%"
             >
               <div class="dataCell textAlignCenter"></div>
             </td>
@@ -479,7 +487,7 @@
               title="Номер детали"
               name="Заказ"
               key="АртикулНаименование"
-              style="width: 34%"
+              style="width: 44%"
             >
               <div class="dataCell"></div>
             </td>
@@ -488,7 +496,7 @@
               name="ДопИнфо"
               class="addingInfo"
               headerClass="addingInfo"
-              style="width: 36%"
+              style="width: 25%"
             >
               <div class="dataCell divAddingInfo"></div>
             </td>
@@ -498,7 +506,7 @@
               key="Наименование"
               class="etapInfo"
               headerClass="etapInfo"
-              style="width: 36%"
+              style="width: 25%"
             >
               <div class="dataCell textAlignStart"></div>
             </td>

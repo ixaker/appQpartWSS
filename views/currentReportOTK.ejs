@@ -77,7 +77,7 @@
       title="Номер детали"
       name="Заказ"
       key="АртикулНаименование"
-      style="width: 31%"
+      style="width: 28%"
     >
       <div class="dataCell"></div>
     </td>
@@ -125,7 +125,7 @@
         class="dataCell checkboxInTable"
       />
     </td>
-    <td title="" style="width: 7%">
+    <td title="" style="width: 10%">
       <div class="groupBtnRow">
         <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
         <i
@@ -157,7 +157,7 @@
           !data["Заказ"]["Активен"] ||
           !data["ЭтапПроизводства"]["ОТК"]
         ) {
-          cosole.log("filter result false");
+          console.log("filter result false");
           result = false;
         }
       } catch (error) {
@@ -189,7 +189,7 @@
       const row = $(this).closest("tr");
       const data = $(row).data("data");
 
-      // $(row).find(".btnOk").hide();
+      $(row).find(".btnOk").hide();
       $(row).find(".btnEdit").show();
       $(row).find("input").prop("disabled", true);
 

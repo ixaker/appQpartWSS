@@ -125,9 +125,18 @@
         });
       }
 
+      console.log("token from index.ejs", token);
       if (token !== "") {
         $.cookie("token", token);
       }
+
+      function listenResize() {
+        window.addEventListener("resize", function () {
+          makeNavbarTextMove();
+        });
+      }
+
+      listenResize();
     </script>
   </body>
 </html>
