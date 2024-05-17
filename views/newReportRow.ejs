@@ -9,43 +9,97 @@
     background-color: aliceblue;
     padding: 15px;
     border-radius: 10px;
-    /* border: 1px solid #d7e7f5; */
+    font-size: 0.9em;
+    line-height: 1.8em;
   }
 
-  .labelNewReport {
-    margin-left: 10px;
-    margin-top: 3px;
-    width: 180px;
-    font-size: 1em;
+  #groupNewReport h5 {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
   }
 
   @media (max-width: 600px) {
     #groupNewReport {
-      width: 320px;
+      width: 100%;
+      font-size: 1.6em;
+      line-height: 3em;
+    }
+
+    .input-group input {
+      height: 3em;
+    }
+
+    #workTimePeriod input {
+      padding: 2px;
     }
   }
 
-  #workInProviderInput {
-    height: 25px;
-    margin-top: 7px;
+  .input-group {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .input-group label {
+  }
+
+  .input-group input {
+    width: 65% !important;
+  }
+
+  #workInProvider {
+    justify-content: start;
+  }
+
+  #workInProvider label {
+  }
+
+  #workInProvider input {
+    width: 10% !important;
+    margin-left: 10px;
+  }
+
+  #groupInputProvider {
+  }
+
+  #groupInputSotrudnik input {
+  }
+
+  #groupInputData input {
+  }
+
+  label.shortTerm {
+    width: 6%;
+    margin-right: 5px;
+  }
+
+  #workTimePeriod label {
+  }
+
+  #workTimePeriod input {
+    width: 18% !important;
+  }
+
+  #groupIntputQuantity input {
+    width: 20% !important;
+  }
+
+  .termoobrabotkaProvider {
+  }
+
+  .obrabotkaProviderPrice input {
+    width: 30% !important;
   }
 </style>
 
 <div id="newReportForm">
   <div id="groupNewReport">
-    <h5 style="margin-bottom: 20px; font-weight: bold; text-align: center">
-      Создание отчета
-    </h5>
+    <h5>Создание отчета</h5>
 
     <div class="input-group mb-2" id="workInProvider">
       <label for="date" class="labelNewReport">Сделано у подрядчика :</label>
-      <input
-        class=""
-        type="checkbox"
-        style="width: 200px"
-        value=""
-        id="workInProviderInput"
-      />
+      <input class="" type="checkbox" value="" id="workInProviderInput" />
     </div>
 
     <div class="input-group mb-2" id="groupInputProvider" style="display: none">
@@ -55,7 +109,6 @@
         class="form-control inputFixBrak"
         id="provider"
         url="/app/autocompleteProvider"
-        style="width: 200px"
         aria-describedby="basic-addon3"
       />
     </div>
@@ -67,44 +120,34 @@
         class="form-control inputFixBrak"
         id="sotrudnik"
         url="/app/autocompleteSotrydnik"
-        style="width: 200px"
         aria-describedby="basic-addon3"
       />
     </div>
 
-    <div class="input-group mb-2">
+    <div class="input-group mb-2" id="groupInputData">
       <label for="date" class="labelNewReport">Дата :</label>
       <input
         type="date"
         class="form-control inputFixBrak"
-        style="width: 200px"
         id="date"
         aria-describedby="basic-addon3"
       />
     </div>
 
     <div class="input-group mb-2" id="workTimePeriod">
-      <label for="time" class="labelNewReport" style="width: 150px"
-        >Время работы</label
-      >
-      <label
-        for="time"
-        class="labelNewReport textAlignEnd"
-        style="width: 20px; padding-right: 3px"
-        >с:</label
-      >
+      <label for="time" class="labelNewReport">Время работы</label>
+      <label for="time" class="labelNewReport textAlignEnd shortTerm">с:</label>
       <input
         type="text"
         class="form-control inputFixBrak textAlignCenter"
         inputmode="numeric"
         limitHourse="23"
         data-mask="B9:A9"
-        style="width: 80px"
         id="timeStart"
         placeholder="чч:мм"
         aria-describedby="basic-addon3"
       />
-      <label for="time" class="labelNewReport textAlignEnd" style="width: 30px"
+      <label for="time" class="labelNewReport textAlignEnd shortTerm"
         >по:</label
       >
       <input
@@ -113,28 +156,26 @@
         inputmode="numeric"
         limitHourse="23"
         data-mask="B9:A9"
-        style="width: 80px"
         id="timeStop"
         placeholder="чч:мм"
         aria-describedby="basic-addon3"
       />
     </div>
 
-    <div class="input-group mb-2">
-      <label for="time" class="labelNewReport" style="width: 280px"
+    <div class="input-group mb-2" id="groupIntputQuantity">
+      <label for="time" class="labelNewReport"
         >Количество изготовлено, шт:</label
       >
       <input
         type="number"
         class="form-control inputFixBrak textAlignEnd"
         inputmode="numeric"
-        style="width: 100px"
         id="count"
         aria-describedby="basic-addon3"
       />
     </div>
 
-    <div class="input-group mb-2 termoobrabotkaProvider">
+    <div class="input-group mb-2 termoobrabotkaProvider termoobrabotka">
       <label for="time" class="labelNewReport" style="width: 280px"
         >Вес одной детали, кг:</label
       >
@@ -142,13 +183,12 @@
         type="number"
         class="form-control inputFixBrak textAlignEnd"
         inputmode="numeric"
-        style="width: 100px"
         id="weight"
         aria-describedby="basic-addon3"
       />
     </div>
 
-    <div class="input-group mb-2 termoobrabotkaProvider">
+    <div class="input-group mb-2 termoobrabotkaProvider termoobrabotka">
       <label for="time" class="labelNewReport" style="width: 280px"
         >Цена обработки 1кг, грн:</label
       >
@@ -156,21 +196,17 @@
         type="number"
         class="form-control inputFixBrak textAlignEnd"
         inputmode="numeric"
-        style="width: 100px"
         id="price"
         aria-describedby="basic-addon3"
       />
     </div>
 
-    <div class="input-group mb-2 obrabotkaProviderPrice">
-      <label for="time" class="labelNewReport" style="width: 280px"
-        >Цена обработки 1шт, грн:</label
-      >
+    <div class="input-group mb-2 obrabotkaProviderPrice termoobrabotka">
+      <label for="time" class="labelNewReport">Цена обработки 1шт, грн:</label>
       <input
         type="number"
         class="form-control inputFixBrak textAlignEnd"
         inputmode="numeric"
-        style="width: 100px"
         id="priceForOne"
         aria-describedby="basic-addon3"
       />
