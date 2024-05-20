@@ -48,17 +48,9 @@
     background-color: rgb(238, 252, 199); /* Наследуется цвет фона родителя */
   }
 
-  #newReportRow input {
-    flex: inherit;
-  }
-
   #saveNewReport {
     margin-right: 15px;
     margin-left: auto;
-  }
-
-  #newReportForm {
-    padding: 10px;
   }
 
   #time {
@@ -466,7 +458,7 @@
               title="Номер детали"
               name="Заказ"
               key="АртикулНаименование"
-              style="width: 44%"
+              style="width: 43%"
             >
               <div class="dataCell"></div>
             </td>
@@ -489,7 +481,7 @@
             >
               <div class="dataCell textAlignStart"></div>
             </td>
-            <td title="Надо" name="МожноДелать" style="width: 7%">
+            <td title="Надо" name="МожноДелать" style="width: 8%">
               <div class="dataCell textAlignEnd"></div>
             </td>
             <td
@@ -882,6 +874,8 @@
         $("#newReportRow").attr("report", rowID);
         $("#newReportRow").insertAfter(row);
         $("#newReportRow").show(100);
+
+        $("#sotrudnik").focus();
       }
     });
 
@@ -940,6 +934,7 @@
 
         if (etapID === "22001") {
           const inputCountValue = parseInt($(count).val());
+          console.log("inputCountValue", inputCountValue);
 
           if (inputCountValue > 0) {
           } else {

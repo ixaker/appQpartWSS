@@ -1,15 +1,14 @@
 <style>
   #newReportForm {
-    padding: 20px;
+    padding: 10px;
   }
 
   #groupNewReport {
-    width: 430px;
+    width: 600px;
+    font-size: 25px;
     margin: auto;
     background-color: aliceblue;
-    padding: 15px;
     border-radius: 10px;
-    font-size: 0.9em;
     line-height: 1.8em;
   }
 
@@ -23,10 +22,14 @@
   @media (max-width: 600px) {
     #groupNewReport {
       width: 100%;
-      font-size: 1.6em;
+      font-size: 5vw;
       line-height: 3em;
     }
 
+    .input-group {
+      margin-bottom: 0.3em;
+      gap: 5px;
+    }
     .input-group input {
       height: 3em;
     }
@@ -39,57 +42,113 @@
   .input-group {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-bottom: 0.7em;
   }
 
-  .input-group label {
+  #groupNewReport label {
+    font-size: 1em;
+    margin-bottom: 0;
   }
 
-  .input-group input {
-    width: 65% !important;
+  #groupNewReport input {
+    flex-grow: 0;
+    height: 2.5em;
+    font-size: 1em;
+    border-radius: 0.25rem;
   }
 
   #workInProvider {
     justify-content: start;
   }
 
-  #workInProvider label {
-  }
-
   #workInProvider input {
-    width: 10% !important;
-    margin-left: 10px;
+    width: 1.5em;
+    height: 1.5em;
+    flex-grow: initial;
   }
 
-  #groupInputProvider {
+  #groupInputProvider label,
+  #groupInputSotrudnik label,
+  #groupInputData label,
+  #workTimePeriod label,
+  #buttonsGroup label {
+    width: 32%;
+  }
+
+  #groupIntputQuantity label,
+  .termoobrabotka label {
+    width: 70%;
+  }
+
+  @media (max-width: 600px) {
+    #groupInputProvider label,
+    #groupInputSotrudnik label,
+    #groupInputData label,
+    #workTimePeriod label,
+    #buttonsGroup label {
+      width: 42%;
+    }
+
+    #groupIntputQuantity label,
+    .termoobrabotka label {
+      width: 75%;
+    }
+  }
+
+  #groupInputProvider input {
+    flex-grow: 1;
   }
 
   #groupInputSotrudnik input {
+    flex-grow: 1;
+  }
+
+  #groupInputData {
+    justify-content: flex-start;
   }
 
   #groupInputData input {
+    width: 8em;
+    flex-grow: 1;
+    text-align: center;
   }
 
-  label.shortTerm {
-    width: 6%;
+  .shortTerm {
+    width: 2em;
     margin-right: 5px;
+  }
+
+  #workTimePeriod div {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  #workTimePeriod {
+    justify-content: flex-start;
   }
 
   #workTimePeriod label {
   }
 
   #workTimePeriod input {
-    width: 18% !important;
+    flex-grow: 1 !important;
   }
 
   #groupIntputQuantity input {
-    width: 20% !important;
-  }
-
-  .termoobrabotkaProvider {
+    flex-grow: 1;
   }
 
   .obrabotkaProviderPrice input {
-    width: 30% !important;
+    flex-grow: 1 !important;
+  }
+
+  .newReportButton {
+    font-size: 1em;
+    width: 7em;
   }
 </style>
 
@@ -97,12 +156,12 @@
   <div id="groupNewReport">
     <h5>Создание отчета</h5>
 
-    <div class="input-group mb-2" id="workInProvider">
+    <div class="input-group" id="workInProvider">
       <label for="date" class="labelNewReport">Сделано у подрядчика :</label>
       <input class="" type="checkbox" value="" id="workInProviderInput" />
     </div>
 
-    <div class="input-group mb-2" id="groupInputProvider" style="display: none">
+    <div class="input-group" id="groupInputProvider" style="display: none">
       <label for="provider" class="labelNewReport">Подрядчик :</label>
       <input
         type="text"
@@ -113,7 +172,7 @@
       />
     </div>
 
-    <div class="input-group mb-2" id="groupInputSotrudnik">
+    <div class="input-group" id="groupInputSotrudnik">
       <label for="sotrudnik" class="labelNewReport">Сотрудник :</label>
       <input
         type="text"
@@ -124,7 +183,7 @@
       />
     </div>
 
-    <div class="input-group mb-2" id="groupInputData">
+    <div class="input-group" id="groupInputData">
       <label for="date" class="labelNewReport">Дата :</label>
       <input
         type="date"
@@ -134,35 +193,37 @@
       />
     </div>
 
-    <div class="input-group mb-2" id="workTimePeriod">
-      <label for="time" class="labelNewReport">Время работы</label>
-      <label for="time" class="labelNewReport textAlignEnd shortTerm">с:</label>
-      <input
-        type="text"
-        class="form-control inputFixBrak textAlignCenter"
-        inputmode="numeric"
-        limitHourse="23"
-        data-mask="B9:A9"
-        id="timeStart"
-        placeholder="чч:мм"
-        aria-describedby="basic-addon3"
-      />
-      <label for="time" class="labelNewReport textAlignEnd shortTerm"
-        >по:</label
-      >
-      <input
-        type="text"
-        class="form-control inputFixBrak textAlignCenter"
-        inputmode="numeric"
-        limitHourse="23"
-        data-mask="B9:A9"
-        id="timeStop"
-        placeholder="чч:мм"
-        aria-describedby="basic-addon3"
-      />
+    <div class="input-group" id="workTimePeriod">
+      <label for="time" class="labelNewReport">Время работы с:</label>
+      <!-- <label for="time" class="labelNewReport textAlignEnd shortTerm">с:</label> -->
+      <div>
+        <input
+          type="text"
+          class="form-control inputFixBrak textAlignCenter"
+          inputmode="numeric"
+          limitHourse="23"
+          data-mask="B9:A9"
+          id="timeStart"
+          placeholder="чч:мм"
+          aria-describedby="basic-addon3"
+        />
+        <label for="time" class="labelNewReport textAlignEnd shortTerm"
+          >по:</label
+        >
+        <input
+          type="text"
+          class="form-control inputFixBrak textAlignCenter"
+          inputmode="numeric"
+          limitHourse="23"
+          data-mask="B9:A9"
+          id="timeStop"
+          placeholder="чч:мм"
+          aria-describedby="basic-addon3"
+        />
+      </div>
     </div>
 
-    <div class="input-group mb-2" id="groupIntputQuantity">
+    <div class="input-group" id="groupIntputQuantity">
       <label for="time" class="labelNewReport"
         >Количество изготовлено, шт:</label
       >
@@ -175,10 +236,8 @@
       />
     </div>
 
-    <div class="input-group mb-2 termoobrabotkaProvider termoobrabotka">
-      <label for="time" class="labelNewReport" style="width: 280px"
-        >Вес одной детали, кг:</label
-      >
+    <div class="input-group termoobrabotkaProvider termoobrabotka">
+      <label for="time" class="labelNewReport">Вес одной детали, кг:</label>
       <input
         type="number"
         class="form-control inputFixBrak textAlignEnd"
@@ -188,10 +247,8 @@
       />
     </div>
 
-    <div class="input-group mb-2 termoobrabotkaProvider termoobrabotka">
-      <label for="time" class="labelNewReport" style="width: 280px"
-        >Цена обработки 1кг, грн:</label
-      >
+    <div class="input-group termoobrabotkaProvider termoobrabotka">
+      <label for="time" class="labelNewReport">Цена обработки 1кг, грн:</label>
       <input
         type="number"
         class="form-control inputFixBrak textAlignEnd"
@@ -201,7 +258,7 @@
       />
     </div>
 
-    <div class="input-group mb-2 obrabotkaProviderPrice termoobrabotka">
+    <div class="input-group obrabotkaProviderPrice termoobrabotka">
       <label for="time" class="labelNewReport">Цена обработки 1шт, грн:</label>
       <input
         type="number"
@@ -212,11 +269,20 @@
       />
     </div>
 
-    <div style="display: flex; margin-top: 20px">
-      <button type="button" class="btn btn-success" id="saveNewReport">
+    <div class="input-group" id="buttonsGroup">
+      <label></label>
+      <button
+        type="button"
+        class="btn btn-success newReportButton"
+        id="saveNewReport"
+      >
         Сохранить
       </button>
-      <button type="button" class="btn btn-secondary" id="cancelNewReport">
+      <button
+        type="button"
+        class="btn btn-secondary newReportButton"
+        id="cancelNewReport"
+      >
         Отмена
       </button>
     </div>
