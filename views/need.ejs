@@ -649,6 +649,13 @@
         console.log(error);
       }
 
+      // hide #listWork if data of table not exist
+      if (!result && $("#listWork").is(":visible")) {
+        const oldGroupEtapID = $("#listWork").attr("groupEtapID");
+        if (data["uid"] === oldGroupEtapID) {
+          $("#listWork").hide(200);
+        }
+      }
       return result;
     };
 
