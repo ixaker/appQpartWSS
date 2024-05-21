@@ -362,9 +362,9 @@
 
       try {
         console.log("startTimeWork", startTimeWork);
-        if (reportDate < startTimeWork) {
-          result = false;
-        }
+        // if (reportDate < startTimeWork) {
+        //   result = false;
+        // }
         if (data["ПометкаУдаления"]) {
           result = false;
         }
@@ -387,7 +387,7 @@
       console.log("callbackBeforeDone user.isAdmin", user, data);
       startTimeWork = new Date(data.startTimeWork);
       startTimeWork.setHours(0, 0, 0, 0);
-      
+
       if (user.isAdmin === true) {
         data.startTimeWork = "1   ";
       }
