@@ -690,6 +690,10 @@
           result = false;
         }
 
+        if (data["ПометкаУдаления"] === true) {
+          result = false;
+        }
+
         if (!data["Заказ"]["Активен"]) {
           result = false;
         }

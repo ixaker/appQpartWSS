@@ -188,6 +188,16 @@
     $(tableID).on("click", ".btnOk", function (event) {
       const row = $(this).closest("tr");
       const data = $(row).data("data");
+      console.log("data", data);
+      const count = data.edited["КоличествоПроверено"] || 0;
+      const OTK = data.edited["СтатусОТК"] || false;
+      const defect = data.edited["КоличествоБрака"] || 0;
+      const edited = {
+        КоличествоПроверено: count,
+        КоличествоБрака: defect,
+        СтатусОТК: OTK,
+      };
+      data.edited = edited;
 
       $(row).find(".btnOk").hide();
       $(row).find(".btnEdit").show();
@@ -195,6 +205,7 @@
 
       clickAnimate($(row).find(".btnEdit"));
       logToServer('Нажата кнопка "Применить"', data);
+      console.log("data", data);
       sendWSS("updateDataOnServer", "", data);
     });
   });

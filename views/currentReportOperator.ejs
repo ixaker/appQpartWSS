@@ -252,7 +252,7 @@
       title="Деталь"
       name="Деталь"
       key="АртикулНаименование"
-      style="width: 44%"
+      style="width: 48%"
     >
       <div class="dataCell"></div>
     </td>
@@ -304,7 +304,7 @@
             <input  type="checkbox" 
                     sync="none" 
                     class="dataCell checkboxInTable"></td> -->
-    <td title="" style="width: 14%">
+    <td title="" style="width: 10%">
       <div class="groupBtnRow">
         <i
           class="bi bi-check-circle btnRow btnOk colorGreen"
@@ -358,9 +358,10 @@
       console.log("callbackFilter", data);
       console.log(data["Сотрудник"]["uid"], user.uid);
 
-      const reportDate = new Date(data["Дата"]);
+      const reportDate = new Date(data["ДатаОтчета"]);
 
       try {
+        console.log("startTimeWork", startTimeWork);
         if (reportDate < startTimeWork) {
           result = false;
         }
@@ -385,7 +386,8 @@
     callbackBeforeDone = function (data) {
       console.log("callbackBeforeDone user.isAdmin", user, data);
       startTimeWork = new Date(data.startTimeWork);
-      q;
+      startTimeWork.setHours(0, 0, 0, 0);
+      
       if (user.isAdmin === true) {
         data.startTimeWork = "1   ";
       }
