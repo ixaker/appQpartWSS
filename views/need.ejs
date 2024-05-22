@@ -90,6 +90,31 @@
     background-color: coral;
   }
 
+  .reportContainer {
+    width: 600px;
+    font-size: 25px;
+    margin: 10px auto 10px auto;
+    background-color: aliceblue;
+    border-radius: 10px;
+    line-height: 1.8em;
+  }
+
+  @media (max-width: 600px) {
+    #groupNewReport {
+      width: 100%;
+      font-size: 5vw;
+      line-height: 3em;
+    }
+
+    .input-group {
+      margin-bottom: 0.3em;
+      gap: 5px;
+    }
+    .input-group input {
+      height: 3em;
+    }
+  }
+
   #fixReportRow input {
     width: 300px;
     flex: inherit;
@@ -100,7 +125,7 @@
   }
 
   #groupFixReport {
-    width: 430px;
+    width: 500px;
     margin: auto;
     background-color: aliceblue;
     padding: 15px;
@@ -174,6 +199,7 @@
         addNevRow="callbackAddNewRowForListDefect"
         callbackAfterWrite="callbackAfterWriteListDefect"
         header
+        init
       >
         <tr class="config" style="display: none">
           <td title="Дата" name="ДатаОтчета" style="width: 70px">
@@ -233,94 +259,7 @@
         </tr>
 
         <tr id="fixReportRow" style="display: none">
-          <td colspan="99">
-            <div id="fixReportForm">
-              <div id="groupFixReport">
-                <h5 style="margin-bottom: 20px; font-weight: bold">
-                  Создание отчета по исправлению брака
-                </h5>
-                <div class="input-group mb-2">
-                  <label
-                    for="sotrudnikFix"
-                    class="labelFixBrak"
-                    style="width: 180px"
-                    >Кто исправлял :</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control inputFixBrak"
-                    id="sotrudnikFix"
-                    url="/app/autocompleteSotrydnik"
-                    name="Станок"
-                    key="ИнвентарныйНомер"
-                    style="width: 200px"
-                    aria-describedby="basic-addon3"
-                  />
-                </div>
-
-                <div class="input-group mb-2">
-                  <label for="dateFix" class="labelFixBrak" style="width: 180px"
-                    >Когда исправлял :</label
-                  >
-                  <input
-                    type="date"
-                    class="form-control inputFixBrak"
-                    style="width: 200px"
-                    id="dateFix"
-                    aria-describedby="basic-addon3"
-                  />
-                </div>
-
-                <div class="input-group mb-2">
-                  <label for="time" class="labelFixBrak" style="width: 300px"
-                    >Времени потрачено, чч:мм:</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control inputFixBrak"
-                    inputmode="numeric"
-                    limitHourse="99"
-                    data-mask="99:A9"
-                    style="width: 80px"
-                    id="time"
-                    placeholder="чч:мм"
-                    aria-describedby="basic-addon3"
-                  />
-                </div>
-
-                <div class="input-group mb-2">
-                  <label for="time" class="labelFixBrak" style="width: 300px"
-                    >Количество исправлено, шт:</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control inputFixBrak textAlignEnd"
-                    inputmode="numeric"
-                    style="width: 80px"
-                    id="countFix"
-                    aria-describedby="basic-addon3"
-                  />
-                </div>
-
-                <div style="display: flex; margin-top: 20px">
-                  <button
-                    type="button"
-                    class="btn btn-success"
-                    id="saveFixReport"
-                  >
-                    Сохранить
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="cancelFixReport"
-                  >
-                    Отмена
-                  </button>
-                </div>
-              </div>
-            </div>
-          </td>
+          <td colspan="99"><%- include('fixReportForm.ejs') %></td>
         </tr>
       </table>
     </td>
@@ -819,6 +758,7 @@
 
     // обработка клика по кнопке Создания отчета
     $("#Надо").on("click", ".btnPlay", function (event) {
+      $("#buttonsGroup").show();
       const rowID = $(this).attr("rowID");
       const row = $("#" + rowID);
       const maxCount = parseInt(
@@ -900,6 +840,8 @@
 
     // обработка клика по кнопке Сохранить отчет
     $("#saveNewReport").on("click", function (event) {
+      // $("#saveNewReport").prop("disabled", true);
+      $("#buttonsGroup").hide();
       clickAnimate(this);
 
       const workInProvider = $("#workInProviderInput");
@@ -914,30 +856,31 @@
       const priceForOne = $("#priceForOne");
       const info = $("#newReportRow").data("data") || {};
       const etapID = info.data["ИД"];
+      let error = false;
 
       if (provider.hasClass("invalid") && provider.is(":visible")) {
         toastr.error("Укажите подрядчика");
-        return;
+        error = true;
       }
 
       if (sotrudnik.hasClass("invalid") && sotrudnik.is(":visible")) {
         toastr.error("Укажите сотрудника");
-        return;
+        error = true;
       }
 
       if (date.hasClass("invalid") && date.is(":visible")) {
         toastr.error("Укажите дату отчета");
-        return;
+        error = true;
       }
 
       if (timeStart.hasClass("invalid") && timeStart.is(":visible")) {
         toastr.error("Укажите время начала работы");
-        return;
+        error = true;
       }
 
       if (timeStop.hasClass("invalid") && timeStop.is(":visible")) {
         toastr.error("Укажите время окончания работы");
-        return;
+        error = true;
       }
 
       if (count.hasClass("invalid")) {
@@ -950,26 +893,31 @@
           if (inputCountValue > 0) {
           } else {
             toastr.error("Укажите сколько штук изготовлено");
-            return;
+            error = true;
           }
         } else {
           toastr.error("Укажите сколько штук изготовлено");
-          return;
+          error = true;
         }
       }
 
       if (weight.hasClass("invalid") && weight.is(":visible")) {
         toastr.error("Укажите вес одной детали");
-        return;
+        error = true;
       }
 
       if (price.hasClass("invalid") && price.is(":visible")) {
         toastr.error("Укажите цену");
-        return;
+        error = true;
       }
 
       if (priceForOne.hasClass("invalid") && priceForOne.is(":visible")) {
         toastr.error("Укажите цену");
+        error = true;
+      }
+
+      if (error === true) {
+        $("#buttonsGroup").show();
         return;
       }
 
@@ -987,7 +935,6 @@
       data.data = info;
 
       NProgress.start();
-
       $.ajax({
         url: "/app/createNewReport",
         method: "POST",
@@ -1008,6 +955,7 @@
       setTimeout(() => {
         $("#newReportRow").hide(300);
       }, 200);
+      $("#saveNewReport").prop("disabled", false);
     });
 
     // обработка клика по галочке Сделано у подрядчика

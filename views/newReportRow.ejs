@@ -1,17 +1,4 @@
 <style>
-  #newReportForm {
-    padding: 10px;
-  }
-
-  #groupNewReport {
-    width: 600px;
-    font-size: 25px;
-    margin: auto;
-    background-color: aliceblue;
-    border-radius: 10px;
-    line-height: 1.8em;
-  }
-
   #groupNewReport h5 {
     font-size: 1.2em;
     margin-bottom: 20px;
@@ -20,20 +7,6 @@
   }
 
   @media (max-width: 600px) {
-    #groupNewReport {
-      width: 100%;
-      font-size: 5vw;
-      line-height: 3em;
-    }
-
-    .input-group {
-      margin-bottom: 0.3em;
-      gap: 5px;
-    }
-    .input-group input {
-      height: 3em;
-    }
-
     #workTimePeriod input {
       padding: 2px;
     }
@@ -153,7 +126,7 @@
 </style>
 
 <div id="newReportForm">
-  <div id="groupNewReport">
+  <div id="groupNewReport" class="reportContainer">
     <h5>Создание отчета</h5>
 
     <div class="input-group" id="workInProvider">
