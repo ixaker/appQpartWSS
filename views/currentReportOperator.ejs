@@ -363,7 +363,7 @@
       try {
         console.log("startTimeWork", startTimeWork);
         console.log("reportDate", reportDate);
-        if (reportDate <= startTimeWork) {
+        if (reportDate < startTimeWork) {
           result = false;
         }
         if (data["ПометкаУдаления"]) {
