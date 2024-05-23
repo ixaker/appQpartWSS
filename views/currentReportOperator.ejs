@@ -363,7 +363,7 @@
       try {
         console.log("startTimeWork", startTimeWork);
         console.log("reportDate", reportDate);
-        if (reportDate < startTimeWork) {
+        if (reportDate <= startTimeWork) {
           result = false;
         }
         if (data["ПометкаУдаления"]) {
@@ -400,10 +400,10 @@
           $(tableID).show();
         }
       } else {
-        startTimeWork = new Date(data.startTimeWork);
+        startTimeWork2 = new Date(data.startTimeWork);
 
         $(".titlePage").text(
-          "Список работ за текущую смену с " + startTimeWork.toLocaleString()
+          "Список работ за текущую смену с " + startTimeWork2.toLocaleString()
         );
         $("#btnAdd").show();
         $(tableID).show();
