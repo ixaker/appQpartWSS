@@ -780,8 +780,6 @@
 
     // обработка клика по кнопке Создания отчета
     $("#Надо").on("click", ".btnPlay", function (event) {
-      toastr.error("Укажите дату отчета");
-      error = true;
       $("#buttonsGroup").show();
       const rowID = $(this).attr("rowID");
       const row = $("#" + rowID);
@@ -1165,6 +1163,10 @@
     );
 
     $("#ОтчетПоРаботе2022").on("click", ".btnPlay", function (event) {
+      if ($("#fixReportRow").is(":visible")) {
+        $("#fixReportRow").hide(100);
+        return;
+      }
       const rowID = $(this).attr("rowID");
       const row = $("#" + rowID);
       const maxCount = parseInt(
@@ -1207,7 +1209,7 @@
       const count = $("#countFix");
 
       if (sotrudnik.hasClass("invalid")) {
-        toastr.error("Укажите кто исправлял брак");
+        toastr.error("Укажите кто исправлял брак", {});
         return;
       } else if (date.hasClass("invalid")) {
         toastr.error("Укажите когда исправлялся брак");
