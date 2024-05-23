@@ -362,9 +362,10 @@
 
       try {
         console.log("startTimeWork", startTimeWork);
-        // if (reportDate < startTimeWork) {
-        //   result = false;
-        // }
+        console.log("reportDate", reportDate);
+        if (reportDate < startTimeWork) {
+          result = false;
+        }
         if (data["ПометкаУдаления"]) {
           result = false;
         }
@@ -388,13 +389,16 @@
       startTimeWork = new Date(data.startTimeWork);
       startTimeWork.setHours(0, 0, 0, 0);
 
-      if (user.isAdmin === true) {
-        data.startTimeWork = "1   ";
-      }
       if (data.startTimeWork == "0001-01-01T00:00:00") {
-        $(".titlePage").text("Смена еще не начата");
+        $(".titlePage").append(". Смена еще не начата");
         $("#btnAdd").hide();
         $(tableID).hide();
+
+        // show table for admin
+        if (user.isAdmin === true) {
+          $("#btnAdd").show();
+          $(tableID).show();
+        }
       } else {
         startTimeWork = new Date(data.startTimeWork);
 
