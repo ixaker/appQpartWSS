@@ -295,6 +295,10 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+.toast {
+  padding-right: 0.5em !important;
+}
+
 .toast-center-error {
   top: 50%;
   left: 50%;
@@ -307,6 +311,16 @@ input[type="number"]::-webkit-outer-spin-button {
   font-size: 1.5em;
   width: 500px;
   max-width: 500px;
+}
+
+@media (max-width: 600px) {
+  .toast-message {
+    font-size: 0.8em;
+  }
+
+  .toast {
+    width: fit-content !important;
+  }
 }
 
 /* command panel breakpoints: 600px, 1280px */
