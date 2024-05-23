@@ -9,7 +9,7 @@
 
   @media (max-width: 600px) {
     td {
-      padding: 0 3px;
+      padding: 0 0.3vw;
     }
   }
 
@@ -37,8 +37,8 @@
   }
 
   .dataCellNeed {
-    height: 10vw;
-    min-height: 50px;
+    height: calc(2em + 1vw);
+    min-height: 30px;
     max-height: 70px;
     font-size: 23px;
     align-content: center;
@@ -90,17 +90,50 @@
     background-color: coral;
   }
 
+  #ОтчетПоРаботе2022 thead tr {
+    font-size: 0.8em;
+  }
+
+  #defectBtn {
+    padding: 0.3vw;
+  }
+
   .reportContainer {
-    width: 600px;
+    width: 630px;
     font-size: 25px;
     margin: 10px auto 10px auto;
     background-color: aliceblue;
     border-radius: 10px;
     line-height: 1.8em;
+    padding: 2vw 2vw 0.1vw 2vw;
+  }
+
+  .reportContainer h5 {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .reportContainer label {
+    font-size: 1em;
+    margin-bottom: 0;
+  }
+
+  .reportContainer input {
+    flex-grow: 0;
+    height: 2.5em;
+    font-size: 1em;
+    border-radius: 0.25rem;
+  }
+
+  .reportButton {
+    font-size: 1em;
+    width: 7em;
   }
 
   @media (max-width: 600px) {
-    #groupNewReport {
+    .reportContainer {
       width: 100%;
       font-size: 5vw;
       line-height: 3em;
@@ -115,31 +148,18 @@
     }
   }
 
-  #fixReportRow input {
-    width: 300px;
-    flex: inherit;
-  }
-
-  .labelFixBrak {
-    margin-left: 10px;
-  }
-
-  #groupFixReport {
-    width: 500px;
-    margin: auto;
-    background-color: aliceblue;
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #d7e7f5;
+  .input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-bottom: 0.7em !important;
   }
 
   #saveFixReport {
     margin-right: 15px;
     margin-left: auto;
-  }
-
-  #fixReportForm {
-    padding: 20px;
   }
 
   #time {
@@ -193,6 +213,7 @@
       <table
         id="ОтчетПоРаботе2022"
         name="ОтчетПоРаботе2022"
+        class="defectTable"
         url="/app/getListDefect"
         filter="filterForDefectTable"
         append="end"
@@ -202,7 +223,7 @@
         init
       >
         <tr class="config" style="display: none">
-          <td title="Дата" name="ДатаОтчета" style="width: 70px">
+          <td title="Дата" name="ДатаОтчета" style="width: 7%">
             <div
               class="dataCell textAlignCenter"
               mask="DD.MM"
@@ -213,7 +234,8 @@
             title="Номер детали"
             name="Заказ"
             key="АртикулНаименование"
-            style="width: 100%"
+            class="textAlignCenter"
+            style="width: 32%"
           >
             <div class="dataCell"></div>
           </td>
@@ -221,18 +243,18 @@
             title="Станок"
             name="Станок"
             key="ИнвентарныйНомер"
-            style="width: 70px"
+            style="width: 8%"
           >
             <div class="dataCell"></div>
           </td>
-          <td title="МЛ" name="Заказ" key="Номер" style="width: 60px">
+          <td title="МЛ" name="Заказ" key="Номер" style="width: 7%">
             <div class="dataCell textAlignCenter"></div>
           </td>
           <td
             title="Этап"
             name="ЭтапПроизводства"
             key="КодНовый"
-            style="width: 90px"
+            style="width: 8%"
           >
             <div class="dataCell textAlignCenter"></div>
           </td>
@@ -240,18 +262,18 @@
             title="Оператор"
             name="Сотрудник"
             key="Наименование"
-            style="width: 220px"
+            style="width: 20%"
           >
             <div class="dataCell"></div>
           </td>
           <td
-            title="Надо исправить"
+            title="Кол-во"
             name="КоличествоОсталосьИсправить"
-            style="width: 100px"
+            style="width: 6%"
           >
             <div class="dataCell textAlignEnd"></div>
           </td>
-          <td title="" style="width: 55px">
+          <td title="" id="defectBtn" style="width: 6%">
             <div class="groupBtnRow">
               <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
             </div>
@@ -259,7 +281,7 @@
         </tr>
 
         <tr id="fixReportRow" style="display: none">
-          <td colspan="99"><%- include('fixReportForm.ejs') %></td>
+          <td colspan="8"><%- include('fixReportForm.ejs') %></td>
         </tr>
       </table>
     </td>
@@ -758,6 +780,8 @@
 
     // обработка клика по кнопке Создания отчета
     $("#Надо").on("click", ".btnPlay", function (event) {
+      toastr.error("Укажите дату отчета");
+      error = true;
       $("#buttonsGroup").show();
       const rowID = $(this).attr("rowID");
       const row = $("#" + rowID);
@@ -1088,7 +1112,8 @@
 
     callbackAddNewRowForListDefect = function (data) {
       const userInfo = $("#menu").data("userInfo");
-      const access = userInfo.data["ПравоВноситьИсправлениеБрака"] || false;
+      // const access = userInfo.data["ПравоВноситьИсправлениеБрака"] || false;
+      const access = true;
 
       try {
         if (access) {
@@ -1163,6 +1188,7 @@
       $("#fixReportRow").attr("report", rowID);
       $("#fixReportRow").insertAfter(row);
       $("#fixReportRow").show();
+      $("#sotrudnikFix").focus();
     });
 
     $("#cancelFixReport").on("click", function (event) {

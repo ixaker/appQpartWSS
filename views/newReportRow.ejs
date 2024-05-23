@@ -1,36 +1,8 @@
 <style>
-  #groupNewReport h5 {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-    font-weight: bold;
-    text-align: center;
-  }
-
   @media (max-width: 600px) {
     #workTimePeriod input {
       padding: 2px;
     }
-  }
-
-  .input-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 10px;
-    margin-bottom: 0.7em;
-  }
-
-  #groupNewReport label {
-    font-size: 1em;
-    margin-bottom: 0;
-  }
-
-  #groupNewReport input {
-    flex-grow: 0;
-    height: 2.5em;
-    font-size: 1em;
-    border-radius: 0.25rem;
   }
 
   #workInProvider {
@@ -118,11 +90,6 @@
   .obrabotkaProviderPrice input {
     flex-grow: 1 !important;
   }
-
-  .newReportButton {
-    font-size: 1em;
-    width: 7em;
-  }
 </style>
 
 <div id="newReportForm">
@@ -162,6 +129,7 @@
         type="date"
         class="form-control inputFixBrak"
         id="date"
+        placeholder="дд/мм/гггг"
         aria-describedby="basic-addon3"
       />
     </div>
@@ -246,14 +214,14 @@
       <label></label>
       <button
         type="button"
-        class="btn btn-success newReportButton"
+        class="btn btn-success reportButton"
         id="saveNewReport"
       >
         Сохранить
       </button>
       <button
         type="button"
-        class="btn btn-secondary newReportButton"
+        class="btn btn-secondary reportButton"
         id="cancelNewReport"
       >
         Отмена
