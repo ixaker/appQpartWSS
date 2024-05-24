@@ -611,7 +611,7 @@
       }
 
       $("#countRowInDefectList").text(countDefect);
-      $("#countRowOTK").text(countDefect);
+      $("#countRowOTK").text(countOTK);
     };
 
     // callback при изменении данных в строке для определения показать или убрать строку
@@ -1329,10 +1329,6 @@
     });
 
     callbackAfterWriteListOTK = function (data) {
-      const countDefect = $(tableID)
-        .children("tbody")
-        .children(".rowData").length;
-      $("#countRowOTK").text(countDefect);
       $("#OTK_ListRow").show(300);
     };
   });
