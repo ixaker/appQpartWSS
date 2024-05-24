@@ -36,9 +36,56 @@ async function initTable(table) {
 
         await $.ajax({
             url: `${tableJQ.attr('url')}`, type: 'GET', dataType: 'json', data: param, success: async function (response) {
-                console.log('initTable response', tableJQ, response);
+                console.log('initTable response', tableJQ);
 
                 if (!response.error) {
+
+                    function mapAndAssignValues(source, target, mapping) {
+                        for (let key in mapping) {
+                            const value = mapping[key];
+
+                            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                                target[key] = {};
+                                mapAndAssignValues(source, target[key], mapping[key]);
+                            } else {
+                                target[key] = source[value];
+                            }
+
+                        }
+                    }
+
+                    if ("KeyMapping" in response) {
+                        response.list = [];
+
+                        response.data.forEach(element => {
+                            const item = {};
+                            mapAndAssignValues(element, item, response.KeyMapping);
+                            response.list.push({ data: item });
+                        });
+                    }
+                    console.log('log response.list', response);
+
+                    if ("Имя" in response) {
+                        response.list.forEach(element => {
+                            element.data["Имя"] = response["Имя"];
+                            element.data["ТипСсылки"] = response["ТипСсылки"];
+                        });
+                    }
+                    console.log('log response.list', response);
+
+                    // if ("RenamedKeys" in response) {
+                    //     response.list.forEach(element => {
+                    //         response.RenamedKeys.forEach(key => {
+                    //             // console.log("element", element, "key", key)
+                    //             element.data[key.originalKey] = element.data[key.shortKey];
+                    //             // delete element.data[key.shortKey];
+                    //             // console.log("element[key.originalKey]", element[key.originalKey])
+                    //         })
+                    //     })
+                    // }
+
+                    console.log('response arter rename', response);
+
                     callbackFromAttr(table, 'callbackBeforeInitTable', response);
 
                     // remove attr, save attr
@@ -55,24 +102,27 @@ async function initTable(table) {
                     async function executeAsync() {
                         // Створюємо масив обіцянок для кожного виклику callbackTable
                         const promises = response.list.map(item => {
-                            console.log('call callbackTable', item);
+                            // console.log('call callbackTable2', item);
 
-                            const name = item.data['Имя'];
-                            console.log('table name', name);
+                            // const name = item.data['Имя'];
+                            // console.log('table name', name);
                             //item['tableID'] = item.data['Имя'];
 
-                            const listTablesForName = $('table[name="' + name + '"]');
-                            console.log('listTablesForName', listTablesForName);
+                            // const listTablesForName = $('table[name="' + name + '"]');
+                            // console.log('listTablesForName', listTablesForName);
 
                             // callbackTable2(item);
 
-                            listTablesForName.each(function () {
-                                const table = $(this);
-                                const tableID = $(this).attr('id');
-                                item['tableID'] = tableID;
+                            // listTablesForName.each(function () {
+                            //     const table = $(this);
+                            //     const tableID = $(this).attr('id');
+                            //     item['tableID'] = tableID;
 
-                                callbackTable2(item);
-                            });
+                            //     callbackTable2(item);
+                            // });
+                            const tableID = tableJQ.attr('id');
+                            item['tableID'] = tableID;
+                            callbackTable2(item);
 
                         })
 
@@ -147,7 +197,7 @@ function createHeaderForTable(tableJQ) {
 
 // добавление новой строки
 async function addNewRow(table, newData) {
-    console.log('addNewRow start', newData.data.uid);
+    // console.log('addNewRow start', newData.data.uid);
     const tableID = table.attr('name') || table.attr('id') || 'tableID';
     let newRow = $(`<tr id="${newData.data.uid}" style="display:none"></tr>`);
 
@@ -203,7 +253,7 @@ async function addNewRow(table, newData) {
 
     // console.log('addNewRow', newRow, table);
     await callbackTable2(newData);
-    console.log('addNewRow end', newData.data.uid);
+    // console.log('addNewRow end', newData.data.uid);
 }
 
 async function reportChanged(row, newData) {
@@ -271,10 +321,10 @@ function disableHighlightElement() {
 
 // функция вызываемая для обновления данных в строке
 callbackTable = async function (data) {
-    console.log('callbackTable start');
+    // console.log('callbackTable start');
     //data.MD5 = await getHash(data);
     const listTablesForName = $('table[name="' + data.data['Имя'] + '"]');
-    console.log('listTablesForName ', listTablesForName);
+    // console.log('listTablesForName ', listTablesForName);
     if (listTablesForName.length > 0) {
         listTablesForName.each(function () {
             const table = $(this);
@@ -292,21 +342,21 @@ callbackTable = async function (data) {
 
 // функция вызываемая для обновления данных в строке
 callbackTable2 = async function (data) {
-    console.log('CallbackTable2 start', data.data.uid);
+    // console.log('CallbackTable2 start', data.data.uid);
     const table = $(`#${data.tableID}`);
     const newData = data.data;
     // console.log('has attr in callbacktable2', $(table)[0].hasAttribute('sort'));
 
-    console.log('callbackTable2', data.tableID);
+    // console.log('callbackTable2', data.tableID);
 
     //const table = $(`#${data.topic}`);
     const row = table.find('#' + newData.uid);
-    console.log('newData: ', newData);
-    console.log('row: ', row);
+    // console.log('newData: ', newData);
+    // console.log('row: ', row);
     if (row.length) {
         let visible = callbackFromAttr(table, 'filter', newData);
         const oldData = row.data('data');
-        console.log('callbackTable2 visible', visible);
+        // console.log('callbackTable2 visible', visible);
         if (!visible) {
             //console.log('$(row).remove()', row);
             // row.animate({
@@ -327,11 +377,11 @@ callbackTable2 = async function (data) {
 
         data.edited = {};
         row.data('data', data);
-        console.log('callbackTable2', 'await reportChanged(row, newData)');
+        // console.log('callbackTable2', 'await reportChanged(row, newData)');
 
         if (true) {
             //if (await reportChanged(row, newData) && visible) {
-            console.log('callbackTable2', 'callbackFromAttr(table, callbackAddNewRow, row);');
+            // console.log('callbackTable2', 'callbackFromAttr(table, callbackAddNewRow, row);');
             callbackFromAttr(table, 'callbackAddNewRow', row);
 
             // console.log('callbackTable2', '$(row).children().children().each');
@@ -414,7 +464,7 @@ callbackTable2 = async function (data) {
         await addNewRow(table, data);
     }
 
-    console.log('callbackTable2', 'end', row.length, data.data.uid);
+    // console.log('callbackTable2', 'end', row.length, data.data.uid);
 }
 
 function sort(table) {
@@ -437,7 +487,7 @@ function sort(table) {
 }
 
 function formatDate(dateString) {
-    console.log('formateDate', dateString)
+    // console.log('formateDate', dateString)
     return `${dateString.substring(8, 10)}.${dateString.substring(5, 7)}`;
 }
 

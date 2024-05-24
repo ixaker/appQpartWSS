@@ -176,6 +176,7 @@
   url="/app/getListGroupEtapNeed"
   filter="filterForListGroupEtapNeed"
   addNevRow="callbackAddNewRowForListGroupEtapNeed"
+  callbackBeforeInitTable="callbackBeforeInitTableForListGroupEtapNeed"
   append="end"
   sort="0"
   init
@@ -220,7 +221,6 @@
         addNevRow="callbackAddNewRowForListDefect"
         callbackAfterWrite="callbackAfterWriteListDefect"
         header
-        init
       >
         <tr class="config" style="display: none">
           <td title="Дата" name="ДатаОтчета" style="width: 7%">
@@ -312,7 +312,6 @@
         callbackAfterWrite="callbackAfterWriteListOTK"
         append="end"
         sort="0"
-        init
         header
       >
         <tr class="config" style="display: none">
@@ -595,6 +594,25 @@
     }
 
     // ************************************************** Надо ********************************************************
+
+    callbackBeforeInitTableForListGroupEtapNeed = function (data) {
+      console.log("callbackBeforeInitTableForListGroupEtapNeed", data);
+      const countDefect = data.defectCount;
+      const countOTK = data.OTK_Count;
+      const visibleDefect = countDefect > 0;
+      const visibleOTK = countOTK > 0;
+
+      if (visibleDefect) {
+        $("#DefectListMainRow").show(300);
+      }
+
+      if (visibleOTK) {
+        $("#OTK_ListMainRow").show(300);
+      }
+
+      $("#countRowInDefectList").text(countDefect);
+      $("#countRowOTK").text(countDefect);
+    };
 
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForListGroupEtapNeed = function (data, result = true) {
@@ -1128,25 +1146,10 @@
       }
     };
 
+    //
     callbackAfterWriteListDefect = function (data) {
       //console.log('callbackAfterWriteListDefect', data);
-      const countDefect = $("#ОтчетПоРаботе2022")
-        .children("tbody")
-        .children(".rowData").length;
-      const visibleDefect = countDefect > 0;
-      const currState = $("#DefectListMainRow").is(":visible");
-
-      if (visibleDefect !== currState) {
-        if (visibleDefect) {
-          $("#DefectListMainRow").show(300);
-        } else {
-          $("#DefectListMainRow").hide(200);
-          $("#DefectListRow").hide(200);
-        }
-      }
-
-      $("#countRowInDefectList").text(countDefect);
-      //console.log('callbackAfterWriteListDefect', countDefect, visibleDefect, currState);
+      $("#DefectListRow").show(300);
     };
 
     $("#аГруппыЭтаповПроизводства").on(
@@ -1156,8 +1159,7 @@
         if ($("#DefectListRow").is(":visible")) {
           $("#DefectListRow").hide(200);
         } else {
-          $("#DefectListRow").show(300);
-          console.log("iiiiiiii");
+          initTable($("#ОтчетПоРаботе2022"));
         }
       }
     );
@@ -1260,7 +1262,7 @@
         if ($("#OTK_ListRow").is(":visible")) {
           $("#OTK_ListRow").hide(200);
         } else {
-          $("#OTK_ListRow").show(300);
+          initTable($("#OTK"));
         }
 
         $("#newReportRow").hide(0);
@@ -1277,7 +1279,7 @@
 
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForOTK = function (data, result = true) {
-      console.log("filterForOTK");
+      // console.log("filterForOTK");
       try {
         if (
           !data["Проведен"] ||
@@ -1291,7 +1293,7 @@
         console.log(error);
       }
 
-      console.log("filter for otk", result);
+      // console.log("filter for otk", result);
       return result;
     };
 
@@ -1331,6 +1333,7 @@
         .children("tbody")
         .children(".rowData").length;
       $("#countRowOTK").text(countDefect);
+      $("#OTK_ListRow").show(300);
     };
   });
 </script>
