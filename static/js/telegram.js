@@ -10,7 +10,7 @@ const botToken = "5506317678:AAEst0pLX1pEIEDqTCqGZ8ZVk-DMj6nx278";
 
 // Функция отправки сообщения (текстового или с фотографией)
 function sendToTelegram(message, file = null) {
-    const deployment = testEnvironment === true ? `Test\n` : `Production: ${version}\n`;
+    const deployment = testEnvironment === "true" ? `Test\n` : `Production: ${version}\n`;
     message = deployment + message
     console.log(message);
 
