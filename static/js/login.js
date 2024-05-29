@@ -111,12 +111,15 @@ function uploadPhoto() {
                     } else {
                         console.log("error - /detectFace");
                         toastr["error"]("Обличчя не роспізнано");
-                        console.log('reader.result', blob)
-                        console.log('response', JSON.stringify(response))
-                        const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-                        console.log('file', file)
+                        try {
+                            const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+                        } catch (error) {
+                            console.error('Помилка при створенні файлу:', error);
+                            const file = null
+                        }
                         sendToTelegram('Обличчя не розпізнано', file)
                         stopTimeoutCamera();
+                        exit();
                     }
 
 
@@ -193,7 +196,6 @@ function loadMenu(userInfo, token, version) {
     $.ajax({
         url: '/app/getUserMenu',
         method: 'GET',
-        timeout: 5000,
         success: function (response) {
             $('#menu').html(response.menu);
             $('#menu').data('userInfo', userInfo);
@@ -237,6 +239,20 @@ function loadMenu(userInfo, token, version) {
                 } else {
                     $('#menu .nav-item:nth-child(1) a').click();
                 }
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            const urlData = {
+                url: this.url,
+                method: this.method
+            };
+            if (textStatus === 'timeout') {
+                console.error('Request timed out');
+                toastr["error"]("Немає зв'язку з сервером 1С");
+                sendErrorToTelegram(jqXHR, textStatus, urlData)
+                exit();
+            } else {
+                console.error('Error: ' + textStatus, errorThrown);
             }
         },
     });

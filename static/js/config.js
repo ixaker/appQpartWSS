@@ -23,12 +23,12 @@ function abortAllRequests() {
 }
 
 $(function () {
-    toastr.options.timeOut = 5000;
+    toastr.options.timeOut = 10000;
     toastr.options.positionClass = 'toast-top-left';
     NProgress.configure({ showSpinner: false });
 
     $.ajaxSetup({
-        timeout: 5000,
+        timeout: 10000,
         error: function (jqXHR, textStatus, errorThrown) {
             const urlData = {
                 url: this.url,
@@ -38,7 +38,7 @@ $(function () {
                 console.error('Request timed out');
                 toastr["error"]("Немає зв'язку з сервером 1С");
                 sendErrorToTelegram(jqXHR, textStatus, urlData)
-                exit();
+                // exit();
             } else {
                 console.error('Error: ' + textStatus, errorThrown);
             }
