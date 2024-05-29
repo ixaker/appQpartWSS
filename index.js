@@ -187,6 +187,8 @@ app.post('/detectFace', async (req, res) => {
           result.version = version;
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
           telegramBot.sendImageAndMessage(req.body.photo, message);
+        } else {
+
         }
       }
     }
@@ -275,7 +277,18 @@ app.post('/saveFace', async (req, res) => {
   res.send(result);
 });
 
-
+app.get('/setip', function (req, res) {
+  process.env.BASE_URL = req.query.ip;
+  log.info('setip', func1C.API_1C_URL);
+  func1C.API_1C_URL = req.query.ip;
+  func1C.setIp(req.query.ip);
+  func1C.host = req.query.ip;
+  func1C.initMiddleware();
+  log.info('setip', func1C.API_1C_URL);
+  // https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app
+  // https://test.qpart.com.ua/setip?ip=http://10.8.0.33:23456/UTCRM_test/ru_RU/hs/app
+  res.send('ok')
+});
 
 // + Страничка - Список пользователей
 app.get('/users', function (req, res) {

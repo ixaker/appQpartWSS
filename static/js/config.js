@@ -23,9 +23,27 @@ function abortAllRequests() {
 }
 
 $(function () {
-    toastr.options.timeOut = 3000;
+    toastr.options.timeOut = 5000;
     toastr.options.positionClass = 'toast-top-left';
     NProgress.configure({ showSpinner: false });
+
+    $.ajaxSetup({
+        timeout: 5000,
+        error: function (jqXHR, textStatus, errorThrown) {
+            const urlData = {
+                url: this.url,
+                method: this.method
+            };
+            if (textStatus === 'timeout') {
+                console.error('Request timed out');
+                toastr["error"]("Немає зв'язку з сервером 1С");
+                sendErrorToTelegram(jqXHR, textStatus, urlData)
+                exit();
+            } else {
+                console.error('Error: ' + textStatus, errorThrown);
+            }
+        }
+    });
 
     stanok = JSON.parse($.cookie("stanok") || '{"value":"","uid":"","fullName":""}');
     $.cookie("stanok", JSON.stringify(stanok), { expires: 365 });
@@ -50,20 +68,16 @@ $(function () {
         }
     };
 
-    // Функция для показа оверлея
     function showOverlay() {
-        $('#overlay').fadeIn(); // Используйте fadeIn для плавного появления оверлея
+        $('#overlay').fadeIn();
     }
 
-    // Функция для скрытия оверлея
     function hideOverlay() {
-        $('#overlay').fadeOut(); // Используйте fadeOut для плавного исчезновения оверлея
+        $('#overlay').fadeOut();
     }
 });
 
 function GetInfo1C(url, param = '', callback, elem = false, type = 'GET') {
-    //console.log('start GetInfo1C', url, param, type);
-
     $.ajax({
         type: type,
         contentType: "application/json; charset=utf-8",
@@ -169,7 +183,10 @@ function initInputAutocomplete(element) {
                     dataType: "json",
                     data: JSON.stringify(data),
                     contentType: 'application/json',
-                    success: function (data) { res(data); }
+                    success: function (data) {
+                        console.log('Отримані дані:', data);
+                        res(data);
+                    }
                 });
             },
             select: function (event, ui) {
@@ -178,9 +195,11 @@ function initInputAutocomplete(element) {
                 $(this).blur();
                 callbackFromAttr(this, 'callbackSelect', ui.item)
             },
-            position: { my: "left bottom", at: "left top" },
+            position: { my: "left bottom", at: "left top", collision: "flip" },
+
             minLength: 1
         }).on("input", function () {
+            console.log('Подія input');
             $(element).attr('uid', '');
             setValid(element, false);
         }).on("blur", function () {

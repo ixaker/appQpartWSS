@@ -12,10 +12,7 @@
     <meta name="title" content="Qpart" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Qpart" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -37,14 +34,7 @@
     <div id="container">
       <nav class="navbar navbar-custom navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-          <img
-            src="img/logo.png"
-            width="30"
-            height="30"
-            id="logo"
-            class="d-inline-block align-top noColorImg"
-            alt=""
-          />
+          <img src="img/logo.png" width="30" height="30" id="logo" class="d-inline-block align-top noColorImg" alt="" />
           <span class="text-container">
             <span id="navbar-brand-text" class="text-animation">Qpart</span>
           </span>
@@ -54,9 +44,7 @@
           <span id="navbar_text_stanok"></span>
           <!-- <span id="navbar_text"></span> -->
 
-          <button id="exit" type="button" class="btn btn-outline-dark">
-            Выход
-          </button>
+          <button id="exit" type="button" class="btn btn-outline-dark">Выход</button>
 
           <button
             class="navbar-toggler"
@@ -83,13 +71,7 @@
       </div>
 
       <div id="login" class="page" style="display: none">
-        <button
-          id="btnStartVideo"
-          type="button"
-          class="btn btn-secondary btn-lg"
-        >
-          Войти в программу
-        </button>
+        <button id="btnStartVideo" type="button" class="btn btn-secondary btn-lg">Войти в программу</button>
         <video id="video" style="display: none" autoplay></video>
       </div>
     </div>
@@ -110,29 +92,30 @@
     <script src="js/wss.js?v=<%= version %>"></script>
     <script src="js/login.js?v=<%= version %>"></script>
     <script src="js/tables.js?v=<%= version %>"></script>
+    <script src="js/telegram.js?v=<%= version %>"></script>
 
     <script>
-      const version = "<%= version %>";
-      const token = "<%= token %>";
-      const test1 = "<%= test %>";
-
+      const version = '<%= version %>';
+      const token = '<%= token %>';
+      const test1 = '<%= test %>';
+      console.log('test1', test1);
       if (test1) {
-        console.log("this is test environment");
-        const elements = document.querySelectorAll(".bg-dark");
-        elements.forEach((element) => {
-          element.classList.remove("bg-dark");
-          element.classList.add("test");
+        console.log('this is test environment');
+        const elements = document.querySelectorAll('.bg-dark');
+        elements.forEach(element => {
+          element.classList.remove('bg-dark');
+          element.classList.add('test');
         });
       }
 
-      console.log("token from index.ejs", token);
-      if (token !== "") {
-        $.cookie("token", token);
+      if (token !== '') {
+        $.cookie('token', token);
       }
 
       function listenResize() {
-        window.addEventListener("resize", function () {
-          makeNavbarTextMove();
+        window.addEventListener('resize', function () {
+          makeNavbarTextMove(); // Викликати тут, якщо необхідно
+          console.log('window.visualViewport.height', window.visualViewport.height);
         });
       }
 

@@ -201,7 +201,7 @@ html {
 }
 
 .ui-autocomplete {
-  max-height: 150px;
+  max-height: 400px;
   font-size: 1.5em;
   overflow-y: auto;
   overflow-x: hidden;
@@ -299,8 +299,8 @@ html {
   line-height: normal;
 } */
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
@@ -395,4 +395,13 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .formButton {
   font-size: 0.8em;
+}
+
+.hide {
+  display: none !important;
+}
+
+.selectedEtap td {
+  font-weight: 600;
+  background-color: gold;
 }

@@ -110,3 +110,9 @@ npm install node-telegram-bot-api --save
 
 // Зміна версії додатка
 При публікації нової версії додатка на Production для автоматичного оновлення клієнтської частини необхідно оновити змінну version в .env
+
+//Заміна url для звернення до 1с за query параметром в url.
+Звернутись до ендпоінт https://test.qpart.com.ua/setip
+і передати параметр для ip
+Наприклад:
+https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app

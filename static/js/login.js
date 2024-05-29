@@ -18,9 +18,9 @@ function startCamera() {
             $('#btnStartVideo').hide();
             $('#video').show();
 
-            setTimeout(function () {
-                stopTimeoutCamera()
-            }, 7000);
+            // setTimeout(function () {
+            //     stopTimeoutCamera()
+            // }, 7000);
 
             if (loadedDataListeners) {
                 video.addEventListener('loadeddata', () => {
@@ -52,6 +52,7 @@ function exit() {
     auth = false;
     disconectWebSocket();
 
+    $('#menu').html('');
     $.cookie("token", '');
     $('#group-navbar').hide();
     $('#login').show();
@@ -83,26 +84,43 @@ function uploadPhoto() {
             const reader = new FileReader();
             reader.onloadend = function () {
                 couterRequest += 1;
+                console.log('couterRequest', couterRequest);
                 $.post('/detectFace', { photo: reader.result, counter: couterRequest }, function (response) {
                     console.log('/detectFace', response);
                     console.log('response.version', response.version);
 
-                    toastr.success(response.similarity);
+                    if (response.similarity > 0.72) {
+                        toastr.success(response.similarity);
+                    } {
+                        toastr.error("Обличчя не видно.");
+                    }
 
                     if (response.detectUser) {
                         loadMenu(response.user, response.token, response.version);
 
                     }
                 }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
-                    console.log("error - /detectFace");
-                    toastr.error(textStatus);
+
+
                 }).always(function () {
                     NProgress.done();
+                    if (couterRequest < 8) {
+                        setTimeout(() => {
+                            uploadPhoto();
+                        }, 500);
+                    } else {
+                        console.log("error - /detectFace");
+                        toastr["error"]("Обличчя не роспізнано");
+                        console.log('reader.result', blob)
+                        console.log('response', JSON.stringify(response))
+                        const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+                        console.log('file', file)
+                        sendToTelegram('Обличчя не розпізнано', file)
+                        stopTimeoutCamera();
+                    }
 
 
-                    setTimeout(() => {
-                        uploadPhoto();
-                    }, 500);
+
 
                 });
             }
@@ -172,57 +190,108 @@ function loadMenu(userInfo, token, version) {
 
     reconectWebSocket();
     // alert('display width: ' + window.innerWidth + ', display height: ' + window.innerHeight);
-    $.get('/app/getUserMenu', function (response) {
-        console.log('/app/getUserMenu', response);
+    $.ajax({
+        url: '/app/getUserMenu',
+        method: 'GET',
+        timeout: 5000,
+        success: function (response) {
+            $('#menu').html(response.menu);
+            $('#menu').data('userInfo', userInfo);
 
-        console.log('getUserMenu response ---- ', response)
-
-        $('#menu').html(response.menu);   // загружаем меню
-        $('#menu').data('userInfo', userInfo);
-
-        $('.nav-item a').each((index, element) => {
-            // console.log('element old url', element);
-            const newUrl = $(element).attr("url") + '?v=' + version;
-            // console.log(newUrl);
-            $(element).attr("url", newUrl);
-            // console.log('element new url', element);
-        });
-
-        $('.nav-item a').on('click', function () {    //обработчик кликов меню
-            abortAllRequests();
-            $('.navbar-collapse').collapse('hide');    // скрываем меню
-            PageUID = $(this).attr("uid");
-            PageURL = $(this).attr("url");
-            //console.log('PageURL', PageURL);
-
-            localStorage.setItem('PageUID', PageUID);
-            sendWSS('unsubscribeAll');
-
-            $.get(PageURL, function (response) {
-                $('#content').html(response);
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                exit();
+            $('.nav-item a').each((index, element) => {
+                // console.log('element old url', element);
+                const newUrl = $(element).attr("url") + '?v=' + version;
+                // console.log(newUrl);
+                $(element).attr("url", newUrl);
+                // console.log('element new url', element);
             });
-        });
 
-        $(document).on('click', function (event) {
-            if (!$(event.target).closest('.navbar-collapse').length && !$(event.target).is('.navbar-collapse')) {
+            $('.nav-item a').on('click', function () {
+                abortAllRequests();
                 $('.navbar-collapse').collapse('hide');
-            }
-        });
+                PageUID = $(this).attr("uid");
+                PageURL = $(this).attr("url");
 
-        if (!oldPageUID) {
-            $('#menu .nav-item:nth-child(1) a').click();     // кликаем по первому пункту меню
-        } else {
-            if ($('.nav-item a[uid="' + oldPageUID + '"]').length > 0) {
-                $('.nav-item a[uid="' + oldPageUID + '"]').click();
+
+                localStorage.setItem('PageUID', PageUID);
+                sendWSS('unsubscribeAll');
+
+                $.get(PageURL, function (response) {
+                    $('#content').html(response);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    exit();
+                });
+            });
+
+            $(document).on('click', function (event) {
+                if (!$(event.target).closest('.navbar-collapse').length && !$(event.target).is('.navbar-collapse')) {
+                    $('.navbar-collapse').collapse('hide');
+                }
+            });
+
+            if (!oldPageUID) {
+                $('#menu .nav-item:nth-child(1) a').click();     // кликаем по первому пункту меню
             } else {
-                $('#menu .nav-item:nth-child(1) a').click();
+                if ($('.nav-item a[uid="' + oldPageUID + '"]').length > 0) {
+                    $('.nav-item a[uid="' + oldPageUID + '"]').click();
+                } else {
+                    $('#menu .nav-item:nth-child(1) a').click();
+                }
             }
-        }
-    }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
-        exit();
+        },
     });
+
+    // $.get('/app/getUserMenu', function (response) {
+    //     console.log('/app/getUserMenu', response);
+
+    //     console.log('getUserMenu response ---- ', response)
+
+    //     $('#menu').html(response.menu);   // загружаем меню
+    //     $('#menu').data('userInfo', userInfo);
+
+    //     $('.nav-item a').each((index, element) => {
+    //         // console.log('element old url', element);
+    //         const newUrl = $(element).attr("url") + '?v=' + version;
+    //         // console.log(newUrl);
+    //         $(element).attr("url", newUrl);
+    //         // console.log('element new url', element);
+    //     });
+
+    //     $('.nav-item a').on('click', function () {    //обработчик кликов меню
+    //         abortAllRequests();
+    //         $('.navbar-collapse').collapse('hide');    // скрываем меню
+    //         PageUID = $(this).attr("uid");
+    //         PageURL = $(this).attr("url");
+    //         //console.log('PageURL', PageURL);
+
+    //         localStorage.setItem('PageUID', PageUID);
+    //         sendWSS('unsubscribeAll');
+
+    //         $.get(PageURL, function (response) {
+    //             $('#content').html(response);
+    //         }).fail(function (jqXHR, textStatus, errorThrown) {
+    //             exit();
+    //         });
+    //     });
+
+    //     $(document).on('click', function (event) {
+    //         if (!$(event.target).closest('.navbar-collapse').length && !$(event.target).is('.navbar-collapse')) {
+    //             $('.navbar-collapse').collapse('hide');
+    //         }
+    //     });
+
+    //     if (!oldPageUID) {
+    //         $('#menu .nav-item:nth-child(1) a').click();     // кликаем по первому пункту меню
+    //     } else {
+    //         if ($('.nav-item a[uid="' + oldPageUID + '"]').length > 0) {
+    //             $('.nav-item a[uid="' + oldPageUID + '"]').click();
+    //         } else {
+    //             $('#menu .nav-item:nth-child(1) a').click();
+    //         }
+    //     }
+    // }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
+    //     exit();
+    // });
 
 }
 
@@ -232,18 +301,12 @@ function makeNavbarTextMove() {
     const navbarBrandText = document.querySelector("#navbar-brand-text");
 
     let navbarBrandWidth = navbarBrand.offsetWidth;
+    let navbarBrandHeight = navbarBrand.offsetHeight;
     let navbarBrandTextWidth = navbarBrandText.offsetWidth;
-
-    console.log("Ширина блоку .navbar-brand:", navbarBrandWidth);
-    console.log("Ширина блоку #navbar-brand-text:", navbarBrandTextWidth);
 
     function isOverflowing() {
         return navbarBrandText.scrollWidth > navbarBrandWidth;
     }
-
-    console.log("isOverflowing", isOverflowing());
-
-    // Перевірити наявність переповнення і застосувати анімацію
 
     if (isOverflowing()) {
         navbarBrandText.classList.add("text-animation");

@@ -5,7 +5,9 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const url = require('url');
 
 const base = process.env.base;
-const API_1C_URL = `${process.env.BASE_URL}/${base}/ru_RU/hs/app`;
+let API_1C_URL = `${process.env.BASE_URL}/${base}/ru_RU/hs/app`;
+let host = '10.8.0.3';
+let ProxyMiddleware1C = {};
 console.log('API_1C_URL', API_1C_URL)
 const API_1C_LOGIN = process.env.API_1C_LOGIN;
 const API_1C_PASSWORD = process.env.API_1C_PASSWORD;
@@ -124,57 +126,77 @@ async function axios1C(method, path, headers, data) {
     }
 }
 
-const ProxyMiddleware1C = createProxyMiddleware({
-    target: API_1C_URL,
-    changeOrigin: true,
-    on: {
-        proxyReq: (proxyReq, req, res) => {
-            try {
-                proxyReq.setHeader('Cookie', ibSession);
-                // proxyReq.setHeader('Authorization', Authorization1C);
-                const newTarget = new url.URL(proxyReq.path, 'http://localhost');
-                newTarget.searchParams.set('uid', req.user.uid);
-                proxyReq.path = newTarget.toString().replace('http://localhost', '');
-                log.info(' --- proxyReq path', proxyReq.path);
-                log.info('createProxyMiddleware req.method', req.method)
-                const writeBody = (bodyData) => {
-                    proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
-                    proxyReq.write(bodyData)
-                }
+function setIp(newIp) {
+    API_1C_URL = newIp;
+}
 
-                const contentType = req.headers['content-type'];
-                // log.info('contentType', contentType)
-                if (contentType && (contentType.includes('application/json') || contentType.includes('application/x-www-form-urlencoded'))) {
-                    writeBody(JSON.stringify(req.body))
-                } else {
-                    // Обробка випадку, коли contentType відсутній або не має підтримуваних типів
+function initMiddleware() {
+    log.info('init API_1C_URL = ', API_1C_URL)
+    log.info('init API_1C_URL = ', Object.keys(ProxyMiddleware1C))
+    ProxyMiddleware1C = createProxyMiddleware({
+        target: API_1C_URL,
+        // target: `${process.env.BASE_URL}/${base}/ru_RU/hs/app`,
+        changeOrigin: true,
+        router: (req) => {
+            return API_1C_URL;
+        },
+        on: {
+            proxyReq: (proxyReq, req, res) => {
+                try {
+                    proxyReq.setHeader('Cookie', ibSession);
+                    // proxyReq.setHeader('Authorization', Authorization1C);
+                    const newTarget = new url.URL(proxyReq.path, 'http://localhost');
+                    newTarget.searchParams.set('uid', req.user.uid);
+                    proxyReq.path = newTarget.toString().replace('http://localhost', '');
+                    // proxyReq.host = host;
+                    log.info(' --- API_1C_URL', API_1C_URL, proxyReq.host);
+
+                    log.info('createProxyMiddleware req.method', req.method)
+                    const writeBody = (bodyData) => {
+                        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
+                        proxyReq.write(bodyData)
+                    }
+
+                    const contentType = req.headers['content-type'];
+                    // log.info('contentType', contentType)
+                    if (contentType && (contentType.includes('application/json') || contentType.includes('application/x-www-form-urlencoded'))) {
+                        writeBody(JSON.stringify(req.body))
+                    } else {
+                        // Обробка випадку, коли contentType відсутній або не має підтримуваних типів
+                    }
+                } catch (error) {
+                    log.error('ProxyMiddleware1C proxyReq error', error);
                 }
-            } catch (error) {
-                log.error('ProxyMiddleware1C proxyReq error', error);
-            }
-        },
-        proxyRes: (proxyRes, req, res) => {
-            log.info('- proxyRes-')
-            try {
-                const status = proxyRes.statusCode;
-                log.info('proxyRes in proxyMiddleware', status)
-                if (status === 400 || status === 404) {
-                    log.info('-- pingRequest from proxyRes')
-                    pingRequest();
+            },
+            proxyRes: (proxyRes, req, res) => {
+                log.info('- proxyRes-')
+                try {
+                    const status = proxyRes.statusCode;
+                    log.info('proxyRes in proxyMiddleware', status)
+                    if (status === 400 || status === 404) {
+                        log.info('-- pingRequest from proxyRes')
+                        pingRequest();
+                    }
+                } catch (error) {
+                    log.error('ProxyMiddleware1C proxyRes error', error);
                 }
-            } catch (error) {
-                log.error('ProxyMiddleware1C proxyRes error', error);
-            }
+            },
+            error: (err, req, res) => {
+                log.error('ProxyMiddleware1C error', err);
+            },
         },
-        error: (err, req, res) => {
-            log.error('ProxyMiddleware1C error', err);
-        },
-    },
-})
+    })
+}
+
+initMiddleware();
 
 module.exports = {
     init,
     GET,
     ProxyMiddleware1C,
-    request1C
+    request1C,
+    API_1C_URL,
+    setIp,
+    host,
+    initMiddleware
 }

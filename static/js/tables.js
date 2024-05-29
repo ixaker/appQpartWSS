@@ -3,7 +3,7 @@ var highlightTimerId;
 
 // инициализация всех таблиц на форме
 async function initTables() {
-    console.log('--- initTables')
+    console.log('--- initTables ---')
     disableHighlightElement();
 
     await $('#content table[init]').each(async function () {
@@ -15,7 +15,7 @@ async function initTables() {
 
 // инициализация таблицы
 async function initTable(table) {
-    console.log('--- initTable one')
+    console.log('--- initTable ---')
     console.log('initTable', table);
     const tableJQ = $(table);
 
@@ -98,6 +98,9 @@ async function initTable(table) {
                     //     await callbackTable(item);
                     // });
 
+                    response.list.forEach(async (item) => {
+                        item.data["skipFilter"] = true;
+                    });
 
                     async function executeAsync() {
                         // Створюємо масив обіцянок для кожного виклику callbackTable
@@ -122,7 +125,8 @@ async function initTable(table) {
                             // });
                             const tableID = tableJQ.attr('id');
                             item['tableID'] = tableID;
-                            callbackTable2(item);
+                            // callbackTable2(item);
+                            addNewRow(tableJQ, item);
 
                         })
 
@@ -197,7 +201,6 @@ function createHeaderForTable(tableJQ) {
 
 // добавление новой строки
 async function addNewRow(table, newData) {
-    // console.log('addNewRow start', newData.data.uid);
     const tableID = table.attr('name') || table.attr('id') || 'tableID';
     let newRow = $(`<tr id="${newData.data.uid}" style="display:none"></tr>`);
 
@@ -251,24 +254,9 @@ async function addNewRow(table, newData) {
         initInputTimeMask(this);
     });
 
-    // console.log('addNewRow', newRow, table);
     await callbackTable2(newData);
-    // console.log('addNewRow end', newData.data.uid);
 }
 
-async function reportChanged(row, newData) {
-    const oldMD5 = row.attr('MD5') || '';
-    if (oldMD5 === '') {
-        return true;
-    }
-
-    const newMD5 = await getHash(newData);
-    // const newMD5 = newData.MD5;
-
-    row.attr('MD5', newMD5);
-    // console.log('newMD5', newMD5, 'oldMD5', oldMD5);
-    return newMD5 !== oldMD5;
-}
 
 function setValueCellOld(element, value) {
     console.log('setValueCell', element.nodeName, value);
@@ -324,7 +312,6 @@ callbackTable = async function (data) {
     // console.log('callbackTable start');
     //data.MD5 = await getHash(data);
     const listTablesForName = $('table[name="' + data.data['Имя'] + '"]');
-    // console.log('listTablesForName ', listTablesForName);
     if (listTablesForName.length > 0) {
         listTablesForName.each(function () {
             const table = $(this);
@@ -342,129 +329,83 @@ callbackTable = async function (data) {
 
 // функция вызываемая для обновления данных в строке
 callbackTable2 = async function (data) {
-    // console.log('CallbackTable2 start', data.data.uid);
     const table = $(`#${data.tableID}`);
     const newData = data.data;
-    // console.log('has attr in callbacktable2', $(table)[0].hasAttribute('sort'));
-
-    // console.log('callbackTable2', data.tableID);
-
-    //const table = $(`#${data.topic}`);
+    const skipFilter = newData.skipFilter || false;
     const row = table.find('#' + newData.uid);
-    // console.log('newData: ', newData);
-    // console.log('row: ', row);
+    let visible = true;
+
+    if (!skipFilter) {
+        visible = callbackFromAttr(table, 'filter', newData);
+    }
+
     if (row.length) {
-        let visible = callbackFromAttr(table, 'filter', newData);
         const oldData = row.data('data');
-        // console.log('callbackTable2 visible', visible);
         if (!visible) {
-            //console.log('$(row).remove()', row);
-            // row.animate({
-            //     opacity: 0,
-            //     width: "50%",
-            //     height: "toggle",
-            //     backgroundColor: "red",
-
-            // }, 1000);
-            // console.log;('--- row remove')
-            // row.css("background-color", "lightgreen");
-            // row.fadeOut();
-            // setTimeout(() => {
             row.remove();
-            // }, 3000);
-
         }
 
         data.edited = {};
         row.data('data', data);
-        // console.log('callbackTable2', 'await reportChanged(row, newData)');
 
-        if (true) {
-            //if (await reportChanged(row, newData) && visible) {
-            // console.log('callbackTable2', 'callbackFromAttr(table, callbackAddNewRow, row);');
-            callbackFromAttr(table, 'callbackAddNewRow', row);
+        callbackFromAttr(table, 'callbackAddNewRow', row);
+        fillData(row, newData, oldData);
 
-            // console.log('callbackTable2', '$(row).children().children().each');
-            row.children().children().each(function () {
-                let dataCell = this;
-                const dataCellJQ = $(dataCell);
-                let name = dataCellJQ.attr('name') || '';
+        sort(table);
 
-                if (name !== '') {
-                    let value = newData[name];
-
-                    if (typeof value === 'object' && value !== null) {
-                        const newUid = value['uid'] || '';
-                        const key = dataCellJQ.attr('key') || '-';
-                        let subValue = value[key];
-
-
-                        if (subValue === undefined) {
-                            subValue = '';
-                        }
-                        const valid = subValue.length ? true : false;
-                        highlightElement(dataCell);
-                        setValueCell(dataCell, subValue);
-                        setValid(dataCell, valid);
-
-
-                        // if (newUid !== '') {
-                        //     const oldUid = dataCellJQ.attr('uid') || '-';
-
-
-                        //     if (newUid !== oldUid) {
-                        //         if (key.length) {
-                        //             highlightElement(dataCell);
-                        //             //dataCellJQ.attr('uid', newUid);
-                        //             setValueCell(dataCell, value[key]);
-                        //             //eventOnBlur(dataCell);
-                        //             setValid(dataCell, true);
-                        //         }
-                        //     }
-                        // } else {
-                        //     dataCellJQ.attr('uid', '');
-                        //     setValueCell(dataCell, '');
-                        //     setValid(dataCell, false);
-                        // }
-                    } else {
-                        //const oldValue = getValueCell(dataCell);
-                        const oldValue = oldData.data[name] || '';
-
-                        if (String(oldValue) !== String(value)) {
-                            highlightElement(dataCell);
-
-                            if (typeof value === 'boolean') {
-                                dataCellJQ.prop('checked', value);
-                            } else {
-                                const typeData = dataCellJQ.attr('typeData') || '';
-
-                                if (typeData !== '') {
-                                    if (typeData === 'date') {
-                                        const mask = dataCellJQ.attr('mask') || '';
-                                        value = formatDate(value, mask);
-                                    }
-                                }
-
-                                setValueCell(dataCell, value)
-                                //$(dataCell).val(value);
-
-                                setValid(dataCell, String(value) !== '');
-                            }
-                        }
-                    }
-                };
-
-            })
-            sort(table);
-        }
-
-        // console.log('callbackTable2', 'callbackFromAttr');
         callbackFromAttr(table, 'callbackAfterWrite', data);
     } else {
-        await addNewRow(table, data);
+        if (visible) {
+            await addNewRow(table, data);
+        }
     }
+}
 
-    // console.log('callbackTable2', 'end', row.length, data.data.uid);
+function fillData(row, newData, oldData) {
+    row.children().children().each(function () {
+        let dataCell = this;
+        const dataCellJQ = $(dataCell);
+        let name = dataCellJQ.attr('name') || '';
+
+        if (name !== '') {
+            let value = newData[name];
+
+            if (typeof value === 'object' && value !== null) {
+                const newUid = value['uid'] || '';
+                const key = dataCellJQ.attr('key') || '-';
+                let subValue = value[key];
+
+                if (subValue === undefined) {
+                    subValue = '';
+                }
+                const valid = subValue.length ? true : false;
+                setValueCell(dataCell, subValue);
+                setValid(dataCell, valid);
+
+            } else {
+                const oldValue = oldData.data[name] || '';
+
+                if (String(oldValue) !== String(value)) {
+
+                    if (typeof value === 'boolean') {
+                        dataCellJQ.prop('checked', value);
+                    } else {
+                        const typeData = dataCellJQ.attr('typeData') || '';
+
+                        if (typeData !== '') {
+                            if (typeData === 'date') {
+                                const mask = dataCellJQ.attr('mask') || '';
+                                value = formatDate(value, mask);
+                            }
+                        }
+
+                        setValueCell(dataCell, value)
+                        setValid(dataCell, String(value) !== '');
+                    }
+                }
+            }
+        };
+    })
 }
 
 function sort(table) {
@@ -614,7 +555,16 @@ function initInputAutocompleteForTable(element) {
 
                 $(this).blur();
             },
-            position: { my: "left bottom", at: "left top" },
+            open: function (event, ui) {
+                console.log('autocomplete open')
+                const autocompleteTop = $(this).autocomplete("widget").offset().top;
+                const windowTop = $(window).scrollTop();
+                const scrollAmount = autocompleteTop - windowTop;
+                console.log('autocomplete open autocompleteTop', autocompleteTop, 'windowTop', windowTop, 'scrollAmount', scrollAmount)
+
+                $(window).scrollTop(windowTop + scrollAmount);
+            },
+            position: { my: "left top", at: "right top" },
             minLength: parseInt($(element).attr('minLength') || 1)
         }).on("input", function () {
             $(element).attr('uid', '');
@@ -682,21 +632,6 @@ function callbackFromAttr(element, attr, param = null) {
         console.log('callbackFromAttr', error, attr);
     }
 }
-
-
-// const timeStart = Date.now();
-// for (let i = 0; i < 1000 ; i++) {
-//     formatDate('2024-04-22T21:00:00Z')
-// }
-// const timeStop = Date.now();
-// console.log('time work FormateDate - ', timeStop - timeStart);
-
-// const timeStart2 = Date.now();
-// for (let i = 0; i < 1000 ; i++) {
-//     formatDateOld('2024-04-22T21:00:00Z', "DD.MM")
-// }
-// const timeStop2 = Date.now();
-// console.log('time work formatDateOld - ', timeStop2 - timeStart2);
 
 function test(func, count, name, ...args) {
     const timeStart = Date.now();

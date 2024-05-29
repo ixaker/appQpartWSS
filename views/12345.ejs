@@ -94,30 +94,12 @@
 
   <div class="input-group mb-2" id="workInProvider" style="display: none">
     <label for="date" class="labelNewZakaz">С Саранской</label>
-    <input
-      class=""
-      type="checkbox"
-      style="width: 30px"
-      value=""
-      id="workInSaranskaya"
-    />
+    <input class="" type="checkbox" style="width: 30px" value="" id="workInSaranskaya" />
   </div>
 
   <div class="buttonContainer">
-    <button
-      type="button"
-      class="btn btn-success formButton zakazButton"
-      id="saveNewZakaz"
-    >
-      Сохранить
-    </button>
-    <button
-      type="button"
-      class="btn btn-secondary zakazButton formButton"
-      id="cancelNewZakaz"
-    >
-      Отмена
-    </button>
+    <button type="button" class="btn btn-success formButton zakazButton" id="saveNewZakaz">Сохранить</button>
+    <button type="button" class="btn btn-secondary zakazButton formButton" id="cancelNewZakaz">Отмена</button>
   </div>
 </div>
 
@@ -136,11 +118,7 @@
 >
   <tr class="config" style="display: none">
     <td title="Дата" name="Дата" style="width: 8%">
-      <div
-        class="dataCell textAlignCenter"
-        mask="DD.MM   HH:mm"
-        typeData="date"
-      ></div>
+      <div class="dataCell textAlignCenter" mask="DD.MM   HH:mm" typeData="date"></div>
     </td>
     <td title="МЛ" name="Номер" style="width: 8%">
       <div class="dataCell textAlignCenter"></div>
@@ -162,37 +140,39 @@
 
 <script>
   $(document).ready(function () {
-    let tableID = "#аЗаказНаПроизводство";
+    let tableID = '#аЗаказНаПроизводство';
 
     const listArticules = [
-      { name: "152", articul: "152" },
-      { name: "1521 с базой", articul: "1521" },
-      { name: "1522 база и конус", articul: "1522" },
-      { name: "1523 под канавку", articul: "1523" },
-      { name: "1524 под чистовую", articul: "1524" },
-      { name: "120", articul: "12345.2" },
-      { name: "80", articul: "12345-80" },
-      { name: "900", articul: "900" },
+      { name: '152', articul: '152' },
+      { name: '1521 с базой', articul: '1521' },
+      { name: '1522 база и конус', articul: '1522' },
+      { name: '1523 под канавку', articul: '1523' },
+      { name: '1524 под чистовую', articul: '1524' },
+      { name: '120', articul: '12345.2' },
+      { name: '80', articul: '12345-80' },
+      { name: 'корпус 900', articul: '900' },
+      { name: 'корпус 400', articul: '400' },
+      { name: 'корпус 155', articul: '155' },
     ];
 
-    if ($("#selectSize").length) {
+    if ($('#selectSize').length) {
       listArticules.forEach(function (item) {
-        const option = $("<option>", {
+        const option = $('<option>', {
           value: item.articul,
           text: item.name,
         });
-        $("#selectSize").append(option);
+        $('#selectSize').append(option);
       });
     }
 
-    const articules = listArticules.map((item) => item.articul).join(",");
-    console.log("articules from 12345", articules);
-    $("#аЗаказНаПроизводство").data("param", articules);
+    const articules = listArticules.map(item => item.articul).join(',');
+    console.log('articules from 12345', articules);
+    $('#аЗаказНаПроизводство').data('param', articules);
 
     initTables();
 
-    initInputCount("#count");
-    initSelectSize("#selectSize");
+    initInputCount('#count');
+    initSelectSize('#selectSize');
 
     // callback при получении данных от сервера по wss
     callbackWSS = async function (data) {
@@ -217,24 +197,24 @@
     callbackAfterWrite = function (data) {};
 
     // клик по кнопке Добавить отчет
-    $("#btnAdd").on("click", function (event) {
+    $('#btnAdd').on('click', function (event) {
       clickAnimate(this);
 
       setTimeout(() => {
-        $("#addZakaz").show(300);
+        $('#addZakaz').show(300);
       }, 200);
       setTimeout(() => {
-        $("#btnAdd").hide(300);
+        $('#btnAdd').hide(300);
       }, 200);
 
-      $("#selectSize").val("");
-      setValid("#selectSize", false);
+      $('#selectSize').val('');
+      setValid('#selectSize', false);
 
-      $("#count").val("");
-      setValid("#count", false);
+      $('#count').val('');
+      setValid('#count', false);
 
-      $("#workInSaranskaya").prop("checked", false);
-      $("#workInSaranskaya").parent().hide();
+      $('#workInSaranskaya').prop('checked', false);
+      $('#workInSaranskaya').parent().hide();
 
       /* var userInput = prompt("Сколько корпусов пришло?");
 
@@ -265,24 +245,24 @@
     });
 
     function initSelectSize(element) {
-      $(element).on("change", function () {
+      $(element).on('change', function () {
         const value = $(this).val();
         setValid(this, true);
 
-        if (value == "12345.2") {
-          $("#workInSaranskaya").parent().show();
+        if (value == '12345.2') {
+          $('#workInSaranskaya').parent().show();
         } else {
-          $("#workInSaranskaya").parent().hide();
-          $("#workInSaranskaya").prop("checked", false);
+          $('#workInSaranskaya').parent().hide();
+          $('#workInSaranskaya').prop('checked', false);
         }
       });
     }
 
     function initInputCount(element) {
-      $(element).on("change", function () {
+      $(element).on('change', function () {
         const value = $(this).val();
 
-        if (value == 0 || value === "" || value < 0) {
+        if (value == 0 || value === '' || value < 0) {
           setValid(this, false);
         } else {
           setValid(this, true);
@@ -290,45 +270,45 @@
       });
     }
 
-    $("#saveNewZakaz").on("click", function (event) {
+    $('#saveNewZakaz').on('click', function (event) {
       clickAnimate(this);
 
-      const selectSize = $("#selectSize");
-      const count = $("#count");
-      const workInSaranskaya = $("#workInSaranskaya");
+      const selectSize = $('#selectSize');
+      const count = $('#count');
+      const workInSaranskaya = $('#workInSaranskaya');
 
-      if (selectSize.hasClass("invalid")) {
-        toastr.error("Выберите размер корпуса");
+      if (selectSize.hasClass('invalid')) {
+        toastr.error('Выберите размер корпуса');
         return;
       }
 
-      if (count.hasClass("invalid")) {
-        toastr.error("Укажите сколько штук изготовлено");
+      if (count.hasClass('invalid')) {
+        toastr.error('Укажите сколько штук изготовлено');
         return;
       }
 
       setTimeout(() => {
-        $("#addZakaz").hide(300);
+        $('#addZakaz').hide(300);
       }, 200);
       setTimeout(() => {
-        $("#btnAdd").show(300);
+        $('#btnAdd').show(300);
       }, 200);
 
       const data = {};
       data.detal = $(selectSize).val();
       data.count = parseInt($(count).val());
-      data.workInSaranskaya = $(workInSaranskaya).prop("checked");
+      data.workInSaranskaya = $(workInSaranskaya).prop('checked');
 
       console.log(data);
       NProgress.start();
 
       $.ajax({
-        url: "/app/createZakaz",
-        method: "POST",
-        contentType: "application/json",
+        url: '/app/createZakaz',
+        method: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
-          console.log("success POST", status, data);
+          console.log('success POST', status, data);
         },
       }).always(function () {
         NProgress.done();
@@ -337,13 +317,13 @@
       });
     });
 
-    $("#cancelNewZakaz").on("click", function (event) {
+    $('#cancelNewZakaz').on('click', function (event) {
       clickAnimate(this);
       setTimeout(() => {
-        $("#addZakaz").hide(300);
+        $('#addZakaz').hide(300);
       }, 200);
       setTimeout(() => {
-        $("#btnAdd").show(300);
+        $('#btnAdd').show(300);
       }, 200);
     });
   });

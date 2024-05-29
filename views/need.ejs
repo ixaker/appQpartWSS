@@ -45,7 +45,7 @@
   }
 
   .selectedGroupEtap > td {
-    background-color: rgb(238, 252, 199); /* Наследуется цвет фона родителя */
+    background-color: rgb(238, 252, 199);
   }
 
   #saveNewReport {
@@ -65,25 +65,6 @@
 
   .hide {
     display: none;
-  }
-
-  #infoZakazForm {
-    max-width: 600px;
-    margin: auto;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
-  #infoZakazForm tr {
-    height: 25px;
-  }
-
-  #infoZakazForm th {
-    width: 40px;
-  }
-
-  #infoZakazForm th:nth-child(2) {
-    width: 160px;
   }
 
   .DefectListMainRow td {
@@ -202,9 +183,7 @@
       <div class="dataCell dataCellNeed">Брак</div>
     </td>
     <td title="Количество работ" name="КоличествоРаботы" style="width: 100px">
-      <div id="countRowInDefectList" class="dataCell textAlignEnd dataCellNeed">
-        0
-      </div>
+      <div id="countRowInDefectList" class="dataCell textAlignEnd dataCellNeed">0</div>
     </td>
   </tr>
 
@@ -218,64 +197,35 @@
         url="/app/getListDefect"
         filter="filterForDefectTable"
         append="end"
-        addNevRow="callbackAddNewRowForListDefect"
-        callbackAfterWrite="callbackAfterWriteListDefect"
+        callbackBeforeInitTable="callbackBeforeInitTableForListDefect"
+        callbackAfterInitTable="callbackAfterInitTableForListDefect"
         header
       >
         <tr class="config" style="display: none">
           <td title="Дата" name="ДатаОтчета" style="width: 7%">
-            <div
-              class="dataCell textAlignCenter"
-              mask="DD.MM"
-              typeData="date"
-            ></div>
+            <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
           </td>
-          <td
-            title="Номер детали"
-            name="Заказ"
-            key="АртикулНаименование"
-            class="textAlignCenter"
-            style="width: 32%"
-          >
+          <td title="Номер детали" name="Заказ" key="АртикулНаименование" class="textAlignCenter" style="width: 32%">
             <div class="dataCell"></div>
           </td>
-          <td
-            title="Станок"
-            name="Станок"
-            key="ИнвентарныйНомер"
-            style="width: 8%"
-          >
+          <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 8%">
             <div class="dataCell"></div>
           </td>
           <td title="МЛ" name="Заказ" key="Номер" style="width: 7%">
             <div class="dataCell textAlignCenter"></div>
           </td>
-          <td
-            title="Этап"
-            name="ЭтапПроизводства"
-            key="КодНовый"
-            style="width: 8%"
-          >
+          <td title="Этап" name="ЭтапПроизводства" key="КодНовый" style="width: 8%">
             <div class="dataCell textAlignCenter"></div>
           </td>
-          <td
-            title="Оператор"
-            name="Сотрудник"
-            key="Наименование"
-            style="width: 20%"
-          >
+          <td title="Оператор" name="Сотрудник" key="Наименование" style="width: 20%">
             <div class="dataCell"></div>
           </td>
-          <td
-            title="Кол-во"
-            name="КоличествоОсталосьИсправить"
-            style="width: 6%"
-          >
+          <td title="Кол-во" name="КоличествоОсталосьИсправить" style="width: 6%">
             <div class="dataCell textAlignEnd"></div>
           </td>
           <td title="" id="defectBtn" style="width: 6%">
             <div class="groupBtnRow">
-              <i class="bi bi-play-circle btnPlay btnRow colorGreen"></i>
+              <i class="bi bi-play-circle btnPlay btnRow colorGreen hide"></i>
             </div>
           </td>
         </tr>
@@ -316,44 +266,21 @@
       >
         <tr class="config" style="display: none">
           <td title="Дата" name="ДатаОтчета" style="width: 8%">
-            <div
-              class="dataCell textAlignCenter"
-              mask="DD.MM"
-              typeData="date"
-            ></div>
+            <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
           </td>
-          <td
-            title="Номер детали"
-            name="Заказ"
-            key="АртикулНаименование"
-            style="width: 33%"
-          >
+          <td title="Номер детали" name="Заказ" key="АртикулНаименование" style="width: 33%">
             <div class="dataCell"></div>
           </td>
           <td title="МЛ" name="Заказ" key="Номер" style="width: 7%">
             <div class="dataCell textAlignCenter"></div>
           </td>
-          <td
-            title="Оператор"
-            name="Сотрудник"
-            key="Наименование"
-            style="width: 21%"
-          >
+          <td title="Оператор" name="Сотрудник" key="Наименование" style="width: 21%">
             <div class="dataCell"></div>
           </td>
-          <td
-            title="Этап производства"
-            name="ЭтапПроизводства"
-            key="Наименование"
-            style="width: 22%"
-          >
+          <td title="Этап производства" name="ЭтапПроизводства" key="Наименование" style="width: 22%">
             <div class="dataCell"></div>
           </td>
-          <td
-            title="Изгото влено"
-            name="КоличествоИзготовлено"
-            style="width: 9%"
-          >
+          <td title="Изгото влено" name="КоличествоИзготовлено" style="width: 9%">
             <div class="dataCell textAlignEnd" style="padding: 5px"></div>
           </td>
           <!--                     <td title="Прове рено" 
@@ -405,30 +332,13 @@
           callbackAfterInitTable="callbackAfterInitTableNeed"
         >
           <tr class="config" style="display: none">
-            <td
-              title="МЛ"
-              name="Заказ"
-              key="Номер"
-              class="zakaz"
-              style="width: 8%"
-            >
+            <td title="МЛ" name="Заказ" key="Номер" class="zakaz" style="width: 8%">
               <div class="dataCell textAlignCenter"></div>
             </td>
-            <td
-              title="Номер детали"
-              name="Заказ"
-              key="АртикулНаименование"
-              style="width: 43%"
-            >
+            <td title="Номер детали" name="Заказ" key="АртикулНаименование" style="width: 43%">
               <div class="dataCell"></div>
             </td>
-            <td
-              title="Доп инфо"
-              name="ДопИнфо"
-              class="addingInfo"
-              headerClass="addingInfo"
-              style="width: 25%"
-            >
+            <td title="Доп инфо" name="ДопИнфо" class="addingInfo" headerClass="addingInfo" style="width: 25%">
               <div class="dataCell divAddingInfo"></div>
             </td>
             <td
@@ -444,27 +354,18 @@
             <td title="Надо" name="МожноДелать" style="width: 8%">
               <div class="dataCell textAlignEnd"></div>
             </td>
-            <td
-              title="Дни"
-              name="КоличествоДнейБездействияНадо"
-              style="width: 7%"
-            >
+            <td title="Дни" name="КоличествоДнейБездействияНадо" style="width: 7%">
               <div class="dataCell textAlignEnd"></div>
             </td>
             <td title="" style="width: 7%">
               <div class="groupBtnRow">
-                <i
-                  class="bi bi-play-circle btnPlay btnRow colorGreen"
-                  style="display: none"
-                ></i>
+                <i class="bi bi-play-circle btnPlay btnRow colorGreen" style="display: none"></i>
               </div>
             </td>
           </tr>
 
           <tr id="newReportRow" style="display: none">
-            <td colspan="6" style="background-color: aliceblue">
-              <%- include('newReportRow.ejs') %>
-            </td>
+            <td colspan="6" style="background-color: aliceblue"><%- include('newReportRow.ejs') %></td>
           </tr>
 
           <tr id="infoZakazRow" style="display: none">
@@ -478,8 +379,56 @@
   </tr>
 </table>
 
+<style>
+  #infoZakazTable {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+  @media (max-width: 600px) {
+    #infoZakazTable {
+      max-width: 320px;
+      font-size: 12px;
+    }
+
+    #infoZakazTable th:nth-child(1) {
+      width: 8%;
+    }
+    #infoZakazTable th:nth-child(2) {
+      width: 52%;
+    }
+    #infoZakazTable th:nth-child(3),
+    #infoZakazTable th:nth-child(4),
+    #infoZakazTable th:nth-child(5),
+    #infoZakazTable th:nth-child(6) {
+      width: 10%;
+    }
+  }
+
+  #infoZakazTable th {
+    font-size: 1em;
+  }
+  #infoZakazTable tr {
+    height: 25px;
+  }
+
+  #infoZakazTable th {
+    width: 40px;
+  }
+
+  #infoZakazTable th:nth-child(1) {
+  }
+
+  #infoZakazTable th:nth-child(2) {
+    width: 160px;
+  }
+</style>
+
 <script id="infoZakaz-template" type="text/x-handlebars-template">
-  <table>
+  <table id='infoZakazTable'>
     <thead>
       <tr>
         <th>Код</th>
@@ -492,13 +441,13 @@
     </thead>
     <tbody>
       {{#each items}}
-        <tr>
-          <td class="textAlignCenter">{{КодНовый}}</td>
+        <tr class='{{rowClass}}'>
+          <td class='textAlignCenter'>{{КодНовый}}</td>
           <td>{{ЭтапПроизводства}}</td>
-          <td class="textAlignEnd">{{Сделано}}</td>
-          <td class="textAlignEnd">{{Брак}}</td>
-          <td class="textAlignEnd {{addClass}}">{{Изготовить}}</td>
-          <td class="textAlignEnd">{{Утеря}}</td>
+          <td class='textAlignEnd'>{{Сделано}}</td>
+          <td class='textAlignEnd'>{{Брак}}</td>
+          <td class='textAlignEnd {{cellClass}}'>{{Изготовить}}</td>
+          <td class='textAlignEnd'>{{Утеря}}</td>
         </tr>
       {{/each}}
     </tbody>
@@ -509,28 +458,28 @@
   var access = false;
 
   $(document).ready(function () {
-    console.log("need.ejs $(document).ready");
-    let tableID = "#OTK";
+    console.log('need.ejs $(document).ready');
+    let tableID = '#OTK';
     initTables();
 
     initInputProvider();
-    initInputAutocomplete("#provider");
-    initInputAutocomplete("#sotrudnik");
-    initInputAutocomplete("#sotrudnikFix");
+    initInputAutocomplete('#provider');
+    initInputAutocomplete('#sotrudnik');
+    initInputAutocomplete('#sotrudnikFix');
 
-    initInputTimeMask("#timeStart");
-    initInputTimeMask("#timeStop");
-    initInputTimeMask("#time");
+    initInputTimeMask('#timeStart');
+    initInputTimeMask('#timeStop');
+    initInputTimeMask('#time');
 
     initInputTimeMask();
-    initInputDate("#date");
-    initInputDate("#dateFix");
-    initInputCount("#count");
-    initInputCount("#countFix");
+    initInputDate('#date');
+    initInputDate('#dateFix');
+    initInputCount('#count');
+    initInputCount('#countFix');
     initInputWeight();
     initInputPrice();
 
-    addSubscribeWSS("ОтчетПоРаботе2022_all");
+    addSubscribeWSS('ОтчетПоРаботе2022_all');
 
     callbackWSS = async function (data) {
       callbackTable(data);
@@ -545,7 +494,7 @@
     }
 
     function initInputDate(element) {
-      $(element).on("change", function () {
+      $(element).on('change', function () {
         const value = $(this).val();
 
         if (value.length == 0) {
@@ -557,11 +506,11 @@
     }
 
     function initInputCount(element) {
-      $(element).on("change", function () {
+      $(element).on('change', function () {
         const value = $(this).val();
-        const maxCount = parseInt($(this).attr("maxCount") || 0);
+        const maxCount = parseInt($(this).attr('maxCount') || 0);
 
-        if (value == 0 || value === "" || value < 0 || value > maxCount) {
+        if (value == 0 || value === '' || value < 0 || value > maxCount) {
           setValid(this, false);
         } else {
           setValid(this, true);
@@ -570,10 +519,10 @@
     }
 
     function initInputWeight() {
-      $("#weight").on("change", function () {
+      $('#weight').on('change', function () {
         const value = $(this).val();
         console.log(value);
-        if (value == 0 || value === "" || value < 0) {
+        if (value == 0 || value === '' || value < 0) {
           setValid(this, false);
         } else {
           setValid(this, true);
@@ -582,10 +531,10 @@
     }
 
     function initInputPrice() {
-      $("#price").on("change", function () {
+      $('#price').on('change', function () {
         const value = $(this).val();
 
-        if (value == 0 || value === "" || value < 0) {
+        if (value == 0 || value === '' || value < 0) {
           setValid(this, false);
         } else {
           setValid(this, true);
@@ -596,32 +545,33 @@
     // ************************************************** Надо ********************************************************
 
     callbackBeforeInitTableForListGroupEtapNeed = function (data) {
-      console.log("callbackBeforeInitTableForListGroupEtapNeed", data);
-      const countDefect = data.defectCount;
-      const countOTK = data.OTK_Count;
+      console.log('callbackBeforeInitTableForListGroupEtapNeed', data);
+      const countDefect = data.defectCount || 0;
+      const countOTK = data.OTK_Count || 0;
       const visibleDefect = countDefect > 0;
       const visibleOTK = countOTK > 0;
 
       if (visibleDefect) {
-        $("#DefectListMainRow").show(300);
+        $('#DefectListMainRow').show(300);
       }
 
       if (visibleOTK) {
-        $("#OTK_ListMainRow").show(300);
+        $('#OTK_ListMainRow').show(300);
       }
 
-      $("#countRowInDefectList").text(countDefect);
-      $("#countRowOTK").text(countOTK);
+      $('#countRowInDefectList').text(countDefect);
+      $('#countRowOTK').text(countOTK);
     };
 
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForListGroupEtapNeed = function (data, result = true) {
+      console.log('filterForListGroupEtapNeed uid', data.uid, data['Наименование']);
       try {
-        if (data["КоличествоРаботы"] == "" || data["КоличествоРаботы"] == "0") {
+        if (data['КоличествоРаботы'] == '' || data['КоличествоРаботы'] == '0') {
           result = false;
         }
 
-        if (data["uid"] == "bf73ce86-47af-11ec-8183-000c29006152") {
+        if (data['uid'] == 'bf73ce86-47af-11ec-8183-000c29006152') {
           result = false;
         }
       } catch (error) {
@@ -629,10 +579,10 @@
       }
 
       // hide #listWork if data of table not exist
-      if (!result && $("#listWork").is(":visible")) {
-        const oldGroupEtapID = $("#listWork").attr("groupEtapID");
-        if (data["uid"] === oldGroupEtapID) {
-          $("#listWork").hide(200);
+      if (!result && $('#listWork').is(':visible')) {
+        const oldGroupEtapID = $('#listWork').attr('groupEtapID');
+        if (data['uid'] === oldGroupEtapID) {
+          $('#listWork').hide(200);
         }
       }
       return result;
@@ -641,7 +591,7 @@
     // callback придобавлении строки группового этапа в атрибут пишем есть ли право вносить отчеты
     callbackAddNewRowForListGroupEtapNeed = function (data) {
       try {
-        $(`#${data.data.uid}`).attr("access", data.data["edit"]);
+        $(`#${data.data.uid}`).attr('access', data.data['edit']);
 
         // data.data['ДоступApp'].forEach(function(element) {
         //     const uidSotr = element['Сотрудник'].uid||'';
@@ -659,21 +609,21 @@
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForNeed = function (data, result = true) {
       try {
-        const groupEtapID = $("#listWork").attr("groupEtapID");
+        const groupEtapID = $('#listWork').attr('groupEtapID');
 
-        if (groupEtapID !== data["ГрупповойЭтап"]["uid"]) {
+        if (groupEtapID !== data['ГрупповойЭтап']['uid']) {
           result = false;
         }
 
-        if (data["МожноДелать"] == "" || data["МожноДелать"] == "0") {
+        if (data['МожноДелать'] == '' || data['МожноДелать'] == '0') {
           result = false;
         }
 
-        if (data["ПометкаУдаления"] === true) {
+        if (data['ПометкаУдаления'] === true) {
           result = false;
         }
 
-        if (!data["Заказ"]["Активен"]) {
+        if (!data['Заказ']['Активен']) {
           result = false;
         }
       } catch (error) {
@@ -682,13 +632,11 @@
 
       try {
         if (result) {
-          const row = $("#" + data["uid"]);
-          const days = parseInt(data["КоличествоДнейБездействияНадо"]);
+          const row = $('#' + data['uid']);
+          const days = parseInt(data['КоличествоДнейБездействияНадо']);
 
           if (days >= 5) {
-            $(row)
-              .find('.dataCell[name="КоличествоДнейБездействияНадо"]')
-              .addClass("colorRed");
+            $(row).find('.dataCell[name="КоличествоДнейБездействияНадо"]').addClass('colorRed');
           }
         }
       } catch (error) {
@@ -701,12 +649,12 @@
     callbackAddNewRowForListNeed = function (data) {
       try {
         if (access) {
-          $("#" + data.data["uid"])
-            .find(".btnPlay")
+          $('#' + data.data['uid'])
+            .find('.btnPlay')
             .show();
         } else {
-          $("#" + data.data["uid"])
-            .find(".btnPlay")
+          $('#' + data.data['uid'])
+            .find('.btnPlay')
             .remove();
         }
       } catch (error) {
@@ -715,256 +663,247 @@
     };
 
     // обработка клика по строке Этапа производства
-    $("#аГруппыЭтаповПроизводства").on(
-      "click",
-      ".аГруппыЭтаповПроизводства",
-      function (event) {
-        console.log(this);
+    $('#аГруппыЭтаповПроизводства').on('click', '.аГруппыЭтаповПроизводства', function (event) {
+      clickAnimate(this);
 
-        $("#newReportRow").hide(0);
-        $("#infoZakazRow").hide(0);
-        $("#OTK_ListRow").hide(0);
+      $('#newReportRow').hide(0);
+      $('#infoZakazRow').hide(0);
+      $('#OTK_ListRow').hide(0);
 
-        const groupEtapID = $(this).attr("id");
-        const oldGroupEtapID = $("#listWork").attr("groupEtapID");
-        const row = $(this);
-        let needInit = false;
+      const groupEtapID = $(this).attr('id');
+      const oldGroupEtapID = $('#listWork').attr('groupEtapID');
+      const row = $(this);
+      let needInit = false;
 
-        $("#listWork").attr("groupEtapID", groupEtapID);
+      $('#listWork').attr('groupEtapID', groupEtapID);
 
-        if (groupEtapID === oldGroupEtapID) {
-          if ($("#listWork").is(":visible")) {
-            $("#listWork").hide(200);
-          } else {
-            $("#Надо").children("tbody").children(".rowData").remove();
-            needInit = true;
-            //$("#listWork").show(300);
-          }
+      if (groupEtapID === oldGroupEtapID) {
+        if ($('#listWork').is(':visible')) {
+          $('#listWork').hide(200);
         } else {
-          $("#listWork").hide(0);
-          $("#Надо").children("tbody").children(".rowData").remove();
-          $("#listWork").insertAfter(row);
-          // $("#listWork").show(300);
+          $('#Надо').children('tbody').children('.rowData').remove();
           needInit = true;
+          //$("#listWork").show(300);
         }
-
-        if (needInit) {
-          $("#аГруппыЭтаповПроизводства")
-            .children("tbody")
-            .children(".rowData")
-            .removeClass("selectedGroupEtap");
-
-          $("#OTK_ListMainRow").removeClass("selectedGroupEtap");
-          $(this).addClass("selectedGroupEtap");
-          $("#Надо").data("param", { groupEtapID: groupEtapID });
-
-          const kod = $(this).find('.dataCell[name="Код"]').text();
-          $("#kod").text(kod);
-
-          console.log("listWork visible");
-          disableHighlightElement();
-
-          access = eval($(this).attr("access") || "false");
-
-          initTable("#Надо");
-
-          enableHighlightElement();
-
-          $(".addingInfo").addClass("hide");
-          $(".etapInfo").removeClass("hide");
-
-          const listEtapDopInfo = [
-            "89fdc2b4-07d8-11ec-816d-000c29006152",
-            "bf73ce86-47af-11ec-8183-000c29006152",
-            "062236eb-67a8-11ea-813c-000c29006152",
-          ];
-
-          if (listEtapDopInfo.includes(groupEtapID)) {
-            $(".addingInfo").removeClass("hide");
-            $(".etapInfo").addClass("hide");
-          }
-        } else {
-          $(this).removeClass("selectedGroupEtap");
-        }
+      } else {
+        $('#listWork').hide(0);
+        $('#Надо').children('tbody').children('.rowData').remove();
+        $('#listWork').insertAfter(row);
+        // $("#listWork").show(300);
+        needInit = true;
       }
-    );
+
+      if (needInit) {
+        $('#аГруппыЭтаповПроизводства').children('tbody').children('.rowData').removeClass('selectedGroupEtap');
+
+        $('#OTK_ListMainRow').removeClass('selectedGroupEtap');
+        $(this).addClass('selectedGroupEtap');
+        $('#Надо').data('param', { groupEtapID: groupEtapID });
+
+        const kod = $(this).find('.dataCell[name="Код"]').text();
+        $('#kod').text(kod);
+
+        console.log('listWork visible');
+        disableHighlightElement();
+
+        access = eval($(this).attr('access') || 'false');
+
+        initTable('#Надо');
+
+        enableHighlightElement();
+
+        $('.addingInfo').addClass('hide');
+        $('.etapInfo').removeClass('hide');
+
+        const listEtapDopInfo = [
+          '89fdc2b4-07d8-11ec-816d-000c29006152',
+          'bf73ce86-47af-11ec-8183-000c29006152',
+          '062236eb-67a8-11ea-813c-000c29006152',
+        ];
+
+        if (listEtapDopInfo.includes(groupEtapID)) {
+          $('.addingInfo').removeClass('hide');
+          $('.etapInfo').addClass('hide');
+        }
+      } else {
+        $(this).removeClass('selectedGroupEtap');
+      }
+    });
 
     // колбек для відображення таблиці після ініціалізації
     callbackAfterInitTableNeed = function (data) {
       setTimeout(() => {
-        $("#listWork").show(300);
+        $('#listWork').show(300);
       }, 100);
     };
 
     // обработка клика по кнопке Создания отчета
-    $("#Надо").on("click", ".btnPlay", function (event) {
-      $("#buttonsGroup").show();
-      const rowID = $(this).attr("rowID");
-      const row = $("#" + rowID);
-      const maxCount = parseInt(
-        $(row).find('.dataCell[name="МожноДелать"]').text() || 0
-      );
-      const data = $(row).data("data");
-      const groupEtapID = $("#listWork").attr("groupEtapID");
-      const userInfo = $("#menu").data("userInfo");
+    $('#Надо').on('click', '.btnPlay', function (event) {
+      $('#buttonsGroup').show();
+      const rowID = $(this).attr('rowID');
+      const row = $('#' + rowID);
+      const maxCount = parseInt($(row).find('.dataCell[name="МожноДелать"]').text() || 0);
+      const data = $(row).data('data');
+      const groupEtapID = $('#listWork').attr('groupEtapID');
+      const userInfo = $('#menu').data('userInfo');
 
       clickAnimate(this);
 
       console.log(data);
 
-      $("#infoZakazRow").hide(0);
+      $('#infoZakazRow').hide(0);
 
-      if ($("#newReportRow").is(":visible")) {
-        $("#newReportRow").hide(100);
+      if ($('#newReportRow').is(':visible')) {
+        $('#newReportRow').hide(100);
       } else {
-        $("#newReportRow").data("data", data);
+        $('#newReportRow').data('data', data);
 
-        $("#provider").val("");
-        $("#provider").attr("uid", "");
-        setValid("#provider", false);
+        $('#provider').val('');
+        $('#provider').attr('uid', '');
+        setValid('#provider', false);
 
-        $("#sotrudnik").val("");
-        $("#sotrudnik").attr("uid", "");
-        setValid("#sotrudnik", false);
+        $('#sotrudnik').val('');
+        $('#sotrudnik').attr('uid', '');
+        setValid('#sotrudnik', false);
 
-        $("#date").val("");
-        setValid("#date", false);
+        $('#date').val('');
+        setValid('#date', false);
 
-        $("#timeStart").val("");
-        setValid("#timeStart", false);
+        $('#timeStart').val('');
+        setValid('#timeStart', false);
 
-        $("#timeStop").val("");
-        setValid("#timeStop", false);
+        $('#timeStop').val('');
+        setValid('#timeStop', false);
 
-        $("#count").val("");
-        $("#count").attr("maxCount", maxCount);
-        setValid("#count", false);
+        $('#count').val('');
+        $('#count').attr('maxCount', maxCount);
+        setValid('#count', false);
 
-        $("#weight").val("");
-        setValid("#weight", false);
+        $('#weight').val('');
+        setValid('#weight', false);
 
-        $("#price").val("");
-        setValid("#price", false);
+        $('#price').val('');
+        setValid('#price', false);
 
-        $("#priceForOne").val("");
-        setValid("#priceForOne", false);
+        $('#priceForOne').val('');
+        setValid('#priceForOne', false);
 
-        $("#workInProviderInput").prop("checked", false);
+        $('#workInProviderInput').prop('checked', false);
 
-        $("#groupInputSotrudnik").show();
-        $("#groupInputProvider").hide();
-        $(".termoobrabotkaProvider").hide();
-        $(".obrabotkaProviderPrice").hide();
+        $('#groupInputSotrudnik').show();
+        $('#groupInputProvider').hide();
+        $('.termoobrabotkaProvider').hide();
+        $('.obrabotkaProviderPrice').hide();
 
-        if (data.data["ЭтапПроизводства"]["НеУчитыватьВремяРаботы"]) {
-          $("#workTimePeriod").hide();
+        if (data.data['ЭтапПроизводства']['НеУчитыватьВремяРаботы']) {
+          $('#workTimePeriod').hide();
         } else {
-          $("#workTimePeriod").show();
+          $('#workTimePeriod').show();
         }
 
-        $("#newReportRow").attr("report", rowID);
-        $("#newReportRow").insertAfter(row);
-        $("#newReportRow").show(100);
+        $('#newReportRow').attr('report', rowID);
+        $('#newReportRow').insertAfter(row);
+        $('#newReportRow').show(100);
 
-        $("#sotrudnik").focus();
+        $('#sotrudnik').focus();
       }
     });
 
     // обработка клика по кнопке Отмена создания отчета
-    $("#cancelNewReport").on("click", function (event) {
+    $('#cancelNewReport').on('click', function (event) {
       clickAnimate(this);
       setTimeout(() => {
-        $("#newReportRow").hide(300);
+        $('#newReportRow').hide(300);
       }, 200);
     });
 
     // обработка клика по кнопке Сохранить отчет
-    $("#saveNewReport").on("click", function (event) {
+    $('#saveNewReport').on('click', function (event) {
       // $("#saveNewReport").prop("disabled", true);
-      $("#buttonsGroup").hide();
+      $('#buttonsGroup').hide();
       clickAnimate(this);
 
-      const workInProvider = $("#workInProviderInput");
-      const provider = $("#provider");
-      const sotrudnik = $("#sotrudnik");
-      const date = $("#date");
-      const timeStart = $("#timeStart");
-      const timeStop = $("#timeStop");
-      const count = $("#count");
-      const weight = $("#weight");
-      const price = $("#price");
-      const priceForOne = $("#priceForOne");
-      const info = $("#newReportRow").data("data") || {};
-      const etapID = info.data["ИД"];
+      const workInProvider = $('#workInProviderInput');
+      const provider = $('#provider');
+      const sotrudnik = $('#sotrudnik');
+      const date = $('#date');
+      const timeStart = $('#timeStart');
+      const timeStop = $('#timeStop');
+      const count = $('#count');
+      const weight = $('#weight');
+      const price = $('#price');
+      const priceForOne = $('#priceForOne');
+      const info = $('#newReportRow').data('data') || {};
+      const etapID = info.data['ИД'];
       let error = false;
 
-      if (provider.hasClass("invalid") && provider.is(":visible")) {
-        toastr.error("Укажите подрядчика");
+      if (provider.hasClass('invalid') && provider.is(':visible')) {
+        toastr.error('Укажите подрядчика');
         error = true;
       }
 
-      if (sotrudnik.hasClass("invalid") && sotrudnik.is(":visible")) {
-        toastr.error("Укажите сотрудника");
+      if (sotrudnik.hasClass('invalid') && sotrudnik.is(':visible')) {
+        toastr.error('Укажите сотрудника');
         error = true;
       }
 
-      if (date.hasClass("invalid") && date.is(":visible")) {
-        toastr.error("Укажите дату отчета");
+      if (date.hasClass('invalid') && date.is(':visible')) {
+        toastr.error('Укажите дату отчета');
         error = true;
       }
 
-      if (timeStart.hasClass("invalid") && timeStart.is(":visible")) {
-        toastr.error("Укажите время начала работы");
+      if (timeStart.hasClass('invalid') && timeStart.is(':visible')) {
+        toastr.error('Укажите время начала работы');
         error = true;
       }
 
-      if (timeStop.hasClass("invalid") && timeStop.is(":visible")) {
-        toastr.error("Укажите время окончания работы");
+      if (timeStop.hasClass('invalid') && timeStop.is(':visible')) {
+        toastr.error('Укажите время окончания работы');
         error = true;
       }
 
-      if (count.hasClass("invalid")) {
-        console.log("info", etapID, info);
+      if (count.hasClass('invalid')) {
+        console.log('info', etapID, info);
 
-        if (etapID === "22001") {
+        if (etapID === '22001') {
           const inputCountValue = parseInt($(count).val());
-          console.log("inputCountValue", inputCountValue);
+          console.log('inputCountValue', inputCountValue);
 
           if (inputCountValue > 0) {
           } else {
-            toastr.error("Укажите сколько штук изготовлено");
+            toastr.error('Укажите сколько штук изготовлено');
             error = true;
           }
         } else {
-          toastr.error("Укажите сколько штук изготовлено");
+          toastr.error('Укажите сколько штук изготовлено');
           error = true;
         }
       }
 
-      if (weight.hasClass("invalid") && weight.is(":visible")) {
-        toastr.error("Укажите вес одной детали");
+      if (weight.hasClass('invalid') && weight.is(':visible')) {
+        toastr.error('Укажите вес одной детали');
         error = true;
       }
 
-      if (price.hasClass("invalid") && price.is(":visible")) {
-        toastr.error("Укажите цену");
+      if (price.hasClass('invalid') && price.is(':visible')) {
+        toastr.error('Укажите цену');
         error = true;
       }
 
-      if (priceForOne.hasClass("invalid") && priceForOne.is(":visible")) {
-        toastr.error("Укажите цену");
+      if (priceForOne.hasClass('invalid') && priceForOne.is(':visible')) {
+        toastr.error('Укажите цену');
         error = true;
       }
 
       if (error === true) {
-        $("#buttonsGroup").show();
+        $('#buttonsGroup').show();
         return;
       }
 
       const data = {};
-      data.workInProvider = $(workInProvider).prop("checked");
-      data.provider = $(provider).attr("uid");
-      data.sotrudnik = $(sotrudnik).attr("uid");
+      data.workInProvider = $(workInProvider).prop('checked');
+      data.provider = $(provider).attr('uid');
+      data.sotrudnik = $(sotrudnik).attr('uid');
       data.date = new Date($(date).val());
       data.timeStart = $(timeStart).val();
       data.timeStop = $(timeStop).val();
@@ -976,15 +915,15 @@
 
       NProgress.start();
       $.ajax({
-        url: "/app/createNewReport",
-        method: "POST",
-        contentType: "application/json",
+        url: '/app/createNewReport',
+        method: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
           if (data.error) {
-            toastr.error(data["Причина"]);
+            toastr.error(data['Причина']);
           } else {
-            toastr.success("Отчет создан!");
+            toastr.success('Отчет создан!');
           }
         },
       }).always(function () {
@@ -993,62 +932,64 @@
       });
 
       setTimeout(() => {
-        $("#newReportRow").hide(300);
+        $('#newReportRow').hide(300);
       }, 200);
-      $("#saveNewReport").prop("disabled", false);
+      $('#saveNewReport').prop('disabled', false);
     });
 
     // обработка клика по галочке Сделано у подрядчика
-    $("#workInProviderInput").on("change", function () {
-      const data = $("#newReportRow").data("data");
+    $('#workInProviderInput').on('change', function () {
+      const data = $('#newReportRow').data('data');
 
       if (this.checked) {
-        $("#groupInputProvider").show();
-        $("#groupInputSotrudnik").hide();
-        $("#workTimePeriod").hide();
+        $('#groupInputProvider').show();
+        $('#groupInputSotrudnik').hide();
+        $('#workTimePeriod').hide();
 
-        if (
-          data.data["ГрупповойЭтап"]["uid"] ===
-          "c61b8e1e-67a5-11ea-813c-000c29006152"
-        ) {
-          $(".termoobrabotkaProvider").show();
-          $(".obrabotkaProviderPrice").hide();
+        if (data.data['ГрупповойЭтап']['uid'] === 'c61b8e1e-67a5-11ea-813c-000c29006152') {
+          $('.termoobrabotkaProvider').show();
+          $('.obrabotkaProviderPrice').hide();
         } else {
-          $(".termoobrabotkaProvider").hide();
-          $(".obrabotkaProviderPrice").show();
+          $('.termoobrabotkaProvider').hide();
+          $('.obrabotkaProviderPrice').show();
         }
       } else {
-        $("#groupInputSotrudnik").show();
-        $("#groupInputProvider").hide();
-        $(".termoobrabotkaProvider").hide();
-        $(".obrabotkaProviderPrice").hide();
+        $('#groupInputSotrudnik').show();
+        $('#groupInputProvider').hide();
+        $('.termoobrabotkaProvider').hide();
+        $('.obrabotkaProviderPrice').hide();
 
-        if (data.data["ЭтапПроизводства"]["НеУчитыватьВремяРаботы"]) {
-          $("#workTimePeriod").hide();
+        if (data.data['ЭтапПроизводства']['НеУчитыватьВремяРаботы']) {
+          $('#workTimePeriod').hide();
         } else {
-          $("#workTimePeriod").show();
+          $('#workTimePeriod').show();
         }
       }
     });
 
     // обработка клика по номеру заказа, отображает таблицу всех этапов с количеством
-    $("#аГруппыЭтаповПроизводства").on("click", ".zakaz", function (event) {
+    $('#аГруппыЭтаповПроизводства').on('click', '.zakaz', function (event) {
       const row = $(this).parent();
-      const data = $(row).data("data");
-      const zakaz = data.data["Заказ"];
-      const zakazUID = zakaz["uid"];
-      const oldZakazUID = $("#infoZakazRow").attr("oldZakazUID");
+      const data = $(row).data('data');
+      const currentEtap = data.data['ИД'];
+      const zakaz = data.data['Заказ'];
+      const zakazUID = zakaz['uid'];
+      const oldZakazUID = $('#infoZakazRow').attr('oldZakazUID');
       let needInit = false;
 
       clickAnimate(this);
 
-      $("#infoZakazRow").attr("oldZakazUID", zakazUID);
+      $('#infoZakazRow').attr('oldZakazUID', zakazUID);
 
-      if ($("#infoZakazRow").is(":visible")) {
+      if ($('#newReportRow').is(':visible')) {
+        $('#newReportRow').hide(100);
+      }
+
+      if ($('#infoZakazRow').is(':visible')) {
         if (zakazUID !== oldZakazUID) {
           needInit = true;
         } else {
-          $("#infoZakazRow").hide(100);
+          $('#infoZakazRow').hide(100);
         }
       } else {
         needInit = true;
@@ -1058,49 +999,50 @@
         NProgress.start();
 
         $.ajax({
-          url: "/app/zakazInfo",
-          type: "GET",
-          dataType: "json",
+          url: '/app/zakazInfo',
+          type: 'GET',
+          dataType: 'json',
           data: { zakaz: zakaz.uid },
           success: function (response) {
-            console.log("response", response);
+            console.log('response', response);
 
             if (!response.error) {
-              Handlebars.registerHelper("isHighDays", function (days) {
-                console.log("isHighDays", days);
+              Handlebars.registerHelper('isHighDays', function (days) {
+                console.log('isHighDays', days);
                 return days > 5;
               });
 
-              const templateSource = $("#infoZakaz-template").html();
+              const templateSource = $('#infoZakaz-template').html();
               const template = Handlebars.compile(templateSource);
-              const items =
-                response["ТекущееСостояниеЭтаповЗаказа"]["ЭтапыПроизводства"];
+              const items = response['ТекущееСостояниеЭтаповЗаказа']['ЭтапыПроизводства'];
 
-              items.forEach((item) => {
-                item["Сделано"] =
-                  item["Сделано"] === "0" ? "" : item["Сделано"];
-                item["Брак"] = item["Брак"] === "0" ? "" : item["Брак"];
-                item["Изготовить"] =
-                  item["Изготовить"] === "0" ? "" : item["Изготовить"];
-                item["Утеря"] = item["Утеря"] === "0" ? "" : item["Утеря"];
-                item["МожноДелать"] =
-                  item["МожноДелать"] === "0" ? "" : item["МожноДелать"];
-                item["КоличествоДнейБездействияНадо"] = parseInt(
-                  item["КоличествоДнейБездействияНадо"]
+              items.forEach(item => {
+                console.log(
+                  'обработка клика по номеру заказа, отображает таблицу всех этапов с количеством item = ',
+                  item,
+                  item['КодНовый'],
+                  currentEtap
                 );
-                item["addClass"] =
-                  item["КоличествоДнейБездействияНадо"] > 5 ? " colorRed" : "";
+                item['rowClass'] = item['КодНовый'] === currentEtap ? 'selectedEtap' : '';
+                item['Сделано'] = item['Сделано'] === '0' ? '' : item['Сделано'];
+                item['Брак'] = item['Брак'] === '0' ? '' : item['Брак'];
+                item['Изготовить'] = item['Изготовить'] === '0' ? '' : item['Изготовить'];
+                item['Утеря'] = item['Утеря'] === '0' ? '' : item['Утеря'];
+                item['МожноДелать'] = item['МожноДелать'] === '0' ? '' : item['МожноДелать'];
+                item['КоличествоДнейБездействияНадо'] = parseInt(item['КоличествоДнейБездействияНадо']);
+                item['cellClass'] = item['КоличествоДнейБездействияНадо'] > 5 ? ' colorRed' : '';
               });
+              console.log('items', items);
 
               const tableHtml = template({ items: items });
-              $("#infoZakazForm").html(tableHtml);
+              $('#infoZakazForm').html(tableHtml);
 
-              $("#infoZakazRow").insertAfter(row);
-              $("#infoZakazRow").show(200);
+              $('#infoZakazRow').insertAfter(row);
+              $('#infoZakazRow').show(200);
             }
           },
           error: function (xhr, status, error) {
-            console.error("Ошибка:", error);
+            console.error('Ошибка:', error);
           },
           complete: function (response) {
             NProgress.done();
@@ -1110,13 +1052,26 @@
     });
 
     // ************************************************** Брак ********************************************************
+
+    callbackBeforeInitTableForListDefect = function (data) {
+      const access = data['ПравоВноситьИсправлениеБрака'] || false;
+      console.log('callbackBeforeInitTableForListDefect', access, data);
+      if (access) {
+        console.log($('#DefectListRow .config .btnPlay'));
+        $('#DefectListRow .config .btnPlay').removeClass('hide');
+        console.log($('#DefectListRow .config .btnPlay'));
+      } else {
+        $('#DefectListRow .config .btnPlay').addClass('hide');
+      }
+    };
+
     filterForDefectTable = function (data, result = true) {
       try {
-        if (!data["Проведен"]) {
+        if (!data['Проведен']) {
           result = false;
-        } else if (data["КоличествоБрака"] == 0) {
+        } else if (data['КоличествоБрака'] == 0) {
           result = false;
-        } else if ((data["КоличествоОсталосьИсправить"] || 0) == 0) {
+        } else if ((data['КоличествоОсталосьИсправить'] || 0) == 0) {
           result = false;
         }
       } catch (error) {}
@@ -1126,122 +1081,94 @@
       return result;
     };
 
-    callbackAddNewRowForListDefect = function (data) {
-      const userInfo = $("#menu").data("userInfo");
-      // const access = userInfo.data["ПравоВноситьИсправлениеБрака"] || false;
-      const access = true;
-
-      try {
-        if (access) {
-          $("#" + data.data["uid"])
-            .find(".btnPlay")
-            .show();
-        } else {
-          $("#" + data.data["uid"])
-            .find(".btnPlay")
-            .remove();
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    callbackAfterInitTableForListDefect = function (data) {
+      $('#DefectListRow').show(300);
     };
 
-    //
-    callbackAfterWriteListDefect = function (data) {
-      //console.log('callbackAfterWriteListDefect', data);
-      $("#DefectListRow").show(300);
-    };
-
-    $("#аГруппыЭтаповПроизводства").on(
-      "click",
-      ".DefectListMainRow",
-      function (event) {
-        if ($("#DefectListRow").is(":visible")) {
-          $("#DefectListRow").hide(200);
-        } else {
-          initTable($("#ОтчетПоРаботе2022"));
-        }
+    $('#аГруппыЭтаповПроизводства').on('click', '.DefectListMainRow', function (event) {
+      if ($('#DefectListRow').is(':visible')) {
+        $('#DefectListRow').hide(200);
+      } else {
+        initTable($('#ОтчетПоРаботе2022'));
       }
-    );
-
-    $("#ОтчетПоРаботе2022").on("click", ".btnPlay", function (event) {
-      if ($("#fixReportRow").is(":visible")) {
-        $("#fixReportRow").hide(100);
-        return;
-      }
-      const rowID = $(this).attr("rowID");
-      const row = $("#" + rowID);
-      const maxCount = parseInt(
-        $(row).find('.dataCell[name="КоличествоОсталосьИсправить"]').text() || 0
-      );
-
-      $("#sotrudnikFix").val("");
-      $("#sotrudnikFix").attr("uid", "");
-      setValid("#sotrudnikFix", false);
-
-      $("#dateFix").val("");
-      setValid("#dateFix", false);
-
-      $("#time").val("");
-      setValid("#time", false);
-
-      $("#countFix").val("");
-      $("#countFix").attr("maxCount", maxCount);
-      setValid("#countFix", false);
-
-      $("#fixReportRow").attr("report", rowID);
-      $("#fixReportRow").insertAfter(row);
-      $("#fixReportRow").show();
-      $("#sotrudnikFix").focus();
     });
 
-    $("#cancelFixReport").on("click", function (event) {
+    $('#ОтчетПоРаботе2022').on('click', '.btnPlay', function (event) {
+      if ($('#fixReportRow').is(':visible')) {
+        $('#fixReportRow').hide(100);
+        return;
+      }
+      const rowID = $(this).attr('rowID');
+      const row = $('#' + rowID);
+      const maxCount = parseInt($(row).find('.dataCell[name="КоличествоОсталосьИсправить"]').text() || 0);
+
+      $('#sotrudnikFix').val('');
+      $('#sotrudnikFix').attr('uid', '');
+      setValid('#sotrudnikFix', false);
+
+      $('#dateFix').val('');
+      setValid('#dateFix', false);
+
+      $('#time').val('');
+      setValid('#time', false);
+
+      $('#countFix').val('');
+      $('#countFix').attr('maxCount', maxCount);
+      setValid('#countFix', false);
+
+      $('#fixReportRow').attr('report', rowID);
+      $('#fixReportRow').insertAfter(row);
+      $('#fixReportRow').show();
+      $('#sotrudnikFix').focus();
+    });
+
+    $('#cancelFixReport').on('click', function (event) {
       clickAnimate(this);
       setTimeout(() => {
-        $("#fixReportRow").hide(300);
+        $('#fixReportRow').hide(300);
       }, 200);
     });
 
-    $("#saveFixReport").on("click", function (event) {
+    $('#saveFixReport').on('click', function (event) {
       clickAnimate(this);
 
-      const sotrudnik = $("#sotrudnikFix");
-      const date = $("#dateFix");
-      const time = $("#time");
-      const count = $("#countFix");
+      const sotrudnik = $('#sotrudnikFix');
+      const date = $('#dateFix');
+      const time = $('#time');
+      const count = $('#countFix');
 
-      if (sotrudnik.hasClass("invalid")) {
-        toastr.error("Укажите кто исправлял брак", {});
+      if (sotrudnik.hasClass('invalid')) {
+        toastr.error('Укажите кто исправлял брак', {});
         return;
-      } else if (date.hasClass("invalid")) {
-        toastr.error("Укажите когда исправлялся брак");
+      } else if (date.hasClass('invalid')) {
+        toastr.error('Укажите когда исправлялся брак');
         return;
-      } else if (time.hasClass("invalid")) {
-        toastr.error("Укажите сколько времени ушло на исправление брака");
+      } else if (time.hasClass('invalid')) {
+        toastr.error('Укажите сколько времени ушло на исправление брака');
         return;
-      } else if (count.hasClass("invalid")) {
-        toastr.error("Укажите сколько штук исправлено");
+      } else if (count.hasClass('invalid')) {
+        toastr.error('Укажите сколько штук исправлено');
         return;
       }
 
       const data = {};
-      data.reportBrak = $("#fixReportRow").attr("report");
-      data.sotrudnik = $(sotrudnik).attr("uid");
+      data.reportBrak = $('#fixReportRow').attr('report');
+      data.sotrudnik = $(sotrudnik).attr('uid');
       data.date = new Date($(date).val());
       data.time = $(time).val();
       data.count = parseInt($(count).val());
 
-      console.log("data", data);
+      console.log('data', data);
 
       NProgress.start();
 
       $.ajax({
-        url: "/app/createFixReport",
-        method: "POST",
-        contentType: "application/json",
+        url: '/app/createFixReport',
+        method: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
-          console.log("logToServer", status, data);
+          console.log('logToServer', status, data);
         },
       }).always(function () {
         NProgress.done();
@@ -1249,44 +1176,32 @@
       });
 
       setTimeout(() => {
-        $("#fixReportRow").hide(300);
+        $('#fixReportRow').hide(300);
       }, 200);
     });
 
     // **************************************************** ОТК ****************************************************
 
-    $("#аГруппыЭтаповПроизводства").on(
-      "click",
-      ".OTK_ListMainRow",
-      function (event) {
-        if ($("#OTK_ListRow").is(":visible")) {
-          $("#OTK_ListRow").hide(200);
-        } else {
-          initTable($("#OTK"));
-        }
-
-        $("#newReportRow").hide(0);
-        $("#infoZakazRow").hide(0);
-        $("#listWork").hide(0);
-
-        $("#аГруппыЭтаповПроизводства")
-          .children("tbody")
-          .children(".rowData")
-          .removeClass("selectedGroupEtap");
-        $(this).addClass("selectedGroupEtap");
+    $('#аГруппыЭтаповПроизводства').on('click', '.OTK_ListMainRow', function (event) {
+      if ($('#OTK_ListRow').is(':visible')) {
+        $('#OTK_ListRow').hide(200);
+      } else {
+        initTable($('#OTK'));
       }
-    );
+
+      $('#newReportRow').hide(0);
+      $('#infoZakazRow').hide(0);
+      $('#listWork').hide(0);
+
+      $('#аГруппыЭтаповПроизводства').children('tbody').children('.rowData').removeClass('selectedGroupEtap');
+      $(this).addClass('selectedGroupEtap');
+    });
 
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForOTK = function (data, result = true) {
       // console.log("filterForOTK");
       try {
-        if (
-          !data["Проведен"] ||
-          data["СтатусОТК"] ||
-          !data["Заказ"]["Активен"] ||
-          !data["ЭтапПроизводства"]["ОТК"]
-        ) {
+        if (!data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизвод ства']['ОТК']) {
           result = false;
         }
       } catch (error) {
@@ -1298,38 +1213,38 @@
     };
 
     // клик по кнопке Редактировать
-    $(tableID).on("click", ".btnEdit", function (event) {
-      const row = $(this).closest("tr");
-      const data = $(row).data("data");
+    $(tableID).on('click', '.btnEdit', function (event) {
+      const row = $(this).closest('tr');
+      const data = $(row).data('data');
 
-      $(tableID).find(".btnEdit").show();
-      $(tableID).find(".btnOk").hide();
-      $(tableID).find("input").prop("disabled", true);
+      $(tableID).find('.btnEdit').show();
+      $(tableID).find('.btnOk').hide();
+      $(tableID).find('input').prop('disabled', true);
 
-      $(row).find(".btnOk").show();
-      $(row).find(".btnEdit").hide();
-      $(row).find("input").prop("disabled", false);
+      $(row).find('.btnOk').show();
+      $(row).find('.btnEdit').hide();
+      $(row).find('input').prop('disabled', false);
 
-      clickAnimate($(row).find(".btnOk"));
+      clickAnimate($(row).find('.btnOk'));
       logToServer('Нажата кнопка "Редактировать"', data);
     });
 
     // клик по кнопке Применить
-    $(tableID).on("click", ".btnOk", function (event) {
-      const row = $(this).closest("tr");
-      const data = $(row).data("data");
+    $(tableID).on('click', '.btnOk', function (event) {
+      const row = $(this).closest('tr');
+      const data = $(row).data('data');
 
-      $(row).find(".btnOk").hide();
-      $(row).find(".btnEdit").show();
-      $(row).find("input").prop("disabled", true);
+      $(row).find('.btnOk').hide();
+      $(row).find('.btnEdit').show();
+      $(row).find('input').prop('disabled', true);
 
-      clickAnimate($(row).find(".btnEdit"));
+      clickAnimate($(row).find('.btnEdit'));
       logToServer('Нажата кнопка "Применить"', data);
-      sendWSS("updateDataOnServer", "", data);
+      sendWSS('updateDataOnServer', '', data);
     });
 
     callbackAfterWriteListOTK = function (data) {
-      $("#OTK_ListRow").show(300);
+      $('#OTK_ListRow').show(300);
     };
   });
 </script>
