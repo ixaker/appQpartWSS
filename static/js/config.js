@@ -28,11 +28,12 @@ $(function () {
     NProgress.configure({ showSpinner: false });
 
     $.ajaxSetup({
-        timeout: 10000,
+        timeout: 3000,
         error: function (jqXHR, textStatus, errorThrown) {
+            console.log('this', this);
             const urlData = {
                 url: this.url,
-                method: this.method
+                method: this.method || this.type
             };
             if (textStatus === 'timeout') {
                 console.error('Request timed out');

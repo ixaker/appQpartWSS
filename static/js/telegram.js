@@ -4,17 +4,25 @@
 const chatId = "672754822";
 const botToken = "5506317678:AAEst0pLX1pEIEDqTCqGZ8ZVk-DMj6nx278";
 
+
+
+
+
 // Функция отправки сообщения (текстового или с фотографией)
 function sendToTelegram(message, file = null) {
-    const newMessage = `Повідомлення від WebApp клієнт:\n${message}`;
+    const deployment = testEnvironment === true ? `Test\n` : `Production: ${version}\n`;
+    message = deployment + message
+    console.log(message);
+
     if (file) {
-        sendPhotoToTelegram(newMessage, file);
+        sendPhotoToTelegram(message, file);
     } else {
-        sendTextToTelegram(newMessage);
+        sendTextToTelegram(message);
     }
 }
 
 function sendErrorToTelegram(jqXHR, textStatus, urlData) {
+    console.log(urlData)
     let errorMessage = 'Request failed\n';
     errorMessage += `Method: ${urlData.method}\n`;
     errorMessage += `URL: ${urlData.url}\n`;

@@ -92,14 +92,21 @@
     <script src="js/wss.js?v=<%= version %>"></script>
     <script src="js/login.js?v=<%= version %>"></script>
     <script src="js/tables.js?v=<%= version %>"></script>
-    <script src="js/telegram.js?v=<%= version %>"></script>
 
     <script>
-      const version = '<%= version %>';
-      const token = '<%= token %>';
-      const test1 = '<%= test %>';
-      console.log('test1', test1);
-      if (test1) {
+      window.config = {
+        testEnvironment: <%= test %>,
+        version: '<%= version %>',
+        token: '<%= token %>',
+      };
+
+      console.log('window.config', window.config);
+      const testEnvironment = window.config.testEnvironment;
+      const version = window.config.version;
+      const token = window.config.token;
+
+      console.log('test, version', testEnvironment, version);
+      if (testEnvironment) {
         console.log('this is test environment');
         const elements = document.querySelectorAll('.bg-dark');
         elements.forEach(element => {
@@ -121,5 +128,6 @@
 
       listenResize();
     </script>
+    <script src="js/telegram.js?v=<%= version %>"></script>
   </body>
 </html>
