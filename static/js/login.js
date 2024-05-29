@@ -110,12 +110,14 @@ function uploadPhoto() {
                         }, 500);
                     } else {
                         console.log("error - /detectFace");
-                        toastr["error"]("Обличчя не роспізнано");
+                        toastr["error"]("Обличчя не розпізнано");
+                        const file = null
                         try {
                             const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+                            console.log('file', file);
                         } catch (error) {
                             console.error('Помилка при створенні файлу:', error);
-                            const file = null
+
                         }
                         sendToTelegram('Обличчя не розпізнано', file)
                         stopTimeoutCamera();
