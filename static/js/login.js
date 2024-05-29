@@ -8,7 +8,6 @@ var couterRequest = 0;
 
 function startCamera() {
     console.log("start startCamera");
-
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
             video.srcObject = stream;
@@ -111,9 +110,9 @@ function uploadPhoto() {
                     } else {
                         console.log("error - /detectFace");
                         toastr["error"]("Обличчя не розпізнано");
-                        const file = null
+                        let file = null;
                         try {
-                            const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+                            file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
                             console.log('file', file);
                         } catch (error) {
                             console.error('Помилка при створенні файлу:', error);
