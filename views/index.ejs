@@ -76,6 +76,17 @@
       </div>
     </div>
 
+    <script>
+      window.config = {
+        testEnvironment: '<%= test %>',
+        version: '<%= version %>',
+        token: '<%= token %>',
+      };
+      const testEnvironment = window.config.testEnvironment;
+      const version = window.config.version;
+      const token = window.config.token;
+    </script>
+
     <script src="lib/jquery-3.6.0.min.js?v=<%= version %>"></script>
     <script src="lib/nprogress.min.js?v=<%= version %>"></script>
     <script src="lib/bootstrap.bundle.min.js?v=<%= version %>"></script>
@@ -95,15 +106,6 @@
     <script src="js/telegram.js?v=<%= version %>"></script>
 
     <script>
-      window.config = {
-        testEnvironment: '<%= test %>',
-        version: '<%= version %>',
-        token: '<%= token %>',
-      };
-      const testEnvironment = window.config.testEnvironment;
-      const version = window.config.version;
-      const token = window.config.token;
-
       console.log('test, version', testEnvironment, version);
       if (testEnvironment) {
         console.log('this is test environment');
