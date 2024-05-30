@@ -27,22 +27,19 @@ $(function () {
     toastr.options.positionClass = 'toast-top-left';
     NProgress.configure({ showSpinner: false });
 
+    console.log(test);
     $.ajaxSetup({
-        timeout: 10000,
+        timeout: 20000,
         error: function (jqXHR, textStatus, errorThrown) {
             console.log('this', this);
             const urlData = {
                 url: this.url,
                 method: this.method || this.type
             };
-            if (textStatus === 'timeout') {
-                console.error('Request timed out');
-                toastr["error"]("Немає зв'язку з сервером 1С");
-                sendErrorToTelegram(jqXHR, textStatus, urlData)
-                // exit();
-            } else {
-                console.error('Error: ' + textStatus, errorThrown);
-            }
+            console.error('Request timed out');
+            toastr["error"]("Немає зв'язку з сервером 1С");
+            sendErrorToTelegram(jqXHR, textStatus, urlData)
+            console.error('Error: ' + textStatus, errorThrown);
         }
     });
 
