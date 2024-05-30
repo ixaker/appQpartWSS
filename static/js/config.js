@@ -28,7 +28,7 @@ $(function () {
     NProgress.configure({ showSpinner: false });
 
     $.ajaxSetup({
-        timeout: 3000,
+        timeout: 10000,
         error: function (jqXHR, textStatus, errorThrown) {
             console.log('this', this);
             const urlData = {
