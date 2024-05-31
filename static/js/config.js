@@ -27,7 +27,7 @@ $(function () {
     toastr.options.positionClass = 'toast-top-left';
     NProgress.configure({ showSpinner: false });
 
-    let timeout = 10000;
+    let timeout = 20000;
     if (testEnvironment) timeout = 3000;
     console.log('timeout', timeout);
     $.ajaxSetup({
