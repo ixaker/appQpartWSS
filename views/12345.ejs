@@ -157,6 +157,7 @@
 
     function createOptionsforSelect(listArticules) {
       if ($('#selectSize').length) {
+        $('#selectSize').html('');
         listArticules.forEach(function (item) {
           const option = $('<option>', {
             value: item.articul,
