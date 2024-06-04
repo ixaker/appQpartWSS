@@ -560,7 +560,7 @@ function initInputAutocompleteForTable(element) {
                 const autocompleteTop = $(this).autocomplete("widget").offset().top;
                 const windowTop = $(window).scrollTop();
                 const scrollAmount = autocompleteTop - windowTop;
-                console.log('autocomplete open autocompleteTop', autocompleteTop, 'windowTop', windowTop, 'scrollAmount', scrollAmount)
+                console.log('    open autocompleteTop', autocompleteTop, 'windowTop', windowTop, 'scrollAmount', scrollAmount, this)
 
                 $(window).scrollTop(windowTop + scrollAmount);
             },
