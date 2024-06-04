@@ -409,9 +409,9 @@ function fillData(row, newData, oldData) {
 }
 
 function sort(table) {
-    //console.log('Sort');
+    console.log('Sort first');
     if ($(table)[0].hasAttribute('sort')) {
-        console.log('Sort');
+        console.log('Sort real');
         $(table).trigger("update");
 
         let columnSort = parseInt($(table).attr('sort'));

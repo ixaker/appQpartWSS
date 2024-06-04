@@ -357,6 +357,10 @@ app.get('/currentReportOperator', async function (req, res) {
   return res.render('currentReportOperator');
 });
 
+app.get('/reportsOperatorForDay', async function (req, res) {
+  return res.render('reportsOperatorForDay');
+});
+
 app.get('/currentReportNaladka', async function (req, res) {
   return res.render('currentReportNaladka');
 });
