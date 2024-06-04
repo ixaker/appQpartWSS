@@ -31,11 +31,11 @@ function startCamera() {
         })
             .catch(function (error) {
                 console.error('Ошибка доступа к веб-камере: ', error);
-                toastr["error"]('Ошибка доступа к веб-камере');
+                toastr.error('Ошибка доступа к веб-камере');
             });
     } else {
         console.error('Браузер не поддерживает API доступа к медиа-устройствам');
-        toastr["error"]('Браузер не поддерживает API доступа к медиа-устройствам');
+        toastr.error('Браузер не поддерживает API доступа к медиа-устройствам');
     }
 }
 
@@ -73,10 +73,8 @@ function uploadPhoto() {
         NProgress.start();
 
         const context = canvas.getContext('2d');
-
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(function (blob) {
@@ -86,17 +84,15 @@ function uploadPhoto() {
                 console.log('couterRequest', couterRequest);
                 $.post('/detectFace', { photo: reader.result, counter: couterRequest }, function (response) {
                     console.log('/detectFace', response);
-                    console.log('response.version', response.version);
-
-                    if (response.similarity > 0.72) {
-                        toastr.success(response.similarity);
-                    } {
-                        toastr.error("Обличчя не видно.");
+                    if (response.detectFace) {
+                        toastr.success(`${response.similarity * 100}%`);
+                    } else {
+                        toastr.error("0%");
                     }
 
                     if (response.detectUser) {
                         loadMenu(response.user, response.token, response.version);
-
+                        return;
                     }
                 }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
 
@@ -109,7 +105,7 @@ function uploadPhoto() {
                         }, 500);
                     } else {
                         console.log("error - /detectFace");
-                        toastr["error"]("Обличчя не розпізнано");
+                        toastr.error("Обличчя не розпізнано");
                         let file = null;
                         try {
                             file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
@@ -122,10 +118,6 @@ function uploadPhoto() {
                         stopTimeoutCamera();
                         exit();
                     }
-
-
-
-
                 });
             }
             reader.readAsDataURL(blob);
@@ -166,11 +158,13 @@ $(function () {
 function loadMenu(userInfo, token, version) {
     console.log('start loadMenu userInfo', userInfo);
     console.log('auth = ', auth);
-    console.log('userInfo.isAdmin = ', userInfo.isAdmin);
     if (auth === true) { userInfo.isAdmin = true }
-    console.log('userInfo.isAdmin = ', userInfo.isAdmin);
     user = userInfo;
     auth = true;
+
+    if (!WebSocketConnected) {
+        connectWebSocket();
+    }
 
     $.cookie("token", token, { expires: 36500 });
 
@@ -192,7 +186,7 @@ function loadMenu(userInfo, token, version) {
     $('#video').hide();
     $('#content').show();
 
-    reconectWebSocket();
+    //reconectWebSocket();
     // alert('display width: ' + window.innerWidth + ', display height: ' + window.innerHeight);
     $.ajax({
         url: '/app/getUserMenu',
@@ -249,7 +243,7 @@ function loadMenu(userInfo, token, version) {
             };
             if (textStatus === 'timeout') {
                 console.error('Request timed out');
-                toastr["error"]("Немає зв'язку з сервером 1С");
+                toastr.error("Немає зв'язку з сервером 1С");
                 sendErrorToTelegram(jqXHR, textStatus, urlData)
                 exit();
             } else {
