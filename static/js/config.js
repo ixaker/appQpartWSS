@@ -191,6 +191,7 @@ function initInputAutocomplete(element) {
             },
             select: function (event, ui) {
                 $(this).attr('uid', ui.item.uid);
+                console.log('ui.item.uid', ui.item.uid)
                 setValid(this, true);
                 $(this).blur();
                 callbackFromAttr(this, 'callbackSelect', ui.item)
