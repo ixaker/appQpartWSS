@@ -322,7 +322,6 @@
 
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {
-      console.log('callbackBeforeDone user.isAdmin', user, data);
       startTimeWork = new Date(data.startTimeWork);
       startTimeWork.setHours(0, 0, 0, 0);
 
