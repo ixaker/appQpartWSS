@@ -23,7 +23,7 @@ function sendErrorToTelegram(jqXHR, textStatus, urlData) {
     errorMessage += `Method: ${urlData.method}\n`;
     errorMessage += `URL: ${urlData.url}\n`;
     errorMessage += `Status: ${jqXHR.status}\n`;
-    errorMessage += `Response Text: ${jqXHR.responseText}\n`;
+    // errorMessage += `Response Text: ${jqXHR.responseText}\n`;
     errorMessage += `Ready State: ${jqXHR.readyState}\n`;
     errorMessage += `Text Status: ${textStatus}\n`;
     errorMessage += `User: ${JSON.stringify(user, null, " ")}\n`;
