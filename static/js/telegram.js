@@ -18,16 +18,14 @@ function sendToTelegram(message, file = null) {
 }
 
 function sendErrorToTelegram(jqXHR, textStatus, urlData) {
-    console.log(urlData)
     let errorMessage = 'Request failed\n';
-    errorMessage += `Method: ${urlData.method}\n`;
-    errorMessage += `URL: ${urlData.url}\n`;
-    errorMessage += `Status: ${jqXHR.status}\n`;
-    // errorMessage += `Response Text: ${jqXHR.responseText}\n`;
-    errorMessage += `Ready State: ${jqXHR.readyState}\n`;
-    errorMessage += `Request body: ${jqXHR.jqXHR.responseText.slice(0, 100)}\n`;
-    errorMessage += `Text Status: ${textStatus}\n`;
-    errorMessage += `User: ${JSON.stringify(user, null, " ")}\n`;
+    errorMessage += urlData.method ? `Method: ${urlData.method}\n` : '';
+    errorMessage += urlData.url ? `URL: ${urlData.url}\n` : '';
+    errorMessage += jqXHR ? `Status: ${jqXHR.status}\n` : '';
+    errorMessage += jqXHR ? `Ready State: ${jqXHR.readyState}\n` : '';
+    errorMessage += jqXHR && jqXHR.responseText ? `Request body: ${jqXHR.responseText.slice(0, 100)}\n` : '';
+    errorMessage += textStatus ? `Text Status: ${textStatus}\n` : '';
+    errorMessage += user ? `User: ${JSON.stringify(user, null, " ")}\n` : '';
     console.log('errorMessage', errorMessage);
     sendToTelegram(errorMessage);
 }
