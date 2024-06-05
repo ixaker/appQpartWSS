@@ -8,22 +8,94 @@
 
   #commandPanel {
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  #dateContainer {
+    display: flex;
+    align-items: center;
+  }
+
+  .btn-arrow {
+    font-size: xxx-large;
+    margin: 0 10px;
+    color: darkgreen;
   }
 
   #date {
-    font-size: 1em;
-    width: 8em;
+    font-size: large;
+    text-align: center;
   }
 
   #sotrudnik {
-    font-size: 1em;
+    font-size: large;
     width: 15em;
+    margin: 0 1em;
+  }
+
+  #sotrudnikTags {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 0.5vw;
+    margin-bottom: 10px;
+  }
+
+  .tag {
+    font-size: 1.5vw;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255);
+    padding: 0.3em 0.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: normal;
+    border: 1px solid darkgrey;
+    white-space: pre;
+  }
+
+  .tag.selected {
+    background-color: orange;
+  }
+
+
+  #reloadPage {
+    margin-left: auto;
+    font-size: xxx-large;
+    color: #007431;
+    margin-right: 10px;
+    height: 65px;
+  }
+
+  #btnAdd {
+    margin-left: auto;
+    font-size: xxx-large;
+    color: #007431;
+    margin-right: 10px;
+  }
+
+  
+  #sumTable {
+    margin-bottom: 15px;
+  }
+
+  #titleRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 </style>
 
 <div id="commandPanel">
-  <input type="date" class="form-control" id="date" placeholder="дд/мм/гггг" aria-describedby="basic-addon3" />
+  <div id="dateContainer">
+    <i class="bi bi-arrow-left-circle btn-arrow" id="prevDay"></i>
+    <input type="date" class="form-control" id="date" placeholder="дд/мм/гггг" aria-describedby="basic-addon3" />
+    <i class="bi bi-arrow-right-circle btn-arrow" id="nextDay"></i>
+  </div>
+
   <input
     type="text"
     class="form-control"
@@ -33,14 +105,37 @@
     aria-describedby="basic-addon3"
     callbackSelect="callbackSelectSotrudnik"
   />
-  <i class="bi bi-plus-circle" id="btnAdd"></i>
+  <i class="bi bi-arrow-clockwise" id="reloadPage"></i>
 </div>
 
+<div id="sotrudnikTags"></div>
+
+<div id="sumTable">
+  <table>
+    <thead>
+      <tr>
+        <th title="Станок" style="width: 7%">Станок</td>
+        <th title="Деталь" style="width: 25%">Деталь</td>
+        <th title="Этап" style="width: 8%">Этап</td>
+        <th title="Этап" style="width: 18%">Этап</td>
+        <th title="К-во" style="width: 6%">К-во</td>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div id="titleRow">
+  <div class="titlePage">Таблица редактирования отчетов</div>
+  <i class="bi bi-plus-circle" id="btnAdd"></i>
+</div>
 <table
   id="ОтчетПоРаботе2022"
   name="ОтчетПоРаботе2022"
   url="/app/reportsOperatorForDay"
   filter="callbackFilter"
+  callbackBeforeInitTable="createTagsOfSotrudnik"
+  callbackAfterInitTable="renderSumTable"
   append="up"
   sort="0"
   header
@@ -93,6 +188,7 @@
 <script>
   $(document).ready(function () {
     let tableID = '#ОтчетПоРаботе2022';
+    let selectedTagUID = ''
     let dateParam;
 
     initInputDate('#date');
@@ -116,10 +212,6 @@
         }
         if (data['ПометкаУдаления']) {
           console.log('Filter ПометкаУдаления');
-          result = false;
-        }
-        if (!data['ЭтоОтчетОператора']) {
-          console.log('Filter ЭтоОтчетОператора');
           result = false;
         }
         if (data['Сотрудник']['uid'] !== $('#sotrudnik').attr('uid')) {
@@ -184,6 +276,11 @@
       });
     });
 
+    $('#reloadPage').on('click', function (event) {
+      clickAnimate(this);
+      updateTable();
+    })
+
     // клик по кнопке Редактировать
     $(tableID).on('click', '.btnEdit', function (event) {
       const row = $(this).closest('tr');
@@ -238,6 +335,97 @@
 
     callbackSelectSotrudnik = function (data) {
       updateTable();
+    };
+
+    createTagsOfSotrudnik = function (data) {
+      console.log('createTagsOfSotrudnik');
+      const listOfSotrudnik = data.users;
+      const $container = $('#sotrudnikTags');
+      $container.html('');
+
+      listOfSotrudnik.forEach(item => {
+        let elementClass;
+        if (item.uid === selectedTagUID) {
+          elementClass = 'tag selected'
+          console.log('elementClass = tag selected');
+        } else {
+          elementClass= 'tag'
+          console.log('elementClass = tag');
+        }
+        const $div = $('<div>', {
+          class: elementClass,
+          text: item.value.replace(' ', '\n'),
+        }).attr({
+          uid: item.uid,
+          value: item.value,
+        });
+
+        $div.on('click', handleClickOnTag);
+
+        $container.append($div);
+      });
+    };
+
+
+
+    function handleClickOnTag() {
+      clickAnimate(this);
+      const $input = $('#sotrudnik');
+      const value = $(this).attr('value');
+      $input.val(value);
+      const uid = $(this).attr('uid');
+      $input.attr('uid', uid);
+      selectedTagUID=uid;
+      console.log('uid', uid)
+      console.log('selectedTagUID', selectedTagUID);
+      updateTable();
+    }
+
+    function setCurrentDate() {
+      let today = new Date();
+      let formattedDate = today.toISOString().split('T')[0];
+      $('#date').val(formattedDate);
+      updateTable();
+    }
+    setCurrentDate();
+
+    function adjustDate(days) {
+      let currentDate = $('#date').val();
+      let date = new Date(currentDate);
+      date.setDate(date.getDate() + days);
+
+      let newDate = date.toISOString().split('T')[0];
+      $('#date').val(newDate);
+
+      console.log('New Date:', newDate);
+      updateTable();
+    }
+
+    $('#prevDay').on('click', function (event) {
+      clickAnimate(this);
+      adjustDate(-1);
+    });
+
+    $('#nextDay').on('click', function (event) {
+      clickAnimate(this);
+      adjustDate(1);
+    });
+
+    renderSumTable = function (data) {
+      console.log('renderSumTable', data.listSumm);
+      let $tbody = $('#sumTable table tbody');
+      $tbody.empty();
+      data.listSumm.forEach(item => {
+        let $tr = $('<tr></tr>');
+
+        $tr.append($('<td></td>').text(item.Станок));
+        $tr.append($('<td></td>').text(item.Деталь));
+        $tr.append($('<td></td>').text(item.Код));
+        $tr.append($('<td></td>').text(item.Этап));
+        $tr.append($('<td></td>').text(item.Количество));
+
+        $tbody.append($tr);
+      });
     };
   });
 </script>
