@@ -31,25 +31,37 @@ $(function () {
     if (testEnvironment) timeout = 3000;
     console.log('timeout', timeout);
     $.ajaxSetup({
-        timeout: 20000,
+        timeout: timeout,
         error: function (jqXHR, textStatus, errorThrown) {
-            // const urlData = {
-            //     url: this.url,
-            //     method: this.method || this.type
-            // };
+            try {
+                const urlData = {
+                    url: this.url,
+                    method: this.method || this.type
+                };
+                console.log('urlData', urlData)
+                console.log('textStatus', textStatus)
+                console.log('jqXHR', jqXHR)
+                console.log('errorThrown', errorThrown)
 
-            // console.log()
-            // // if (textStatus = 'timeout' && jqXHR.responseText !== "Структура") {
-            // if (textStatus = 'timeout') {
-            //     console.error('Request timed out');
-            //     toastr["error"]("Немає зв'язку з сервером 1С");
-            // } else {
-            //     console.error("Помилка зв'язку");
-            //     toastr["error"]("Помилка зв'язку");
-            // }
+                if (urlData.url === '/authentication') {
+                    console.log('error from config authentication')
+                    return;
+                }
 
-            // sendErrorToTelegram(jqXHR, textStatus, urlData)
-            // console.error('Error: ', textStatus, errorThrown, jqXHR);
+                if (textStatus === 'timeout' && jqXHR.responseText !== "Структура") {
+                    if (textStatus === 'timeout') {
+                        toastr["error"]("Немає зв'язку з сервером 1С");
+                    } else {
+                        console.error("Помилка зв'язку");
+                        toastr["error"]("Помилка зв'язку");
+                    }
+                }
+
+                sendErrorToTelegram(jqXHR || '', textStatus || '', urlData || '');
+                console.error('Error from ajax request: ', textStatus || '', errorThrown || '', jqXHR || '');
+            } catch (error) {
+                console.error('Error whith code in config.js: ', error);
+            }
         }
     });
 
