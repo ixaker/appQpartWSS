@@ -38,8 +38,14 @@ $(function () {
                 url: this.url,
                 method: this.method || this.type
             };
-            console.error('Request timed out');
-            toastr["error"]("Немає зв'язку з сервером 1С");
+
+            if (textStatus = 'timeout') {
+                console.error('Request timed out');
+                toastr["error"]("Немає зв'язку з сервером 1С");
+            } else {
+                console.error("Помилка зв'язку");
+                toastr["error"]("Помилка зв'язку");
+            }
             sendErrorToTelegram(jqXHR, textStatus, urlData)
             console.error('Error: ' + textStatus, errorThrown);
         }
