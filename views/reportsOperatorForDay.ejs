@@ -120,11 +120,11 @@
   <table>
     <thead>
       <tr>
-        <th title="Станок" style="width: 7%">Станок</td>
-        <th title="Деталь" style="width: 25%">Деталь</td>
-        <th title="Этап" style="width: 8%">Этап</td>
+        <th title="Станок" class="textAlignCenter" style="width: 6%">Станок</td>
+        <th title="Деталь" style="width: 31%">Деталь</td>
+        <th title="Этап" class="textAlignCenter" style="width: 5%">Этап</td>
         <th title="Этап" style="width: 18%">Этап</td>
-        <th title="К-во" style="width: 6%">К-во</td>
+        <th title="К-во" style="width: 4%">К-во</td>
       </tr>
     </thead>
     <tbody></tbody>
@@ -150,7 +150,7 @@
     <td title="Станок" name="Станок" key="ИнвентарныйНомер" headerClass="colunmForEdit" style="display: none">
       <div class="dataCell"></div>
     </td>
-    <td title="Станок" name="Станок" key="ИнвентарныйНомер" headerClass="colunmForEdit" style="width: 7%">
+    <td title="Станок" name="Станок" key="ИнвентарныйНомер" headerClass="colunmForEdit" style="width: 8%">
       <input
         type="text"
         minLength="1"
@@ -160,16 +160,16 @@
         style="padding: 0px"
       />
     </td>
-    <td title="Деталь" name="Деталь" key="АртикулНаименование" style="width: 25%">
+    <td title="Деталь" name="Деталь" key="АртикулНаименование" style="width: 29%">
       <div class="dataCell"></div>
     </td>
-    <td title="Этап" name="ЭтапПроизводства" key="КодНовый" style="width: 8%">
+    <td title="Этап" name="ЭтапПроизводства" key="КодНовый" style="width: 6%">
       <div class="dataCell textAlignCenter"></div>
     </td>
     <td title="Этап" name="ЭтапПроизводства" key="Наименование" style="width: 18%">
       <div class="dataCell"></div>
     </td>
-    <td title="МЛ" name="Заказ" key="Номер" style="width: 6%">
+    <td title="МЛ" name="Заказ" key="Номер" style="width: 5%">
       <div class="dataCell textAlignCenter"></div>
     </td>
     <td title="К-во" name="КоличествоИзготовлено" headerClass="colunmForEdit" style="width: 5%">
@@ -178,7 +178,7 @@
     <td title="" name="Проведен" headerClass="colunmForEdit" style="width: 4%">
       <input type="checkbox" sync="none" class="dataCell checkboxInTable" />
     </td>
-    <td title="" style="width: 10%">
+    <td title="" style="width: 8%">
       <div class="groupBtnRow">
         <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none"></i>
         <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
@@ -424,11 +424,11 @@
       data.listSumm.forEach(item => {
         let $tr = $('<tr></tr>');
 
-        $tr.append($('<td></td>').text(item.Станок));
+        $tr.append($('<td class="textAlignCenter"></td>').text(item.Станок));
         $tr.append($('<td></td>').text(item.Деталь));
-        $tr.append($('<td></td>').text(item.Код));
-        $tr.append($('<td></td>').text(item.Этап));
-        $tr.append($('<td></td>').text(item.Количество));
+        $tr.append($('<td class="textAlignCenter"></td>').text(item.Код));
+        $tr.append($('<td "></td>').text(item.Этап));
+        $tr.append($('<td class="textAlignEnd"></td>').text(item.Количество));
 
         $tbody.append($tr);
       });
