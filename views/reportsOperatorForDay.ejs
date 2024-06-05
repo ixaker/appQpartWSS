@@ -241,10 +241,9 @@
     updateTable = function () {
       const sotrudnik = $('#sotrudnik');
       const date = $('#date');
+      $('tr.rowData').remove();
       dateParam = JSON.stringify(new Date($(date).val()));
       dateParam = dateParam.slice(1, -15);
-      console.log('dateParam', dateParam);
-
       const param = {
         userUID: $(sotrudnik).attr('uid'),
         date: dateParam,
@@ -420,9 +419,8 @@
     renderSumTable = function (data) {
       console.log('renderSumTable', data.listSumm);
       let $tbody = $('#sumTable table tbody');
-      $tbody.empty();
       data.listSumm.forEach(item => {
-        let $tr = $('<tr></tr>');
+        let $tr = $('<tr class="rowData"></tr>');
 
         $tr.append($('<td class="textAlignCenter"></td>').text(item.Станок));
         $tr.append($('<td></td>').text(item.Деталь));
@@ -433,5 +431,6 @@
         $tbody.append($tr);
       });
     };
+
   });
 </script>
