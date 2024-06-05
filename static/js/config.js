@@ -33,21 +33,23 @@ $(function () {
     $.ajaxSetup({
         timeout: 20000,
         error: function (jqXHR, textStatus, errorThrown) {
-            const urlData = {
-                url: this.url,
-                method: this.method || this.type
-            };
+            // const urlData = {
+            //     url: this.url,
+            //     method: this.method || this.type
+            // };
 
-            if (textStatus = 'timeout' && jqXHR.responseText !== "Структура") {
-                console.error('Request timed out');
-                toastr["error"]("Немає зв'язку з сервером 1С");
-            } else {
-                console.error("Помилка зв'язку");
-                toastr["error"]("Помилка зв'язку");
-            }
-            textStatus.requestData = requestData;
-            sendErrorToTelegram(jqXHR, textStatus, urlData)
-            console.error('Error: ' + textStatus, errorThrown, requestData, jqXHR.responseText);
+            // console.log()
+            // // if (textStatus = 'timeout' && jqXHR.responseText !== "Структура") {
+            // if (textStatus = 'timeout') {
+            //     console.error('Request timed out');
+            //     toastr["error"]("Немає зв'язку з сервером 1С");
+            // } else {
+            //     console.error("Помилка зв'язку");
+            //     toastr["error"]("Помилка зв'язку");
+            // }
+
+            // sendErrorToTelegram(jqXHR, textStatus, urlData)
+            // console.error('Error: ', textStatus, errorThrown, jqXHR);
         }
     });
 
