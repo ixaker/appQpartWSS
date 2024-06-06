@@ -205,8 +205,8 @@ app.use((req, res, next) => {
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
       log.info('jwt.verify error');
-      res.redirect('/');
-      // res.status(403).send({ textError: 'jwt.verify error' });
+      // res.redirect('/');
+      res.status(403).send({ textError: 'jwt.verify error' });
 
       return
     } else {
@@ -410,8 +410,9 @@ app.get('/zakupka', async function (req, res) {
 // Error
 app.use((req, res) => {
   log.warn('error path')
-  res.redirect('/');
+  // res.redirect('/');
   // res.status(404).sendFile(createPath('error.html'));
+  res.status(404).send({ textError: 'error' })
 });
 
 app.use((err, req, res, next) => {
