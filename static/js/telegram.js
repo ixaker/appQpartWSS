@@ -8,7 +8,6 @@ const botToken = "5506317678:AAEst0pLX1pEIEDqTCqGZ8ZVk-DMj6nx278";
 function sendToTelegram(message, file = null) {
     const deployment = testEnvironment === "true" ? `Test\n` : `Production: ${version}\n`;
     message = deployment + message
-    console.log('file', file)
     if (file) {
         console.log(file);
         sendPhotoToTelegram(message, file);
