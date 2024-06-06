@@ -194,7 +194,7 @@
 <script>
   $(document).ready(function () {
     let tableID = '#ОтчетПоРаботе2022';
-    let selectedTagUID = ''
+    let selectedTagUID;
     let dateParam;
 
     initInputDate('#date');
@@ -347,10 +347,9 @@
       const listOfSotrudnik = data.users;
       const $container = $('#sotrudnikTags');
       $container.html('');
-
       listOfSotrudnik.forEach(item => {
         let elementClass;
-        if (item.uid === selectedTagUID) {
+        if (item.uid === selectedTagUID || item.value === $('#sotrudnik').val() ) {
           elementClass = 'tag selected'
           console.log('elementClass = tag selected');
         } else {
