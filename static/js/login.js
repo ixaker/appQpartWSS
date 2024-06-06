@@ -134,7 +134,7 @@ function authentication() {
         makeNavbarTextMove();
         $.cookie("token", response.token);
     }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
-        console.log("error - /authentication");
+        console.log("error - '/authentication'");
         exit();
     });
 }
@@ -236,20 +236,20 @@ function loadMenu(userInfo, token, version) {
                 }
             }
         },
-        error: function (jqXHR, textStatus, errorThrown) {
-            const urlData = {
-                url: this.url,
-                method: this.method
-            };
-            if (textStatus === 'timeout') {
-                console.error('Request timed out');
-                toastr.error("Немає зв'язку з сервером 1С");
-                sendErrorToTelegram(jqXHR, textStatus, urlData)
-                exit();
-            } else {
-                console.error('Error: ' + textStatus, errorThrown);
-            }
-        },
+        // error: function (jqXHR, textStatus, errorThrown) {
+        // const urlData = {
+        //     url: this.url,
+        //     method: this.method
+        // };
+        // if (textStatus === 'timeout') {
+        //     console.error('Request timed out');
+        //     toastr.error("Немає зв'язку з сервером 1С");
+        //     sendErrorToTelegram(jqXHR, textStatus, urlData)
+        //     exit();
+        // } else {
+        //     console.error('Error: ' + textStatus, errorThrown);
+        // }
+        // },
     });
 
     // $.get('/app/getUserMenu', function (response) {
