@@ -220,12 +220,17 @@
           console.log('Filter Дата отчета не співпадає');
           result = false;
         }
-        if (data['ПометкаУдаления']) {
-          console.log('Filter ПометкаУдаления');
-          result = false;
-        }
         if (data['Сотрудник']['uid'] !== $('#sotrudnik').attr('uid')) {
           console.log('Filter Сотрудник', data['Сотрудник']['uid'], $('#sotrudnik').attr('uid'));
+          result = false;
+        }
+        console.log('before chek result=',result);
+        if (result) {
+          console.log('before callbackAddNevRow');
+          callbackAddNevRow(data);
+        }
+        if (data['ПометкаУдаления']) {
+          console.log('Filter ПометкаУдаления');
           result = false;
         }
         $('#countDetalForCurrentReport').text(data['КоличествоИзготовлено']);
@@ -235,6 +240,27 @@
 
       return result;
     };
+
+    callbackAddNevRow = function(data) {
+      console.log('addNevRow start');
+      const url="/app/reportsOperatorForDay";
+      const sotrudnik = $('#sotrudnik');
+      const date = $('#date');
+      $('#sumTable tr.rowData').remove();
+      dateParam = JSON.stringify(new Date($(date).val()));
+      dateParam = dateParam.slice(1, -15);
+      const param = {
+        userUID: $(sotrudnik).attr('uid'),
+        date: dateParam,
+      };
+      $.ajax({url: url, type: 'GET', dataType: 'json', data: param, success: async function (response) {
+        console.log('initTable response', response);
+        if (!response.error) {
+          renderSumTable(response);
+        }
+        }
+      })
+    }
 
     function initInputDate(element) {
       $(element).on('change', function () {
