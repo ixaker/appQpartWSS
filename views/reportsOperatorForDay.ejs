@@ -121,10 +121,11 @@
     <thead>
       <tr>
         <th title="Станок" class="textAlignCenter" style="width: 6%">Станок</td>
-        <th title="Деталь" style="width: 31%">Деталь</td>
+        <th title="Деталь" style="width: 27%">Деталь</td>
         <th title="Этап" class="textAlignCenter" style="width: 5%">Этап</td>
         <th title="Этап" style="width: 18%">Этап</td>
         <th title="К-во" style="width: 4%">К-во</td>
+        <th title="К-во" style="width: 4%">Брак</td>
       </tr>
     </thead>
     <tbody></tbody>
@@ -160,7 +161,7 @@
         style="padding: 0px"
       />
     </td>
-    <td title="Деталь" name="Деталь" key="АртикулНаименование" style="width: 29%">
+    <td title="Деталь" name="Деталь" key="АртикулНаименование" style="width: 24%">
       <div class="dataCell"></div>
     </td>
     <td title="Этап" name="ЭтапПроизводства" key="КодНовый" style="width: 6%">
@@ -173,6 +174,9 @@
       <div class="dataCell textAlignCenter"></div>
     </td>
     <td title="К-во" name="КоличествоИзготовлено" headerClass="colunmForEdit" style="width: 5%">
+      <input type="number" inputmode="numeric" checkValid min="0" sync="none" class="dataCell quantity textAlignEnd" />
+    </td>
+    <td title="Брак" name="КоличествоБрака" headerClass="colunmForEdit" style="width: 5%">
       <input type="number" inputmode="numeric" checkValid min="0" sync="none" class="dataCell quantity textAlignEnd" />
     </td>
     <td title="" name="Проведен" headerClass="colunmForEdit" style="width: 4%">
@@ -426,6 +430,7 @@
         $tr.append($('<td class="textAlignCenter"></td>').text(item.Код));
         $tr.append($('<td "></td>').text(item.Этап));
         $tr.append($('<td class="textAlignEnd"></td>').text(item.Количество));
+        $tr.append($('<td class="textAlignEnd"></td>').text(item.Брак));
 
         $tbody.append($tr);
       });
