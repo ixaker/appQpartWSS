@@ -344,7 +344,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 .titlePage {
   line-height: 2em;
-  font-size: 1.6em;
+  font-size: clamp(18px, 1.6em, 26px);
   font-weight: bold;
   margin: 0;
 }
@@ -364,10 +364,6 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 600px) {
-  .titlePage {
-    font-size: 18px;
-  }
-
   #btnAdd {
     margin: 0 5px 0 5px;
   }
