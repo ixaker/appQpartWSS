@@ -1,13 +1,12 @@
 <style>
   table {
+    font-size: 0.9em;
+  }
+
+  table th {
     font-size: 0.75em;
   }
 
-  @media (orientation: portrait) {
-    table {
-      /* font-size: 1em; */
-    }
-  }
   .thead th {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -18,40 +17,6 @@
     display: flex;
     justify-content: center;
   }
-  /* 
-  @media (max-width: 800px) {
-    #ОтчетПоРаботе2022 th {
-      width: auto !important;
-    }
-
-    #ОтчетПоРаботе2022 {
-      font-size: 0.5em !important;
-    }
-
-    #ОтчетПоРаботе2022 th:nth-child(2) {
-      width: 15% !important;
-    }
-
-    #ОтчетПоРаботе2022 th:nth-child(4) {
-      width: 12% !important;
-    }
-
-    #ОтчетПоРаботе2022 .dataCell {
-      text-wrap: wrap;
-    }
-
-    #ОтчетПоРаботе2022 td:nth-child(2) {
-      font-size: 1.4em !important;
-    }
-
-    #ОтчетПоРаботе2022 .btnRow {
-      font-size: medium !important;
-    }
-
-    #ОтчетПоРаботе2022 .checkboxInTable {
-      height: 20px !important;
-    }
-  } */
 </style>
 
 <h3 class="titlePage">Список отчетов на проверку ОТК</h3>
@@ -70,15 +35,10 @@
     <td title="ДатаДляСортировки" name="ДатаОтчета" style="display: none">
       <div class="dataCell"></div>
     </td>
-    <td title="Дата" name="ДатаОтчета" style="width: 5%">
+    <td title="Дата" name="ДатаОтчета" style="width: 6%">
       <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
     </td>
-    <td
-      title="Номер детали"
-      name="Заказ"
-      key="АртикулНаименование"
-      style="width: 28%"
-    >
+    <td title="Номер детали" name="Заказ" key="АртикулНаименование" style="width: 22%">
       <div class="dataCell"></div>
     </td>
     <td title="МЛ" name="Заказ" key="Номер" style="width: 5%">
@@ -87,51 +47,25 @@
     <td title="Оператор" name="Сотрудник" key="Наименование" style="width: 20%">
       <div class="dataCell"></div>
     </td>
-    <td
-      title="Этап производства"
-      name="ЭтапПроизводства"
-      key="Наименование"
-      style="width: 15%"
-    >
+    <td title="Этап производства" name="ЭтапПроизводства" key="Наименование" style="width: 20%">
       <div class="dataCell"></div>
     </td>
     <td title="Изгото влено" name="КоличествоИзготовлено" style="width: 6%">
       <div class="dataCell textAlignEnd" style="padding: 5px"></div>
     </td>
     <td title="Прове рено" name="КоличествоПроверено" style="width: 6%">
-      <input
-        type="number"
-        inputmode="numeric"
-        checkValid
-        min="0"
-        sync="none"
-        class="dataCell quantity textAlignEnd"
-      />
+      <input type="number" inputmode="numeric" checkValid min="0" sync="none" class="dataCell quantity textAlignEnd" />
     </td>
     <td title="Брак" name="КоличествоБрака" style="width: 5%">
-      <input
-        type="number"
-        inputmode="numeric"
-        min="0"
-        sync="none"
-        class="dataCell quantity textAlignEnd"
-      />
+      <input type="number" inputmode="numeric" min="0" sync="none" class="dataCell quantity textAlignEnd" />
     </td>
     <td title="Готов" class="" name="СтатусОТК" style="width: 5%">
-      <input
-        type="checkbox"
-        name="Проведен"
-        sync="none"
-        class="dataCell checkboxInTable"
-      />
+      <input type="checkbox" name="Проведен" sync="none" class="dataCell checkboxInTable" />
     </td>
     <td title="" style="width: 5%">
       <div class="groupBtnRow">
         <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
-        <i
-          class="bi bi-check-circle btnRow btnOk colorGreen"
-          style="display: none"
-        ></i>
+        <i class="bi bi-check-circle btnRow btnOk colorGreen" style="display: none"></i>
       </div>
     </td>
   </tr>
@@ -139,9 +73,9 @@
 
 <script>
   $(document).ready(function () {
-    let tableID = "#ОтчетПоРаботе2022";
+    let tableID = '#ОтчетПоРаботе2022';
     initTables();
-    addSubscribeWSS("ОтчетПоРаботе2022_all");
+    addSubscribeWSS('ОтчетПоРаботе2022_all');
 
     callbackWSS = async function (data) {
       callbackTable(data);
@@ -150,14 +84,9 @@
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForOTK = function (data, result = true) {
       try {
-        console.log("filter", data);
-        if (
-          !data["Проведен"] ||
-          data["СтатусОТК"] ||
-          !data["Заказ"]["Активен"] ||
-          !data["ЭтапПроизводства"]["ОТК"]
-        ) {
-          console.log("filter result false");
+        console.log('filter', data);
+        if (!data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']) {
+          console.log('filter result false');
           result = false;
         }
       } catch (error) {
@@ -168,30 +97,30 @@
     };
 
     // клик по кнопке Редактировать
-    $(tableID).on("click", ".btnEdit", function (event) {
-      const row = $(this).closest("tr");
-      const data = $(row).data("data");
+    $(tableID).on('click', '.btnEdit', function (event) {
+      const row = $(this).closest('tr');
+      const data = $(row).data('data');
 
-      $(tableID).find(".btnEdit").show();
-      $(tableID).find(".btnOk").hide();
-      $(tableID).find("input").prop("disabled", true);
+      $(tableID).find('.btnEdit').show();
+      $(tableID).find('.btnOk').hide();
+      $(tableID).find('input').prop('disabled', true);
 
-      $(row).find(".btnOk").show();
-      $(row).find(".btnEdit").hide();
-      $(row).find("input").prop("disabled", false);
+      $(row).find('.btnOk').show();
+      $(row).find('.btnEdit').hide();
+      $(row).find('input').prop('disabled', false);
 
-      clickAnimate($(row).find(".btnOk"));
+      clickAnimate($(row).find('.btnOk'));
       logToServer('Нажата кнопка "Редактировать"', data);
     });
 
     // клик по кнопке Применить
-    $(tableID).on("click", ".btnOk", function (event) {
-      const row = $(this).closest("tr");
-      const data = $(row).data("data");
-      console.log("data", data);
-      const count = data.edited["КоличествоПроверено"] || 0;
-      const OTK = data.edited["СтатусОТК"] || false;
-      const defect = data.edited["КоличествоБрака"] || 0;
+    $(tableID).on('click', '.btnOk', function (event) {
+      const row = $(this).closest('tr');
+      const data = $(row).data('data');
+      console.log('data', data);
+      const count = data.edited['КоличествоПроверено'] || 0;
+      const OTK = data.edited['СтатусОТК'] || false;
+      const defect = data.edited['КоличествоБрака'] || 0;
       const edited = {
         КоличествоПроверено: count,
         КоличествоБрака: defect,
@@ -199,14 +128,14 @@
       };
       data.edited = edited;
 
-      $(row).find(".btnOk").hide();
-      $(row).find(".btnEdit").show();
-      $(row).find("input").prop("disabled", true);
+      $(row).find('.btnOk').hide();
+      $(row).find('.btnEdit').show();
+      $(row).find('input').prop('disabled', true);
 
-      clickAnimate($(row).find(".btnEdit"));
+      clickAnimate($(row).find('.btnEdit'));
       logToServer('Нажата кнопка "Применить"', data);
-      console.log("data", data);
-      sendWSS("updateDataOnServer", "", data);
+      console.log('data', data);
+      sendWSS('updateDataOnServer', '', data);
     });
   });
 </script>
