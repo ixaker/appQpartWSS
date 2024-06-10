@@ -40,29 +40,22 @@ const options = { expiresIn: '3h' };
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
 
-function getVersion() {
-  const test = process.env.TEST;
-  let version;
 
-  if (test === 'true') {
-    const currentDate = new Date();
-    const hours = currentDate.getHours().toString().padStart(2, '0');
-    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+const test = process.env.TEST;
+log.warn('test: ', test);
+let version;
+if (test === 'true') {
+  const currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, '0');
+  const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+  const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
-    version = `${hours}${minutes}${seconds}`;
-    log.info('test version: ', version);
-  } else {
-    version = process.env.version || '1.0.0';
-    log.info('production version: ', version);
-  }
-
-  return version;
+  version = `${hours}${minutes}${seconds}`;
+  log.info('test version: ', version);
+} else {
+  version = process.env.version || '1.0.0';
+  log.info('production version: ', version);
 }
-
-// Виклик функції для отримання версії
-const version = getVersion();
-
 
 const maxAge = 31536000;
 
@@ -215,6 +208,7 @@ app.use((req, res, next) => {
       log.info('jwt.verify error');
       // res.redirect('/');
       res.status(403).send({ textError: 'jwt.verify error' });
+      // res.status(404).sendFile(createPath('error.html'));
 
       return
     } else {
@@ -413,14 +407,12 @@ app.get('/zakupka', async function (req, res) {
   return res.render('zakupka');
 });
 
-
-
 // Error
 app.use((req, res) => {
   log.warn('error path')
   // res.redirect('/');
-  // res.status(404).sendFile(createPath('error.html'));
-  res.status(404).send({ textError: 'error' })
+  res.status(404).sendFile(createPath('error.html'));
+  // res.status(404).send({ textError: 'error' })
 });
 
 app.use((err, req, res, next) => {
