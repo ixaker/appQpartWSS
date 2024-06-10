@@ -34,7 +34,7 @@ if (!fs.existsSync(envFilePath)) {
   fs.writeFileSync(envFilePath, defaultEnvData);
 }
 
-const secret = 'my-secret-key';
+const secret = process.env.secret || 'my-secret-key';
 const options = { expiresIn: '3h' };
 
 const adminRoute = process.env.adminRoute || 'admin';
