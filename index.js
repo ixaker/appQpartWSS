@@ -40,21 +40,29 @@ const options = { expiresIn: '3h' };
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
 
-const test = process.env.TEST;
-log.warn('test: ', test);
-let version;
-if (test === 'true') {
-  const currentDate = new Date();
-  const hours = currentDate.getHours().toString().padStart(2, '0'); // Додаємо ведущий нуль, якщо година складається з однієї цифри
-  const minutes = currentDate.getMinutes().toString().padStart(2, '0'); // Додаємо ведущий нуль, якщо хвилина складається з однієї цифри
-  const seconds = currentDate.getSeconds().toString().padStart(2, '0'); // Додаємо ведущий нуль, якщо секунда складається з однієї цифри
+function getVersion() {
+  const test = process.env.TEST;
+  let version;
 
-  version = `${hours}${minutes}${seconds}`;
-  log.info('test version: ', version);
-} else {
-  version = process.env.version || '1.0.0';
-  log.info('production version: ', version);
+  if (test === 'true') {
+    const currentDate = new Date();
+    const hours = currentDate.getHours().toString().padStart(2, '0');
+    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+
+    version = `${hours}${minutes}${seconds}`;
+    log.info('test version: ', version);
+  } else {
+    version = process.env.version || '1.0.0';
+    log.info('production version: ', version);
+  }
+
+  return version;
 }
+
+// Виклик функції для отримання версії
+const version = getVersion();
+
 
 const maxAge = 31536000;
 
