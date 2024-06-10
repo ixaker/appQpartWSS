@@ -350,17 +350,11 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 #btnAdd {
-  font-size: 3em;
+  font-size: xxx-large;
   color: #007431;
-  margin: 0 10px 0 10px;
+  margin-left: auto;
   line-height: 1em;
-}
-
-.btnAdd {
-  font-size: 3em;
-  color: #007431;
   margin-right: 10px;
-  line-height: 1em;
 }
 
 @media (max-width: 600px) {
