@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const { exec } = require('child_process');
 const url = require('url');
-const axios = require('axios');
+// const axios = require('axios');
 
 // services
 const log = require('./services/loggerConfig.js');
