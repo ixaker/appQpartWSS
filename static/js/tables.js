@@ -453,11 +453,11 @@ function setEventOnChange(element, newData) {
         //console.log('data', data);
 
         if (type == 'checkbox') {
-            userInput = $(this).is(":checked"); // Булево значение
+            userInput = $(this).is(":checked");
             validValue = true;
 
         } else if (type == 'number') {
-            userInput = parseFloat($(this).val()); // Число
+            userInput = parseFloat($(this).val());
 
             if (userInput > 0) {
                 validValue = true;
