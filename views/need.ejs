@@ -1186,6 +1186,7 @@
       if ($('#OTK_ListRow').is(':visible')) {
         $('#OTK_ListRow').hide(200);
       } else {
+        $('#OTK_ListRow').show(300);
         initTable($('#OTK'));
       }
 
@@ -1199,9 +1200,9 @@
 
     // callback при изменении данных в строке для определения показать или убрать строку
     filterForOTK = function (data, result = true) {
-      // console.log("filterForOTK");
+      console.log('filterForOTK data', data);
       try {
-        if (!data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизвод ства']['ОТК']) {
+        if (!data['Проведен'] || data['СтатусОТК'] || !data['Заказ']['Активен'] || !data['ЭтапПроизводства']['ОТК']) {
           result = false;
         }
       } catch (error) {
@@ -1244,7 +1245,8 @@
     });
 
     callbackAfterWriteListOTK = function (data) {
-      $('#OTK_ListRow').show(300);
+      console.log('--------- callbackAfterWriteListOTK ------');
+      // $('#OTK_ListRow').show(300);
     };
   });
 </script>
