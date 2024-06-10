@@ -378,6 +378,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 .formTitle {
   font-size: 1em;
+  font-weight: bold;
   display: flex;
   justify-content: center;
   margin-bottom: 0.6em;

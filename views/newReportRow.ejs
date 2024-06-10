@@ -94,7 +94,7 @@
 
 <div id="newReportForm">
   <div id="groupNewReport" class="reportContainer">
-    <h5>Создание отчета</h5>
+    <div class="formTitle">Создание отчета</div>
 
     <div class="input-group" id="workInProvider">
       <label for="date" class="labelNewReport">Сделано у подрядчика :</label>
@@ -148,9 +148,7 @@
           placeholder="чч:мм"
           aria-describedby="basic-addon3"
         />
-        <label for="time" class="labelNewReport textAlignEnd shortTerm"
-          >по:</label
-        >
+        <label for="time" class="labelNewReport textAlignEnd shortTerm">по:</label>
         <input
           type="text"
           class="form-control inputFixBrak textAlignCenter"
@@ -165,9 +163,7 @@
     </div>
 
     <div class="input-group" id="groupIntputQuantity">
-      <label for="time" class="labelNewReport"
-        >Количество изготовлено, шт:</label
-      >
+      <label for="time" class="labelNewReport">Количество изготовлено, шт:</label>
       <input
         type="number"
         class="form-control inputFixBrak textAlignEnd"
@@ -212,20 +208,8 @@
 
     <div class="input-group" id="buttonsGroup">
       <label></label>
-      <button
-        type="button"
-        class="btn btn-success reportButton"
-        id="saveNewReport"
-      >
-        Сохранить
-      </button>
-      <button
-        type="button"
-        class="btn btn-secondary reportButton"
-        id="cancelNewReport"
-      >
-        Отмена
-      </button>
+      <button type="button" class="btn btn-success reportButton" id="saveNewReport">Сохранить</button>
+      <button type="button" class="btn btn-secondary reportButton" id="cancelNewReport">Отмена</button>
     </div>
   </div>
 </div>
