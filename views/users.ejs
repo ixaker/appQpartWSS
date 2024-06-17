@@ -346,32 +346,21 @@
       <div class="userNameText">
         <h4 class="userNameFaceID">
           <i class="bi bi-record-fill" <% if (user.work) { %>
-            style="color: chartreuse;" <% } else { %> style="color: lightgrey;"
-            <% } %> >
+            style="color: chartreuse;" <% } else { %> style="color: lightgrey;" <% } %> >
           </i>
           <span class="userName"><%= user.name %></span>
         </h4>
         <h6 class="userMenuFaceID"><%= user.menu %></h6>
         <h6 class="userProfaFaceID"><%= user.profa %></h6>
-        <h4 class="userCountFaceID btn btn-outline-dark btnUserEdit">
-          <%= user.count %> фото
-        </h4>
+        <h4 class="userCountFaceID btn btn-outline-dark btnUserEdit"><%= user.count %> фото</h4>
         <h4 class="userActionButton">
           <i class="bi bi-chevron-down"></i>
         </h4>
       </div>
 
       <div class="userActions">
-        <button
-          class="btn btn-outline-dark btnUserEdit"
-          onclick="loginUser('<%= user.uid %>')"
-        >
-          Залогиниться
-        </button>
-        <button
-          class="btn btn-outline-dark btnUserEdit"
-          onclick="deletePhotos('<%= user.uid %>')"
-        >
+        <button class="btn btn-outline-dark btnUserEdit" onclick="loginUser('<%= user.uid %>')">Залогиниться</button>
+        <button class="btn btn-outline-dark btnUserEdit" onclick="deletePhotos('<%= user.uid %>')">
           Удалить все фото
         </button>
         <button
@@ -401,12 +390,7 @@
       >
         Начать
       </button>
-      <button
-        class="btn btn-outline-dark btnUserVideoScaner rightAlign"
-        onclick="closeVideoScaner()"
-      >
-        Закрыть
-      </button>
+      <button class="btn btn-outline-dark btnUserVideoScaner rightAlign" onclick="closeVideoScaner()">Закрыть</button>
     </div>
 
     <div id="groupUserInfoForVideoScaner">
@@ -418,10 +402,10 @@
 </div>
 
 <script>
-  var videoScaner = document.getElementById("videoScaner");
-  var selectedUID = "";
+  var videoScaner = document.getElementById('videoScaner');
+  var selectedUID = '';
   var scannerActive = false;
-  var canvasVideoScaner = document.createElement("canvas");
+  var canvasVideoScaner = document.createElement('canvas');
 
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.log(navigator.mediaDevices);
@@ -432,139 +416,119 @@
         videoScaner.srcObject = stream;
       })
       .catch(function (error) {
-        console.error("Ошибка доступа к веб-камере: ", error);
-        toastr["error"]("Ошибка доступа к веб-камере");
+        console.error('Ошибка доступа к веб-камере: ', error);
+        toastr['error']('Ошибка доступа к веб-камере');
       });
   } else {
-    console.error("Браузер не поддерживает API доступа к медиа-устройствам");
-    toastr["error"]("Браузер не поддерживает API доступа к медиа-устройствам");
+    console.error('Браузер не поддерживает API доступа к медиа-устройствам');
+    toastr['error']('Браузер не поддерживает API доступа к медиа-устройствам');
   }
 
-  videoScaner.addEventListener("loadeddata", () => {
-    console.log("event loadeddata videoScaner");
-    $("#btnStartScanFace").show();
+  videoScaner.addEventListener('loadeddata', () => {
+    console.log('event loadeddata videoScaner');
+    $('#btnStartScanFace').show();
   });
 
   function addPhoto(btn, uid, name, count) {
-    console.log("addPhoto", uid, btn);
+    console.log('addPhoto', uid, btn);
 
     selectedUID = uid;
 
-    $("#selectedUserForVideoScaner").text(name);
-    $("#infoForSelectedUserForVideoScaner").text(
-      $("#" + selectedUID + " .userCountFaceID").text()
-    );
-    $("#blockFormForVideoScaner").show();
+    $('#selectedUserForVideoScaner').text(name);
+    $('#infoForSelectedUserForVideoScaner').text($('#' + selectedUID + ' .userCountFaceID').text());
+    $('#blockFormForVideoScaner').show();
   }
 
   function closeVideoScaner() {
-    console.log("closeVideoScaner");
-    $("#blockFormForVideoScaner").hide();
+    console.log('closeVideoScaner');
+    $('#blockFormForVideoScaner').hide();
     scannerActive = false;
-    $("#btnStartScanFace").html("Начать");
+    $('#btnStartScanFace').html('Начать');
   }
 
   function startVideoScaner() {
-    console.log("startVideoScaner");
+    console.log('startVideoScaner');
     scannerActive = !scannerActive;
 
     if (scannerActive) {
-      $("#btnStartScanFace").html("Остановить");
+      $('#btnStartScanFace').html('Остановить');
       savePhoto();
     } else {
-      $("#btnStartScanFace").html("Начать");
+      $('#btnStartScanFace').html('Начать');
     }
   }
 
   function savePhoto() {
-    console.log("start uploadPhoto");
+    console.log('start uploadPhoto');
 
     try {
       if (scannerActive) {
-        if ($("#videoScaner").is(":visible")) {
+        if ($('#videoScaner').is(':visible')) {
           NProgress.start();
 
-          const context = canvasVideoScaner.getContext("2d");
+          const context = canvasVideoScaner.getContext('2d');
 
           canvasVideoScaner.width = videoScaner.videoWidth;
           canvasVideoScaner.height = videoScaner.videoHeight;
 
-          context.drawImage(
-            videoScaner,
-            0,
-            0,
-            canvasVideoScaner.width,
-            canvasVideoScaner.height
-          );
+          context.drawImage(videoScaner, 0, 0, canvasVideoScaner.width, canvasVideoScaner.height);
 
           canvasVideoScaner.toBlob(function (blob) {
-            console.log("blob", blob);
+            console.log('blob', blob);
 
             const reader = new FileReader();
             reader.onloadend = function () {
               $.post(
-                "/saveFace",
+                '/saveFace',
                 { photo: reader.result, uid: selectedUID },
                 function (response) {
-                  console.log("response from reader.onloadend", response);
+                  console.log('response from reader.onloadend', response);
                   NProgress.done();
 
                   if (response.detectFace) {
-                    $("#infoForSelectedUserForVideoScaner").text(
-                      response.similarity + " - " + response.user.count
-                    );
-                    $("#" + selectedUID + " .userCountFaceID").text(
-                      "" + response.user.count + " шт"
-                    );
-                    toastr["info"]("OK");
+                    $('#infoForSelectedUserForVideoScaner').text(response.similarity + ' - ' + response.user.count);
+                    $('#' + selectedUID + ' .userCountFaceID').text('' + response.user.count + ' шт');
+                    toastr['info']('OK');
                   } else {
-                    toastr["error"]("Лицо не обнаружено");
+                    toastr['error']('Лицо не обнаружено');
                   }
 
                   setTimeout(() => {
                     savePhoto();
                   }, 500);
                 },
-                "json"
+                'json'
               ).fail(function (jqXHR, textStatus, errorThrown) {
-                console.log("error - /saveFace");
+                console.log('error - /saveFace');
                 NProgress.done();
 
                 setTimeout(() => {
                   savePhoto();
                 }, 500);
-                console.log(
-                  "--------------- error from fail --------------",
-                  textStatus
-                );
-                toastr["error"]("ERROR");
+                console.log('--------------- error from fail --------------', textStatus);
+                toastr['error']('ERROR');
               });
             };
             reader.readAsDataURL(blob);
-          }, "image/jpeg");
+          }, 'image/jpeg');
         }
       }
     } catch (error) {
-      console.log(
-        "--------------- error from face scan ------------------",
-        error
-      );
+      console.log('--------------- error from face scan ------------------', error);
       setTimeout(() => {
         savePhoto();
       }, 500);
-      toastr["error"](error);
+      toastr['error'](error);
     }
   }
 
   function deletePhotos(uid) {
-    console.log("deletePhotos", uid);
+    console.log('deletePhotos', uid);
 
-    $.post("/deleteFaces", { uid: uid }, function (response) {
+    $.post('/deleteFaces', { uid: uid }, function (response) {
       console.log(response);
-      $("#" + response.user.uid + " .userCountFaceID").text(
-        "" + response.user.count + " фото"
-      );
-      $("#userFoto").children().remove();
+      $('#' + response.user.uid + ' .userCountFaceID').text('' + response.user.count + ' фото');
+      $('#userFoto').children().remove();
     });
   }
 
@@ -572,19 +536,19 @@
     NProgress.start();
 
     $.ajax({
-      url: "/loadUserListFrom1C",
-      type: "GET",
+      url: '/loadUserListFrom1C',
+      type: 'GET',
       timeout: 5000, // 30 секунд
       success: function (response) {
         NProgress.done();
-        $("#content").html(response);
+        $('#content').html(response);
       },
       error: function (xhr, status, error) {
         NProgress.done();
-        if (status === "timeout") {
-          console.log("Запрос превысил максимальное время ожидания");
+        if (status === 'timeout') {
+          console.log('Запрос превысил максимальное время ожидания');
         } else {
-          console.log("Произошла ошибка: " + error);
+          console.log('Произошла ошибка: ' + error);
         }
       },
     });
@@ -594,62 +558,62 @@
     NProgress.start();
 
     $.ajax({
-      url: "/updateFaceID",
-      type: "GET",
+      url: '/updateFaceID',
+      type: 'GET',
       timeout: 200000, // 30 секунд
       success: function (response) {
         NProgress.done();
-        $("#content").html(response);
+        $('#content').html(response);
       },
       error: function (xhr, status, error) {
         NProgress.done();
-        if (status === "timeout") {
-          console.log("Запрос превысил максимальное время ожидания");
+        if (status === 'timeout') {
+          console.log('Запрос превысил максимальное время ожидания');
         } else {
-          console.log("Произошла ошибка: " + error);
+          console.log('Произошла ошибка: ' + error);
         }
       },
     });
   }
 
   function loginUser(uid) {
-    $.post("/token", { user: uid }, function (data, status) {
-      console.log("logToServer", "Data: ", data, "\nStatus: ", status);
-      console.log("token", data.token);
+    $.post('/token', { user: uid }, function (data, status) {
+      console.log('logToServer', 'Data: ', data, '\nStatus: ', status);
+      console.log('token', data.token);
 
-      $("#content").html("");
-      $("#menu").html("");
-      localStorage.setItem("PageUID", "");
-      PageUID = "";
-      $.cookie("token", data.token);
+      $('#content').html('');
+      $('#menu').html('');
+      localStorage.setItem('PageUID', '');
+      PageUID = '';
+      $.cookie('token', data.token);
       authentication();
     });
   }
 
   $(document).ready(function () {
-    $("#search").on("input", function () {
-      let searchTerms = $(this).val().split(" ").filter(Boolean);
+    $('#search').on('input', function () {
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
 
-      $(".userCard").each(function () {
+      $('.userCard').each(function () {
         let found = true;
         let elements = $(this)
-          .find(".userName, .userProfaFaceID")
+          .find('.userName, .userProfaFaceID')
           .map(function () {
             return { el: $(this) };
           })
           .get();
-        elements.forEach((element) => {
-          element.text = element.el.text().replace(/<mark>|<\/mark>/g, "");
-          console.log("element.text", element.text);
+        elements.forEach(element => {
+          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+          console.log('element.text', element.text);
         });
 
         if (searchTerms.length > 0) {
-          found = searchTerms.every((term) => {
-            const regex = new RegExp(`(${term})`, "gi");
-            return elements.some((element) => {
+          found = searchTerms.every(term => {
+            const regex = new RegExp(`(${term})`, 'gi');
+            return elements.some(element => {
               if (element.text.match(regex)) {
-                element.text = element.text.replace(regex, "<mark>$1</mark>");
-                console.log("element.text", element.text);
+                element.text = element.text.replace(regex, '<mark>$1</mark>');
+                console.log('element.text', element.text);
                 return true;
               }
               return false;
@@ -657,55 +621,53 @@
           });
         }
 
-        $(this).toggleClass("hide", !found);
-        elements.forEach((element) => {
+        $(this).toggleClass('hide', !found);
+        elements.forEach(element => {
           element.el.html(element.text);
         });
       });
     });
 
     // клик по количеству фото .userCountFaceID
-    $(".userCountFaceID").on("click", function (event) {
+    $('.userCountFaceID').on('click', function (event) {
       clickAnimate(this);
 
-      const row = $(this).closest(".userCard");
-      const newUserID = row.attr("id");
-      const oldUserID = $("#userFoto").attr("UserID") || "";
+      const row = $(this).closest('.userCard');
+      const newUserID = row.attr('id');
+      const oldUserID = $('#userFoto').attr('UserID') || '';
 
       if (newUserID !== oldUserID) {
-        $("#userFoto").hide();
+        $('#userFoto').hide();
       }
 
-      if ($("#userFoto").is(":visible")) {
-        $("#userFoto").hide(100);
+      if ($('#userFoto').is(':visible')) {
+        $('#userFoto').hide(100);
       } else {
-        $("#userFoto").children().remove();
-        $("#userFoto").appendTo(row);
-        $("#userFoto").show(100);
-        $("#userFoto").attr("UserID", newUserID);
+        $('#userFoto').children().remove();
+        $('#userFoto').appendTo(row);
+        $('#userFoto').show(100);
+        $('#userFoto').attr('UserID', newUserID);
 
         NProgress.start();
 
         try {
           $.ajax({
-            url: "/userListFoto",
-            type: "GET",
-            dataType: "json",
+            url: '/userListFoto',
+            type: 'GET',
+            dataType: 'json',
             data: { UserID: newUserID },
             success: function (response) {
-              console.log("response", response);
+              console.log('response', response);
 
               if (response.length > 0) {
                 let indexFoto = 1;
 
-                response.forEach((item) => {
+                response.forEach(item => {
                   console.log(item);
 
-                  let newFoto = $(
-                    `<img class="userFoto" src="" alt="${item}" indexFoto="${indexFoto}">`
-                  );
+                  let newFoto = $(`<img class="userFoto" src="" alt="${item}" indexFoto="${indexFoto}">`);
 
-                  if (item === "notFound.png") {
+                  if (item === 'notFound.png') {
                     newFoto = $(
                       `<img class="userFoto" src="${item}" alt="${item}" title="${item}" indexFoto="${indexFoto}">`
                     );
@@ -715,13 +677,13 @@
                     );
                   }
 
-                  $("#userFoto").append(newFoto);
+                  $('#userFoto').append(newFoto);
 
                   indexFoto += 1;
                 });
               } else {
                 let newFoto = $(`<h6>Нет фотографий</h6>`);
-                $("#userFoto").append(newFoto);
+                $('#userFoto').append(newFoto);
               }
 
               NProgress.done();
@@ -733,62 +695,60 @@
       }
     });
 
-    $("#userFoto").on("click", ".userFoto", function (event) {
-      let file = $(this).attr("alt");
-      let indexFoto = $(this).attr("indexFoto");
-      let UserID = $(this).closest(".userCard").attr("id");
+    $('#userFoto').on('click', '.userFoto', function (event) {
+      let file = $(this).attr('alt');
+      let indexFoto = $(this).attr('indexFoto');
+      let UserID = $(this).closest('.userCard').attr('id');
       let fotoForDelete = this;
-      let deleteFoto = confirm(
-        "Вы уверены, что хотите удалить эту фотографию?"
-      );
+      let deleteFoto = confirm('Вы уверены, что хотите удалить эту фотографию?');
 
       if (deleteFoto) {
         NProgress.start();
 
         try {
           $.ajax({
-            url: "/userListFoto",
-            type: "DELETE",
-            dataType: "json",
+            url: '/userListFoto',
+            type: 'DELETE',
+            dataType: 'json',
             data: { UserID: UserID, file: file, indexFoto: indexFoto },
             complete: function (response) {
-              console.log("on complete");
+              console.log('on complete');
               //$('.userFoto[alt="' + file + '"]').remove();
 
               console.log(fotoForDelete);
               NProgress.done();
 
-              let userCard = $(fotoForDelete).closest(".userCard");
-              let userCountFaceID = $(userCard).find(".userCountFaceID");
+              let userCard = $(fotoForDelete).closest('.userCard');
+              let userCountFaceID = $(userCard).find('.userCountFaceID');
               let text = $(userCountFaceID).text();
-              let count = (parseInt(text) - 1).toString() + " фото";
+              let count = (parseInt(text) - 1).toString() + ' фото';
               $(userCountFaceID).text(count);
 
-              console.log("userCard", userCard);
-              console.log("userCountFaceID", userCountFaceID);
-              console.log("text", text);
-              console.log("count", count);
+              console.log('userCard', userCard);
+              console.log('userCountFaceID', userCountFaceID);
+              console.log('text', text);
+              console.log('count', count);
 
               $(fotoForDelete).remove();
             },
           });
         } catch (error) {
-          console.log("error", error);
+          console.log('error', error);
           NProgress.done();
         }
       }
     });
 
-    $(".userActions").hide();
+    $('.userActions').hide();
 
     // Керування показом та приховуванням блоку userActions та зміна значення кнопки
-    $(".userActionButton").on("click", function () {
-      var $userActions = $(this).closest(".userCard").find(".userActions");
+    $('.userActionButton').on('click', function () {
+      var $userActions = $(this).closest('.userCard').find('.userActions');
       $userActions.toggle(300);
 
       // Зміна значення кнопки на відповідну іконку в залежності від стану блоку userActions
-      var $icon = $(this).find("i");
-      $icon.toggleClass("bi-chevron-down bi-chevron-up");
+      var $icon = $(this).find('i');
+      $icon.toggleClass('bi-chevron-down bi-chevron-up');
     });
   });
 </script>
