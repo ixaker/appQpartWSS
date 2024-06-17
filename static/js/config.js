@@ -38,10 +38,7 @@ $(function () {
                     url: this.url,
                     method: this.method || this.type
                 };
-                console.log('urlData', urlData)
-                console.log('textStatus', textStatus)
-                console.log('jqXHR', jqXHR)
-                console.log('errorThrown', errorThrown)
+                console.log('handle error in ajaxSetup')
 
                 if (urlData.url === '/authentication') {
                     console.log('error from config authentication')
@@ -49,16 +46,23 @@ $(function () {
                 }
 
                 if (textStatus === 'timeout' && jqXHR.responseText !== "Структура") {
-                    if (textStatus === 'timeout') {
-                        toastr["error"]("Немає зв'язку з сервером 1С");
-                    } else {
-                        console.error("Помилка зв'язку");
-                        toastr["error"]("Помилка зв'язку");
-                    }
+                    toastr["error"]("Немає зв'язку з сервером 1С");
                 }
 
-                sendErrorToTelegram(jqXHR || '', textStatus || '', urlData || '');
+                if (jqXHR.responseText === "Структура") {
+                    console.error("Помилка СТРУКТУРА від 1С");
+                    toastr["error"]("Помилка СТРУКТУРА від 1С");
+                }
+
+                if (jqXHR.status === 530) {
+                    console.error("Помилка авторизації", jqXHR.responseText);
+                    toastr["error"]("Помилка авторизації");
+                    return
+                }
+
+                toastr["error"]("Помилка зв'язку");
                 console.error('Error from ajax request: ', textStatus || '', errorThrown || '', jqXHR || '');
+                sendErrorToTelegram(jqXHR || '', textStatus || '', urlData || '');
             } catch (error) {
                 console.error('Error whith code in config.js: ', error);
             }
