@@ -119,6 +119,29 @@
         $.cookie('token', token);
       }
 
+      function screenSize() {
+        const screenWidth = window.screen.width;
+        const screenHeight = window.screen.height;
+        const availableScreenWidth = window.screen.availWidth;
+        const availableScreenHeight = window.screen.availHeight;
+
+        alert(
+          'viewport width: ' +
+            window.innerWidth +
+            ', viewport height: ' +
+            window.innerHeight +
+            ', screen width: ' +
+            screenWidth +
+            ', screen height: ' +
+            screenHeight +
+            ', availableScreenWidth: ' +
+            availableScreenWidth +
+            ', availableScreenHeight: ' +
+            availableScreenHeight
+        );
+      }
+      // screenSize();
+
       function listenResize() {
         window.addEventListener('resize', function () {
           makeNavbarTextMove();
