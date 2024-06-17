@@ -92,15 +92,15 @@ app.get('/uploadPhoto', (req, res, next) => {
 });
 
 // + Обработчик админского обхода авторизации
-app.get('/adminAuth', (req, res, next) => {
-  let result = { detectUser: true };
-  result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
-  result.token = jwt.sign(result.user, secret, options);
+// app.get('/adminAuth', (req, res, next) => {
+//   let result = { detectUser: true };
+//   result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
+//   result.token = jwt.sign(result.user, secret, options);
 
-  log.data('/adminAuth', result);
+//   log.data('/adminAuth', result);
 
-  res.send(result);
-});
+//   res.send(result);
+// });
 
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 app.use(express.json({ limit: '10mb' }));
@@ -344,7 +344,7 @@ app.get('/userListFoto', async function (req, res) {
 
 app.delete('/userListFoto', async function (req, res) {
   faceID.deleteUserFoto(req.body.UserID, req.body.file);
-  return res.send('{result:"OK"}');
+  return res.send('{"result":"OK"}');
 });
 
 // ***********************************************************************************************
@@ -416,7 +416,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).send("Произошла ошибка на сервере.");
+  res.status(500).send({ "error": "Произошла ошибка на сервере." });
 });
 
 
