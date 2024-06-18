@@ -53,3 +53,7 @@ td input:disabled {
   background-color: white !important;
   border: none !important;
 }
+
+.selectedRow td {
+  background-color: rgb(238, 252, 199);
+}
