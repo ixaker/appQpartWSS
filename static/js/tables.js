@@ -180,19 +180,22 @@ async function initTable(table) {
 
 // создание стороки заголовков таблицы
 function createHeaderForTable(tableJQ) {
-    console.log('--- createHeaderForTable')
+    console.log('--- createHeaderForTable', tableJQ.children('tbody').children('.config').children())
+
+
     let header = tableJQ.children('thead');
 
     if (header.length > 0) {
         return;
     }
     let newRow = $(`<tr></tr>`);
-
-    tableJQ.find('.config').children().each(function () {
+    tableJQ.children('tbody').children('.config').children().each(function () {
+        console.log('append', $(this).attr('title'))
         newRow.append($(`<th class="${$(this).attr('headerClass') || ''}" style="${$(this).attr('style')}">${$(this).attr('title')}</th>`));
     });
 
     $($('<thead></thead>').append(newRow)).prependTo(tableJQ);
+    console.log('tableJQ', tableJQ);
 
     if (!tableJQ[0].hasAttribute('header')) {
         newRow.hide();
