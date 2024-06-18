@@ -407,6 +407,10 @@ app.get('/zakupka', async function (req, res) {
   return res.render('zakupka');
 });
 
+app.get('/repairList', async function (req, res) {
+  return res.render('repairList');
+});
+
 // Error
 app.use((req, res) => {
   log.warn('error path')
