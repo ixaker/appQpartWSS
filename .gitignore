@@ -1,6 +1,7 @@
 /foto/
 /log/
 /node_modules/
+/static/foto
 .env
 embeddings.json
 userInfoData.json
