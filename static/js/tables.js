@@ -435,6 +435,11 @@ function formatDate(dateString) {
     return `${dateString.substring(8, 10)}.${dateString.substring(5, 7)}`;
 }
 
+function formatDateTime(dateString) {
+    // console.log('formateDate', dateString)
+    return `${dateString.substring(8, 10)}.${dateString.substring(5, 7)}.${dateString.substring(0, 4)} ${dateString.substring(11, 16)}`;
+}
+
 function setEventOnChange(element, newData) {
 
     $(element).attr('rowID', newData.data.uid);
