@@ -1,21 +1,53 @@
 <style>
+  .card-title {
+  }
   #orderInfo {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 10px;
-    gap: 10px;
   }
 
-  #infoTitle {
-    margin: 0 auto;
+  .titlePage {
+    font-size: 3.7em;
+  }
+
+  #closeBtn {
+    margin-left: auto;
+    margin-right: 10px;
+    font-size: xxx-large;
+    color: darkgreen;
+    line-height: 1em;
   }
 
   #infoGroup {
+    font-size: large;
+  }
+
+  .input-group {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
     gap: 10px;
+    margin-bottom: 0.7em !important;
+    width: 100%;
+  }
+
+  .input-group label {
+    margin-bottom: 0;
+  }
+
+  .input-group input {
+  }
+
+  .form-control {
+    font-size: 1em;
+    background-color: white !important;
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+  }
+
+  .form-control:focus  {
+    box-shadow: none;
   }
 
   #infoDate {
@@ -24,19 +56,23 @@
   #infoStanok {
   }
 
-  #infoAutor {
+  #infoAuthor {
   }
 
   #infoText {
+    border: 1px solid lightgrey;
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0;
+    background-color: white;
   }
   #infoOrderText {
   }
 
   #sotrudnik {
-    font-size: 1.25rem;
   }
   #infoDiagnosText {
-    font-size: 1.25rem;
   }
 
   #infoDifficult {
@@ -68,54 +104,17 @@
   #saveInfo {
   }
 
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 10%;
-    width: 100%;
-    height: 95%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .showModal {
-    display: flex;
-  }
-
-  .modal-content {
-    background-color: white;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 95vw;
-    height: 90%;
-    border-radius: 10px;
-    position: relative;
-    margin-top: 2%;
-  }
-
-  .close-modal-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    line-height: 25px;
-    border: none;
-    background-color: white;
-    font-size: 2em;
-  }
-
   table {
-    font-size: 0.9em;
+    font-size: 1.7em;
+  }
+
+  table th {
+    font-size: 1rem;
   }
 
   table td {
     padding: 5px;
+    line-height: 2.5em;
   }
   #commandPanel {
     width: 100%;
@@ -201,6 +200,7 @@
 
   #newOrderText {
     font-size: 1.25rem;
+    width: 100%;
   }
 
   .groupSearch input {
@@ -216,261 +216,403 @@
   }
 </style>
 
-<div id="commandPanel">
-  <h4 class="titlePage">Заявки на ремонт оборудования</h4>
-  <i class="bi bi-plus-circle" id="btnAdd"></i>
+<div id="main">
+  <div id="commandPanel">
+    <h4 class="titlePage">Заявки на ремонт</h4>
+    <i class="bi bi-plus-circle" id="btnAdd"></i>
+  </div>
+
+  <div id="addOrder" style="display: none">
+    <div id="orderTitle">Новая заявка на ремонт</div>
+
+    <input
+      type="text"
+      minLength="1"
+      url="/app/autocompleteStanok"
+      class="dataCell form-control"
+      placeholder="Cтанок..."
+      id="newOrderStanok"
+      class="form-control"
+      callbackSelect="callbackSelectStanok"
+      class="form-control mr-sm-2"
+    />
+
+    <textarea class="form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
+
+    <div class="input-group" id="orderButtonGroup">
+      <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
+      <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
+    </div>
+  </div>
+
+  <table
+    id="ЗаявкаНаРемонт"
+    name="ЗаявкаНаРемонт"
+    url="/app/repairOrder"
+    callbackBeforeInitTable="callbackBeforeDone"
+    filter="callbackFilter"
+    callbackAfterInitTable="callbackAfterDone"
+    addNevRow="callbackAddNewRow"
+    callbackAfterWrite="callbackAfterWrite"
+    append="up"
+    init
+    header
+  >
+    <tr class="config" style="display: none">
+      <td title="Дни" name="Дни" style="width: 10%">
+        <div class="dataCell textAlignCenter"></div>
+      </td>
+      <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 15%">
+        <div class="dataCell textAlignCenter"></div>
+      </td>
+      <td title="Описание" name="Описание" style="width: 48%">
+        <div class="dataCell"></div>
+      </td>
+      <td title="Статус" name="СтатусЗаявки" style="width: 22%">
+        <div class="dataCell"></div>
+      </td>
+      
+    </tr>
+
+    <tr id="stageRow" style="display: none">
+      <td colspan="7" style="background-color: aliceblue">
+        <div id="stageForm"></div>
+      </td>
+    </tr>
+  </table>
 </div>
 
-<div id="addOrder" style="display: none">
-  <div id="orderTitle">Новая заявка на ремонт</div>
+<style>
+  #modal {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    padding: 0 10px;
+  }
 
-  <input
-    type="text"
-    minLength="1"
-    url="/app/autocompleteStanok"
-    class="dataCell form-control"
-    placeholder="Cтанок..."
-    id="newOrderStanok"
-    class="form-control"
-    callbackSelect="callbackSelectStanok"
-    class="form-control mr-sm-2"
-  />
+  .showModal {
+    display: flex;
+  }
 
-  <textarea class="form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
+  .close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    line-height: 25px;
+    border: none;
+    background-color: white;
+    font-size: 2em;
+  }
+</style>
 
-  <div class="input-group" id="orderButtonGroup">
-    <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
-    <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
+<style>
+  #controlPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  #btnAddForm {
+    margin: 0 auto;
+    font-size: xxx-large;
+    color: #007431;
+  }
+
+  #btn-container {
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 300px;
+    display: none;
+    margin-bottom: 20px;
+    position: absolute;
+    z-index: 1;
+    top: 85%;
+    opacity: 0;
+    gap: 2px;
+
+    transition: opacity 0.2s;
+  }
+
+  #btn-container.showModal {
+    opacity: 1;
+  }
+
+  .card {
+    padding: 0px 5px 0px 5px;
+    margin-bottom: 10px;
+    border-radius: 0px 12px 12px 12px;
+    max-width: 600px;
+    background-color: white;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .card-author {
+    font-weight: bold;
+    color: #8275eb;
+  }
+
+  .card-body {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    background-color: lightgray;
+  }
+
+  #choiceDifficult {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cardLabel {
+    margin: 0;
+  }
+
+  .card-text {
+    margin-bottom: 0;
+  }
+
+  #commandBtns {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .select {
+    font-weight: bold;
+    color: darkred;
+  }
+
+  .card-date {
+    margin-top: -10px;
+    font-size: 0.7em;
+    color: darkgrey;
+    width: 100%;
+    text-align: right;
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .form-group label {
+    margin-bottom: 0;
+  }
+
+  .form-control {
+    width: 70%;
+    margin-left: auto;
+  }
+
+  #executor {
+    width: fit-content;
+  }
+
+
+</style>
+
+<div id="modal" style="display: none">
+  <div id="commandPanel">
+    <h4 class="titlePage">Заявка на ремонт</h4>
+    <i id="closeBtn" class="bi bi-x-circle"></i>
   </div>
-</div>
 
-<!-- <div id="commandPanel">
-  <i class="bi bi-plus-circle" id="btnAdd"></i>
-  <div class="btn-group" role="group" aria-label="all/work">
-    <button type="button" class="btn btn-primary all-work btn-lg" id="btnAll">Все</button>
-    <button type="button" class="btn btn-secondary all-work btn-lg" id="btnWork">В работе</button>
+  <div id="infoGroup">
+    <div class="form-group">
+      <pre id="infoText">Текст заявки</pre>
+    </div>
+
+    <div class="form-group">
+      <label >Дата:</label>
+      <input type="text" readonly class="form-control" id="infoDate"></input>
+    </div>
+    
+    <div class="form-group">
+      <label >Автор:</label>
+      <input type="text" readonly class="form-control" id="infoAuthor"></input>
+    </div>
+
+    <div class="form-group">
+      <label>Станок:</label>
+      <input type="text" readonly class="form-control" id="infoStanok"></input>
+    </div>
+
+    <div class="form-group">
+      <label>Срок:</label>
+      <input type="text" readonly class="form-control" id="infoDays"></input>
+    </div>
+    
+    <div class="form-group">
+      <label for="difficultButton">Сложность:</label>
+      <select id="difficultButton" class="form-control">
+        
+      </select>
+    </div>
+
+    
+
+    <div class="form-group">
+      <label for="status">Статус</label>
+      <select id="status" class="form-control">
+        <option value="Диагностика">Диагностика</option>
+        <option value="Ремонт">Ремонт</option>
+        <option value="Выполнена">Выполнена</option>
+      </select>
+    </div>
+    
   </div>
 
-  <div class="" role="group" aria-label="el/mech">
-    <button type="button" class="btn btn-primary mech-el btn-lg" id="btnMech">Механік</button>
-    <button type="button" class="btn btn-primary mech-el btn-lg ml-2" id="btnEl">Електрик</button>
-  </div>
-
-  <div class="input-group-lg rounded groupSearch">
-    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="searchInput" />
-    <span class="input-group-text border-0" id="search-addon">
-      <i class="bi bi-search"></i>
-    </span>
-  </div>
-</div> -->
-
-<table
-  id="ЗаявкаНаРемонт"
-  name="ЗаявкаНаРемонт"
-  url="/app/ListOfRepairOrders"
-  callbackBeforeInitTable="callbackBeforeDone"
-  filter="callbackFilter"
-  callbackAfterInitTable="callbackAfterDone"
-  addNevRow="callbackAddNewRow"
-  callbackAfterWrite="callbackAfterWrite"
-  append="up"
-  init
-  header
->
-  <tr class="config" style="display: none">
-    <td title="Дата" name="Дата" style="width: 6%">
-      <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
-    </td>
-    <td title="Дни" name="Дни" style="width: 5%">
-      <div class="dataCell textAlignCenter"></div>
-    </td>
-    <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 8%">
-      <div class="dataCell textAlignCenter"></div>
-    </td>
-    <td title="Проблема" name="Описание" style="width: 75%">
-      <div class="dataCell"></div>
-    </td>
-    <!-- <td title="Автор" name="Сотрудник" key="Наименование" style="width: 20%">
-      <div class="dataCell"></div>
-    </td>
-    <td title="Статус" name="СтатусЗаявки" style="width: 10%">
-      <div class="dataCell textAlignEnd"></div>
-    </td>
-    <td title="Мех" name="МеханикаСостояние" style="width: 15%">
-      <div class="dataCell textAlignCenter"></div>
-    </td>
-    <td title="Електр" name="ЭлектрикаСостояние" key="ЭлектрикаСостояние" style="width: 15%">
-      <div class="dataCell textAlignCenter"></div>
-    </td> -->
-    <td title="" style="width: 6%">
-      <div class="dataCell textAlignCenter">
-        <i class="bi bi-pencil btnEdit btnRow colorGreen"></i>
-      </div>
-    </td>
-  </tr>
-
-  <!-- Repair order details -->
-  <tr id="rowOrderInfo" style="display: none" class="selectedRow">
-    <td colspan="8">
-      <div id="orderInfo">
-        <div id="infoTitle">Інформація по ремонту</div>
-        <div id="infoGroup">
-          <div id="infoDate">Дата: 17.05</div>
-          <div id="infoStanok">Станок: T007</div>
-          <div id="infoAutor">Створив заявку: Амауріца Олексій</div>
+  <div id="modal-content">
+    <!-- <div id="controlPanel">
+        <i class="bi bi-plus-circle" id="btnAddForm"></i>
+        <div id="btn-container" class="btn-container">
+          <button type="button" class="btn btn-primary btn" id="createZakupka">Створити заявку на закупку</button>
+          <button type="button" class="btn btn-primary btn" id="repairDone">Ремонт завершено</button>
+          <button type="button" class="btn btn-primary btn" id="repairConfirm">Прийняти ремонт</button>
+          <button type="button" class="btn btn-primary btn" id="writeComment">Написати коментар</button>
+          <button type="button" class="btn btn-primary btn" id="appointDifficult">Призначити складність</button>
+          <button type="button" class="btn btn-primary btn" id="appointExecutor">Призначити відповідального</button>
         </div>
-
-        <div id="infoText">Текст заявки Тут вказується причина поломки і якісь інші примітки...</div>
-
-        <div id="infoText">
-          Текст діагностики
-          <textarea
-            class="form-control"
-            id="infoDiagnosText"
-            rows="3"
-            placeholder="  Тут вказується причина поломки і якісь інші примітки..."
-          ></textarea>
-        </div>
-        <div class="input-group" id="groupInputSotrudnik">
-          <label for="sotrudnik" class="labelNewReport">Призначити виконавця:</label>
-          <input
-            type="text"
-            class="form-control inputFixBrak"
-            id="sotrudnik"
-            url="/app/autocompleteSotrydnik"
-            aria-describedby="basic-addon3"
-          />
-        </div>
-
-        <!-- <div id="infoDifficult">Складність ремонту</div> -->
-        <div class="input-group" id="workInProvider">
-          <label for="date" class="labelNewReport">Ремонт завершено:</label>
-          <input class="" type="checkbox" value="" id="orderDone" />
-        </div>
-        <div class="input-group" id="infoButtonGroup">
-          <button type="button" class="btn btn-secondary btn-lg" id="cancelInfo">Отмена</button>
-          <button type="button" class="btn btn-success btn-lg" id="saveInfo">Сохранить</button>
-        </div>
-      </div>
-      <!-- <div id="containerTable" style="padding: 5px 0">
-        <table
-          id="tableOrderInfo"
-          name="tableOrderInfo"
-          url="/app/ListOfRepairTickets"
-          filter="filterForNeed"
-          append=""
-          header
-          callbackAfterInitTable="callbackAfterInitTableOrderInfo"
-        >
-          <tr class="config" style="display: none">
-            <td title="Дата" name="Дата" style="width: 6%">
-              <div class="dataCell" mask="DD.MM" typeData="date"></div>
-            </td>
-            <td title="Дни" name="Заявка" key="Дни" style="width: 6%">
-              <div class="dataCell"></div>
-            </td>
-            <td title="Направление" name="Заказ" style="width: 12%">
-              <div class="dataCell"></div>
-            </td>
-            <td title="Задача" name="Описание" style="width: 20%">
-              <div class="dataCell"></div>
-            </td>
-            <td title="Что сделано" name="Заказ" style="width: 20%">
-              <div class="dataCell"></div>
-            </td>
-            <td title="Статус" name="Заявка" key="СтатусЗаявки" style="width: 10%">
-              <div class="dataCell"></div>
-            </td>
-          </tr>
-        </table>
       </div> -->
-    </td>
-  </tr>
-  <tr id="stageRow" style="display: none">
-    <td colspan="7" style="background-color: aliceblue">
-      <div id="stageForm"></div>
-    </td>
-  </tr>
-</table>
 
-<!-- <div id="modal" class="modal">
-  <div class="modal-content">
-    <button class="close-modal-btn" id="closeBtn"><i class="bi bi-x"></i></button>
-    <h2>Модальне вікно</h2>
-    <p>Це простий приклад модального вікна.</p>
+    <style>
+      #sendComment {
+        font-size: xx-large;
+        color: darkgreen;
+        margin-top: auto;
+        margin-right: 10px;
+      }
+      #commentForm {
+        
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        background-color: white;
+        border-radius: 12px 12px 12px 12px !important;
+        margin-bottom: 10px !important;
+      }
+
+      #comment {
+        border: none;
+        font-size: 2.2em;
+      }
+    </style>
+    <div class="input-group" id="commentForm">
+      <textarea class="form-control" id="comment" rows="1" placeholder="написать сообщение..."></textarea>
+      <i class="bi bi-send" id="sendComment"></i>
+    </div>
+
+    <div id="formContainer" style="display: none">
+      <!-- place for form -->
+      <div class="card">
+        <div class="card-body">
+          <textarea class="form-control" id="newOrderText" rows="2" placeholder="нотатки..."></textarea>
+          <div id="choiceDifficult" style="display: none">
+            <p class="cardLabel">Складність ремонта:</p>
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button type="button" class="btn btn-secondary">простий</button>
+              <button type="button" class="btn btn-secondary">середній</button>
+              <button type="button" class="btn btn-secondary">складний</button>
+            </div>
+          </div>
+          <div class="input-group" id="choiceExecutor" style="display: none">
+            <label for="sotrudnik" class="cardLabel">Призначити виконавця:</label>
+            <input
+              type="text"
+              class="form-control inputFixBrak"
+              id="sotrudnik"
+              url="/app/autocompleteSotrydnik"
+              aria-describedby="basic-addon3"
+            />
+          </div>
+
+          <div>
+            <div id="commandBtns">
+              <button type="button" class="btn btn-primary btn" id="cancelInfo">Відмінити</button>
+              <button type="button" class="btn btn-primary btn" id="saveInfo">Зберегти</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="historyContainer">
+      <!-- history of current repair -->
+    </div>
+
+    <!-- Шаблон картки -->
   </div>
 </div>
 
-<div id="showModalButton">Show modal</div> -->
+<script id="card-template" type="text/x-handlebars-template">
+  <div class='card'>
+    <div class='card-body'>
+      <div class='card-author'></div>
+      <p class='card-text'><span class='card-author'>{{author}}:</span> {{text}}</p>
+      <div class='card-date'>{{date}}</div>
+    </div>
+  </div>
+</script>
+
+<script id="formTemplate" type="text/x-handlebars-template">
+  <textarea class='form-control' id='newOrderText' rows='2' placeholder='нотатки...'></textarea>
+  <div id='choiceDifficult'>
+    <p class='cardLabel'>Складність ремонта:</p>
+    <div class='btn-group' role='group' aria-label='Basic example'>
+      <button type='button' class='btn btn-secondary'>простий</button>
+      <button type='button' class='btn btn-secondary'>середній</button>
+      <button type='button' class='btn btn-secondary'>складний</button>
+    </div>
+  </div>
+  {{#if isSotrudnik}}
+    <div class='input-group' id='groupInputSotrudnik'>
+      <label for='sotrudnik' class='cardLabel'>Призначити виконавця:</label>
+      <input
+        type='text'
+        class='form-control inputFixBrak'
+        id='sotrudnik'
+        url='/app/autocompleteSotrydnik'
+        aria-describedby='basic-addon3'
+        callbackSelect=''
+      />
+    </div>
+  {{/if}}
+  <div>
+    <div id='commandBtns'>
+      <button type='button' class='btn btn-primary btn' id='cancelInfo'>Відмінити</button>
+      <button type='button' class='btn btn-primary btn' id='saveInfo'>Зберегти</button>
+    </div>
+  </div>
+</script>
 
 <script>
   $(document).ready(function () {
     let tableID = '#ЗаявкаНаРемонт';
-    let startTimeWork = new Date();
-    let timerWork = false;
-    let disableBtnIncrement = false;
-    let avaria = false;
-    initInputAutocomplete('#sotrudnik');
-
-    $('#saveInfo').on('click', function () {
-      console.log('click safe');
-      const orderText = $('#infoText').val();
-      const diagnosticText = $('#infoDiagnosText').val();
-      const sotrudnik = $('#sotrudnik').attr('uid') || '';
-      const orderDone = $('#orderDone').is(':checked');
-      const orderUID = $('#rowOrderInfo').attr('currentRow');
-      let data = $(`#${orderUID}`).data('data');
-
-      const edited = {
-        orderText: orderText,
-        diagnosticText: diagnosticText,
-        orderDone: orderDone,
-        sotrudnik: sotrudnik,
-      };
-
-      data.edited = edited;
-
-      console.log('data', data);
-
-      $.ajax({
-        url: '/app/ListOfRepairOrders',
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (response) {
-          console.log('Response:', response);
-          if (response.error) {
-            toastr.error('Помилка звязку', response['Причина']);
-          } else {
-            toastr.success('Данні сохранено');
-            $('#rowOrderInfo').hide(300);
-            const orderUID = $('#rowOrderInfo').attr('currentRow');
-            $(`#${orderUID}`).removeClass('selectedRow');
-          }
-        },
-        error: function (error) {
-          console.log('Error:', error);
-          toastr.error('Error', error);
-        },
-      });
-    });
-
-    $('#showModalButton').on('click', function () {
-      console.log('showModal');
-      $('#modal').toggleClass('showModal');
-    });
-
-    $('#closeBtn').on('click', function () {
-      console.log('closeModal');
-      $('#modal').toggleClass('showModal');
-    });
+    let currentRowJQ;
 
     initTables();
+    initInputAutocomplete('#sotrudnik');
     initInputAutocomplete('#newOrderStanok');
-
-    $('#newOrderStanok').autocomplete({
-      position: { my: 'left top', at: 'left bottom', collision: 'flip' },
-    });
 
     // callback при получении данных от сервера по wss
     callbackWSS = async function (data) {
@@ -482,17 +624,15 @@
     // callback при изменении данных в строке для определения показать или убрать строку
     callbackFilter = function (data, result = true) {
       console.log('callbackFilter', data);
-      console.log(data['Сотрудник']['uid'], user.uid);
 
-      const reportDate = new Date(data['ДатаОтчета']);
-
-      try {
-        console.log('startTimeWork', startTimeWork);
-        console.log('reportDate', reportDate);
-
-        $('#countDetalForCurrentReport').text(data['КоличествоИзготовлено']);
-      } catch (error) {
-        console.log(error);
+      if ($('#modal').is(':visible')) {
+        const newUID = data.uid;
+        const currentUID = currentRowJQ.data('data').data.uid;
+        console.log('newUID currentUID ', newUID, currentUID);
+        if (newUID === currentUID) {
+          renderOrderPage({data: data});
+        }
+        
       }
 
       return result;
@@ -502,7 +642,12 @@
     callbackBeforeDone = function (data) {};
 
     // callback после отрисовки таблицы
-    callbackAfterDone = function (data) {};
+    callbackAfterDone = function (data) {
+      console.log('callback after', data['ВариантыСложности'])
+            $.each(data['ВариантыСложности'], function(index, value) {
+                $('#difficultButton').append(`<option value="${value.data['uid']}">${value.data['Наименование']}</option>`);
+            });
+    };
 
     // callback после вставки новой пустой строки, перед заполнением данными
     callbackAddNewRow = function (data) {
@@ -529,26 +674,6 @@
         $('#newOrderStanok').data(data);
       }, 10);
     };
-    // клик по кнопке Редактировать
-    $(tableID).on('click', '.btnEdit', function (event) {
-      const row = $(this).closest('tr');
-      const data = $(row).data('data');
-
-      $(tableID).find('.btnDelete').hide();
-      $(tableID).find('.btnPlay').show();
-      $(tableID).find('.btnEdit').show();
-      $(tableID).find('.btnOk').hide();
-      $(tableID).find('input').prop('disabled', true);
-
-      $(row).find('.btnOk').show();
-      $(row).find('.btnDelete').show();
-      $(row).find('.btnEdit').hide();
-      $(row).find('.btnPlay').hide();
-      $(row).find('input').prop('disabled', false);
-
-      clickAnimate($(row).find('.btnOk'));
-      logToServer('Нажата кнопка "Редактировать"', data);
-    });
 
     // клик по кнопке Добавить заявку
     $('#btnAdd').on('click', function (event) {
@@ -559,9 +684,9 @@
 
       highlight = false;
 
-      $('#addOrder').show(300);
-      $('#commandPanel').hide(300);
-      $('#ЗаявкаНаРемонт').hide(300);
+      $('#addOrder').show(0);
+      $('#commandPanel').hide(0);
+      $('#ЗаявкаНаРемонт').hide(0);
       $('#newOrderStanok').focus();
       logToServer('Нажата кнопка "Добавить заявку"');
 
@@ -571,7 +696,9 @@
       }
     });
 
+    // click on saveOrder
     $('#saveOrder').on('click', function () {
+      clickAnimate(this);
       const stanokUID = $('#newOrderStanok').data('uid');
       const newOrderText = $('#newOrderText').val();
       console.log('stanok', stanokUID);
@@ -590,15 +717,15 @@
 
       NProgress.start();
       $.ajax({
-        url: '/app/createOrderRepair',
+        url: '/app/repairOrder',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
           console.log('logToServer', status, data);
-          $('#addOrder').hide(300);
-          $('#commandPanel').show(300);
-          $('#ЗаявкаНаРемонт').show(300);
+          $('#addOrder').hide(0);
+          $('#commandPanel').show(0);
+          $('#ЗаявкаНаРемонт').show(0);
         },
       }).always(function () {
         NProgress.done();
@@ -606,10 +733,12 @@
       });
     });
 
+    // click on cancelOrder
     $('#cancelOrder').on('click', function () {
-      $('#addOrder').hide(300);
-      $('#commandPanel').show(300);
-      $('#ЗаявкаНаРемонт').show(300);
+      clickAnimate(this);
+      $('#addOrder').hide(0);
+      $('#commandPanel').show(0);
+      $('#ЗаявкаНаРемонт').show(0);
     });
 
     $('.all-work').on('click', function () {
@@ -622,28 +751,135 @@
       $(this).toggleClass('btn-secondary');
     });
 
+    var formTemplate = Handlebars.compile($('#formTemplate').html());
+
+    function closeBtnContainer() {
+      setTimeout(function () {
+        $('#btn-container').css('display', 'none');
+      }, 200);
+    }
+
+    function hideAllInputs() {}
+
+    $('#createZakupka').on('click', function () {
+      console.log('createZakupka');
+      $('#formContainer').show();
+      closeBtnContainer();
+    });
+
+    $('#repairDone').on('click', function () {
+      console.log('repairDone');
+      $('#formContainer').show();
+
+      closeBtnContainer();
+    });
+    $('#repairConfirm').on('click', function () {
+      $('#formContainer').show();
+      closeBtnContainer();
+    });
+
+    $('#writeComment').on('click', function () {
+      $('#formContainer').show();
+      closeBtnContainer();
+    });
+
+    $('#appointDifficult').on('click', function () {
+      console.log('призначити складність');
+      $('#formContainer').show();
+      $('#choiceDifficult').show();
+      closeBtnContainer();
+    });
+
+    $('#appointExecutor').on('click', function () {
+      $('#formContainer').show();
+      $('#choiceExecutor').show();
+      closeBtnContainer();
+    });
+
+    $('#btnAddForm').on('click', function () {
+      event.stopPropagation();
+      if ($('#btn-container').hasClass('showModal')) {
+        closeBtnContainer();
+      } else {
+        $('#btn-container').css('display', 'flex');
+        setTimeout(function () {
+          $('#btn-container').addClass('showModal');
+        }, 10);
+      }
+    });
+
+    $(document).on('click', function (event) {
+      closeBtnContainer();
+    });
+  
+    ////////////////////////////////////////////////
+    
+    
+    function renderOrderPage(data) {
+      const text = data.data;
+      const date = formatDate(data.data['Дата']);
+      const stanokNumber = data.data['Станок']['ИнвентарныйНомер'];
+      const stanokName = data.data['Станок']['Наименование'];
+      const author = data.data['Сотрудник']['Наименование'];
+      const description = data.data['Описание'];
+      const sotrudnik = data.data['Ответственный'];
+      const diagnosticText = data.data['РезультатДиагностики'];
+      const orderDone = data.data['РемонтЗавершен'];
+      const status = data.data['СтатусЗаявки'];
+      const difficult = data.data['Сложность']['uid'];
+      const executor = data.data['Ответственный']['Наименование'];
+      $('#infoText').text(`${description}`);
+      $('#infoDate').val(`${date}`);
+      $('#infoStanok').val(`${stanokNumber} ${stanokName}`);
+      $('#infoAuthor').val(`${author}`);
+      $('#sotrudnik').val(sotrudnik['Наименование']);
+      $('#sotrudnik').attr('uid', sotrudnik['uid']);
+      $('#infoDiagnosText').val(diagnosticText);
+      $('#orderDone').prop('checked', orderDone);
+      $('#difficultButton').val(difficult);
+      $('#status').val(status);
+      $('#executor').val(executor);
+      console.log('difficult', difficult);
+
+      var cardTemplate = Handlebars.compile($('#card-template').html());
+      const historyContainer = $('#historyContainer');
+      const tasks = data.data['История'];
+      console.log('tasks', currentRowJQ.data('data').data['История']);
+      historyContainer.text('');
+      tasks.forEach(function (task) {
+        var cardHtml = cardTemplate({
+          author: task['Сотрудник']['Наименование'],
+          text: task.Текст,
+          date: formatDateTime(task.Дата),
+        });
+
+        historyContainer.prepend(cardHtml);
+      });
+    }
+
+
+    // click on tableRow
+    
     $(tableID).on('click', '.ЗаявкаНаРемонт', function (event) {
       console.log('ЗаявкаНаРемонт click');
+      $('#main').hide();
+      $('#modal').show();
       const currentRow = $(this).attr('id');
       const oldRow = $('#rowOrderInfo').attr('currentRow');
       const row = $(this);
       let needInit = false;
       $('#rowOrderInfo').attr('currentRow', currentRow);
-      console.log('current row data', $(this).data('data'));
+
       const data = $(this).data('data');
-      const sotrudnik = data.data['Ответственный'];
-      $('#sotrudnik').val(sotrudnik['Наименование']);
-      $('#sotrudnik').attr('uid', sotrudnik['uid']);
+      currentRowJQ = row;
+      console.log('currentRowJQ', currentRowJQ);
+      console.log('data from row', currentRowJQ.data('data'));
+      $('#modal').data('data', data);
 
-      const diagnosticText = data.data['РезультатДиагностики'];
-      $('#infoDiagnosText').val(diagnosticText);
-
-      const orderDone = data.data['РемонтЗавершен'];
-      $('#orderDone').prop('checked', orderDone);
-
+      renderOrderPage(data);
+      
       if (currentRow === oldRow) {
         if ($('#rowOrderInfo').is(':visible')) {
-          console.log('rowOrderInfo is visible');
           $('#rowOrderInfo').hide(200);
           $(tableID).children('tbody').children('.rowData').removeClass('selectedRow');
         } else {
@@ -667,43 +903,133 @@
       }
     });
 
-    // $(tableID).on('click', '.ЗаявкаНаРемонт', function (event) {
-    //   console.log('ЗаявкаНаРемонт click');
-    //   const currentRow = $(this).attr('id');
-    //   const oldRow = $('#rowOrderInfo').attr('currentRow');
-    //   const row = $(this);
-    //   let needInit = false;
-    //   $('#rowOrderInfo').attr('currentRow', currentRow);
+    function sendDataTo1C(data) {
+      $.ajax({
+        url: '/app/repairOrder',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (response) {
+          console.log('Response:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Дані сохранено');
+          }
+        },
+        error: function (error) {
+          console.log('Error:', error);
+          toastr.error('Error', error);
+        },
+      });
+    }
 
-    //   if (currentRow === oldRow) {
-    //     if ($('#rowOrderInfo').is(':visible')) {
-    //       console.log('rowOrderInfo is visible');
-    //       $('#rowOrderInfo').hide(200);
-    //       $(tableID).children('tbody').children('.rowData').removeClass('selectedRow');
-    //     } else {
-    //       console.log('rowOrderInfo is not visible');
-    //       needInit = true;
-    //     }
-    //   } else {
-    //     $('#rowOrderInfo').hide(0);
-    //     $('#rowOrderInfo').insertAfter(row);
-    //     needInit = true;
-    //   }
+    $('#sotrudnik').on('blur', function () {
+      currentRowJQ.data('data').edited['Ответственный'] = $('#sotrudnik').attr('uid');
+      console.log('sotrudnik', currentRowJQ.data('data').edited);
+    });
 
-    //   if (needInit) {
-    //     console.log('if needInit');
-    //     $(tableID).children('tbody').children('.rowData').removeClass('selectedRow');
+    
+    // handle select on status
+    $("#status").on("change", function() {
+      const data = currentRowJQ.data('data');
+      data.edited['СтатусЗаявки'] = $( this ).val();
+      console.log($( this ).val());
+      sendDataTo1C(data);
+    })
 
-    //     $(this).addClass('selectedRow');
-    //     $('#tableOrderInfo').data('param', { order: currentRow });
-    //     initTable('#tableOrderInfo');
-    //   }
+    // handle select on status
+    $("#difficultButton").on("change", function() {
+      const data = currentRowJQ.data('data');
+      data.edited['Сложность'] = $( this ).val();
+      console.log($(this).val());
+      sendDataTo1C(data);
+    })
 
-    //   callbackAfterInitTableOrderInfo = function (data) {
-    //     setTimeout(() => {
-    //       $('#rowOrderInfo').show(300);
-    //     }, 100);
-    //   };
-    // });
+
+    
+
+    $('#sendComment').on('click', function () {
+      clickAnimate(this);
+      console.log('sendComment', currentRowJQ.data('data'));
+      let data = currentRowJQ.data('data');
+      data.edited['Комментарий'] = $('#comment').val();
+      if ($('#comment').val() === '') {
+        return;
+      }
+      console.log(data.edited);
+
+      $.ajax({
+        url: '/app/repairOrder',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (response) {
+          console.log('Response:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Данні сохранено');
+            $('#comment').val('');
+          }
+        },
+        error: function (error) {
+          console.log('Error:', error);
+          toastr.error('Error', error);
+        },
+      });
+    });
+
+    // click on button cancelInfo
+    $('#cancelInfo').on('click', function () {
+      console.log('cancel info');
+      clickAnimate(this);
+      $('#rowOrderInfo').hide(300);
+    });
+
+    $('#saveInfo').on('click', function () {
+      console.log('click safe', $('#modal').data('data').edited);
+      $('#saveInfo').focus();
+      clickAnimate(this);
+      let data = currentRowJQ.data('data');
+      console.log('data', data);
+
+      // $.ajax({
+      //   url: '/app/repairOrder',
+      //   type: 'PUT',
+      //   contentType: 'application/json',
+      //   data: JSON.stringify(data),
+      //   success: function (response) {
+      //     console.log('Response:', response);
+      //     if (response.error) {
+      //       toastr.error('Помилка звязку', response['Причина']);
+      //     } else {
+      //       toastr.success('Данні сохранено');
+      //       $('#rowOrderInfo').hide(300);
+      //       const orderUID = $('#rowOrderInfo').attr('currentRow');
+      //       $(`#${orderUID}`).removeClass('selectedRow');
+      //     }
+      //   },
+      //   error: function (error) {
+      //     console.log('Error:', error);
+      //     toastr.error('Error', error);
+      //   },
+      // });
+    });
+
+    // click closeBtn on modal
+    $('#closeBtn').on('click', function () {
+      console.log('closeModal');
+      $('#main').show();
+    });
+
+    $('#newOrderStanok').autocomplete({
+      position: { my: 'left top', at: 'left bottom', collision: 'flip' },
+    });
+
+    $('#comment').on('input', function() {
+        $(this).css('height', 'auto');
+        $(this).css('height', this.scrollHeight + 'px');
+      });
   });
 </script>
