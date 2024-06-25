@@ -2,6 +2,7 @@
 /log/
 /node_modules/
 /static/foto
+/static/storage
 .env
 embeddings.json
 userInfoData.json
