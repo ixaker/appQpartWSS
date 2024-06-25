@@ -1,11 +1,6 @@
 <style>
-  .card-title {
-  }
-  #orderInfo {
-  }
-
   .titlePage {
-    font-size: 3.7em;
+    font-size: x-large;
   }
 
   #closeBtn {
@@ -46,17 +41,8 @@
     box-shadow: none;
   }
 
-  .form-control:focus  {
+  .form-control:focus {
     box-shadow: none;
-  }
-
-  #infoDate {
-  }
-
-  #infoStanok {
-  }
-
-  #infoAuthor {
   }
 
   #infoText {
@@ -66,16 +52,9 @@
     border-radius: 4px;
     margin: 0;
     background-color: white;
-  }
-  #infoOrderText {
-  }
-
-  #sotrudnik {
-  }
-  #infoDiagnosText {
-  }
-
-  #infoDifficult {
+    font-size: large;
+    font-family: inherit;
+    color: #495057;
   }
 
   #workInProvider {
@@ -88,20 +67,11 @@
     flex-grow: initial;
   }
 
-  #infoDone {
-  }
-
   #infoButtonGroup {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     gap: 10px;
-  }
-
-  #cancelInfo {
-  }
-
-  #saveInfo {
   }
 
   table {
@@ -121,7 +91,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 20px;
+    gap: 10px;
     margin-bottom: 10px;
     flex-wrap: wrap;
   }
@@ -165,46 +135,12 @@
     background-color: #fff;
   }
 
-  #addOrder {
-    margin: 20px auto 40px auto;
-    background-color: aliceblue;
-    max-width: 600px;
-    min-width: 320px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding: 10px;
-    gap: 10px;
-    border-radius: 0.5rem;
-  }
-
-  #orderTitle {
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: bold;
-  }
-
-  #newOrderStanok {
-    width: 100%;
-    font-size: 1.25rem;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-  }
-
-  #orderButtonGroup {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-
-  #newOrderText {
-    font-size: 1.25rem;
-    width: 100%;
-  }
-
   .groupSearch input {
     border: none;
+  }
+
+  .redText {
+    color: red;
   }
 
   .invalid:focus {
@@ -222,9 +158,68 @@
     <i class="bi bi-plus-circle" id="btnAdd"></i>
   </div>
 
-  <div id="addOrder" style="display: none">
-    <div id="orderTitle">Новая заявка на ремонт</div>
+  <style>
+    #addOrder {
+    }
 
+    .applicationForm {
+      margin: 20px auto 40px auto;
+      background-color: aliceblue;
+      max-width: 600px;
+      min-width: 320px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      padding: 10px;
+      gap: 10px;
+      border-radius: 0.5rem;
+    }
+
+    .applicationTitle {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    #orderTitle {
+    }
+
+    #newOrderStanok {
+      width: 100%;
+      font-size: 1.25rem;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+      padding: 0.375rem 0.75rem;
+    }
+
+    #orderButtonGroup {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .applicationText {
+      font-size: 1.25rem;
+      width: 100%;
+    }
+
+    #newOrderText {
+    }
+
+    #attachPhotoVideoForNewOrder {
+      font-size: xxx-large;
+      margin-right: auto;
+    }
+
+    #attachedFilesForNewOrder {
+      gap: 15px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+  </style>
+
+  <div id="addOrder" class="applicationForm" style="display: none">
+    <div id="orderTitle" class="applicationTitle">Новая заявка на ремонт</div>
     <input
       type="text"
       minLength="1"
@@ -236,10 +231,12 @@
       callbackSelect="callbackSelectStanok"
       class="form-control mr-sm-2"
     />
+    <textarea class="applicationText form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
 
-    <textarea class="form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
+    <div id="attachedFilesForNewOrder"></div>
 
     <div class="input-group" id="orderButtonGroup">
+      <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
       <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
       <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
     </div>
@@ -248,7 +245,7 @@
   <table
     id="ЗаявкаНаРемонт"
     name="ЗаявкаНаРемонт"
-    url="/app/repairOrder"
+    url="/app/repairOrder/"
     callbackBeforeInitTable="callbackBeforeDone"
     filter="callbackFilter"
     callbackAfterInitTable="callbackAfterDone"
@@ -257,11 +254,9 @@
     append="up"
     init
     header
+    sort="3"
   >
     <tr class="config" style="display: none">
-      <td title="Дни" name="Дни" style="width: 10%">
-        <div class="dataCell textAlignCenter"></div>
-      </td>
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 15%">
         <div class="dataCell textAlignCenter"></div>
       </td>
@@ -271,7 +266,9 @@
       <td title="Статус" name="СтатусЗаявки" style="width: 22%">
         <div class="dataCell"></div>
       </td>
-      
+      <td title="Дни" name="Дни" style="width: 10%">
+        <div class="dataCell textAlignCenter days"></div>
+      </td>
     </tr>
 
     <tr id="stageRow" style="display: none">
@@ -282,6 +279,9 @@
   </table>
 </div>
 
+<!-- Form for zakupka -->
+
+<!-- modal block -->
 <style>
   #modal {
     width: 100%;
@@ -340,77 +340,6 @@
     opacity: 1;
   }
 
-  .card {
-    padding: 0px 5px 0px 5px;
-    margin-bottom: 10px;
-    border-radius: 0px 12px 12px 12px;
-    max-width: 600px;
-    background-color: white;
-    border: none;
-    font-size: 1rem;
-  }
-
-  .card-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .card-author {
-    font-weight: bold;
-    color: #8275eb;
-  }
-
-  .card-body {
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .card-info {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    background-color: lightgray;
-  }
-
-  #choiceDifficult {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .cardLabel {
-    margin: 0;
-  }
-
-  .card-text {
-    margin-bottom: 0;
-  }
-
-  #commandBtns {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-
-  .select {
-    font-weight: bold;
-    color: darkred;
-  }
-
-  .card-date {
-    margin-top: -10px;
-    font-size: 0.7em;
-    color: darkgrey;
-    width: 100%;
-    text-align: right;
-  }
-
   .form-group {
     display: flex;
     align-items: center;
@@ -418,23 +347,42 @@
 
   .form-group label {
     margin-bottom: 0;
+    transition: 2s;
+    width: 35%;
   }
 
-  .form-control {
-    width: 70%;
+  #modal .form-control {
+    width: 65%;
     margin-left: auto;
   }
 
-  #executor {
-    width: fit-content;
+  #btnAddZakupka {
+    font-size: xxx-large;
+    color: darkgreen;
+    margin-left: auto;
   }
 
+  #countOrderZakupka {
+    border: 1px solid #ced4da;
+    padding: 0.375rem 0.75rem;
+    background-color: white !important;
+    border-radius: 0.25rem;
+    width: 150px;
+    text-align: center;
+    display: flex;
+    cursor: default;
+    user-select: none;
+  }
 
+  .marginLeftAuto {
+    margin-left: auto;
+  }
 </style>
 
 <div id="modal" style="display: none">
   <div id="commandPanel">
     <h4 class="titlePage">Заявка на ремонт</h4>
+    <h4 id="orderNum" class="titlePage">0001</h4>
     <i id="closeBtn" class="bi bi-x-circle"></i>
   </div>
 
@@ -443,34 +391,43 @@
       <pre id="infoText">Текст заявки</pre>
     </div>
 
+    <div class="form-group" id="filesAuthorOrder"></div>
+
     <div class="form-group">
-      <label >Дата:</label>
-      <input type="text" readonly class="form-control" id="infoDate"></input>
+      <label>Дата:</label>
+      <input type="text" readonly class="form-control" id="infoDate" />
     </div>
-    
+
     <div class="form-group">
-      <label >Автор:</label>
-      <input type="text" readonly class="form-control" id="infoAuthor"></input>
+      <label>Автор:</label>
+      <input type="text" readonly class="form-control" id="infoAuthor" />
     </div>
 
     <div class="form-group">
       <label>Станок:</label>
-      <input type="text" readonly class="form-control" id="infoStanok"></input>
+      <input type="text" readonly class="form-control" id="infoStanok" />
     </div>
 
     <div class="form-group">
-      <label>Срок:</label>
-      <input type="text" readonly class="form-control" id="infoDays"></input>
+      <label id="labelSrok">Срок:</label>
+      <input type="text" readonly class="form-control" id="infoDays" />
     </div>
-    
+
     <div class="form-group">
       <label for="difficultButton">Сложность:</label>
-      <select id="difficultButton" class="form-control">
-        
-      </select>
+      <select id="difficultButton" class="form-control"></select>
     </div>
 
-    
+    <div class="form-group">
+      <label for="executor">Исполнитель:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="executor"
+        url="/app/autocompleteSotrydnik"
+        aria-describedby="basic-addon3"
+      />
+    </div>
 
     <div class="form-group">
       <label for="status">Статус</label>
@@ -480,31 +437,40 @@
         <option value="Выполнена">Выполнена</option>
       </select>
     </div>
-    
+
+    <div class="form-group">
+      <label>Закупка:</label>
+      <div id="countOrderZakupka">
+        <div>Нет заявок</div>
+        <i class="bi bi-caret-down-fill marginLeftAuto"></i>
+        <i class="bi bi-caret-up-fill marginLeftAuto" style="display: none"></i>
+      </div>
+      <i class="bi bi-plus-circle" id="btnAddZakupka"></i>
+    </div>
+
+    <div id="listOrderZakupka" style="display: none"></div>
   </div>
 
   <div id="modal-content">
-    <!-- <div id="controlPanel">
-        <i class="bi bi-plus-circle" id="btnAddForm"></i>
-        <div id="btn-container" class="btn-container">
-          <button type="button" class="btn btn-primary btn" id="createZakupka">Створити заявку на закупку</button>
-          <button type="button" class="btn btn-primary btn" id="repairDone">Ремонт завершено</button>
-          <button type="button" class="btn btn-primary btn" id="repairConfirm">Прийняти ремонт</button>
-          <button type="button" class="btn btn-primary btn" id="writeComment">Написати коментар</button>
-          <button type="button" class="btn btn-primary btn" id="appointDifficult">Призначити складність</button>
-          <button type="button" class="btn btn-primary btn" id="appointExecutor">Призначити відповідального</button>
-        </div>
-      </div> -->
-
     <style>
-      #sendComment {
-        font-size: xx-large;
+      #actions {
+        font-size: xxx-large;
         color: darkgreen;
+        margin-right: 0px;
         margin-top: auto;
-        margin-right: 10px;
+        width: 74px;
+        line-height: 55px;
+        padding: 10px 10px 5px 0;
+        align-self: flex-end;
       }
+
+      #sendComment {
+      }
+
+      #attachPhoto {
+      }
+
       #commentForm {
-        
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -515,13 +481,134 @@
 
       #comment {
         border: none;
-        font-size: 2.2em;
+        font-size: large;
+        resize: none;
+        border-radius: 12px;
+        align-self: flex-start;
+      }
+
+      #attachedFiles {
+        display: flex;
+        gap: 5px;
+        padding: 5px;
+      }
+
+      .attachedImg {
+        width: 103px;
+        height: 135px;
+        position: relative;
+        border: 1px solid;
+        align-items: center;
+        display: flex;
+      }
+
+      /*       .attachedImg::before {
+        content: 'x';
+        position: absolute;
+        top: 3px;
+        right: 2px;
+        color: white;
+      } */
+    </style>
+
+    <div class="input-group" id="commentForm">
+      <textarea class="form-control" id="comment" rows="3" placeholder="написать сообщение..."></textarea>
+      <div id="actions">
+        <i class="bi bi-send" id="sendComment"></i>
+        <!-- <i class="bi bi-camera" id="attachPhoto"></i> -->
+      </div>
+      <input type="file" id="file-input" accept="image/*,video/*" capture multiple style="display: none" />
+    </div>
+    <div id="attachedFiles"></div>
+
+    <div class="camera-modal" id="camera-modal" style="display: none">
+      <video id="camera-video" autoplay></video>
+      <span id="video-timer">00:00</span>
+      <div class="camera-controls">
+        <button id="capture-photo"><i class="bi bi-camera"></i></button>
+        <button id="capture-video"><i class="bi bi-record-fill"></i></button>
+        <button id="stop-video" style="display: none"><i class="bi bi-stop-fill"></i></button>
+        <button id="close-camera"><i class="bi bi-x-square"></i></button>
+      </div>
+    </div>
+
+    <style>
+      .camera-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      #camera-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      #video-timer {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 30px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: none; /* Початково прихований */
+      }
+
+      .camera-controls {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 1001;
+      }
+
+      .camera-controls button {
+        padding: 0px 10px;
+        font-size: 48px;
+        cursor: pointer;
+        background-color: white;
+        border: none;
+        border-radius: 5px;
+        transition: transform 0.2s ease;
+      }
+
+      #capture-video {
+        color: red;
+      }
+
+      #stop-video {
+        color: red;
+      }
+
+      @keyframes clickAnimation {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.95);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .camera-controls button:active {
+        animation: clickAnimation 0.1s ease;
       }
     </style>
-    <div class="input-group" id="commentForm">
-      <textarea class="form-control" id="comment" rows="1" placeholder="написать сообщение..."></textarea>
-      <i class="bi bi-send" id="sendComment"></i>
-    </div>
 
     <div id="formContainer" style="display: none">
       <!-- place for form -->
@@ -559,13 +646,112 @@
     <div id="historyContainer">
       <!-- history of current repair -->
     </div>
-
-    <!-- Шаблон картки -->
   </div>
 </div>
 
+<style>
+  .card {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    max-width: 600px;
+    background-color: inherit;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .card-author {
+    font-weight: bold;
+    color: #8275eb;
+  }
+
+  .card-avatar {
+    border-radius: 50%;
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .card-body {
+    background-color: white;
+    border-radius: 0px 12px 12px 12px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: min-content;
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    background-color: lightgray;
+  }
+
+  #choiceDifficult {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cardLabel {
+    margin: 0;
+  }
+
+  .card-text {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #commandBtns {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .select {
+    font-weight: bold;
+    color: darkred;
+  }
+
+  .card-date {
+    margin-top: -10px;
+    font-size: 0.7em;
+    color: darkgrey;
+    width: 100%;
+    text-align: right;
+  }
+</style>
+
+<!-- Шаблон картки -->
 <script id="card-template" type="text/x-handlebars-template">
   <div class='card'>
+    <div class='card-avatar'>
+      <img src='/foto/{{avatar}}.jpg' onerror="this.onerror=null;this.src='/img/avatar.png';" alt='avatar' />
+
+    </div>
     <div class='card-body'>
       <div class='card-author'></div>
       <p class='card-text'><span class='card-author'>{{author}}:</span> {{text}}</p>
@@ -575,43 +761,148 @@
 </script>
 
 <script id="formTemplate" type="text/x-handlebars-template">
-  <textarea class='form-control' id='newOrderText' rows='2' placeholder='нотатки...'></textarea>
-  <div id='choiceDifficult'>
-    <p class='cardLabel'>Складність ремонта:</p>
-    <div class='btn-group' role='group' aria-label='Basic example'>
-      <button type='button' class='btn btn-secondary'>простий</button>
-      <button type='button' class='btn btn-secondary'>середній</button>
-      <button type='button' class='btn btn-secondary'>складний</button>
+    <textarea class='form-control' id='newOrderText' rows='2' placeholder='нотатки...'></textarea>
+    <div id='choiceDifficult'>
+      <p class='cardLabel'>Складність ремонта:</p>
+      <div class='btn-group' role='group' aria-label='Basic example'>
+        <button type='button' class='btn btn-secondary'>простий</button>
+        <button type='button' class='btn btn-secondary'>середній</button>
+        <button type='button' class='btn btn-secondary'>складний</button>
+      </div>
+    </div>
+    {{#if isSotrudnik}}
+      <div class='input-group' id='groupInputSotrudnik'>
+        <label for='sotrudnik' class='cardLabel'>Призначити виконавця:</label>
+        <input
+          type='text'
+          class='form-control inputFixBrak'
+          id='sotrudnik'
+          url='/app/autocompleteSotrydnik'
+          aria-describedby='basic-addon3'
+          callbackSelect=''
+        />
+      </div>
+    {{/if}}
+    <div>
+      <div id='commandBtns'>
+        <button type='button' class='btn btn-primary btn' id='cancelInfo'>Відмінити</button>
+        <button type='button' class='btn btn-primary btn' id='saveInfo'>Зберегти</button>
+      </div>
     </div>
   </div>
-  {{#if isSotrudnik}}
-    <div class='input-group' id='groupInputSotrudnik'>
-      <label for='sotrudnik' class='cardLabel'>Призначити виконавця:</label>
-      <input
-        type='text'
-        class='form-control inputFixBrak'
-        id='sotrudnik'
-        url='/app/autocompleteSotrydnik'
-        aria-describedby='basic-addon3'
-        callbackSelect=''
-      />
+</script>
+
+<style>
+  #listOrderZakupka {
+    position: relative;
+    top: -20px;
+  }
+
+  .cardOrderZakupka {
+    background-color: white;
+    border-radius: 10px 10px 10px 10px;
+    padding: 10px 10px;
+    margin-bottom: 10px;
+    font-size: small;
+    border: 1px solid #ccc;
+  }
+
+  .cardOrderZakupkaTitle {
+    text-align: center;
+    font-size: larger;
+  }
+
+  .cardOrderZakupkaTitle span {
+    font-weight: 600;
+    color: black;
+  }
+
+  .cardOrderZakupkaText {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 3px;
+    background-color: #fbfbfb;
+    margin-bottom: 5px;
+  }
+
+  .cardOrderZakupkaUser {
+    margin-left: 5px;
+  }
+
+  .cardOrderZakupkaStatus {
+    margin-left: 5px;
+  }
+
+  .cardOrderZakupkaSrok {
+    margin-left: 5px;
+    width: 105px;
+    text-align: end;
+  }
+
+  .doneOrderZakupka {
+    background-color: honeydew;
+  }
+</style>
+
+<script id="ordersZakupka-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='cardOrderZakupka {{data.classOrder}}' uid='{{data.uid}}'>
+
+      <div class='cardOrderZakupkaTitle'>Заявка на закупку № <span>{{data.Номер}}</span></div>
+
+      <div class='cardOrderZakupkaAuthor displayFlex'>
+        <label>Создал:</label>
+        <div class='cardOrderZakupkaUser fontWeight600'>{{data.Сотрудник.Наименование}}</div>
+        <div class='cardOrderZakupkaDate marginLeftAuto fontWeight600'>{{data.Дата}}</div>
+      </div>
+
+      <p class='cardOrderZakupkaText'>{{data.ТекстЗаявки}}</p>
+
+      <div class='cardOrderZakupkaFooter displayFlex'>
+        <div class='cardOrderZakupkaStatusGroup displayFlex'>
+          <label>Статус:</label>
+          <div class='cardOrderZakupkaStatus fontWeight600'>{{data.СтатусЗаявки}}</div>
+        </div>
+        <div class='cardOrderZakupkaSrokGroup displayFlex marginLeftAuto'>
+          <label>Плановая дата:</label>
+          <div class='cardOrderZakupkaSrok fontWeight600'>{{data.ПлановаяДата}}</div>
+        </div>
+      </div>
     </div>
-  {{/if}}
-  <div>
-    <div id='commandBtns'>
-      <button type='button' class='btn btn-primary btn' id='cancelInfo'>Відмінити</button>
-      <button type='button' class='btn btn-primary btn' id='saveInfo'>Зберегти</button>
+  {{/each}}
+</script>
+
+<style>
+  #filesAuthorOrder {
+    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .imgSmall {
+    width: 100%;
+    /* height: 150px; */
+    border: 1px solid #aaa;
+  }
+</style>
+
+<script id="img-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='attachedImg'>
+      <img src='{{src}}' src-source='{{source}}' class='imgSmall src-source' />
     </div>
-  </div>
+
+  {{/each}}
 </script>
 
 <script>
   $(document).ready(function () {
     let tableID = '#ЗаявкаНаРемонт';
     let currentRowJQ;
+    $(tableID).data('param', { active: true });
 
     initTables();
-    initInputAutocomplete('#sotrudnik');
+    initInputAutocomplete('#executor');
     initInputAutocomplete('#newOrderStanok');
 
     // callback при получении данных от сервера по wss
@@ -623,16 +914,16 @@
 
     // callback при изменении данных в строке для определения показать или убрать строку
     callbackFilter = function (data, result = true) {
-      console.log('callbackFilter', data);
+      console.log('callbackFilter', data['СтатусЗаявки']);
 
-      if ($('#modal').is(':visible')) {
+      if (data['СтатусЗаявки'] === 'Выполнена') return;
+      if ($('#modal').is(':visible') || $('#formZakupka').is(':visible')) {
         const newUID = data.uid;
         const currentUID = currentRowJQ.data('data').data.uid;
         console.log('newUID currentUID ', newUID, currentUID);
         if (newUID === currentUID) {
-          renderOrderPage({data: data});
+          renderOrderPage({ data: data });
         }
-        
       }
 
       return result;
@@ -643,10 +934,10 @@
 
     // callback после отрисовки таблицы
     callbackAfterDone = function (data) {
-      console.log('callback after', data['ВариантыСложности'])
-            $.each(data['ВариантыСложности'], function(index, value) {
-                $('#difficultButton').append(`<option value="${value.data['uid']}">${value.data['Наименование']}</option>`);
-            });
+      console.log('callback after', data['ВариантыСложности']);
+      $.each(data['ВариантыСложности'], function (index, value) {
+        $('#difficultButton').append(`<option value="${value.data['uid']}">${value.data['Наименование']}</option>`);
+      });
     };
 
     // callback после вставки новой пустой строки, перед заполнением данными
@@ -656,14 +947,13 @@
 
     // callback после внесения изменений в строку с сервера
     callbackAfterWrite = function (data) {
-      console.log('callbackAfterWrite', data);
+      console.log('callbackAfterWrite', data.data['Дни']);
+      let row = $('#' + data.data['uid']);
+      console.log('row from callback', row);
 
-      if (data.data['Проведен']) {
-        console.log('eeeeeeeeeeeeeeeeeeee');
-
-        let row = $('#' + data['uid']);
-        console.log('row Проведен', row);
-        $(row).find('.btnRow ').remove();
+      if (data.data['Дни'] < 1) {
+        console.log('dangerColor');
+        row.find('.days').addClass('dangerColor');
       }
     };
 
@@ -699,39 +989,105 @@
     // click on saveOrder
     $('#saveOrder').on('click', function () {
       clickAnimate(this);
-      const stanokUID = $('#newOrderStanok').data('uid');
+
+      let media = [];
+      let names = [];
+      $('#attachedFilesForNewOrder')
+        .children()
+        .each((index, child) => {
+          const blob = $(child).children('.source').data('blob');
+          const blobPreview = $(child).children('.preview').data('blob');
+
+          let file = { data: blob };
+          let filePreview = { data: blobPreview };
+          if (blob.type === 'image/jpeg') {
+            file.name = index.toString() + '.png';
+            filePreview.name = 'p' + index.toString() + '.png';
+          } else if (blob.type === 'video/mp4') {
+            file.name = index.toString() + '.mp4';
+            filePreview.name = 'p' + index.toString() + '.png';
+          } else {
+            file.name = index.toString() + '.none';
+            console.log('unknown type of blob', blob.type, file.name);
+          }
+
+          media.push(file);
+          media.push(filePreview);
+          names.push(file.name);
+        });
+
+      const stanokUID = $('#newOrderStanok').data('uid') || '';
       const newOrderText = $('#newOrderText').val();
-      console.log('stanok', stanokUID);
-      console.log(' text', newOrderText);
+
       let data = {
         stanokUID: stanokUID,
         newOrderText: newOrderText,
+        files: names,
       };
 
-      if (!stanokUID) {
-        toastr.error('Укажите станок');
-        $('#newOrderStanok').addClass('invalid');
+      if (stanokUID === '' && newOrderText === '') {
+        toastr.error('Укажите станок или текст заявки');
         $('#newOrderStanok').focus();
         return;
       }
 
+      function afterSaveOrder(response) {
+        console.log('afterSaveOrder', response);
+
+        $('#addOrder').hide(0);
+        $('#commandPanel').show(0);
+        $('#ЗаявкаНаРемонт').show(0);
+        $('#newOrderStanok').data('uid', '');
+        saveFilesToBackend(media, response.uid, response.uid);
+      }
+
+      sendDataTo1C(data, 'POST', afterSaveOrder);
       NProgress.start();
-      $.ajax({
-        url: '/app/repairOrder',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (data, status) {
-          console.log('logToServer', status, data);
-          $('#addOrder').hide(0);
-          $('#commandPanel').show(0);
-          $('#ЗаявкаНаРемонт').show(0);
-        },
-      }).always(function () {
-        NProgress.done();
-        highlight = true;
-      });
     });
+
+    function saveFilesToBackend(media, uid, uidChild) {
+      console.log('saveFilesToBackend', media, uid, uidChild);
+
+      media.forEach(element => {
+        const patch = `/${uid}/${uidChild}`;
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          $.post(
+            '/saveFile',
+            JSON.stringify({ file: reader.result, path: patch, name: element.name }),
+            function (response) {
+              console.log('/saveFile', response);
+            },
+            'json'
+          )
+            .fail(function (jqXHR, textStatus, errorThrown) {})
+            .always(function () {
+              NProgress.done();
+            });
+        };
+        reader.readAsDataURL(element.data);
+
+        // const reader = new FileReader();
+
+        // reader.onloadend = function () {
+        //   const data = { file: 'reader.result', path: patch };
+        //   const jsonData = JSON.stringify(data);
+        //   // $.post('/saveFile', data, function (response) {}, 'json');
+        //   fetch(`/saveFile`, { method: 'POST', body: jsonData });
+        // };
+        // reader.readAsDataURL(element.data);
+
+        console.log('element.data', element.data);
+
+        // fetch(`/saveFile?patch=${patch}`, {
+        //   method: 'POST',
+        //   body: element.data,
+        // })
+        //   .then(response => response.json())
+        //   .then(data => console.log(data))
+        //   .catch(error => console.error('Error:', error));
+      });
+    }
 
     // click on cancelOrder
     $('#cancelOrder').on('click', function () {
@@ -759,41 +1115,11 @@
       }, 200);
     }
 
-    function hideAllInputs() {}
-
-    $('#createZakupka').on('click', function () {
-      console.log('createZakupka');
-      $('#formContainer').show();
-      closeBtnContainer();
-    });
-
-    $('#repairDone').on('click', function () {
-      console.log('repairDone');
-      $('#formContainer').show();
-
-      closeBtnContainer();
-    });
-    $('#repairConfirm').on('click', function () {
-      $('#formContainer').show();
-      closeBtnContainer();
-    });
-
-    $('#writeComment').on('click', function () {
-      $('#formContainer').show();
-      closeBtnContainer();
-    });
-
-    $('#appointDifficult').on('click', function () {
-      console.log('призначити складність');
-      $('#formContainer').show();
-      $('#choiceDifficult').show();
-      closeBtnContainer();
-    });
-
-    $('#appointExecutor').on('click', function () {
-      $('#formContainer').show();
-      $('#choiceExecutor').show();
-      closeBtnContainer();
+    // click on cancelOrder
+    $('#cancelOrder').on('click', function () {
+      clickAnimate(this);
+      $('#formZakupka').hide();
+      $('#modal').show();
     });
 
     $('#btnAddForm').on('click', function () {
@@ -811,13 +1137,60 @@
     $(document).on('click', function (event) {
       closeBtnContainer();
     });
-  
+
     ////////////////////////////////////////////////
-    
-    
+
+    // Обновляем таймер обратного отсчета каждую секунду
+    const countdown = setInterval(timer, 1000);
+
+    function timer() {
+      const strTargetDate = $('#infoDays').attr('date') || '';
+
+      if (strTargetDate === '') {
+        $('#infoDays').val('срок не назначен');
+        return;
+      }
+
+      let targetDate = parseInt(strTargetDate);
+      let now = new Date().getTime();
+
+      const data = currentRowJQ.data('data');
+      console.log('currentRowJQ', data.data.СтатусЗаявки);
+      if (data.data.СтатусЗаявки === 'Выполнена') {
+        targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
+        now = new Date(data.data['Дата']).getTime();
+        $('#labelSrok').text('Выполнено за:');
+      } else {
+        $('#labelSrok').text('Осталось:');
+      }
+
+      const distance = targetDate - now;
+
+      // Вычисляем дни, часы, минуты и секунды
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(Math.abs(distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor(Math.abs(distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor(Math.abs(distance % (1000 * 60)) / 1000);
+
+      const hoursStr = String(hours).padStart(2, '0');
+      const minutesStr = String(minutes).padStart(2, '0');
+      const secondsStr = String(seconds).padStart(2, '0');
+
+      $('#infoDays').val(`${days} дней ${hoursStr}:${minutesStr}:${secondsStr}`);
+
+      if (days < 1) {
+        $('#infoDays').addClass('dangerColor');
+      } else {
+        $('#infoDays').removeClass('dangerColor');
+      }
+    }
+
     function renderOrderPage(data) {
-      const text = data.data;
-      const date = formatDate(data.data['Дата']);
+      console.log('start renderOrderPage', data);
+
+      const uid = data.data.uid;
+      const orderNum = data.data['Номер'].slice(-4);
+      const date = formatDateTime(data.data['Дата']);
       const stanokNumber = data.data['Станок']['ИнвентарныйНомер'];
       const stanokName = data.data['Станок']['Наименование'];
       const author = data.data['Сотрудник']['Наименование'];
@@ -828,18 +1201,72 @@
       const status = data.data['СтатусЗаявки'];
       const difficult = data.data['Сложность']['uid'];
       const executor = data.data['Ответственный']['Наименование'];
+
+      $('#modal').attr('uid', uid);
+      $('#modal').data('data', data);
+      $('#orderNum').text(`${orderNum}`);
       $('#infoText').text(`${description}`);
       $('#infoDate').val(`${date}`);
       $('#infoStanok').val(`${stanokNumber} ${stanokName}`);
       $('#infoAuthor').val(`${author}`);
       $('#sotrudnik').val(sotrudnik['Наименование']);
-      $('#sotrudnik').attr('uid', sotrudnik['uid']);
+      $('#executor').attr('uid', sotrudnik['uid']);
       $('#infoDiagnosText').val(diagnosticText);
       $('#orderDone').prop('checked', orderDone);
       $('#difficultButton').val(difficult);
       $('#status').val(status);
       $('#executor').val(executor);
-      console.log('difficult', difficult);
+
+      // Заявки на закупку start
+      const listOrdersZakupka = data.data['ЗаявкиНаЗакупку'];
+      const countZakupka = listOrdersZakupka.length;
+
+      listOrdersZakupka.forEach(function (element) {
+        element.data['Номер'] = element.data['Номер'].slice(-4);
+        element.data['Дата'] = formatDateTime(element.data['Дата']);
+        element.data['ПлановаяДата'] = formatDateTime(element.data['ПлановаяДата']);
+
+        if (element.data['ПлановаяДата'] === '01.01.0001 00:00') {
+          element.data['ПлановаяДата'] = '';
+        }
+
+        element.data.classOrder = '';
+
+        if (element.data['СтатусЗаявки'] === 'Готово') {
+          element.data.classOrder = 'doneOrderZakupka';
+        }
+      });
+
+      generateFromTemplate('#ordersZakupka-template', listOrdersZakupka, '#listOrderZakupka');
+
+      $('#countOrderZakupka div').text(countZakupka > 0 ? `Заявок ${countZakupka} шт` : 'Нет заявок');
+      // Заявки на закупку stop
+
+      // Картинки заявки start
+      const listImgZakupka = data.data['Файлы'];
+      const imgs = [];
+
+      listImgZakupka.forEach(function (element) {
+        console.log('img', element);
+
+        if (element.ИД === uid) {
+          //const src = 'https://a7b85a942d4082eb.cdn.express/mediaFiles/363efa8a-3249-11ef-8255-000c29006152/363efa8a-3249-11ef-8255-000c29006152/0.png';
+          const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
+          const source = `${pathToStorage}/${uid}/${element.ИД}/${element.Файл}`;
+          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, 2)}png`;
+          imgs.push({ source: source, src: src });
+        }
+      });
+
+      generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
+      // Картинки заявки stop
+
+      stanokNumber === undefined ? $('#infoStanok').parent().hide() : $('#infoStanok').parent().show();
+      description === '' ? $('#infoText').hide() : $('#infoText').show();
+
+      // timer back
+      const dateSrok = new Date(data.data['ПлановаяДатаГотовности']).getTime();
+      $('#infoDays').attr('date', dateSrok);
 
       var cardTemplate = Handlebars.compile($('#card-template').html());
       const historyContainer = $('#historyContainer');
@@ -848,6 +1275,7 @@
       historyContainer.text('');
       tasks.forEach(function (task) {
         var cardHtml = cardTemplate({
+          avatar: task['Сотрудник']['uid'],
           author: task['Сотрудник']['Наименование'],
           text: task.Текст,
           date: formatDateTime(task.Дата),
@@ -857,56 +1285,28 @@
       });
     }
 
-
     // click on tableRow
-    
     $(tableID).on('click', '.ЗаявкаНаРемонт', function (event) {
       console.log('ЗаявкаНаРемонт click');
+
       $('#main').hide();
       $('#modal').show();
-      const currentRow = $(this).attr('id');
-      const oldRow = $('#rowOrderInfo').attr('currentRow');
-      const row = $(this);
-      let needInit = false;
-      $('#rowOrderInfo').attr('currentRow', currentRow);
 
+      $('#countOrderZakupka i:first').show();
+      $('#countOrderZakupka i:eq(1)').hide();
+      $('#listOrderZakupka').hide();
+
+      currentRowJQ = $(this);
       const data = $(this).data('data');
-      currentRowJQ = row;
-      console.log('currentRowJQ', currentRowJQ);
-      console.log('data from row', currentRowJQ.data('data'));
-      $('#modal').data('data', data);
 
       renderOrderPage(data);
-      
-      if (currentRow === oldRow) {
-        if ($('#rowOrderInfo').is(':visible')) {
-          $('#rowOrderInfo').hide(200);
-          $(tableID).children('tbody').children('.rowData').removeClass('selectedRow');
-        } else {
-          console.log('rowOrderInfo is not visible');
-          needInit = true;
-          $('#rowOrderInfo').show(200);
-        }
-      } else {
-        $('#rowOrderInfo').hide(0);
-        $('#rowOrderInfo').insertAfter(row);
-        $('#rowOrderInfo').show(200);
-        needInit = true;
-      }
-
-      if (needInit) {
-        console.log('if needInit');
-        $(tableID).children('tbody').children('.rowData').removeClass('selectedRow');
-
-        $(this).addClass('selectedRow');
-        $('#tableOrderInfo').data('param', { order: currentRow });
-      }
+      timer();
     });
 
-    function sendDataTo1C(data) {
+    function sendDataTo1C(data, method = 'GET', callback) {
       $.ajax({
         url: '/app/repairOrder',
-        type: 'PUT',
+        type: method,
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (response) {
@@ -915,42 +1315,46 @@
             toastr.error('Помилка звязку', response['Причина']);
           } else {
             toastr.success('Дані сохранено');
+            if (typeof callback === 'function') {
+              callback(response);
+            }
           }
         },
         error: function (error) {
           console.log('Error:', error);
           toastr.error('Error', error);
         },
+      }).always(function () {
+        NProgress.done();
+        highlight = true;
       });
     }
 
-    $('#sotrudnik').on('blur', function () {
-      currentRowJQ.data('data').edited['Ответственный'] = $('#sotrudnik').attr('uid');
-      console.log('sotrudnik', currentRowJQ.data('data').edited);
+    $('#executor').on('blur', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['Ответственный'] = $('#executor').attr('uid');
+      console.log('executor', data.edited);
+      sendDataTo1C(data, 'PUT');
     });
 
-    
     // handle select on status
-    $("#status").on("change", function() {
+    $('#status').on('change', function () {
       const data = currentRowJQ.data('data');
-      data.edited['СтатусЗаявки'] = $( this ).val();
-      console.log($( this ).val());
-      sendDataTo1C(data);
-    })
-
-    // handle select on status
-    $("#difficultButton").on("change", function() {
-      const data = currentRowJQ.data('data');
-      data.edited['Сложность'] = $( this ).val();
+      data.edited['СтатусЗаявки'] = $(this).val();
       console.log($(this).val());
-      sendDataTo1C(data);
-    })
+      sendDataTo1C(data, 'PUT');
+    });
 
-
-    
+    // handle select on status
+    $('#difficultButton').on('change', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['Сложность'] = $(this).val();
+      console.log($(this).val());
+      sendDataTo1C(data, 'PUT');
+    });
 
     $('#sendComment').on('click', function () {
-      clickAnimate(this);
+      clickAnimateColor(this);
       console.log('sendComment', currentRowJQ.data('data'));
       let data = currentRowJQ.data('data');
       data.edited['Комментарий'] = $('#comment').val();
@@ -967,7 +1371,7 @@
         success: function (response) {
           console.log('Response:', response);
           if (response.error) {
-            toastr.error('Помилка звязку', response['Причина']);
+            toastr.error('Помилка', response['Причина']);
           } else {
             toastr.success('Данні сохранено');
             $('#comment').val('');
@@ -987,49 +1391,244 @@
       $('#rowOrderInfo').hide(300);
     });
 
-    $('#saveInfo').on('click', function () {
-      console.log('click safe', $('#modal').data('data').edited);
-      $('#saveInfo').focus();
-      clickAnimate(this);
-      let data = currentRowJQ.data('data');
-      console.log('data', data);
-
-      // $.ajax({
-      //   url: '/app/repairOrder',
-      //   type: 'PUT',
-      //   contentType: 'application/json',
-      //   data: JSON.stringify(data),
-      //   success: function (response) {
-      //     console.log('Response:', response);
-      //     if (response.error) {
-      //       toastr.error('Помилка звязку', response['Причина']);
-      //     } else {
-      //       toastr.success('Данні сохранено');
-      //       $('#rowOrderInfo').hide(300);
-      //       const orderUID = $('#rowOrderInfo').attr('currentRow');
-      //       $(`#${orderUID}`).removeClass('selectedRow');
-      //     }
-      //   },
-      //   error: function (error) {
-      //     console.log('Error:', error);
-      //     toastr.error('Error', error);
-      //   },
-      // });
-    });
-
     // click closeBtn on modal
     $('#closeBtn').on('click', function () {
       console.log('closeModal');
       $('#main').show();
+      $('#modal').hide();
     });
 
     $('#newOrderStanok').autocomplete({
       position: { my: 'left top', at: 'left bottom', collision: 'flip' },
     });
 
-    $('#comment').on('input', function() {
-        $(this).css('height', 'auto');
-        $(this).css('height', this.scrollHeight + 'px');
-      });
+    $('#comment').on('input', function () {
+      $(this).css('height', 'auto');
+      $(this).css('height', this.scrollHeight + 'px');
+    });
+
+    // capture video photo
+    let stream;
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    $('#attachPhoto').click(function () {
+      $('#camera-modal').show();
+      startCamera();
+    });
+
+    $('#capture-photo').click(function () {
+      const video = document.getElementById('camera-video');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+
+      $('<img>').attr('src', dataUrl).addClass('attachedImg').appendTo('#attachedFiles');
+
+      console.log(dataUrl);
+    });
+
+    $('#capture-video').click(function () {
+      const video = document.getElementById('camera-video');
+      mediaRecorder = new MediaRecorder(video.srcObject);
+      chunks = [];
+
+      $('#capture-video').hide();
+      $('#stop-video').show();
+
+      startTimer();
+
+      mediaRecorder.ondataavailable = function (e) {
+        chunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = function () {
+        stopTimer();
+        const blob = new Blob(chunks, { type: 'video/mp4' });
+        const videoUrl = URL.createObjectURL(blob);
+
+        $('#attachedFiles').append(
+          $('<video>')
+            .attr({
+              src: videoUrl,
+              width: '50',
+              height: '50',
+              controls: true,
+            })
+            .addClass('attachedVideo')
+        );
+
+        console.log(videoUrl);
+      };
+
+      mediaRecorder.start();
+    });
+
+    $('#stop-video').click(function () {
+      mediaRecorder.stop();
+      $('#capture-video').show();
+      $('#stop-video').hide();
+    });
+
+    $('#close-camera').click(function () {
+      clickAnimate(this);
+      $('#camera-modal').hide();
+      stopCamera();
+    });
+
+    function startTimer() {
+      $('#video-timer').text('00:00').show();
+
+      let startTime = Date.now();
+      timerInterval = setInterval(function () {
+        let elapsedTime = Date.now() - startTime;
+        let seconds = Math.floor((elapsedTime / 1000) % 60);
+        let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+
+        let formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        $('#video-timer').text(formattedTime);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      $('#video-timer').hide().text('00:00');
+    }
+
+    function startCamera() {
+      navigator.mediaDevices
+        .getUserMedia({
+          video: { facingMode: { exact: 'environment' } },
+          audio: false,
+        })
+        .then(function (mediaStream) {
+          stream = mediaStream;
+          const video = document.getElementById('camera-video');
+          video.srcObject = stream;
+          video.play();
+
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = function (event) {
+            if (event.data.size > 0) {
+              recordedChunks.push(event.data);
+            }
+          };
+
+          mediaRecorder.onstop = function () {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            recordedChunks = [];
+            const url = URL.createObjectURL(blob);
+            console.log(url);
+          };
+        })
+        .catch(function (error) {
+          console.error('Error accessing media devices.', error);
+        });
+    }
+
+    function stopCamera() {
+      const video = document.getElementById('camera-video');
+      video.pause();
+      video.srcObject = null;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    }
+
+    $('#attachPhotoVideoForNewOrder').on('click', function () {
+      clickAnimate(this);
+      startAttachPhotoVideo(this);
+    });
   });
 </script>
+
+<!-- Закупка start-->
+
+<style>
+  #setPriorityZakupka {
+    margin-right: auto;
+  }
+</style>
+
+<div id="formZakupka" class="applicationForm" style="display: none">
+  <div class="applicationTitle">Новая заявка на закупку</div>
+  <textarea class="applicationText form-control" id="newZakupkaText" rows="3" placeholder="Текст заявки..."></textarea>
+  <div class="input-group" id="orderButtonGroup">
+    <button type="button" class="btn btn-secondary btn-lg" id="setPriorityZakupka">Срочно</button>
+    <div id="groupButton">
+      <button type="button" class="btn btn-secondary btn-lg" id="cancelZakupka">Отмена</button>
+      <button type="button" class="btn btn-success btn-lg" id="saveZakupka">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#btnAddZakupka').on('click', function () {
+      $('#newZakupkaText').val('');
+      setValid('#textNew', false);
+
+      $('#setPriorityZakupka').removeClass('btn-danger');
+      $('#setPriorityZakupka').addClass('btn-secondary');
+
+      $('#modal').hide();
+      $('#formZakupka').show();
+
+      $('#newZakupkaText').focus();
+    });
+
+    $('#cancelZakupka').on('click', function (event) {
+      $('#modal').show();
+      $('#formZakupka').hide();
+    });
+
+    $('#saveZakupka').on('click', function () {
+      console.log('saveZakupka on click');
+      clickAnimate(this);
+      const zakupkaText = $('#newZakupkaText').val();
+      const srochno = $('#setPriorityZakupka').hasClass('btn-danger');
+      const currentRow = $('#modal').data('data');
+
+      const data = {
+        textNew: zakupkaText,
+        srochno: srochno,
+        Основание: {
+          ТипСсылки: currentRow.data['ТипСсылки'],
+          uid: currentRow.data['uid'],
+        },
+      };
+
+      NProgress.start();
+      console.log('data', data);
+
+      requestTo1C('/zakupka', 'POST', data, function (response) {
+        console.log('Callback executed with response:', response);
+        $('#formZakupka').hide();
+        $('#modal').show();
+      });
+    });
+
+    $('#setPriorityZakupka').on('click', function (event) {
+      if ($(this).hasClass('btn-secondary')) {
+        $(this).switchClass('btn-secondary', 'btn-danger');
+      } else {
+        $(this).switchClass('btn-danger', 'btn-secondary');
+      }
+    });
+
+    $('#countOrderZakupka').on('click', function () {
+      clickAnimate(this);
+      $('#countOrderZakupka i').toggle();
+      $('#listOrderZakupka').toggle();
+    });
+  });
+
+  $(document).on('click', '.attachedImg', function () {
+    mediaviewer(this);
+  });
+</script>
+
+<!-- Закупка stop-->
