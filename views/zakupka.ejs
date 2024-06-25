@@ -126,23 +126,13 @@
 <div id="formNew" class="formContainer" style="display: none">
   <h5 class="formTitle">Новая заявка на закупку</h5>
 
-  <textarea
-    id="textNew"
-    style="width: 100%; padding: 5px"
-    placeholder="Напишите что и сколько нужно..."
-  ></textarea>
+  <textarea id="textNew" style="width: 100%; padding: 5px" placeholder="Напишите что и сколько нужно..."></textarea>
 
   <div class="buttonContainer">
-    <button type="button" class="btn btn-secondary formButton" id="setPriority">
-      Срочно
-    </button>
+    <button type="button" class="btn btn-secondary formButton" id="setPriority">Срочно</button>
     <div class="rightButtons">
-      <button type="button" class="btn btn-success formButton" id="saveNew">
-        Сохранить
-      </button>
-      <button type="button" class="btn btn-secondary formButton" id="cancelNew">
-        Отмена
-      </button>
+      <button type="button" class="btn btn-success formButton" id="saveNew">Сохранить</button>
+      <button type="button" class="btn btn-secondary formButton" id="cancelNew">Отмена</button>
     </div>
   </div>
 </div>
@@ -161,48 +151,17 @@
   header
 >
   <tr class="config" style="display: none">
-    <td
-      title="Дата"
-      name="Дата"
-      headerClass="colunmDate"
-      class="colunmDate"
-      style="width: 25%; white-space: normal"
-    >
-      <div
-        class="dataCell textAlignCenter"
-        mask="DD.MM HH:mm"
-        typeData="date"
-      ></div>
+    <td title="Дата" name="Дата" headerClass="colunmDate" class="colunmDate" style="width: 25%; white-space: normal">
+      <div class="dataCell textAlignCenter" mask="DD.MM HH:mm" typeData="date"></div>
     </td>
     <td title="Текст заявки" name="ТекстЗаявки" style="width: 55%">
-      <div
-        class="dataCell textAlignLeft"
-        style="padding: 5px; overflow: hidden; text-overflow: ellipsis"
-      ></div>
+      <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
     </td>
-    <td
-      title="Автор"
-      name="АвторЗаявки"
-      headerClass="colunmAuthor"
-      class="colunmAuthor"
-      style="width: 30%"
-    >
-      <div
-        class="dataCell textAlignLeft"
-        style="padding: 5px; overflow: hidden; text-overflow: ellipsis"
-      ></div>
+    <td title="Автор" name="АвторЗаявки" headerClass="colunmAuthor" class="colunmAuthor" style="width: 30%">
+      <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
     </td>
-    <td
-      title="Статус"
-      name="СтатусЗаявки"
-      headerClass="colunmStatus"
-      class="colunmStatus"
-      style="width: 15%"
-    >
-      <div
-        class="dataCell textAlignLeft"
-        style="padding: 5px; overflow: hidden; text-overflow: ellipsis"
-      ></div>
+    <td title="Статус" name="СтатусЗаявки" headerClass="colunmStatus" class="colunmStatus" style="width: 15%">
+      <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
     </td>
   </tr>
 
@@ -218,12 +177,8 @@
         </div>
         <div id="textFull"></div>
         <div id="buttons" style="display: flex; margin-bottom: 20px">
-          <button type="button" class="btn btn-secondary" id="cancelZayavka">
-            Отменить
-          </button>
-          <button type="button" class="btn btn-success" id="doneZayavka">
-            Готово
-          </button>
+          <button type="button" class="btn btn-secondary" id="cancelZayavka">Отменить</button>
+          <button type="button" class="btn btn-success" id="doneZayavka">Готово</button>
         </div>
         <div id="historyComment"></div>
         <div id="blockNewComment" style="display: flex; margin: 5px 0">
@@ -235,9 +190,7 @@
             aria-describedby="basic-addon2"
           />
           <div class="input-group-append">
-            <button id="btnAddNewComment" class="btn btn-success" type="button">
-              Сохранить
-            </button>
+            <button id="btnAddNewComment" class="btn btn-success" type="button">Сохранить</button>
           </div>
         </div>
       </div>
@@ -251,7 +204,7 @@
 
     initTables();
 
-    addSubscribeWSS("ЗаявкаНаЗакупку_all");
+    addSubscribeWSS('ЗаявкаНаЗакупку_all');
 
     // callback при получении данных от сервера по wss
     callbackWSS = async function (data) {
@@ -260,21 +213,21 @@
 
     // callback при изменении данных в строке для определения показать или убрать строку
     callbackFilter = function (data, result = true) {
-      console.log("callbackFilter", data);
+      console.log('callbackFilter', data);
 
       if (!viewRowAllUsers) {
-        console.log("check access");
+        console.log('check access');
 
-        if (data["Сотрудник"]["uid"] !== user.uid) {
+        if (data['Сотрудник']['uid'] !== user.uid) {
           result = false;
         }
       }
 
-      if (data["СтатусЗаявки"] === "Готово") {
+      if (data['СтатусЗаявки'] === 'Готово') {
         result = false;
       }
 
-      if (data["СтатусЗаявки"] === "Отменена") {
+      if (data['СтатусЗаявки'] === 'Отменена') {
         result = false;
       }
 
@@ -283,52 +236,50 @@
 
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {
-      console.log("callbackBeforeDone", data);
+      console.log('callbackBeforeDone', data);
 
-      if (data.hasOwnProperty("full")) {
+      if (data.hasOwnProperty('full')) {
         viewRowAllUsers = data.full;
       }
 
-      console.log("viewRowAllUsers", viewRowAllUsers);
+      console.log('viewRowAllUsers', viewRowAllUsers);
 
       if (viewRowAllUsers) {
-        $(".colunmAuthor").show();
-        $(".colunmStatus").hide();
+        $('.colunmAuthor').show();
+        $('.colunmStatus').hide();
       } else {
-        $(".colunmAuthor").hide();
-        $(".colunmStatus").show();
+        $('.colunmAuthor').hide();
+        $('.colunmStatus').show();
       }
     };
 
     // callback после отрисовки таблицы
     callbackAfterDone = function (data) {
-      console.log("callbackAfterDone", data);
+      console.log('callbackAfterDone', data);
     };
 
     // callback после вставки новой пустой строки, перед заполнением данными
     callbackAddNewRow = function (data) {
-      console.log("callbackAddNewRow", data);
+      console.log('callbackAddNewRow', data);
     };
 
     // callback после внесения изменений в строку с сервера
     callbackAfterWrite = function (data) {
-      console.log("callbackAfterWrite", data);
+      console.log('callbackAfterWrite', data);
 
       const table = $(`#${data.tableID}`);
-      const row = $(table).find("#" + data.uid);
+      const row = $(table).find('#' + data.uid);
       const cell = $(row).find('div[name="АвторЗаявки"]');
 
-      $(cell).html(
-        `<a href="tel:${data.data["Сотрудник"]["ОсновнойНомерТелефона"]}">${data.data["АвторЗаявки"]}</a>`
-      );
+      $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
 
       updateHistory();
     };
 
-    $("#textNew").on("change", function () {
+    $('#textNew').on('change', function () {
       const value = $(this).val();
 
-      if (value === "") {
+      if (value === '') {
         setValid(this, false);
       } else {
         setValid(this, true);
@@ -336,49 +287,49 @@
     });
 
     // клик по кнопке Добавить отчет
-    $("#addNew").on("click", function (event) {
+    $('#addNew').on('click', function (event) {
       clickAnimate(this);
 
       setTimeout(() => {
-        $("#formNew").show(300);
+        $('#formNew').show(300);
       }, 200);
       setTimeout(() => {
-        $("#addNew").hide(300);
+        $('#addNew').hide(300);
       }, 200);
 
-      $("#saveNew").prop("disabled", false);
+      $('#saveNew').prop('disabled', false);
 
-      $("#textNew").val("");
-      setValid("#textNew", false);
+      $('#textNew').val('');
+      setValid('#textNew', false);
 
-      $("#setPriority").removeClass("btn-danger");
-      $("#setPriority").addClass("btn-secondary");
+      $('#setPriority').removeClass('btn-danger');
+      $('#setPriority').addClass('btn-secondary');
 
       setTimeout(() => {
-        $("#textNew").focus();
+        $('#textNew').focus();
       }, 500);
       window.scrollBy(0, 80);
     });
 
-    $("#saveNew").on("click", function (event) {
+    $('#saveNew').on('click', function (event) {
       clickAnimate(this);
 
-      $(this).prop("disabled", true);
+      $(this).prop('disabled', true);
 
-      const textNew = $("#textNew");
+      const textNew = $('#textNew');
 
-      if (textNew.hasClass("invalid")) {
-        toastr.error("Напишите что нужно купить!");
+      if (textNew.hasClass('invalid')) {
+        toastr.error('Напишите что нужно купить!');
         return;
       }
 
-      const srochno = $("#setPriority").hasClass("btn-danger");
+      const srochno = $('#setPriority').hasClass('btn-danger');
 
       setTimeout(() => {
-        $("#formNew").hide(300);
+        $('#formNew').hide(300);
       }, 200);
       setTimeout(() => {
-        $("#addNew").show(300);
+        $('#addNew').show(300);
       }, 200);
 
       const data = {};
@@ -388,178 +339,178 @@
       NProgress.start();
 
       $.ajax({
-        url: "/app/zakupka",
-        method: "POST",
-        contentType: "application/json",
+        url: '/app/zakupka',
+        method: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
-          console.log("success POST", status, data);
+          console.log('success POST', status, data);
         },
       }).always(function () {
         NProgress.done();
       });
     });
 
-    $("#cancelNew").on("click", function (event) {
+    $('#cancelNew').on('click', function (event) {
       clickAnimate(this);
 
       setTimeout(() => {
-        $("#formNew").hide(300);
+        $('#formNew').hide(300);
       }, 200);
       setTimeout(() => {
-        $("#addNew").show(300);
+        $('#addNew').show(300);
       }, 200);
     });
 
-    $("#ЗаявкаНаЗакупку").on("click", ".rowData", function (event) {
-      console.log("click rowData");
+    $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
+      console.log('click rowData');
 
-      let curentRowID = $(this).attr("id");
-      let prevRowID = $("#infoRow").attr("curentRow") || "";
+      let curentRowID = $(this).attr('id');
+      let prevRowID = $('#infoRow').attr('curentRow') || '';
 
       if (curentRowID === prevRowID) {
-        $("#infoRow").toggleClass("hide", true);
-        $("#infoRow").attr("curentRow", "");
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
       } else {
-        $("#infoRow").toggleClass("hide", false);
-        $("#infoRow").attr("curentRow", curentRowID);
-        $("#infoRow").insertAfter(this);
+        $('#infoRow').toggleClass('hide', false);
+        $('#infoRow').attr('curentRow', curentRowID);
+        $('#infoRow').insertAfter(this);
 
-        let data = $(this).data("data").data;
+        let data = $(this).data('data').data;
 
-        $("#kod").text(data["Номер"]);
-        $("#status").text(data["СтатусЗаявки"]);
+        $('#kod').text(data['Номер']);
+        $('#status').text(data['СтатусЗаявки']);
 
-        if (data["Приоритет"] === "Срочно") {
-          $("#priority").text("Срочно");
-          $("#priority").addClass("srochno");
+        if (data['Приоритет'] === 'Срочно') {
+          $('#priority').text('Срочно');
+          $('#priority').addClass('srochno');
         } else {
-          $("#priority").text("");
-          $("#priority").removeClass("srochno");
+          $('#priority').text('');
+          $('#priority').removeClass('srochno');
         }
 
-        $("#newComment").val("");
-        setValid("#newComment", false);
+        $('#newComment').val('');
+        setValid('#newComment', false);
 
-        $("#textFull").text(data["ТекстЗаявки"]);
+        $('#textFull').text(data['ТекстЗаявки']);
         updateHistory();
       }
     });
 
     function updateHistory() {
-      let curentrow = $("#infoRow").attr("curentrow") || "";
+      let curentrow = $('#infoRow').attr('curentrow') || '';
 
-      if (curentrow === "") {
+      if (curentrow === '') {
         return;
       }
 
-      let currRow = $("#" + curentrow);
+      let currRow = $('#' + curentrow);
 
-      if ($(currRow).is(":visible")) {
-        let data = $(currRow).data("data").data;
-        let history = data["ИсторияКомментариев"];
+      if ($(currRow).is(':visible')) {
+        let data = $(currRow).data('data').data;
+        let history = data['ИсторияКомментариев'];
         console.log(history);
 
-        $("#historyComment").html("");
+        $('#historyComment').html('');
 
         $.each(history, function (index, item) {
-          let dateRow = moment(item["Дата"]).format("DD.MM HH:mm");
-          let sotrudnik = item["Сотрудник"]["Наименование"];
+          let dateRow = moment(item['Дата']).format('DD.MM HH:mm');
+          let sotrudnik = item['Сотрудник']['Наименование'];
 
           let row = $('<div class="itemComent">');
           row.append(
-            `<a style='white-space: break-spaces;'>${item["НомерСтроки"]}. <strong>${dateRow} - ${sotrudnik}</strong> : ${item.Комментарий}</a>`
+            `<a style='white-space: break-spaces;'>${item['НомерСтроки']}. <strong>${dateRow} - ${sotrudnik}</strong> : ${item.Комментарий}</a>`
           );
-          $("#historyComment").append(row);
+          $('#historyComment').append(row);
         });
       }
     }
 
     // клик по кнопке Добавить новый комментарий
-    $("#btnAddNewComment").on("click", function (event) {
+    $('#btnAddNewComment').on('click', function (event) {
       clickAnimate(this);
 
       const data = {};
-      data.textNew = $("#newComment").val();
-      data.curentrow = $("#infoRow").attr("curentrow");
+      data.textNew = $('#newComment').val();
+      data.curentrow = $('#infoRow').attr('curentrow');
 
-      if (data.textNew === "") {
-        toastr.error("Пустой комментарий");
+      if (data.textNew === '') {
+        toastr.error('Пустой комментарий');
         return;
       }
 
       NProgress.start();
 
       $.ajax({
-        url: "/app/zakupka",
-        method: "PUT",
-        contentType: "application/json",
+        url: '/app/zakupka',
+        method: 'PUT',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
-          console.log("success PUT", status, data);
+          console.log('success PUT', status, data);
         },
       }).always(function () {
         NProgress.done();
-        $("#newComment").val("");
+        $('#newComment').val('');
         setTimeout(updateHistory, 1000);
       });
     });
 
-    $("#setPriority").on("click", function (event) {
-      if ($("#setPriority").hasClass("btn-secondary")) {
-        $("#setPriority").removeClass("btn-secondary");
-        $("#setPriority").addClass("btn-danger");
+    $('#setPriority').on('click', function (event) {
+      if ($('#setPriority').hasClass('btn-secondary')) {
+        $('#setPriority').removeClass('btn-secondary');
+        $('#setPriority').addClass('btn-danger');
       } else {
-        $("#setPriority").removeClass("btn-danger");
-        $("#setPriority").addClass("btn-secondary");
+        $('#setPriority').removeClass('btn-danger');
+        $('#setPriority').addClass('btn-secondary');
       }
     });
 
-    $("#cancelZayavka").on("click", function (event) {
+    $('#cancelZayavka').on('click', function (event) {
       clickAnimate(this);
 
       const data = {};
-      data.change = [{ key: "СтатусЗаявки", value: "Отменена" }];
-      data.curentrow = $("#infoRow").attr("curentrow");
+      data.change = [{ key: 'СтатусЗаявки', value: 'Отменена' }];
+      data.curentrow = $('#infoRow').attr('curentrow');
 
       NProgress.start();
 
       $.ajax({
-        url: "/app/zakupka",
-        method: "POST",
-        contentType: "application/json",
+        url: '/app/zakupka',
+        method: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
-          console.log("success POST", status, data);
+          console.log('success POST', status, data);
         },
       }).always(function () {
         NProgress.done();
-        $("#infoRow").toggleClass("hide", true);
-        $("#infoRow").attr("curentRow", "");
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
       });
     });
 
-    $("#doneZayavka").on("click", function (event) {
+    $('#doneZayavka').on('click', function (event) {
       clickAnimate(this);
 
       const data = {};
-      data.change = [{ key: "СтатусЗаявки", value: "Готово" }];
-      data.curentrow = $("#infoRow").attr("curentrow");
+      data.change = [{ key: 'СтатусЗаявки', value: 'Готово' }];
+      data.curentrow = $('#infoRow').attr('curentrow');
 
       NProgress.start();
 
       $.ajax({
-        url: "/app/zakupka",
-        method: "POST",
-        contentType: "application/json",
+        url: '/app/zakupka',
+        method: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (data, status) {
-          console.log("success POST", status, data);
+          console.log('success POST', status, data);
         },
       }).always(function () {
         NProgress.done();
-        $("#infoRow").toggleClass("hide", true);
-        $("#infoRow").attr("curentRow", "");
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
       });
     });
   });

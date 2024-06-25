@@ -32,9 +32,7 @@
 
 <div class="input-group input-group-lg">
   <div class="input-group-prepend">
-    <span class="input-group-text"
-      >Станок к которому привязан этот планшет :
-    </span>
+    <span class="input-group-text">Станок к которому привязан этот планшет : </span>
   </div>
   <input
     type="text"
@@ -62,7 +60,7 @@
         } */
 
     function setAutocompleteStanok(element) {
-      const url = $(element).attr("url");
+      const url = $(element).attr('url');
 
       $(element)
         .autocomplete({
@@ -70,41 +68,41 @@
             const data = { term: req.term };
 
             $.ajax({
-              method: "POST",
+              method: 'POST',
               url: url,
-              dataType: "json",
+              dataType: 'json',
               data: JSON.stringify(data),
-              contentType: "application/json",
+              contentType: 'application/json',
               success: function (data) {
                 res(data);
               },
             });
           },
           select: function (event, ui) {
-            $(this).attr("uid", ui.item.uid);
-            $.cookie("stanok", JSON.stringify(ui.item), { expires: 365 });
-            $("#navbar_text_stanok").text(ui.item.fullName);
+            $(this).attr('uid', ui.item.uid);
+            $.cookie('stanok', JSON.stringify(ui.item), { expires: 365 });
+            $('#navbar_text_stanok').text(ui.item.fullName);
             stanok = ui.item;
-            $("#navbar_text_stanok").show();
+            $('#navbar_text_stanok').show();
           },
-          minLength: parseInt($(element).attr("minLength")),
+          minLength: parseInt($(element).attr('minLength')),
         })
-        .on("input", function () {
-          $(this).attr("uid", "");
-          $.cookie("stanok", '{"value":"","uid":"","fullName":""}', {
+        .on('input', function () {
+          $(this).attr('uid', '');
+          $.cookie('stanok', '{"value":"","uid":"","fullName":""}', {
             expires: 365,
           });
-          $("#navbar_text_stanok").text("");
-          $("#navbar_text_stanok").hide();
+          $('#navbar_text_stanok').text('');
+          $('#navbar_text_stanok').hide();
         })
-        .on("blur", function () {
-          if (($(this).attr("uid") || "") === "") {
-            $(this).val("");
+        .on('blur', function () {
+          if (($(this).attr('uid') || '') === '') {
+            $(this).val('');
           }
         });
     }
-    setAutocompleteStanok("#stanok");
-    $("#stanok").attr("uid", stanok.uid);
-    $("#stanok").val(stanok.value);
+    setAutocompleteStanok('#stanok');
+    $('#stanok').attr('uid', stanok.uid);
+    $('#stanok').val(stanok.value);
   });
 </script>
