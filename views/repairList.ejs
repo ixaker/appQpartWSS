@@ -86,7 +86,7 @@
     padding: 5px;
     line-height: 2.5em;
   }
-  #commandPanel {
+  .commandPanel {
     width: 100%;
     display: flex;
     align-items: center;
@@ -152,8 +152,32 @@
   }
 </style>
 
+<div id="addOrder" class="applicationForm" style="display: none">
+  <div id="orderTitle" class="applicationTitle">Новая заявка на ремонт</div>
+  <input
+    type="text"
+    minLength="1"
+    url="/app/autocompleteStanok"
+    class="dataCell form-control"
+    placeholder="Cтанок..."
+    id="newOrderStanok"
+    class="form-control"
+    callbackSelect="callbackSelectStanok"
+    class="form-control mr-sm-2"
+  />
+  <textarea class="applicationText form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
+
+  <div id="attachedFilesForNewOrder"></div>
+
+  <div class="input-group" id="orderButtonGroup">
+    <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
+    <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
+    <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
+  </div>
+</div>
+
 <div id="main">
-  <div id="commandPanel">
+  <div id="commandPanel" class="commandPanel">
     <h4 class="titlePage">Заявки на ремонт</h4>
     <i class="bi bi-plus-circle" id="btnAdd"></i>
   </div>
@@ -217,30 +241,6 @@
       flex-wrap: wrap;
     }
   </style>
-
-  <div id="addOrder" class="applicationForm" style="display: none">
-    <div id="orderTitle" class="applicationTitle">Новая заявка на ремонт</div>
-    <input
-      type="text"
-      minLength="1"
-      url="/app/autocompleteStanok"
-      class="dataCell form-control"
-      placeholder="Cтанок..."
-      id="newOrderStanok"
-      class="form-control"
-      callbackSelect="callbackSelectStanok"
-      class="form-control mr-sm-2"
-    />
-    <textarea class="applicationText form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
-
-    <div id="attachedFilesForNewOrder"></div>
-
-    <div class="input-group" id="orderButtonGroup">
-      <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
-      <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
-      <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
-    </div>
-  </div>
 
   <table
     id="ЗаявкаНаРемонт"
@@ -380,7 +380,7 @@
 </style>
 
 <div id="modal" style="display: none">
-  <div id="commandPanel">
+  <div class="commandPanel">
     <h4 class="titlePage">Заявка на ремонт</h4>
     <h4 id="orderNum" class="titlePage">0001</h4>
     <i id="closeBtn" class="bi bi-x-circle"></i>
@@ -967,16 +967,17 @@
 
     // клик по кнопке Добавить заявку
     $('#btnAdd').on('click', function (event) {
+      console.log('add order click ----');
       $('#newOrderStanok').val('');
       $('#newOrderText').val('');
+      $('#attachedFilesForNewOrder').empty();
 
       clickAnimate(this);
 
       highlight = false;
 
       $('#addOrder').show(0);
-      $('#commandPanel').hide(0);
-      $('#ЗаявкаНаРемонт').hide(0);
+      $('#main').hide(0);
       $('#newOrderStanok').focus();
       logToServer('Нажата кнопка "Добавить заявку"');
 
@@ -1035,8 +1036,7 @@
         console.log('afterSaveOrder', response);
 
         $('#addOrder').hide(0);
-        $('#commandPanel').show(0);
-        $('#ЗаявкаНаРемонт').show(0);
+        $('#main').show(0);
         $('#newOrderStanok').data('uid', '');
         saveFilesToBackend(media, response.uid, response.uid);
       }
@@ -1093,8 +1093,8 @@
     $('#cancelOrder').on('click', function () {
       clickAnimate(this);
       $('#addOrder').hide(0);
-      $('#commandPanel').show(0);
-      $('#ЗаявкаНаРемонт').show(0);
+
+      $('#main').show(0);
     });
 
     $('.all-work').on('click', function () {
@@ -1119,7 +1119,7 @@
     $('#cancelOrder').on('click', function () {
       clickAnimate(this);
       $('#formZakupka').hide();
-      $('#modal').show();
+      $('#main').show();
     });
 
     $('#btnAddForm').on('click', function () {
