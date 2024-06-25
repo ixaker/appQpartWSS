@@ -4,12 +4,13 @@ const https = require('https');
 const fs = require('fs');
 const WebSocket = require('ws');
 const express = require('express');
+
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const { exec } = require('child_process');
 const url = require('url');
-// const axios = require('axios');
+const axios = require('axios');
 
 // services
 const log = require('./services/loggerConfig.js');
@@ -102,8 +103,59 @@ app.get('/uploadPhoto', (req, res, next) => {
 //   res.send(result);
 // });
 
-app.use(express.urlencoded({ limit: '1mb', extended: true }));
-app.use(express.json({ limit: '10mb' }));
+app.post('/saveFile', (req, res) => {
+  let body = '';
+
+  // Чтение данных из запроса
+  req.on('data', chunk => {
+    body += chunk.toString(); // Преобразование бинарных данных в строку
+  });
+
+  // Обработка завершения чтения данных
+  req.on('end', () => {
+    console.log('Received data:', body);
+
+    // Если данные в формате JSON, можно их распарсить
+    try {
+      const jsonData = JSON.parse(body);
+      console.log('Parsed JSON data:', jsonData);
+
+      const base64Image = jsonData.file.split(';base64,').pop();
+      const binaryData = Buffer.from(base64Image, 'base64');
+      const filePath = path.join(__dirname, 'static', 'storage', 'mediaFiles', jsonData.path, jsonData.name);
+
+      log.info('filePath', filePath);
+
+      // Получаем путь к директории файла
+      const dir = path.dirname(filePath);
+
+      // Создаем директории, если их нет
+      ensureDirectoryExistence(dir);
+
+      fs.writeFile(filePath, binaryData, 'binary', (err) => {
+        if (err) {
+          log.error(err);
+        } else {
+          log.info(`Изображение успешно сохранено в ${filePath}`);
+        }
+      });
+      // Отправка ответа
+      res.status(200).send({ 'result': 'Data received' });
+    } catch (error) {
+      console.error('Failed to parse JSON:', error);
+      res.status(400).send({ 'result': 'Invalid JSON' });
+    }
+  });
+
+  // Обработка ошибок чтения данных
+  req.on('error', (err) => {
+    console.error('Error reading request:', err);
+    res.status(500).send('Internal Server Error');
+  });
+});
+
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({ limit: '100mb' }));
 
 // + Страничка - Оболочка
 app.get('/', (req, res) => {
@@ -131,6 +183,10 @@ app.get('/' + adminRoute, (req, res) => {
   });
   // res.sendFile(createPath('admin.html'));
 });
+
+
+
+
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
@@ -174,6 +230,8 @@ app.post('/dataUpdated', (req, res) => {
   //res.sentStatus(200);
   return;
 });
+
+
 
 app.post('/detectFace', async (req, res) => {
   let result = await faceID.findUserOnFoto(req.body);
@@ -247,8 +305,6 @@ app.post('/authentication', async (req, res) => {
 });
 
 // add headers for cache
-
-
 app.post('/uploadPhoto', async (req, res) => {
   log.info('post uploadPhoto', req.body);
 
@@ -410,6 +466,7 @@ app.get('/zakupka', async function (req, res) {
 app.get('/repairList', async function (req, res) {
   return res.render('repairList');
 });
+
 
 // Error
 app.use((req, res) => {
@@ -598,3 +655,11 @@ setInterval(() => {
 }, 10000);
 
 main();
+
+function ensureDirectoryExistence(dirPath) {
+  if (fs.existsSync(dirPath)) {
+    return true;
+  }
+  ensureDirectoryExistence(path.dirname(dirPath));
+  fs.mkdirSync(dirPath);
+};
