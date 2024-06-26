@@ -1298,6 +1298,7 @@
 
       $('#main').hide();
       $('#modal').show();
+      window.scrollTo({ top: 0, behavior: 'auto' });
 
       $('#countOrderZakupka i:first').show();
       $('#countOrderZakupka i:eq(1)').hide();
@@ -1574,7 +1575,7 @@
 
 <script>
   $(document).ready(function () {
-    usersAllowToEdit = ['Соболев Андрей'];
+    usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
     function canUserEdit(user, usersAllowToEdit) {
       return usersAllowToEdit.some(name => name === user.name);
     }
