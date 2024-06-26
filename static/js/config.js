@@ -333,7 +333,7 @@ function startAttachPhotoVideo(btnAttach) {
     const elementForAttach = $(`#${idElementForAttach}`);
 
     console.log('elementForAttach', elementForAttach);
-
+    document.body.style.overflow = "hidden";
     $('#formMainCamera').show();
 
     attachedPhotoVideo = [];
@@ -342,6 +342,7 @@ function startAttachPhotoVideo(btnAttach) {
         $('#capturePhoto').off('click');
         $('#captureVideo').off('click');
         $('#stop-video').off('click');
+        document.body.style.overflow = "";
 
         clickAnimate(this);
         $('#formMainCamera').hide();
