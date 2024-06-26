@@ -55,6 +55,7 @@
     font-size: large;
     font-family: inherit;
     color: #495057;
+    white-space: pre-wrap;
   }
 
   #workInProvider {
@@ -254,9 +255,12 @@
     append="up"
     init
     header
-    sort="3"
+    sort="0"
   >
     <tr class="config" style="display: none">
+      <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="display: none">
+        <div class="dataCell textAlignCenter planeDate"></div>
+      </td>
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 15%">
         <div class="dataCell textAlignCenter"></div>
       </td>
@@ -415,7 +419,7 @@
 
     <div class="form-group">
       <label for="difficultButton">Сложность:</label>
-      <select id="difficultButton" class="form-control"></select>
+      <select id="difficultButton" class="form-control" disabled data-editable="true"></select>
     </div>
 
     <div class="form-group">
@@ -426,12 +430,14 @@
         id="executor"
         url="/app/autocompleteSotrydnik"
         aria-describedby="basic-addon3"
+        data-editable="true"
+        readonly
       />
     </div>
 
     <div class="form-group">
       <label for="status">Статус</label>
-      <select id="status" class="form-control">
+      <select id="status" class="form-control" disabled data-editable="true">
         <option value="Диагностика">Диагностика</option>
         <option value="Ремонт">Ремонт</option>
         <option value="Выполнена">Выполнена</option>
@@ -949,7 +955,9 @@
     callbackAfterWrite = function (data) {
       console.log('callbackAfterWrite', data.data['Дни']);
       let row = $('#' + data.data['uid']);
-      console.log('row from callback', row);
+      const dateInSecond = new Date(data.data['ПлановаяДатаГотовности']);
+      const dateInSeconds = Math.floor(dateInSecond.getTime() / 1000);
+      row.find('.planeDate').text(dateInSeconds);
 
       if (data.data['Дни'] < 1) {
         console.log('dangerColor');
@@ -1567,6 +1575,14 @@
 
 <script>
   $(document).ready(function () {
+    if (false) {
+      $('[data-editable="true"]').prop('readonly', false);
+      $('[data-editable="true"]').prop('disabled', false);
+    } else {
+      $('[data-editable="true"]').prop('readonly', true);
+      $('[data-editable="true"]').prop('disabled', true);
+    }
+
     $('#btnAddZakupka').on('click', function () {
       $('#newZakupkaText').val('');
       setValid('#textNew', false);
