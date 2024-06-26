@@ -3,6 +3,10 @@
     font-size: x-large;
   }
 
+  .titlePage .status {
+    font-size: large;
+  }
+
   #closeBtn {
   }
 
@@ -189,7 +193,7 @@
 
 <div id="main">
   <div id="commandPanel" class="commandPanel">
-    <h4 class="titlePage">Заявки на ремонт</h4>
+    <h4 class="titlePage">Заявки на ремонт <span class="status"> в работе </span></h4>
     <div class="btnContainer">
       <i class="bi bi-check-circle commandBtn" id="btnDone"></i>
       <i class="bi bi-plus-circle commandBtn" id="btnAdd"></i>
@@ -767,7 +771,11 @@
 <script id="card-template" type="text/x-handlebars-template">
   <div class='card'>
     <div class='card-avatar'>
-      <img src='/foto/{{avatar}}.jpg' onerror="this.onerror=null;this.src='/img/avatar.png';" alt='avatar' />
+      <img
+        src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
+        onerror="this.onerror=null;this.src='/img/avatar.png';"
+        alt='avatar'
+      />
 
     </div>
     <div class='card-body'>
