@@ -568,13 +568,14 @@
       }
 
       .attachedImg {
-        width: 103px;
-        height: 135px;
+        width: 46px;
+        height: 60px;
         position: relative;
         border: 1px solid;
         align-items: center;
         display: flex;
         margin-bottom: 1rem;
+        flex: 0 0 auto;
       }
 
       /*       .attachedImg::before {
@@ -1028,10 +1029,12 @@
 
 <style>
   #filesAuthorOrder {
-    gap: 15px;
+    gap: 5px;
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
   .imgSmall {
