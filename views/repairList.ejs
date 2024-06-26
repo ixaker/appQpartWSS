@@ -127,6 +127,11 @@
     padding: 5px;
     line-height: 2.5em;
   }
+
+  #commandPanel {
+    margin-bottom: 9px;
+  }
+
   .commandPanel {
     width: 100%;
     display: flex;
@@ -213,7 +218,13 @@
     callbackSelect="callbackSelectStanok"
     class="form-control mr-sm-2"
   />
-  <textarea class="applicationText form-control" id="newOrderTopic" rows="1" placeholder="Тема заявки..."></textarea>
+  <textarea
+    class="applicationText form-control"
+    id="newOrderTopic"
+    rows="1"
+    placeholder="Тема заявки..."
+    maxlength="25"
+  ></textarea>
   <textarea class="applicationText form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
 
   <div id="attachedFilesForNewOrder"></div>
@@ -316,16 +327,13 @@
       <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="display: none">
         <div class="dataCell textAlignCenter planeDate"></div>
       </td>
-      <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 15%">
+      <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 16%">
         <div class="dataCell textAlignCenter"></div>
       </td>
-      <td title="Тема" name="Тема" style="width: 48%">
+      <td title="Тема" name="Тема" style="width: 72%">
         <div class="dataCell"></div>
       </td>
-      <td title="Статус" name="СтатусЗаявки" style="width: 22%">
-        <div class="dataCell"></div>
-      </td>
-      <td title="Дни" name="Дни" style="width: 10%">
+      <td title="Дни" name="Дни" style="width: 12%">
         <div class="dataCell textAlignCenter days"></div>
       </td>
     </tr>
@@ -419,6 +427,8 @@
     font-size: xxx-large;
     color: darkgreen;
     margin-left: auto;
+    line-height: normal;
+    height: 1em;
   }
 
   #countOrderZakupka {
@@ -522,7 +532,7 @@
         color: darkgreen;
         margin-right: 0px;
         margin-top: auto;
-        width: 74px;
+        /* width: 74px; */
         line-height: 55px;
         padding: 10px 10px 5px 0;
         align-self: flex-end;
@@ -577,7 +587,7 @@
     </style>
 
     <div class="input-group" id="commentForm">
-      <textarea class="form-control" id="comment" rows="3" placeholder="написать сообщение..."></textarea>
+      <textarea class="form-control" id="comment" rows="1" placeholder="написать сообщение..."></textarea>
       <div id="actions">
         <i class="bi bi-send" id="sendComment"></i>
         <!-- <i class="bi bi-camera" id="attachPhoto"></i> -->
@@ -728,15 +738,10 @@
     font-size: 1rem;
   }
 
-  .card-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
   .card-author {
     font-weight: bold;
     color: #8275eb;
+    font-size: 0.9em;
   }
 
   .card-avatar {
@@ -765,11 +770,21 @@
     width: min-content;
   }
 
-  .card-info {
+  .card-head {
     display: flex;
-    flex-direction: row;
-    gap: 10px;
-    background-color: lightgray;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-text {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .card-date {
+    font-size: 0.7em;
+    color: darkgrey;
+    text-align: right;
   }
 
   #choiceDifficult {
@@ -784,11 +799,6 @@
     margin: 0;
   }
 
-  .card-text {
-    margin-bottom: 0;
-    overflow-wrap: anywhere;
-  }
-
   #commandBtns {
     width: 100%;
     display: flex;
@@ -799,14 +809,6 @@
   .select {
     font-weight: bold;
     color: darkred;
-  }
-
-  .card-date {
-    margin-top: -10px;
-    font-size: 0.7em;
-    color: darkgrey;
-    width: 100%;
-    text-align: right;
   }
 </style>
 
@@ -822,9 +824,92 @@
 
     </div>
     <div class='card-body'>
-      <div class='card-author'></div>
-      <p class='card-text'><span class='card-author'>{{author}}:</span> {{text}}</p>
-      <div class='card-date'>{{date}}</div>
+      <div class='card-head'>
+        <div class='card-author'>{{author}}</div>
+        <div class='card-date'>{{date}}</div>
+      </div>
+
+      <p class='card-text'>{{text}}</p>
+
+    </div>
+  </div>
+</script>
+
+<!-- Шаблон картки2 -->
+
+<style>
+  .card2 {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    max-width: 600px;
+    background-color: inherit;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .card-author2 {
+    font-weight: bold;
+    color: #8275eb;
+  }
+
+  .card-avatar2 {
+    border-radius: 50%;
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-avatar2 img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .card-body2 {
+    background-color: white;
+    border-radius: 0px 12px 12px 12px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: min-content;
+  }
+
+  .card-text2 {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .card-date2 {
+    margin-top: -10px;
+    font-size: 0.7em;
+    color: darkgrey;
+    width: 100%;
+    text-align: right;
+  }
+</style>
+
+<script id="card-template2" type="text/x-handlebars-template">
+  <div class='card2'>
+    <div class='card-avatar2'>
+      <img
+        src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
+        onerror="this.onerror=null;this.src='/img/avatar.png';"
+        alt='avatar'
+      />
+
+    </div>
+    <div class='card-body2'>
+      <div class='card-author2'></div>
+      <p class='card-text2'><span class='card-author2'>{{author}}:</span> {{text}}</p>
+      <div class='card-date2'>{{date}}</div>
     </div>
   </div>
 </script>
@@ -1029,8 +1114,19 @@
     callbackAfterWrite = function (data) {
       console.log('callbackAfterWrite', data.data['Дни']);
       let row = $('#' + data.data['uid']);
-      const dateInSecond = new Date(data.data['ПлановаяДатаГотовности']);
-      const dateInSeconds = Math.floor(dateInSecond.getTime() / 1000);
+
+      const activeOrders = $(tableID).data('param').active;
+      let dateInSeconds = 0;
+      if (activeOrders) {
+        console.log('В роботі');
+        const dateInSecond = new Date(data.data['ПлановаяДатаГотовности']);
+        dateInSeconds = Math.floor(dateInSecond.getTime() / 1000);
+      } else {
+        console.log('Виконані замовлення');
+        const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
+        console.log('dateFinish', dateFinish);
+        dateInSeconds = Math.floor((dateFinish.getTime() * -1) / 1000);
+      }
       row.find('.planeDate').text(dateInSeconds);
 
       if (data.data['Дни'] < 1) {
@@ -1077,6 +1173,7 @@
       $('#btnDone').toggleClass('pressed', !activeOrders);
       $(tableID).data('param', { active: activeOrders });
       $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
+      $('#statusMark').toggleClass('pressed', !activeOrders);
       abortAllRequests();
       initTable(tableID);
       console.log('state of params ', $(tableID).data('param').active);
@@ -1361,7 +1458,13 @@
       // Картинки заявки stop
 
       stanokNumber === undefined ? $('#infoStanok').parent().hide() : $('#infoStanok').parent().show();
-      description === '' ? $('#infoText').hide() : $('#infoText').show();
+      topic === '' ? $('#infoTopic').hide() : $('#infoTopic').show();
+      if (description === '') {
+        $('#infoText').hide();
+        $('#infoText').closest('.form-group').hide();
+      } else {
+        $('#infoText').show();
+      }
 
       // timer back
       const dateSrok = new Date(data.data['ПлановаяДатаГотовности']).getTime();
