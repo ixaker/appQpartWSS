@@ -1,10 +1,30 @@
 <style>
   .titlePage {
     font-size: x-large;
+    position: relative;
   }
 
-  .titlePage .status {
-    font-size: large;
+  /*   .titlePage::after {
+    content: attr(data-status);
+    font-size: x-small;
+    background-color: aliceblue;
+    top: -20px;
+    right: 20%;
+    padding: 2px 3px;
+    position: relative;
+  } */
+
+  .status {
+    position: relative;
+    font-size: x-small;
+    border-radius: 5px;
+    padding: 3px;
+    top: -5px;
+    text-align: end;
+    display: block;
+    text-align: end;
+    display: block;
+    color: darkgreen;
   }
 
   #closeBtn {
@@ -180,6 +200,7 @@
     callbackSelect="callbackSelectStanok"
     class="form-control mr-sm-2"
   />
+  <textarea class="applicationText form-control" id="newOrderTopic" rows="1" placeholder="Тема заявки..."></textarea>
   <textarea class="applicationText form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
 
   <div id="attachedFilesForNewOrder"></div>
@@ -193,7 +214,11 @@
 
 <div id="main">
   <div id="commandPanel" class="commandPanel">
-    <h4 class="titlePage">Заявки на ремонт <span class="status"> в работе </span></h4>
+    <div>
+      <h4 class="titlePage" style="line-height: normal">Заявки на ремонт</h4>
+      <div id="statusMark" class="status">в работе</div>
+    </div>
+
     <div class="btnContainer">
       <i class="bi bi-check-circle commandBtn" id="btnDone"></i>
       <i class="bi bi-plus-circle commandBtn" id="btnAdd"></i>
@@ -281,7 +306,7 @@
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 15%">
         <div class="dataCell textAlignCenter"></div>
       </td>
-      <td title="Описание" name="Описание" style="width: 48%">
+      <td title="Тема" name="Тема" style="width: 48%">
         <div class="dataCell"></div>
       </td>
       <td title="Статус" name="СтатусЗаявки" style="width: 22%">
@@ -1007,6 +1032,7 @@
     $('#btnAdd').on('click', function (event) {
       console.log('add order click ----');
       $('#newOrderStanok').val('');
+      $('#newOrderTopic').val('');
       $('#newOrderText').val('');
       $('#attachedFilesForNewOrder').empty();
 
@@ -1031,6 +1057,7 @@
 
       $('#btnDone').toggleClass('pressed', !activeOrders);
       $(tableID).data('param', { active: activeOrders });
+      $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
       abortAllRequests();
       initTable(tableID);
       console.log('state of params ', $(tableID).data('param').active);
@@ -1067,17 +1094,19 @@
         });
 
       const stanokUID = $('#newOrderStanok').data('uid') || '';
+      const newOrderTopic = $('#newOrderTopic').val();
       const newOrderText = $('#newOrderText').val();
 
       let data = {
         stanokUID: stanokUID,
+        newOrderTopic: newOrderTopic,
         newOrderText: newOrderText,
         files: names,
       };
 
-      if (stanokUID === '' && newOrderText === '') {
-        toastr.error('Укажите станок или текст заявки');
-        $('#newOrderStanok').focus();
+      if (newOrderTopic === '') {
+        toastr.error('Укажите тему заявки');
+        $('#newOrderTopic').focus();
         return;
       }
 
