@@ -438,7 +438,6 @@
     <div class="form-group">
       <label for="status">Статус</label>
       <select id="status" class="form-control" disabled data-editable="true">
-        <option value="Диагностика">Диагностика</option>
         <option value="Ремонт">Ремонт</option>
         <option value="Выполнена">Выполнена</option>
       </select>
@@ -1575,7 +1574,12 @@
 
 <script>
   $(document).ready(function () {
-    if (false) {
+    usersAllowToEdit = ['Соболев Андрей'];
+    function canUserEdit(user, usersAllowToEdit) {
+      return usersAllowToEdit.some(name => name === user.name);
+    }
+
+    if (canUserEdit(user, usersAllowToEdit)) {
       $('[data-editable="true"]').prop('readonly', false);
       $('[data-editable="true"]').prop('disabled', false);
     } else {
