@@ -116,3 +116,6 @@ npm install node-telegram-bot-api --save
 і передати параметр для ip
 Наприклад:
 https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app
+
+інв.номери планшетів:
+1722, 1755 - цех на Яхненківській
