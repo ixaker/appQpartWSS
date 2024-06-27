@@ -371,7 +371,7 @@
     sort="0"
   >
     <tr class="config" style="display: none">
-      <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="width: 30%">
+      <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="display: none">
         <div class="dataCell textAlignCenter planeDate"></div>
       </td>
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 16%">
@@ -1174,13 +1174,14 @@
       if (activeOrders) {
         console.log('В роботі');
         dateInSeconds = Math.floor(datePlanned.getTime() / 1000);
-        console.log('dateInSeconds', dateInSeconds);
         overdue = days < 1;
       } else {
         console.log('Виконані замовлення');
         dateInSeconds = Math.floor((dateFinish.getTime() * -1) / 1000);
         daysForDone = Math.floor((dateFinish.getTime() - dateStart.getTime()) / (1000 * 60 * 60 * 24));
         row.find('.days').text(daysForDone);
+        console.log('datePlanned', datePlanned);
+        console.log('dateFinish', dateFinish);
         overdue = dateFinish < datePlanned;
       }
       row.find('.planeDate').text(dateInSeconds);
