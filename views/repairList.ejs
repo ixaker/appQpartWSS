@@ -371,7 +371,7 @@
     sort="0"
   >
     <tr class="config" style="display: none">
-      <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="display: none">
+      <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="width: 30%">
         <div class="dataCell textAlignCenter planeDate"></div>
       </td>
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 16%">
@@ -1170,10 +1170,11 @@
       const datePlanned = new Date(data.data['ПлановаяДатаГотовности']);
       const dateStart = new Date(data.data['Дата']);
       const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
-      const overdue = false;
+      let overdue = false;
       if (activeOrders) {
         console.log('В роботі');
         dateInSeconds = Math.floor(datePlanned.getTime() / 1000);
+        console.log('dateInSeconds', dateInSeconds);
         overdue = days < 1;
       } else {
         console.log('Виконані замовлення');
@@ -1183,6 +1184,7 @@
         overdue = dateFinish < datePlanned;
       }
       row.find('.planeDate').text(dateInSeconds);
+      console.log('dateInSeconds', dateInSeconds);
 
       if (data.data['Дни'] < 1) {
         console.log('dangerColor');
