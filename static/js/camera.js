@@ -31,7 +31,6 @@ function startAttachPhotoVideo(btnAttach) {
         }
 
         busyCamera = true;
-
         const video = document.getElementById('mainCamera');
         const canvas = document.createElement('canvas');
         const flash = document.getElementById('flash');
@@ -93,7 +92,6 @@ function startAttachPhotoVideo(btnAttach) {
             clearInterval(timerInterval);
             $('#videoTimer').hide().text('00:00');
 
-            // stopTimer();
             const blob = new Blob(chunks, { type: 'video/mp4' });
             const videoUrl = URL.createObjectURL(blob);
             console.log('allMediaFiles', allMediaFiles);
@@ -133,7 +131,6 @@ function startAttachPhotoVideo(btnAttach) {
     $('#stopVideo').click(function () {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             mediaRecorder.stop();
-
 
             setTimeout(() => {
                 console.log('setInterval')
