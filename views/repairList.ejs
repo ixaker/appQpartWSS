@@ -27,6 +27,17 @@
     color: darkgreen;
   }
 
+  .eye-container {
+    position: relative;
+  }
+
+  .eye {
+    position: absolute;
+    bottom: -8px;
+    right: 5px;
+    display: none;
+  }
+
   #closeBtn {
   }
 
@@ -377,8 +388,9 @@
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 16%">
         <div class="dataCell textAlignCenter"></div>
       </td>
-      <td title="Тема" name="Тема" style="width: 72%">
-        <div class="dataCell"></div>
+      <td title="Тема" name="Тема" class="eye-container" style="width: 72%">
+        <div class="dataCell topic"></div>
+        <i class="bi bi-eye-slash eye"></i>
       </td>
       <td title="Дни" name="Дни" style="width: 12%">
         <div class="dataCell textAlignCenter days"></div>
@@ -609,7 +621,7 @@
       }
 
       #attachedFiles {
-        display: flex;
+        display: none;
         gap: 5px;
         padding: 5px;
       }
@@ -623,6 +635,17 @@
         display: flex;
         margin-bottom: 1rem;
         flex: 0 0 auto;
+      }
+
+      #showViews {
+        display: none;
+        margin: 0 auto 10px;
+        font-size: 0.8rem;
+        border-radius: 5px;
+        padding: 3px 10px;
+        background-color: white;
+        text-align: center;
+        width: fit-content;
       }
 
       /*       .attachedImg::before {
@@ -766,6 +789,8 @@
         </div>
       </div>
     </div>
+
+    <div id="showViews">показать просмотры</div>
     <div id="historyContainer">
       <!-- history of current repair -->
     </div>
@@ -776,7 +801,7 @@
   .card {
     display: flex;
     flex-direction: row;
-    gap: 15px;
+    gap: 10px;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 10px;
@@ -784,6 +809,38 @@
     background-color: inherit;
     border: none;
     font-size: 1rem;
+  }
+
+  .view-card {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+    display: none;
+  }
+
+  .view-card .card-body {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .view-card .card-head {
+    width: 70%;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .view-card .card-author {
+    width: 60%;
+  }
+
+  .view-card .card-text {
+    color: darkgrey;
+    font-size: 0.7em;
+  }
+
+  .view-card .card-date {
+    font-size: 0.7em;
+    color: darkgrey;
   }
 
   .card-author {
@@ -795,8 +852,8 @@
   .card-avatar {
     border-radius: 50%;
     background-color: white;
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -862,7 +919,7 @@
 
 <!-- Шаблон картки -->
 <script id="card-template" type="text/x-handlebars-template">
-  <div class='card'>
+  <div class='card {{additionalClass}}'>
     <div class='card-avatar'>
       <img
         src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
@@ -1192,6 +1249,31 @@
         console.log('dangerColor');
         row.find('.days').addClass('dangerColor');
       }
+
+      const myRow = data.data['Просмотры'].find(row => {
+        console.log('row.Сотрудник.uid, user.uid ', row.Сотрудник.uid, user.uid);
+        return (row.Сотрудник.uid = user.uid);
+      });
+      console.log('myRow', myRow);
+
+      const dateOfLastView = myRow.ДатаПросмотра;
+      console.log('dateOfLastView', dateOfLastView);
+
+      const dateOflastActivity = data.data['ДатаПоследнейАктивности'];
+
+      if (dateOfLastView < dateOflastActivity) {
+        console.log('if statement ', dateOfLastView, dateOflastActivity, data.data['Тема']);
+        console.log('Остання активність була пізніше за останній перегляд');
+        row.find('.eye').show();
+      } else {
+        console.log('Останній перегляд був пізніший за останню активність');
+        row.find('.eye').hide();
+      }
+      // console.log(
+      //   'перегляди, ДатаПоследнейАктивности',
+      //   data.data['Просмотры'][0]['ДатаПросмотра'],
+      //   data.data['ДатаПоследнейАктивности']
+      // );
     };
 
     callbackSelectStanok = function (data) {
@@ -1501,6 +1583,7 @@
       // timer back
       const dateSrok = new Date(data.data['ПлановаяДатаГотовности']).getTime();
       $('#infoDays').attr('date', dateSrok);
+      timer();
 
       var cardTemplate = Handlebars.compile($('#card-template').html());
       const historyContainer = $('#historyContainer');
@@ -1508,7 +1591,9 @@
       console.log('tasks', currentRowJQ.data('data').data['История']);
       historyContainer.text('');
       tasks.forEach(function (task) {
+        console.log('task', task.Просмотр);
         var cardHtml = cardTemplate({
+          additionalClass: task.Просмотр ? 'view-card' : '',
           avatar: task['Сотрудник']['uid'],
           author: task['Сотрудник']['Наименование'],
           text: task.Текст,
@@ -1536,6 +1621,23 @@
 
       renderOrderPage(data);
       sendDataTo1C(data, 'PATCH');
+
+      // const cardElement = $('#modal').first();
+      // const unreadedElement = $('<div id="unreaded">непрочитані повідомлення</div>');
+      // unreadedElement.insertAfter(cardElement);
+
+      // $.ajax({
+      //   url: '/app/repairOrder',
+      //   type: 'OPTIONS',
+      //   success: function (response, status, xhr) {
+      //     const allowedMethods = xhr.getResponseHeader('Allow');
+      //     console.log('Дозволені методи:', allowedMethods);
+      //   },
+      //   error: function (error) {
+      //     console.log('Error from options:', error);
+      //   },
+      // });
+
       timer();
     });
 
@@ -1683,6 +1785,25 @@
       $('[data-editable="true"]').prop('readonly', true);
       $('[data-editable="true"]').prop('disabled', true);
     }
+
+    const usersCanShowViews = ['Голуб Виталий'];
+    console.log('canUserEdit', canUserEdit(user, usersCanShowViews));
+    if (canUserEdit(user, usersCanShowViews)) {
+      $('#showViews').show();
+    }
+
+    $('#showViews').on('click', function () {
+      const button = $(this);
+      const viewsVisible = $('.view-card').is(':visible');
+
+      if (viewsVisible) {
+        $('.view-card').hide();
+        button.text('показать просмотры');
+      } else {
+        $('.view-card').css('display', 'flex');
+        button.text('скрыть просмотры');
+      }
+    });
 
     $('#btnAddZakupka').on('click', function () {
       $('#newZakupkaText').val('');
