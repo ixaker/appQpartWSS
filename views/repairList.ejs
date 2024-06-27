@@ -1368,13 +1368,14 @@
 
       let targetDate = parseInt(strTargetDate);
       let now = new Date().getTime();
-
+      let dangerClass = 'dangerColor';
       const data = currentRowJQ.data('data');
       console.log('currentRowJQ', data.data.СтатусЗаявки);
       if (data.data.СтатусЗаявки === 'Выполнена') {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         now = new Date(data.data['Дата']).getTime();
         $('#labelSrok').text('Выполнено за:');
+        dangerClass = '';
       } else {
         $('#labelSrok').text('Осталось:');
       }
@@ -1394,7 +1395,7 @@
       $('#infoDays').val(`${days} дней ${hoursStr}:${minutesStr}:${secondsStr}`);
 
       if (days < 1) {
-        $('#infoDays').addClass('dangerColor');
+        $('#infoDays').addClass(dangerClass);
       } else {
         $('#infoDays').removeClass('dangerColor');
       }
