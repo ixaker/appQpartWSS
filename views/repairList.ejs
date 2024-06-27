@@ -1167,6 +1167,7 @@
       const activeOrders = $(tableID).data('param').active;
       let dateInSeconds = 0;
       const days = data.data['Дни'];
+      console.log('days', days, data.data['Тема']);
       const datePlanned = new Date(data.data['ПлановаяДатаГотовности']);
       const dateStart = new Date(data.data['Дата']);
       const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
@@ -1360,7 +1361,6 @@
 
     function timer() {
       const strTargetDate = $('#infoDays').attr('date') || '';
-
       if (strTargetDate === '') {
         $('#infoDays').val('срок не назначен');
         return;
@@ -1370,12 +1370,19 @@
       let now = new Date().getTime();
       let dangerClass = 'dangerColor';
       const data = currentRowJQ.data('data');
+      const datePlanned = new Date(data.data['ПлановаяДатаГотовности']);
+      const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
+
       console.log('currentRowJQ', data.data.СтатусЗаявки);
+
+      if (data.data.СтатусЗаявки === 'Выполнена' && dateFinish < datePlanned) {
+        dangerClass = '';
+      }
+
       if (data.data.СтатусЗаявки === 'Выполнена') {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         now = new Date(data.data['Дата']).getTime();
         $('#labelSrok').text('Выполнено за:');
-        dangerClass = '';
       } else {
         $('#labelSrok').text('Осталось:');
       }
