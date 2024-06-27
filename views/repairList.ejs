@@ -234,6 +234,13 @@
     <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
     <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
   </div>
+  <div class="applicationForm disabled-overlay" id="disabledOverlay">
+    <div class="loader-text">Завантаження...</div>
+    <!-- <div class="loader"></div> -->
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
 </div>
 
 <div id="main">
@@ -254,6 +261,7 @@
     }
 
     .applicationForm {
+      position: relative;
       margin: 20px auto 40px auto;
       background-color: aliceblue;
       max-width: 600px;
@@ -264,6 +272,45 @@
       padding: 10px;
       gap: 10px;
       border-radius: 0.5rem;
+    }
+
+    .applicationForm.disabled-overlay {
+      position: absolute;
+      top: -20px;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .loader-text {
+      z-index: 1000;
+      color: white;
+      font-size: xx-large;
+    }
+
+    .loader {
+      border: 10px solid #f3f3f3;
+      border-top: 10px solid darkgreen;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+      z-index: 10000;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     .applicationTitle {
@@ -1124,18 +1171,21 @@
         console.log('В роботі');
         const dateInSecond = new Date(data.data['ПлановаяДатаГотовности']);
         dateInSeconds = Math.floor(dateInSecond.getTime() / 1000);
+
+        if (data.data['Дни'] < 1) {
+          console.log('dangerColor');
+          row.find('.days').addClass('dangerColor');
+        }
       } else {
         console.log('Виконані замовлення');
+        const dateStart = new Date(data.data['Дата']);
         const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
-        console.log('dateFinish', dateFinish);
         dateInSeconds = Math.floor((dateFinish.getTime() * -1) / 1000);
+
+        daysForDone = Math.floor((dateFinish.getTime() - dateStart.getTime()) / (1000 * 60 * 60 * 24));
+        row.find('.days').text(daysForDone);
       }
       row.find('.planeDate').text(dateInSeconds);
-
-      if (data.data['Дни'] < 1) {
-        console.log('dangerColor');
-        row.find('.days').addClass('dangerColor');
-      }
     };
 
     callbackSelectStanok = function (data) {
@@ -1153,6 +1203,8 @@
       $('#newOrderTopic').val('');
       $('#newOrderText').val('');
       $('#attachedFilesForNewOrder').empty();
+
+      $('#disabledOverlay').css('display', 'flex');
 
       clickAnimate(this);
 
@@ -1186,6 +1238,21 @@
     $('#saveOrder').on('click', function () {
       clickAnimate(this);
 
+      const stanokUID = $('#newOrderStanok').data('uid') || '';
+      const newOrderTopic = $('#newOrderTopic').val();
+      const newOrderText = $('#newOrderText').val();
+
+      if (newOrderTopic === '') {
+        toastr.error('Укажите тему заявки');
+        $('#newOrderTopic').focus();
+        return;
+      }
+
+      $('#disabledOverlay').css('display', 'flex');
+
+      NProgress.start();
+      $('#saveOrder').attr('disabled', true);
+
       let media = [];
       let names = [];
       $('#attachedFilesForNewOrder')
@@ -1212,10 +1279,6 @@
           names.push(file.name);
         });
 
-      const stanokUID = $('#newOrderStanok').data('uid') || '';
-      const newOrderTopic = $('#newOrderTopic').val();
-      const newOrderText = $('#newOrderText').val();
-
       let data = {
         stanokUID: stanokUID,
         newOrderTopic: newOrderTopic,
@@ -1223,68 +1286,17 @@
         files: names,
       };
 
-      if (newOrderTopic === '') {
-        toastr.error('Укажите тему заявки');
-        $('#newOrderTopic').focus();
-        return;
-      }
-
-      function afterSaveOrder(response) {
-        console.log('afterSaveOrder', response);
-
+      sendDataTo1C(data, 'POST', async function (response) {
+        await saveFilesToStorage(media, response.uid, response.uid);
         $('#addOrder').hide(0);
         $('#main').show(0);
         $('#newOrderStanok').data('uid', '');
-        saveFilesToBackend(media, response.uid, response.uid);
-      }
-
-      sendDataTo1C(data, 'POST', afterSaveOrder);
-      NProgress.start();
-    });
-
-    function saveFilesToBackend(media, uid, uidChild) {
-      console.log('saveFilesToBackend', media, uid, uidChild);
-
-      media.forEach(element => {
-        const patch = `/${uid}/${uidChild}`;
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          $.post(
-            '/saveFile',
-            JSON.stringify({ file: reader.result, path: patch, name: element.name }),
-            function (response) {
-              console.log('/saveFile', response);
-            },
-            'json'
-          )
-            .fail(function (jqXHR, textStatus, errorThrown) {})
-            .always(function () {
-              NProgress.done();
-            });
-        };
-        reader.readAsDataURL(element.data);
-
-        // const reader = new FileReader();
-
-        // reader.onloadend = function () {
-        //   const data = { file: 'reader.result', path: patch };
-        //   const jsonData = JSON.stringify(data);
-        //   // $.post('/saveFile', data, function (response) {}, 'json');
-        //   fetch(`/saveFile`, { method: 'POST', body: jsonData });
-        // };
-        // reader.readAsDataURL(element.data);
-
-        console.log('element.data', element.data);
-
-        // fetch(`/saveFile?patch=${patch}`, {
-        //   method: 'POST',
-        //   body: element.data,
-        // })
-        //   .then(response => response.json())
-        //   .then(data => console.log(data))
-        //   .catch(error => console.error('Error:', error));
+        $('#saveOrder').attr('disabled', false);
+        $('#disabledOverlay').hide();
       });
-    }
+      NProgress.done();
+      document.body.style.overflow = '';
+    });
 
     // click on cancelOrder
     $('#cancelOrder').on('click', function () {
@@ -1452,7 +1464,8 @@
           //const src = 'https://a7b85a942d4082eb.cdn.express/mediaFiles/363efa8a-3249-11ef-8255-000c29006152/363efa8a-3249-11ef-8255-000c29006152/0.png';
           const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
           const source = `${pathToStorage}/${uid}/${element.ИД}/${element.Файл}`;
-          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, 2)}png`;
+          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, -3)}png`;
+          console.log('src ', src);
           imgs.push({ source: source, src: src });
         }
       });
@@ -1531,7 +1544,6 @@
           toastr.error('Error', error);
         },
       }).always(function () {
-        NProgress.done();
         highlight = true;
       });
     }

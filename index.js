@@ -113,13 +113,10 @@ app.post('/saveFile', (req, res) => {
 
   // Обработка завершения чтения данных
   req.on('end', () => {
-    console.log('Received data:', body);
+    console.log('Received data:');
 
-    // Если данные в формате JSON, можно их распарсить
     try {
       const jsonData = JSON.parse(body);
-      console.log('Parsed JSON data:', jsonData);
-
       const base64Image = jsonData.file.split(';base64,').pop();
       const binaryData = Buffer.from(base64Image, 'base64');
       const filePath = path.join(__dirname, 'static', 'storage', 'mediaFiles', jsonData.path, jsonData.name);
@@ -135,12 +132,12 @@ app.post('/saveFile', (req, res) => {
       fs.writeFile(filePath, binaryData, 'binary', (err) => {
         if (err) {
           log.error(err);
+          res.status(400).send({ 'result': 'error write file to storage' + jsonData.name });
         } else {
           log.info(`Изображение успешно сохранено в ${filePath}`);
+          res.status(200).send({ 'result': 'Data received' });
         }
       });
-      // Отправка ответа
-      res.status(200).send({ 'result': 'Data received' });
     } catch (error) {
       console.error('Failed to parse JSON:', error);
       res.status(400).send({ 'result': 'Invalid JSON' });
