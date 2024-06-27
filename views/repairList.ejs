@@ -1182,12 +1182,13 @@
         row.find('.days').text(daysForDone);
         console.log('datePlanned', datePlanned);
         console.log('dateFinish', dateFinish);
-        overdue = dateFinish < datePlanned;
+        console.log('Тема', data.data['Тема']);
+        overdue = dateFinish > datePlanned;
       }
       row.find('.planeDate').text(dateInSeconds);
       console.log('dateInSeconds', dateInSeconds);
 
-      if (data.data['Дни'] < 1) {
+      if (overdue) {
         console.log('dangerColor');
         row.find('.days').addClass('dangerColor');
       }
