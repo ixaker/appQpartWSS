@@ -1187,7 +1187,6 @@
         overdue = dateFinish > datePlanned;
       }
       row.find('.planeDate').text(dateInSeconds);
-      console.log('dateInSeconds', dateInSeconds);
 
       if (overdue) {
         console.log('dangerColor');
@@ -1361,6 +1360,7 @@
 
     function timer() {
       const strTargetDate = $('#infoDays').attr('date') || '';
+
       if (strTargetDate === '') {
         $('#infoDays').val('срок не назначен');
         return;
@@ -1368,19 +1368,13 @@
 
       let targetDate = parseInt(strTargetDate);
       let now = new Date().getTime();
-      let dangerClass = 'dangerColor';
+
       const data = currentRowJQ.data('data');
-      const datePlanned = new Date(data.data['ПлановаяДатаГотовности']);
-      const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
-
       console.log('currentRowJQ', data.data.СтатусЗаявки);
-
-      if (data.data.СтатусЗаявки === 'Выполнена' && dateFinish < datePlanned) {
-        dangerClass = '';
-      }
-
       if (data.data.СтатусЗаявки === 'Выполнена') {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
+        plannedData = new Date(data.data['ПлановаяДатаГотовности']).getTime();
+        finishDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         now = new Date(data.data['Дата']).getTime();
         $('#labelSrok').text('Выполнено за:');
       } else {
@@ -1401,10 +1395,18 @@
 
       $('#infoDays').val(`${days} дней ${hoursStr}:${minutesStr}:${secondsStr}`);
 
-      if (days < 1) {
-        $('#infoDays').addClass(dangerClass);
+      if (data.data.СтатусЗаявки === 'Выполнена') {
+        if (plannedData < finishDate) {
+          $('#infoDays').addClass('dangerColor');
+        } else {
+          $('#infoDays').removeClass('dangerColor');
+        }
       } else {
-        $('#infoDays').removeClass('dangerColor');
+        if (days < 1) {
+          $('#infoDays').addClass('dangerColor');
+        } else {
+          $('#infoDays').removeClass('dangerColor');
+        }
       }
     }
 
