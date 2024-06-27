@@ -1535,6 +1535,7 @@
       const data = $(this).data('data');
 
       renderOrderPage(data);
+      sendDataTo1C(data, 'PATCH');
       timer();
     });
 
@@ -1640,137 +1641,6 @@
       $(this).css('height', 'auto');
       $(this).css('height', this.scrollHeight + 'px');
     });
-
-    // capture video photo
-    let stream;
-    let mediaRecorder;
-    let recordedChunks = [];
-
-    $('#attachPhoto').click(function () {
-      $('#camera-modal').show();
-      startCamera();
-    });
-
-    $('#capture-photo').click(function () {
-      const video = document.getElementById('camera-video');
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/png');
-
-      $('<img>').attr('src', dataUrl).addClass('attachedImg').appendTo('#attachedFiles');
-
-      console.log(dataUrl);
-    });
-
-    $('#capture-video').click(function () {
-      const video = document.getElementById('camera-video');
-      mediaRecorder = new MediaRecorder(video.srcObject);
-      chunks = [];
-
-      $('#capture-video').hide();
-      $('#stop-video').show();
-
-      startTimer();
-
-      mediaRecorder.ondataavailable = function (e) {
-        chunks.push(e.data);
-      };
-
-      mediaRecorder.onstop = function () {
-        stopTimer();
-        const blob = new Blob(chunks, { type: 'video/mp4' });
-        const videoUrl = URL.createObjectURL(blob);
-
-        $('#attachedFiles').append(
-          $('<video>')
-            .attr({
-              src: videoUrl,
-              width: '50',
-              height: '50',
-              controls: true,
-            })
-            .addClass('attachedVideo')
-        );
-
-        console.log(videoUrl);
-      };
-
-      mediaRecorder.start();
-    });
-
-    $('#stop-video').click(function () {
-      mediaRecorder.stop();
-      $('#capture-video').show();
-      $('#stop-video').hide();
-    });
-
-    $('#close-camera').click(function () {
-      clickAnimate(this);
-      $('#camera-modal').hide();
-      stopCamera();
-    });
-
-    function startTimer() {
-      $('#video-timer').text('00:00').show();
-
-      let startTime = Date.now();
-      timerInterval = setInterval(function () {
-        let elapsedTime = Date.now() - startTime;
-        let seconds = Math.floor((elapsedTime / 1000) % 60);
-        let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
-
-        let formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        $('#video-timer').text(formattedTime);
-      }, 1000);
-    }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      $('#video-timer').hide().text('00:00');
-    }
-
-    function startCamera() {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: { facingMode: { exact: 'environment' } },
-          audio: false,
-        })
-        .then(function (mediaStream) {
-          stream = mediaStream;
-          const video = document.getElementById('camera-video');
-          video.srcObject = stream;
-          video.play();
-
-          mediaRecorder = new MediaRecorder(stream);
-          mediaRecorder.ondataavailable = function (event) {
-            if (event.data.size > 0) {
-              recordedChunks.push(event.data);
-            }
-          };
-
-          mediaRecorder.onstop = function () {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            recordedChunks = [];
-            const url = URL.createObjectURL(blob);
-            console.log(url);
-          };
-        })
-        .catch(function (error) {
-          console.error('Error accessing media devices.', error);
-        });
-    }
-
-    function stopCamera() {
-      const video = document.getElementById('camera-video');
-      video.pause();
-      video.srcObject = null;
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    }
 
     $('#attachPhotoVideoForNewOrder').on('click', function () {
       clickAnimate(this);
