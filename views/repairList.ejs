@@ -1164,28 +1164,30 @@
     callbackAfterWrite = function (data) {
       console.log('callbackAfterWrite', data.data['Дни']);
       let row = $('#' + data.data['uid']);
-
       const activeOrders = $(tableID).data('param').active;
       let dateInSeconds = 0;
+      const days = data.data['Дни'];
+      const datePlanned = new Date(data.data['ПлановаяДатаГотовности']);
+      const dateStart = new Date(data.data['Дата']);
+      const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
+      const overdue = false;
       if (activeOrders) {
         console.log('В роботі');
-        const dateInSecond = new Date(data.data['ПлановаяДатаГотовности']);
-        dateInSeconds = Math.floor(dateInSecond.getTime() / 1000);
-
-        if (data.data['Дни'] < 1) {
-          console.log('dangerColor');
-          row.find('.days').addClass('dangerColor');
-        }
+        dateInSeconds = Math.floor(datePlanned.getTime() / 1000);
+        overdue = days < 1;
       } else {
         console.log('Виконані замовлення');
-        const dateStart = new Date(data.data['Дата']);
-        const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
         dateInSeconds = Math.floor((dateFinish.getTime() * -1) / 1000);
-
         daysForDone = Math.floor((dateFinish.getTime() - dateStart.getTime()) / (1000 * 60 * 60 * 24));
         row.find('.days').text(daysForDone);
+        overdue = dateFinish < datePlanned;
       }
       row.find('.planeDate').text(dateInSeconds);
+
+      if (data.data['Дни'] < 1) {
+        console.log('dangerColor');
+        row.find('.days').addClass('dangerColor');
+      }
     };
 
     callbackSelectStanok = function (data) {
