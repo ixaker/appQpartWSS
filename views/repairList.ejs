@@ -385,10 +385,10 @@
       <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="display: none">
         <div class="dataCell textAlignCenter planeDate"></div>
       </td>
-      <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 16%">
+      <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 17%">
         <div class="dataCell textAlignCenter"></div>
       </td>
-      <td title="Тема" name="Тема" class="eye-container" style="width: 72%">
+      <td title="Тема" name="Тема" class="eye-container" style="width: 71%">
         <div class="dataCell topic"></div>
         <i class="bi bi-eye-slash eye"></i>
       </td>
@@ -537,7 +537,16 @@
 
     <div class="form-group">
       <label>Станок:</label>
-      <input type="text" readonly class="form-control" id="infoStanok" />
+      <!-- <input type="text" readonly class="form-control" id="infoStanok" /> -->
+      <input
+        type="text"
+        class="form-control"
+        id="infoStanok"
+        url="/app/autocompleteStanok"
+        aria-describedby="basic-addon3"
+        data-editable="true"
+        readonly
+      />
     </div>
 
     <div class="form-group">
@@ -791,6 +800,7 @@
     </div>
 
     <div id="showViews">показать просмотры</div>
+    <div id="avatarViewContainer"></div>
     <div id="historyContainer">
       <!-- history of current repair -->
     </div>
@@ -843,10 +853,16 @@
     color: darkgrey;
   }
 
-  .card-author {
+  .card-author,
+  .card-author:link,
+  .card-author:visited,
+  .card-author:hover,
+  .card-author:active {
     font-weight: bold;
     color: #8275eb;
     font-size: 0.9em;
+    text-decoration: none;
+    display: inline-block;
   }
 
   .card-avatar {
@@ -857,6 +873,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .card-avatar.selected {
+    border: 2px solid darkgreen;
   }
 
   .card-avatar img {
@@ -919,25 +939,57 @@
 
 <!-- Шаблон картки -->
 <script id="card-template" type="text/x-handlebars-template">
-  <div class='card {{additionalClass}}'>
-    <div class='card-avatar'>
+  {{#each this}}
+    <div class='card {{additionalClass}}' uid='{{avatar}}'>
+      <div class='card-avatar' uid='{{avatar}}'>
+        <img
+          src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
+          onerror="this.onerror=null;this.src='/img/avatar.png';"
+          alt='avatar'
+        />
+
+      </div>
+      <div class='card-body'>
+        <div class='card-head'>
+          <a href='tel:{{tel}}' class='card-author'>{{author}}</a>
+          <div class='card-date'>{{date}}</div>
+        </div>
+
+        <p class='card-text'>{{text}}</p>
+
+      </div>
+    </div>
+  {{/each}}
+</script>
+
+<style>
+  #avatarViewContainer {
+    display: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 5px;
+    overflow: auto;
+    padding-bottom: 5px;
+  }
+
+  #avatarViewContainer .card-avatar {
+    width: 40px;
+    height: 40px;
+  }
+</style>
+
+<script id="viewAvatar-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='card-avatar' uid='{{this}}'>
       <img
-        src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
+        src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{this}}.jpg'
         onerror="this.onerror=null;this.src='/img/avatar.png';"
         alt='avatar'
       />
-
     </div>
-    <div class='card-body'>
-      <div class='card-head'>
-        <div class='card-author'>{{author}}</div>
-        <div class='card-date'>{{date}}</div>
-      </div>
 
-      <p class='card-text'>{{text}}</p>
-
-    </div>
-  </div>
+  {{/each}}
 </script>
 
 <!-- Шаблон картки2 -->
@@ -1153,7 +1205,6 @@
     <div class='attachedImg'>
       <img src='{{src}}' src-source='{{source}}' class='imgSmall src-source' />
     </div>
-
   {{/each}}
 </script>
 
@@ -1166,6 +1217,7 @@
     initTables();
     initInputAutocomplete('#executor');
     initInputAutocomplete('#newOrderStanok');
+    initInputAutocomplete('#infoStanok');
 
     // callback при получении данных от сервера по wss
     callbackWSS = async function (data) {
@@ -1252,20 +1304,38 @@
 
       const myRow = data.data['Просмотры'].find(row => {
         console.log('row.Сотрудник.uid, user.uid ', row.Сотрудник.uid, user.uid);
-        return (row.Сотрудник.uid = user.uid);
+        return row.Сотрудник.uid === user.uid;
       });
-      console.log('myRow', myRow);
+      console.log('myRow', myRow, typeof myRow, myRow ? true : false);
 
-      const dateOfLastView = myRow.ДатаПросмотра;
+      if (myRow !== undefined) {
+        dateOfLastView = myRow.ДатаПросмотра;
+      } else {
+        dateOfLastView = '1970-01-01T00:00:00 000000';
+      }
+
       console.log('dateOfLastView', dateOfLastView);
 
       const dateOflastActivity = data.data['ДатаПоследнейАктивности'];
 
       if (dateOfLastView < dateOflastActivity) {
-        console.log('if statement ', dateOfLastView, dateOflastActivity, data.data['Тема']);
+        console.log(
+          'дата останнього перегляду: ',
+          dateOfLastView,
+          ' дата останньої активності: ',
+          dateOflastActivity,
+          data.data['Тема']
+        );
         console.log('Остання активність була пізніше за останній перегляд');
         row.find('.eye').show();
       } else {
+        console.log(
+          'дата останнього перегляду: ',
+          dateOfLastView,
+          ' дата останньої активності: ',
+          dateOflastActivity,
+          data.data['Тема']
+        );
         console.log('Останній перегляд був пізніший за останню активність');
         row.find('.eye').hide();
       }
@@ -1438,9 +1508,12 @@
     ////////////////////////////////////////////////
 
     // Обновляем таймер обратного отсчета каждую секунду
-    const countdown = setInterval(timer, 1000);
-
+    // const countdown = setInterval(timer, 1000);
+    callbackFuncSecondInterval = function () {
+      timer();
+    };
     function timer() {
+      console.log('start func timer');
       const strTargetDate = $('#infoDays').attr('date') || '';
 
       if (strTargetDate === '') {
@@ -1452,7 +1525,9 @@
       let now = new Date().getTime();
 
       const data = currentRowJQ.data('data');
+      console.log('currentRowJQ ', currentRowJQ);
       console.log('currentRowJQ', data.data.СтатусЗаявки);
+      console.log('data from timer', data);
       if (data.data.СтатусЗаявки === 'Выполнена') {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         plannedData = new Date(data.data['ПлановаяДатаГотовности']).getTime();
@@ -1585,23 +1660,42 @@
       $('#infoDays').attr('date', dateSrok);
       timer();
 
-      var cardTemplate = Handlebars.compile($('#card-template').html());
-      const historyContainer = $('#historyContainer');
-      const tasks = data.data['История'];
-      console.log('tasks', currentRowJQ.data('data').data['История']);
-      historyContainer.text('');
-      tasks.forEach(function (task) {
-        console.log('task', task.Просмотр);
-        var cardHtml = cardTemplate({
-          additionalClass: task.Просмотр ? 'view-card' : '',
-          avatar: task['Сотрудник']['uid'],
-          author: task['Сотрудник']['Наименование'],
-          text: task.Текст,
-          date: formatDateTime(task.Дата),
-        });
+      const cardsData = data.data['История'];
+      const cards = [];
 
-        historyContainer.prepend(cardHtml);
+      cardsData.forEach(element => {
+        console.log('Просмотр', element.Просмотр, 'Сотрудник', element['Сотрудник']['Наименование']);
+        const card = {
+          additionalClass: element.Просмотр ? 'view-card' : '',
+          text: element.Текст,
+          date: formatDateTime(element.Дата),
+          avatar: element['Сотрудник']['uid'],
+          author: element['Сотрудник']['Наименование'],
+          tel: element['Сотрудник']['ОсновнойНомерТелефона'],
+        };
+
+        if (element.Просмотр) {
+          if (user.uid === element['Сотрудник']['uid']) {
+            return;
+          }
+        }
+
+        cards.push(card);
       });
+
+      generateFromTemplate('#card-template', cards.reverse(), '#historyContainer');
+
+      const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
+      let uniqueUidsWithoutMe = uniqueUids.filter(item => item !== user.uid);
+      // uniqueUidsWithoutMe.push('btnAllUsers');
+      // for (let i = 0; i < 14; i++) {
+      //   uniqueUids.push('f9c18a95-123c-11ed-81c1-000c29006152');
+      // }
+
+      generateFromTemplate('#viewAvatar-template', uniqueUidsWithoutMe, '#avatarViewContainer');
+      // const btnAllUsers = $('.card-avatar[uid="btnAllUsers"]').find('img');
+      // btnAllUsers.attr('src', '/img/allUsers.png');
+      // btnAllUsers.parent().addClass('selected');
     }
 
     // click on tableRow
@@ -1620,52 +1714,57 @@
       const data = $(this).data('data');
 
       renderOrderPage(data);
-      sendDataTo1C(data, 'PATCH');
+      universalRequest('/app/repairOrder', 'PATCH', data);
 
       // const cardElement = $('#modal').first();
       // const unreadedElement = $('<div id="unreaded">непрочитані повідомлення</div>');
       // unreadedElement.insertAfter(cardElement);
 
-      // $.ajax({
-      //   url: '/app/repairOrder',
-      //   type: 'OPTIONS',
-      //   success: function (response, status, xhr) {
-      //     const allowedMethods = xhr.getResponseHeader('Allow');
-      //     console.log('Дозволені методи:', allowedMethods);
-      //   },
-      //   error: function (error) {
-      //     console.log('Error from options:', error);
-      //   },
-      // });
-
       timer();
     });
 
     function sendDataTo1C(data, method = 'GET', callback) {
-      $.ajax({
-        url: '/app/repairOrder',
-        type: method,
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (response) {
-          console.log('Response:', response);
+      universalRequest(
+        '/app/repairOrder',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback:', response);
           if (response.error) {
             toastr.error('Помилка звязку', response['Причина']);
           } else {
             toastr.success('Дані сохранено');
-            if (typeof callback === 'function') {
-              callback(response);
-            }
+            // if (typeof callback === 'function') {
+            //   callback(response);
+            // }
           }
         },
-        error: function (error) {
-          console.log('Error:', error);
+        function onError(error) {
+          console.log('Error callback:', error);
           toastr.error('Error', error);
         },
-      }).always(function () {
-        highlight = true;
+        function onComplete() {
+          console.log('Request completed');
+        }
+      );
+    }
+
+    function putDataTo1C(fieldId, fieldName) {
+      $(`${fieldId}`).on('blur', function () {
+        const data = currentRowJQ.data('data');
+        data.edited[`${fieldName}`] = $(`${fieldId}`).attr('uid');
+        console.log(fieldName, data.edited);
+        console.log('putDataTo1C data=', data);
+        sendDataTo1C(data, 'PUT');
       });
     }
+
+    putDataTo1C('#infoStanok', 'Станок');
+    // putDataTo1C('#executor', 'Ответственный');
+    // putDataTo1C('#status', 'СтатусЗаявки');
+    // putDataTo1C('#difficultButton', 'Сложность');
+    // putDataTo1C('#sendComment', 'Комментарий');
 
     $('#executor').on('blur', function () {
       const data = currentRowJQ.data('data');
@@ -1674,7 +1773,6 @@
       sendDataTo1C(data, 'PUT');
     });
 
-    // handle select on status
     $('#status').on('change', function () {
       const data = currentRowJQ.data('data');
       data.edited['СтатусЗаявки'] = $(this).val();
@@ -1682,7 +1780,6 @@
       sendDataTo1C(data, 'PUT');
     });
 
-    // handle select on status
     $('#difficultButton').on('change', function () {
       const data = currentRowJQ.data('data');
       data.edited['Сложность'] = $(this).val();
@@ -1700,25 +1797,27 @@
       }
       console.log(data.edited);
 
-      $.ajax({
-        url: '/app/repairOrder',
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (response) {
-          console.log('Response:', response);
-          if (response.error) {
-            toastr.error('Помилка', response['Причина']);
-          } else {
-            toastr.success('Данні сохранено');
-            $('#comment').val('');
-          }
-        },
-        error: function (error) {
-          console.log('Error:', error);
-          toastr.error('Error', error);
-        },
-      });
+      sendDataTo1C(data, 'PUT');
+
+      //   $.ajax({
+      //     url: '/app/repairOrder',
+      //     type: 'PUT',
+      //     contentType: 'application/json',
+      //     data: JSON.stringify(data),
+      //     success: function (response) {
+      //       console.log('Response:', response);
+      //       if (response.error) {
+      //         toastr.error('Помилка', response['Причина']);
+      //       } else {
+      //         toastr.success('Данні сохранено');
+      //         $('#comment').val('');
+      //       }
+      //     },
+      //     error: function (error) {
+      //       console.log('Error:', error);
+      //       toastr.error('Error', error);
+      //     },
+      //   });
     });
 
     // click on button cancelInfo
@@ -1797,12 +1896,27 @@
       const viewsVisible = $('.view-card').is(':visible');
 
       if (viewsVisible) {
+        $('#avatarViewContainer').hide();
         $('.view-card').hide();
         button.text('показать просмотры');
       } else {
+        $('#avatarViewContainer').css('display', 'flex');
         $('.view-card').css('display', 'flex');
         button.text('скрыть просмотры');
       }
+    });
+
+    $('#avatarViewContainer').on('click', '.card-avatar', function () {
+      clickAnimate(this);
+      let uid = $(this).attr('uid');
+      if ($(this).hasClass('selected')) {
+        uid = '';
+      }
+      $(`#historyContainer .view-card`).css('display', 'flex');
+      $(`.card-avatar`).removeClass('selected');
+      $(`.card-avatar[uid="${uid}"]`).addClass('selected');
+      $(`#historyContainer .view-card[uid]:not([uid="${uid}"])`).hide();
+      console.log($(`#historyContainer .view-card[uid]:not([uid="${uid}"])`));
     });
 
     $('#btnAddZakupka').on('click', function () {

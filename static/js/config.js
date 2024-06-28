@@ -324,5 +324,63 @@ function generateFromTemplate(idTemplate, data, idParent) {
 }
 
 
+// example of usage function
+// universalRequest(
+//     '/app/someEndpoint', // URL
+//     'POST',              // Метод
+//     { key: 'value' },    // Тело запроса
+//     { param1: 'value1', param2: 'value2' }, // Параметры
+//     function onSuccess(response) {
+//         console.log('Success callback:', response);
+//     },
+//     function onError(error) {
+//         console.log('Error callback:', error);
+//     },
+//     function onComplete() {
+//         console.log('Request completed');
+//     }
+// );
 
+function universalRequest(url, method = 'GET', payload = {}, params = {}, onSuccess, onError, onComplete) {
+    console.log('universalRequest', url, method, payload, params);
 
+    let queryString = '';
+    if (params && typeof params === 'object') {
+        queryString = '?' + $.param(params);
+    }
+
+    try {
+        $.ajax({
+            url: url + queryString,
+            type: method,
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (response) {
+                try {
+                    if (typeof onSuccess === 'function') { onSuccess(response); }
+                } catch (callbackError) {
+                    console.error('Callback Error:', callbackError);
+                    if (typeof onError === 'function') { onError(callbackError); }
+                }
+            },
+            error: function (error) {
+                try {
+                    if (typeof onError === 'function') { onError(error); }
+                } catch (callbackError) {
+                    console.error('Callback Error:', callbackError);
+                    if (typeof onError === 'function') { onError(callbackError); }
+                }
+            },
+        }).always(function () {
+            try {
+                if (typeof onComplete === 'function') { onComplete(); }
+            } catch (callbackError) {
+                console.error('Callback Error:', callbackError);
+                if (typeof onError === 'function') { onError(callbackError); }
+            }
+        });
+    } catch (ajaxError) {
+        console.error('AJAX Error:', ajaxError);
+        if (typeof onError === 'function') { onError(ajaxError); }
+    }
+}
