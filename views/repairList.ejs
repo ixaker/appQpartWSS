@@ -1513,7 +1513,6 @@
       timer();
     };
     function timer() {
-      console.log('start func timer');
       const strTargetDate = $('#infoDays').attr('date') || '';
 
       if (strTargetDate === '') {
@@ -1525,9 +1524,6 @@
       let now = new Date().getTime();
 
       const data = currentRowJQ.data('data');
-      console.log('currentRowJQ ', currentRowJQ);
-      console.log('currentRowJQ', data.data.СтатусЗаявки);
-      console.log('data from timer', data);
       if (data.data.СтатусЗаявки === 'Выполнена') {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         plannedData = new Date(data.data['ПлановаяДатаГотовности']).getTime();
@@ -1567,8 +1563,16 @@
       }
     }
 
+    function hideAvatarViewContainer() {
+      console.log('hideAvatarViewContainer');
+      $('#avatarViewContainer').hide();
+      $('.view-card').css('display', 'none');
+      $('#showViews').text('показать просмотры');
+    }
+
     function renderOrderPage(data) {
       console.log('start renderOrderPage', data);
+      hideAvatarViewContainer();
 
       const uid = data.data.uid;
       const orderNum = data.data['Номер'].slice(-4);
@@ -1664,7 +1668,6 @@
       const cards = [];
 
       cardsData.forEach(element => {
-        console.log('Просмотр', element.Просмотр, 'Сотрудник', element['Сотрудник']['Наименование']);
         const card = {
           additionalClass: element.Просмотр ? 'view-card' : '',
           text: element.Текст,
@@ -1896,9 +1899,7 @@
       const viewsVisible = $('.view-card').is(':visible');
 
       if (viewsVisible) {
-        $('#avatarViewContainer').hide();
-        $('.view-card').hide();
-        button.text('показать просмотры');
+        hideAvatarViewContainer();
       } else {
         $('#avatarViewContainer').css('display', 'flex');
         $('.view-card').css('display', 'flex');
