@@ -1435,7 +1435,7 @@
       $('#newOrderTopic').val('');
       $('#newOrderText').val('');
       $('#attachedFilesForNewOrder').empty();
-      history.pushState({ page: 'newOrder' }, '', '#newOrder');
+      history.pushState({ page: 'newOrder' }, '', '');
 
       // $('#disabledOverlay').css('display', 'flex');
 
@@ -1810,7 +1810,7 @@
       renderOrderPage(data);
       universalRequest('/app/repairOrder', 'PATCH', data);
 
-      history.pushState({ page: 'order', uid: data.data.uid }, '', `#order/` + data.data.uid);
+      history.pushState({ page: 'order', uid: data.data.uid }, '', '');
 
       timer();
     });
@@ -1824,11 +1824,18 @@
         switch (state.page) {
           case 'newOrder':
             console.log('newOrder0');
+            closeAll();
             openFormOrder();
             break;
           case 'order':
             console.log('order');
+            closeAll();
             openOrder();
+            break;
+          case 'formZakupka':
+            console.log('formZakupka');
+            closeAll();
+            addZakupka();
             break;
           case 'someOtherState':
             break;
@@ -2071,6 +2078,11 @@
       // console.log($(`#historyContainer .view-card[uid]:not([uid="${uid}"])`));
     });
 
+    function addZakupka() {
+      $('#modal').hide();
+      $('#formZakupka').show();
+    }
+
     $('#btnAddZakupka').on('click', function () {
       $('#newZakupkaText').val('');
       setValid('#textNew', false);
@@ -2080,10 +2092,8 @@
       $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-secondary');
       statusZakupka = '';
 
-      $('#modal').hide();
-      $('#formZakupka').show();
-      history.pushState({ page: 'zakupka' }, '', 'zakupka');
-
+      addZakupka();
+      history.pushState({ page: 'formZakupka' }, '', '');
       $('#newZakupkaText').focus();
     });
 
