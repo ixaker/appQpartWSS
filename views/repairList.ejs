@@ -252,7 +252,7 @@
 
   <div id="attachedFilesForNewOrder"></div>
 
-  <div class="input-group" id="orderButtonGroup">
+  <div class="input-group" id="newOrderButtonGroup">
     <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
     <button type="button" class="btn btn-secondary btn-lg" id="cancelOrder">Отмена</button>
     <button type="button" class="btn btn-success btn-lg" id="saveOrder">Сохранить</button>
@@ -357,6 +357,13 @@
       display: flex;
       justify-content: flex-end;
       flex-direction: column;
+      gap: 10px;
+    }
+
+    #newOrderButtonGroup {
+      display: flex;
+      justify-content: flex-end;
+      flex-direction: row;
       gap: 10px;
     }
 
