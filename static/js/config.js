@@ -316,7 +316,6 @@ function requestTo1C(patch, method, payload, callback) {
 }
 
 function generateFromTemplate(idTemplate, data, idParent) {
-    console.log('generateFromTemplate', idTemplate, idParent, data);
     const templateHTML = $(idTemplate).html();
     const template = Handlebars.compile(templateHTML);
     const html = template(data);
