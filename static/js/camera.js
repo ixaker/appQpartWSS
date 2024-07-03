@@ -51,7 +51,7 @@ function startAttachPhotoVideo(btnAttach) {
             img.appendTo(attachedImg);
             img.data('blob', blob);
 
-            const btn = $('<i class="bi bi-trash deleteBtn" onclick="deleteMeParent(this)"></i>');
+            const btn = $('<i class="bi bi-trash deleteBtn" ></i>');
             btn.addClass('attachedImgBtn');
             btn.appendTo(attachedImg);
 
