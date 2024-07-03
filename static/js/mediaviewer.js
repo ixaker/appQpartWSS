@@ -7,58 +7,6 @@ function mediaviewer(element) {
     const $attachedImgs = $('.attachedImg');
     let currentIndex = $attachedImgs.index($currentElement);
 
-    const styles = `
-        .media-viewer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .media-viewer-overlay img,
-        .media-viewer-overlay video {
-            width: 100%;
-        }
-        .media-viewer-close,
-        .media-viewer-prev,
-        .media-viewer-next {
-            position: fixed;
-            top: 50%;
-            font-size: xxx-large;
-            color: darkgreen;
-            cursor: pointer;
-            z-index: 10000;
-            background-color: lightgrey;
-            opacity: 0.8;
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .media-viewer-close {
-            top: 10px;
-            right: 20px;
-            transform: none;
-        }
-        .media-viewer-prev {
-            left: 20px;
-        }
-        .media-viewer-next {
-            right: 20px;
-        }
-    `;
-
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = styles;
-    document.head.appendChild(styleSheet);
-
     const $overlay = $('<div class="media-viewer-overlay"></div>');
 
     const $closeBtn = $('<i class="bi bi-x-lg media-viewer-close"></i>');
@@ -99,9 +47,14 @@ function mediaviewer(element) {
 
     $('body').append($overlay);
 
+    function closeViewer() {
+        $overlay.remove();
+        history.replaceState(null, '', window.location.pathname);
+    }
+
     $closeBtn.on('click', function () {
         clickAnimate(this);
-        $overlay.remove();
+        closeViewer();
     });
 
     $prevBtn.on('click', function () {
@@ -125,41 +78,50 @@ function mediaviewer(element) {
     });
 
     const overlayElement = $overlay.get(0);
-    // const hammer = new Hammer(overlayElement);
+    const hammer = new Hammer(overlayElement);
 
-    // hammer.on('swipeleft', function () {
-    //     clickAnimate(overlayElement);
-    //     console.log('swipe left');
+    hammer.on('swipeleft', function () {
+        clickAnimate(overlayElement);
+        console.log('swipe left');
 
-    //     currentIndex = (currentIndex < $attachedImgs.length - 1) ? currentIndex + 1 : 0;
-    //     const nextImg = $attachedImgs.eq(currentIndex).find('.src-source');
-    //     const blob = nextImg.attr('src-source');
-    //     console.log('nextBtn', nextImg, blob);
-    //     updateOverlayContent(blob, nextImg);
-    // });
+        currentIndex = (currentIndex < $attachedImgs.length - 1) ? currentIndex + 1 : 0;
+        const nextImg = $attachedImgs.eq(currentIndex).find('.src-source');
+        const blob = nextImg.attr('src-source');
+        console.log('nextBtn', nextImg, blob);
+        updateOverlayContent(blob, nextImg);
+    });
 
-    // hammer.on('swiperight', function () {
-    //     clickAnimate(overlayElement);
-    //     console.log('swipe right');
-    //     console.log(this);
-    //     currentIndex = (currentIndex > 0) ? currentIndex - 1 : $attachedImgs.length - 1;
-    //     const prevImg = $attachedImgs.eq(currentIndex).find('.src-source');
-    //     const blob = prevImg.attr('src-source');
-    //     console.log('nextBtn', prevImg, blob);
-    //     updateOverlayContent(blob, prevImg);
-    // });
+    hammer.on('swiperight', function () {
+        clickAnimate(overlayElement);
+        console.log('swipe right');
+        console.log(this);
+        currentIndex = (currentIndex > 0) ? currentIndex - 1 : $attachedImgs.length - 1;
+        const prevImg = $attachedImgs.eq(currentIndex).find('.src-source');
+        const blob = prevImg.attr('src-source');
+        console.log('nextBtn', prevImg, blob);
+        updateOverlayContent(blob, prevImg);
+    });
+
+    history.pushState({ page: 'mediaViewer' }, '', '');
+    window.addEventListener('popstate', function (event) {
+        if (event.state && event.state.page === 'mediaViewer') {
+            console.log('Back to media viewer');
+        } else {
+            closeViewer();
+        }
+    });
 
     // let nextEvent = '';
-    // hammer.on('panstart', function (event) {
-    //     console.log('event.center.x', event.center.x);
-    //     const end = event.center.x;
-    //     const screenWidth = window.innerWidth;
-    //     console.log('panstart screenWidth', screenWidth);
-    //     if (end < 50 || end > (screenWidth - 50)) {
-    //         console.log('overlay close');
-    //         nextEvent = 'close';
-    //     }
-    // })
+    hammer.on('panmove', function (event) {
+        console.log('event.center.x', event.center.x);
+        //     const end = event.center.x;
+        //     const screenWidth = window.innerWidth;
+        //     console.log('panstart screenWidth', screenWidth);
+        //     if (end < 50 || end > (screenWidth - 50)) {
+        //         console.log('overlay close');
+        //         nextEvent = 'close';
+        //     }
+    })
 
     // hammer.on('panend', function (event) {
     //     if (nextEvent === 'close') $overlay.remove();
