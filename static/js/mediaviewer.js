@@ -56,8 +56,7 @@ function mediaviewer(element) {
     `;
 
     const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = styles;
+    styleSheet.textContent = styles;
     document.head.appendChild(styleSheet);
 
     const $overlay = $('<div class="media-viewer-overlay"></div>');
@@ -93,16 +92,7 @@ function mediaviewer(element) {
             if (newElem.prop('tagName') === 'VIDEO') {
                 newElem.attr('autoplay', '');
             }
-
         }
-
-
-
-        /*         if (src.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-                    $overlay.append('<img src="' + src + '">');
-                } else if (src.match(/\.(mp4|webm|ogg)$/) != null) {
-                    $overlay.append('<video src="' + src + '" controls autoplay></video>');
-                } */
     }
 
     updateOverlayContent(srcSource, $img);
@@ -133,4 +123,46 @@ function mediaviewer(element) {
         console.log('nextBtn', nextImg, blob);
         updateOverlayContent(blob, nextImg);
     });
+
+    const overlayElement = $overlay.get(0);
+    // const hammer = new Hammer(overlayElement);
+
+    // hammer.on('swipeleft', function () {
+    //     clickAnimate(overlayElement);
+    //     console.log('swipe left');
+
+    //     currentIndex = (currentIndex < $attachedImgs.length - 1) ? currentIndex + 1 : 0;
+    //     const nextImg = $attachedImgs.eq(currentIndex).find('.src-source');
+    //     const blob = nextImg.attr('src-source');
+    //     console.log('nextBtn', nextImg, blob);
+    //     updateOverlayContent(blob, nextImg);
+    // });
+
+    // hammer.on('swiperight', function () {
+    //     clickAnimate(overlayElement);
+    //     console.log('swipe right');
+    //     console.log(this);
+    //     currentIndex = (currentIndex > 0) ? currentIndex - 1 : $attachedImgs.length - 1;
+    //     const prevImg = $attachedImgs.eq(currentIndex).find('.src-source');
+    //     const blob = prevImg.attr('src-source');
+    //     console.log('nextBtn', prevImg, blob);
+    //     updateOverlayContent(blob, prevImg);
+    // });
+
+    // let nextEvent = '';
+    // hammer.on('panstart', function (event) {
+    //     console.log('event.center.x', event.center.x);
+    //     const end = event.center.x;
+    //     const screenWidth = window.innerWidth;
+    //     console.log('panstart screenWidth', screenWidth);
+    //     if (end < 50 || end > (screenWidth - 50)) {
+    //         console.log('overlay close');
+    //         nextEvent = 'close';
+    //     }
+    // })
+
+    // hammer.on('panend', function (event) {
+    //     if (nextEvent === 'close') $overlay.remove();
+    // })
+
 }
