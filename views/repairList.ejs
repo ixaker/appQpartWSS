@@ -1910,16 +1910,17 @@
 
     $('#done').on('change', function () {
       const data = currentRowJQ.data('data');
-      const value = $(this).is(':checked');
-      if (data.data['СтатусЗаявки'] === 'Ремонт' && value) {
-        toastr.error('Поменяйте статус на "Выполнен"');
-        $('#done').prop('checked', false);
-        return;
-      }
+      const isChecked = $(this).is(':checked');
+      // if (data.data['СтатусЗаявки'] === 'Ремонт' && value) {
+      //   toastr.error('Поменяйте статус на "Выполнен"');
+      //   $('#done').prop('checked', false);
+      //   return;
+      // }
 
       if (!$(this).is(':checked')) {
       }
       data.edited['РемонтЗавершен'] = $(this).is(':checked');
+      data.edited['СтатусЗаявки'] = isChecked ? 'Выполнена' : 'Ремонт';
       console.log('checkbox ремонт завершен: ', $(this).val());
       sendDataTo1C(data, 'PUT');
     });
