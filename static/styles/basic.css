@@ -334,7 +334,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 #toast-container > .toast-error {
-  font-size: 1.5em;
+  /* font-size: 1.5em; */
   width: 500px;
   max-width: 500px;
 }
