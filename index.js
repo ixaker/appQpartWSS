@@ -461,7 +461,11 @@ app.get('/zakupka', async function (req, res) {
 });
 
 app.get('/repairList', async function (req, res) {
-  return res.render('repairList');
+  res.render('repairList', {
+    version: version,
+    token: '',
+    test: test,
+  });
 });
 
 
