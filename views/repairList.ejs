@@ -1,7 +1,20 @@
 <style>
+  #content {
+    max-width: 500px;
+    min-width: 370px;
+    margin: 0 auto;
+  }
   .titlePage {
     font-size: x-large;
     position: relative;
+  }
+
+  thead {
+    display: none;
+  }
+
+  td {
+    height: 0;
   }
 
   /*   .titlePage::after {
@@ -55,7 +68,6 @@
 
   .commandBtn {
     margin-left: auto;
-    margin-right: 10px;
     font-size: xxx-large;
     color: darkgreen;
     line-height: 1em;
@@ -140,6 +152,7 @@
 
   table {
     font-size: 1.7em;
+    background-color: inherit;
   }
 
   table th {
@@ -147,8 +160,7 @@
   }
 
   table td {
-    padding: 5px;
-    line-height: 2.5em;
+    border: none;
   }
 
   #commandPanel {
@@ -165,28 +177,31 @@
     flex-wrap: wrap;
   }
 
-  .btnContainer {
+  .titleContainer {
+    align-self: flex-start;
   }
 
-  .pressed {
-    color: darkorange;
-  }
-
-  #btnAdd {
-    margin-left: auto;
-    margin-right: 10px;
+  .commandRow {
+    display: flex;
+    position: relative;
+    align-items: center;
+    align-self: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
   }
 
   .groupSearch {
-    width: auto;
+    width: 170px;
     border: 1px solid #aaa;
     background-color: #fff;
     display: flex;
     align-items: center;
-    flex-grow: 2;
-    font-size: 1em;
-    max-width: 240px;
-    margin-left: auto;
+    font-size: large;
+  }
+
+  #groupSearch {
+    margin: 0;
   }
 
   .groupSearch:focus-within {
@@ -213,6 +228,89 @@
 
   .groupSearch input {
     border: none;
+  }
+
+  mark {
+    background: yellow;
+    padding: 0;
+  }
+
+  .btnContainer {
+    margin-left: auto;
+    margin-right: 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .commandImg {
+    height: 100%;
+    width: 48px;
+  }
+
+  #sortContainer {
+    position: relative;
+  }
+
+  #sortList {
+    display: none;
+    height: 0;
+    position: absolute;
+    font-size: x-large;
+    width: max-content;
+    padding: 10px;
+    top: 100%;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 01s, visibility 0.3s, transform 0.3s ease-out;
+    transform: translateY(-10px);
+  }
+
+  #sortList.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(5px);
+    height: auto;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  #sortList ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  #sortList li {
+    padding: 10px 20px 10px 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+  }
+
+  #sortList li:hover {
+    background-color: #f0f0f0;
+  }
+
+  #sortList li::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: darkgreen;
+  }
+
+  .pressed {
+    color: darkorange;
+  }
+
+  #btnAdd {
+    margin-left: auto;
   }
 
   .redText {
@@ -248,7 +346,12 @@
     placeholder="Тема заявки..."
     maxlength="25"
   ></textarea>
-  <textarea class="applicationText form-control" id="newOrderText" rows="3" placeholder="Текст заявки..."></textarea>
+  <textarea
+    class="applicationText form-control"
+    id="newOrderText"
+    rows="3"
+    placeholder="Текст заявки (необязательно)..."
+  ></textarea>
 
   <div id="attachedFilesForNewOrder"></div>
 
@@ -268,14 +371,41 @@
 
 <div id="main">
   <div id="commandPanel" class="commandPanel">
-    <div>
+    <div class="titleContainer">
       <h4 class="titlePage" style="line-height: normal">Заявки на ремонт</h4>
       <div id="statusMark" class="status">в работе</div>
     </div>
 
-    <div class="btnContainer">
-      <i class="bi bi-check-circle commandBtn" id="btnDone"></i>
-      <i class="bi bi-plus-circle commandBtn" id="btnAdd"></i>
+    <div class="commandRow">
+      <div class="input-group-search rounded groupSearch" id="groupSearch">
+        <input
+          type="search"
+          id="search"
+          class="form-control rounded"
+          placeholder="Поиск"
+          aria-label="Search"
+          aria-describedby="search-addon"
+        />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <div class="btnContainer">
+        <div id="sortContainer">
+          <img src="img/sort.svg?v=<%= version %>" alt="sort icon" class="commandImg" id="btnSort" />
+          <div id="sortList">
+            <ul>
+              <li id="sortSrok">срок</li>
+              <li id="sortStatus">статус</li>
+              <li id="sortStanok">станок</li>
+              <li id="sortDate">дата</li>
+            </ul>
+          </div>
+        </div>
+        <img src="img/check-circle.svg?v=<%= version %>" alt="check icon" class="commandImg commandBtn" id="btnDone" />
+        <img src="img/plus-circle.svg?v=<%= version %>" alt="plus icon" class="commandImg commandBtn" id="btnAdd" />
+      </div>
     </div>
   </div>
 
@@ -420,7 +550,7 @@
     }
   </style>
 
-  <table
+  <!-- <table
     id="ЗаявкаНаРемонт"
     name="ЗаявкаНаРемонт"
     url="/app/repairOrder/"
@@ -441,7 +571,7 @@
       <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="width: 17%">
         <div class="dataCell textAlignCenter"></div>
       </td>
-      <td title="Тема" name="Тема" class="eye-container" style="width: 71%">
+      <td title="Тема" name="Тема" class="order eye-container" style="width: 71%">
         <div class="dataCell topic"></div>
         <i class="bi bi-eye-slash eye"></i>
         <i class="bi bi-check done"></i>
@@ -449,6 +579,43 @@
       <td title="Дни" name="Дни" style="width: 12%">
         <div class="dataCell textAlignCenter days"></div>
       </td>
+    </tr>
+
+    <tr id="stageRow" style="display: none">
+      <td colspan="7" style="background-color: aliceblue">
+        <div id="stageForm"></div>
+      </td>
+    </tr>
+  </table> -->
+
+  <table
+    id="ЗаявкаНаРемонт"
+    name="ЗаявкаНаРемонт"
+    url="/app/repairOrder/"
+    callbackBeforeInitTable="callbackBeforeDone"
+    filter="callbackFilter"
+    callbackAfterInitTable="callbackAfterDone"
+    addNevRow="callbackAddNewRow"
+    callbackAfterWrite="callbackAfterWrite"
+    append="up"
+    init
+    header
+    sort="0"
+  >
+    <tr class="config" style="display: none">
+      <td title="ПлановаяДатаГотовности" name="ПлановаяДатаГотовности" style="display: none" headerClass="srokSort">
+        <div class="dataCell textAlignCenter planeDate"></div>
+      </td>
+      <td title="Станок" name="Станок" key="ИнвентарныйНомер" style="display: none" headerClass="stanokSort">
+        <div class="dataCell textAlignCenter"></div>
+      </td>
+      <td title="СтатусЗаявки" name="СтатусЗаявки" style="display: none" headerClass="statusSort">
+        <div class="dataCell textAlignCenter"></div>
+      </td>
+      <td title="Дата" name="Дата" style="display: none" headerClass="dateSort">
+        <div class="dataCell textAlignCenter createDate"></div>
+      </td>
+      <td title="Тема" name="Тема" class="order" style="width: 60%"></td>
     </tr>
 
     <tr id="stageRow" style="display: none">
@@ -464,10 +631,6 @@
 <!-- modal block -->
 <style>
   #modal {
-    width: 100%;
-    max-width: 600px;
-    margin: auto;
-    padding: 0 10px;
   }
 
   .showModal {
@@ -1141,6 +1304,96 @@
   </div>
 </script>
 
+<!-- template for tile -->
+
+<style>
+  .tileContainer {
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 8px;
+    padding: 5px 5px 1px 5px;
+    box-shadow: 2px 3px 5px #999;
+  }
+
+  .separateDateLine {
+    display: flex;
+
+    font-size: small;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .visible {
+    display: flex;
+  }
+
+  .backgroundYellow {
+    background-color: lightyellow;
+  }
+
+  .tile1row {
+    display: flex;
+    font-size: large;
+    margin-bottom: 1px;
+  }
+
+  .tileStanok {
+    color: darkgreen;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .tileTopic {
+  }
+
+  .tile2row {
+    display: flex;
+    justify-content: space-between;
+    font-size: small;
+    color: darkgray;
+  }
+
+  .tileStatus {
+    width: 30%;
+  }
+
+  .tileZakupka {
+    width: 20%;
+  }
+  .tileTimer {
+    width: 40%;
+    text-align: end;
+  }
+
+  .tileEye {
+    width: 10%;
+    text-align: end;
+  }
+</style>
+
+<script id="tileTemplate" type="text/x-handlebars-template">
+  <div class='tileContainer {{doneClass}}'>
+
+    <div class='tile1row'>
+      <div class='tileStanok {{stanokClass}}'>{{stanok}}</div>
+      <div class='tileTopic'>{{topic}}</div>
+    </div>
+    <div class='tile2row'>
+      <div class='tileStatus'>{{status}}</div>
+      <div class='tileZakupka'><i class='bi bi-cart3'></i> {{readyZakupka}}/{{sumZakupka}}</div>
+      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{timer}}</div>
+      <div class='tileEye'>
+        {{#if showEyeIcon}}
+          <i class='bi bi-eye-slash'></i>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</script>
+
+<!-- template for order -->
 <script id="formTemplate" type="text/x-handlebars-template">
     <textarea class='form-control' id='newOrderText' rows='2' placeholder='нотатки...'></textarea>
     <div id='choiceDifficult'>
@@ -1325,13 +1578,33 @@
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {};
 
+    let previousDate = 0;
+    let previousShift = '';
+
+    let formatter = new Intl.DateTimeFormat('uk-UA', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
+    let timeFormatter = new Intl.DateTimeFormat('uk-UA', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+
     // callback после отрисовки таблицы
     callbackAfterDone = function (data) {
-      console.log('callback after', data['ВариантыСложности']);
+      console.log('callback afterDone', data.list);
       $('#difficultButton').html('');
       $.each(data['ВариантыСложности'], function (index, value) {
         $('#difficultButton').append(`<option value="${value.data['uid']}">${value.data['Наименование']}</option>`);
       });
+      const sort = $('#ЗаявкаНаРемонт').attr('sort');
+      if (sort === '3') {
+        makeDateSeparator();
+      }
+      $(tableID).attr('initDone', true);
     };
 
     // callback после вставки новой пустой строки, перед заполнением данными
@@ -1339,19 +1612,61 @@
       console.log('callbackAddNewRow', data);
     };
 
-    // callback после внесения изменений в строку с сервера
-    callbackAfterWrite = function (data) {
-      console.log('callbackAfterWrite', data.data['Дни']);
-      let row = $('#' + data.data['uid']);
-      const activeOrders = $(tableID).data('param').active;
-      let dateInSeconds = 0;
-      const days = data.data['Дни'];
-      console.log('days', days, data.data['Тема']);
+    function renderOrderTile() {}
+
+    function makeDateSeparator() {
+      console.log('makeDateSeparator sort attribute', $(tableID).attr('sort'));
+      $('.separateDateLine').remove();
+      if ($(tableID).attr('sort') !== '3') return;
+
+      let dataForSeparate = [];
+      $('#ЗаявкаНаРемонт tr').each(function (index, el) {
+        if ($(el).data('data') !== undefined) {
+          console.log('element', $(el).data('data').data);
+          dataForSeparate.push($(el).data('data'));
+        }
+      });
+
+      // let firstRow = $('#ЗаявкаНаРемонт tr:first-child .tileContainer');
+      // firstRow.find('.tileContainer').before(dateLine);
+
+      dataForSeparate.forEach(el => {
+        console.log('dataForSeparate.forEach el', el);
+
+        let date = new Date(el.data['Дата']);
+        let currentDate = formatter.format(date);
+        let currentTime = timeFormatter.format(date);
+        let currentHour = date.getHours();
+        let currentShift = '';
+
+        if (currentHour >= 7 && currentHour < 19) {
+          currentShift = 'Денна зміна';
+        } else {
+          currentShift = 'Нічна зміна';
+        }
+
+        let row = $('#' + el.data['uid']);
+
+        if (currentDate !== previousDate || currentShift !== previousShift) {
+          console.log('нова дата або зміна має бути тут');
+          let separateData = `${currentDate} - ${currentShift}`;
+
+          const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
+
+          row.find('.tileContainer').before(dateLine);
+        }
+
+        previousDate = currentDate;
+        previousShift = currentShift;
+      });
+    }
+
+    function makeDaysDanger(data, row, isOrderInWork, days) {
       const datePlanned = new Date(data.data['ПлановаяДатаГотовности']);
       const dateStart = new Date(data.data['Дата']);
       const dateFinish = new Date(data.data['ФактическаяДатаГотовности']);
       let overdue = false;
-      if (activeOrders) {
+      if (isOrderInWork) {
         console.log('В роботі');
         dateInSeconds = Math.floor(datePlanned.getTime() / 1000);
         overdue = days < 1;
@@ -1366,48 +1681,110 @@
         overdue = dateFinish > datePlanned;
       }
       row.find('.planeDate').text(dateInSeconds);
-
       if (overdue) {
-        console.log('dangerColor');
         row.find('.days').addClass('dangerColor');
       }
+    }
 
+    function rewriteDateInSeconds(data, row) {
+      const dateStart = new Date(data.data['Дата']);
+      dateInSeconds = Math.floor(dateStart.getTime() / 1000);
+      row.find('.createDate').text(dateInSeconds);
+    }
+
+    function hasNewChanges(data, row) {
       const myRow = data.data['Просмотры'].find(row => {
         console.log('row.Сотрудник.uid, user.uid ', row.Сотрудник.uid, user.uid);
         return row.Сотрудник.uid === user.uid;
       });
       console.log('myRow', myRow, typeof myRow, myRow ? true : false);
-
       if (myRow !== undefined) {
         dateOfLastView = myRow.ДатаПросмотра;
       } else {
         dateOfLastView = '1970-01-01T00:00:00 000000';
       }
-
       console.log('dateOfLastView', dateOfLastView);
-
       const dateOflastActivity = data.data['ДатаПоследнейАктивности'];
-
       if (dateOfLastView < dateOflastActivity) {
-        row.find('.eye').show();
+        return true;
       } else {
-        row.find('.eye').hide();
+        return false;
       }
+    }
 
-      // const doneStatus = data.data['СтатусЗаявки'];
+    function isOrderDone(data, row) {
+      let doneStatus = data.data['СтатусЗаявки'];
 
-      // if (doneStatus === 'Выполнена') {
-      //   console.log('статус заявки', doneStatus);
-      //   row.find('.done').show();
-      // } else {
-      //   row.find('.done').hide();
-      // }
+      if (doneStatus === 'Выполнена') {
+        console.log('статус заявки', doneStatus);
+        row.find('.done').show();
+      } else {
+        row.find('.done').hide();
+      }
+      return doneStatus === 'Выполнена';
+    }
 
-      // console.log(
-      //   'перегляди, ДатаПоследнейАктивности',
-      //   data.data['Просмотры'][0]['ДатаПросмотра'],
-      //   data.data['ДатаПоследнейАктивности']
-      // );
+    // callback после внесения изменений в строку с сервера
+    callbackAfterWrite = function (data) {
+      console.log('callbackAfterWrite', data.data['Дни']);
+      let row = $('#' + data.data['uid']);
+      let td = row.find('td.order');
+      const isOrderInWork = $(tableID).data('param').active;
+      let dateInSeconds = 0;
+
+      const stanok = data.data['Станок']['ИнвентарныйНомер'] || '';
+      let stanokClass = '';
+      if (stanok === '') stanokClass = 'displayNone';
+      const topic = data.data['Тема'];
+      const status = data.data['СтатусЗаявки'];
+      const days = data.data['Дни'];
+      let timerClass = data.data['РемонтЗавершен'] ? '' : 'activeTimer';
+      let dateSrok = new Date(data.data['ПлановаяДатаГотовности']).getTime();
+      let dateStart = new Date(data.data['Дата']);
+      let now = new Date().getTime();
+      if (data.data['РемонтЗавершен']) {
+        now = new Date(data.data['Дата']).getTime();
+
+        planeDate = new Date(data.data['ПлановаяДатаГотовности']).getTime();
+        dateSrok = new Date(data.data['ФактическаяДатаГотовности']).getTime();
+        if (planeDate < dateSrok) timerClass = 'dangerColor';
+      }
+      let sumZakupka = data.data['ЗаявкиНаЗакупку'].length || '0';
+      readyStatusZakupka = ['На складе', 'Выдано', 'Готово', 'Отменена'];
+      let readyZakupka =
+        data.data['ЗаявкиНаЗакупку'].filter(zakupka => {
+          if (readyStatusZakupka.includes(zakupka.data['СтатусЗаявки'])) {
+          } else {
+          }
+          return readyStatusZakupka.includes(zakupka.data['СтатусЗаявки']);
+        }).length || '0';
+      console.log('readyZakupka', readyZakupka);
+
+      const distance = dateSrok - now;
+      const strTimer = secondToStringTime(distance);
+      const doneClass = isOrderDone(data, row) ? 'backgroundYellow' : '';
+
+      const templateData = {
+        doneClass: doneClass,
+        stanok: stanok,
+        stanokClass: stanokClass,
+        topic: topic,
+        sumZakupka: sumZakupka,
+        readyZakupka: readyZakupka,
+        status: status,
+        dateSrok: dateSrok,
+        timerClass: timerClass,
+        timer: strTimer,
+        showEyeIcon: hasNewChanges(data, row),
+        dateStart: dateStart,
+      };
+
+      generateFromTemplate('#tileTemplate', templateData, td);
+      makeDaysDanger(data, row, isOrderInWork, days);
+      rewriteDateInSeconds(data, row);
+      if ($(tableID).attr('initDone')) {
+        makeDateSeparator();
+      }
     };
 
     callbackSelectStanok = function (data) {
@@ -1431,6 +1808,7 @@
     // клик по кнопке Добавить заявку
     $('#btnAdd').on('click', function (event) {
       console.log('add order click ----');
+      clickAnimate(this);
       $('#newOrderStanok').val('');
       $('#newOrderTopic').val('');
       $('#newOrderText').val('');
@@ -1455,6 +1833,7 @@
 
     $('#btnDone').on('click', function (event) {
       console.log('btnDone click');
+      clickAnimate(this);
       const activeOrders = !$(tableID).data('param').active;
 
       $('#btnDone').toggleClass('pressed', !activeOrders);
@@ -1465,6 +1844,93 @@
       initTable(tableID);
       console.log('state of params ', $(tableID).data('param').active);
     });
+
+    $('#search').on('input', function () {
+      console.log('search');
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
+      $('.rowData').each(function () {
+        console.log('row', this);
+
+        let found = true;
+        let elements = $(this)
+          .find('.tileStanok, .tileTopic')
+          .map(function () {
+            return { el: $(this) };
+          })
+          .get();
+
+        elements.forEach(element => {
+          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+          console.log('element.text', element.text);
+        });
+
+        if (searchTerms.length > 0) {
+          found = searchTerms.every(term => {
+            const regex = new RegExp(`(${term})`, 'gi');
+            return elements.some(element => {
+              if (element.text.match(regex)) {
+                element.text = element.text.replace(regex, '<mark>$1</mark>');
+                console.log('element.text', element.text);
+                return true;
+              }
+              return false;
+            });
+          });
+        }
+
+        $(this).find('.tileContainer').parent().toggleClass('hide', !found);
+        console.log('parent', $(this).find('.tileContainer').parent());
+
+        elements.forEach(element => {
+          element.el.html(element.text);
+        });
+
+        console.log('elements', elements);
+      });
+    });
+
+    $('#btnSort').on('click', function () {
+      let sortList = $('#sortList');
+      clickAnimate(this);
+
+      sortList.toggle();
+      sortList.toggleClass('active');
+    });
+
+    $(document).on('click', function () {
+      if (!$(event.target).closest('#sortList').length && !$(event.target).is('#btnSort')) {
+        $('#sortList').hide();
+        $('#sortList').removeClass('active');
+      }
+    });
+
+    function sortHandler(selector, sortValue, sortClass) {
+      $(selector).on('click', function () {
+        console.log('sortHandler', this);
+
+        const defaultSortDirection = '1';
+        const sort = $(tableID).attr('sort') || '0';
+        let sortDirection = $(tableID).attr('sortDirection') || defaultSortDirection;
+        if (sort === sortValue) {
+          sortDirection = sortDirection === '0' ? '1' : '0';
+        } else {
+          sortDirection = defaultSortDirection;
+        }
+
+        $(tableID).attr('sort', sortValue);
+        $(tableID).attr('sortDirection', sortDirection);
+
+        $(tableID).trigger('sorton', [[[parseInt(sortValue), parseInt(sortDirection)]]]);
+        // $(`th.${sortClass}`).click();
+        $('#sortList').hide();
+        $('#sortList').toggleClass('active');
+        makeDateSeparator();
+      });
+    }
+    sortHandler('#sortSrok', '0', 'srokSort');
+    sortHandler('#sortStatus', '2', 'statusSort');
+    sortHandler('#sortStanok', '1', 'stanokSort');
+    sortHandler('#sortDate', '3', 'dateSort');
 
     // click on saveOrder
     $('#saveOrder').on('click', function () {
@@ -1582,7 +2048,39 @@
     // const countdown = setInterval(timer, 1000);
     callbackFuncSecondInterval = function () {
       timer();
+      timerForList();
     };
+
+    function timerForList() {
+      const now = new Date().getTime();
+
+      $('.activeTimer').each((ind, element) => {
+        const date = parseInt($(element).attr('date'));
+        const distance = date - now;
+        if (distance < 24 * 60 * 60 * 1000) {
+          if (!$(element).hasClass('dangerColor')) {
+            console.log('has not class danger');
+            $(element).addClass('dangerColor');
+          }
+        }
+        const strTimer = secondToStringTime(distance);
+        $(element).text(strTimer);
+      });
+    }
+
+    function secondToStringTime(seconds) {
+      const days = Math.floor(seconds / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(Math.abs(seconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor(Math.abs(seconds % (1000 * 60 * 60)) / (1000 * 60));
+      const sec = Math.floor(Math.abs(seconds % (1000 * 60)) / 1000);
+
+      const hoursStr = String(hours).padStart(2, '0');
+      const minutesStr = String(minutes).padStart(2, '0');
+      const secondsStr = String(sec).padStart(2, '0');
+
+      return `${days} д ${hoursStr}:${minutesStr}:${secondsStr}`;
+    }
+
     function timer() {
       const strTargetDate = $('#infoDays').attr('date') || '';
 
@@ -1593,13 +2091,17 @@
 
       let targetDate = parseInt(strTargetDate);
       let now = new Date().getTime();
+      let days;
+      let plannedData;
 
       const data = currentRowJQ.data('data');
-      if (data.data.СтатусЗаявки === 'Выполнена') {
+      if (data.data.РемонтЗавершен) {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         plannedData = new Date(data.data['ПлановаяДатаГотовности']).getTime();
         finishDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         now = new Date(data.data['Дата']).getTime();
+        days = Math.floor((plannedData - now) / 86400000);
+
         $('#labelSrok').text('Выполнено за:');
       } else {
         $('#labelSrok').text('Осталось:');
@@ -1607,19 +2109,9 @@
 
       const distance = targetDate - now;
 
-      // Вычисляем дни, часы, минуты и секунды
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(Math.abs(distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor(Math.abs(distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor(Math.abs(distance % (1000 * 60)) / 1000);
+      $('#infoDays').val(secondToStringTime(distance));
 
-      const hoursStr = String(hours).padStart(2, '0');
-      const minutesStr = String(minutes).padStart(2, '0');
-      const secondsStr = String(seconds).padStart(2, '0');
-
-      $('#infoDays').val(`${days} дней ${hoursStr}:${minutesStr}:${secondsStr}`);
-
-      if (data.data.СтатусЗаявки === 'Выполнена') {
+      if (data.data.РемонтЗавершен) {
         if (plannedData < finishDate) {
           $('#infoDays').addClass('dangerColor');
         } else {
@@ -1710,8 +2202,6 @@
       const imgs = [];
 
       listImgZakupka.forEach(function (element) {
-        console.log('img', element);
-
         if (element.ИД === uid) {
           //const src = 'https://a7b85a942d4082eb.cdn.express/mediaFiles/363efa8a-3249-11ef-8255-000c29006152/363efa8a-3249-11ef-8255-000c29006152/0.png';
           const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
@@ -1943,6 +2433,7 @@
       console.log(data.edited);
 
       sendDataTo1C(data, 'PUT');
+      $('#comment').val('');
 
       //   $.ajax({
       //     url: '/app/repairOrder',
@@ -2012,8 +2503,9 @@
     <div id="statusZakupka">
       <label class="form-label">Приоритет:</label>
       <div class="btn-container">
-        <button type="button" class="btn btn-secondary" id="srochno">Срочно</button>
-        <button type="button" class="btn btn-secondary" id="now">На сейчас</button>
+        <input type="hidden" id="priority" name="priority" value="Нормально" />
+        <button type="button" class="btn btn-secondary" id="srochno" data-priority="Срочно">Срочно</button>
+        <button type="button" class="btn btn-secondary" id="now" data-priority="На сейчас">На сейчас</button>
       </div>
     </div>
 
@@ -2087,6 +2579,7 @@
     $('#btnAddZakupka').on('click', function () {
       $('#newZakupkaText').val('');
       setValid('#textNew', false);
+      let priority = '';
 
       $('#setPriorityZakupka').removeClass('btn-danger');
       $('#setPriorityZakupka').addClass('btn-secondary');
@@ -2105,7 +2598,7 @@
 
     function toggleStatusButtons(element) {
       if (element.hasClass('active')) {
-        priority = '';
+        priority = 'Нормально';
         element.removeClass('active btn-danger').addClass('btn-secondary');
         console.log('has class active');
       } else {
@@ -2117,7 +2610,7 @@
       console.log(element);
     }
 
-    let priority = '';
+    let priority = 'Нормально';
     $('#srochno').on('click', () => {
       priority = 'Срочно';
       toggleStatusButtons($('#srochno'));
@@ -2137,6 +2630,7 @@
       const data = {
         textNew: zakupkaText,
         priority: priority,
+        srochno: false,
         Основание: {
           ТипСсылки: currentRow.data['ТипСсылки'],
           uid: currentRow.data['uid'],
@@ -2152,6 +2646,7 @@
         $('#formZakupka').hide();
         $('#modal').show();
       });
+      priority = 'Нормально';
     });
 
     $('#setPriorityZakupka').on('click', function (event) {
