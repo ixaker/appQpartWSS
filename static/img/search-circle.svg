@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 48 48" width="48px" height="48px" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="color-0" gradientUnits="userSpaceOnUse" bx:pinned="true">
+      <stop style="stop-color: rgb(0, 100, 0);"/>
+    </linearGradient>
+  </defs>
+  <path d="M 24 45 C 7.857 45 -2.232 27.498 5.841 13.502 C 9.585 7.002 16.509 3 24 3 C 40.144 3 50.229 20.499 42.16 34.502 C 38.415 40.998 31.492 45 24 45 M 24 48 C 42.447 48 53.977 27.999 44.754 12 C 40.473 4.575 32.562 0 24 0 C 5.55 0 -5.979 19.998 3.248 36 C 7.529 43.425 15.439 48 24 48" style="fill: url('#color-0');"/>
+  <g>
+    <path d="M 22.105 31.302 C 27.295 31.302 31.503 27.038 31.503 21.779 C 31.503 16.52 27.295 12.256 22.105 12.256 C 16.915 12.256 12.707 16.52 12.707 21.779 C 12.707 27.038 16.915 31.302 22.105 31.302 Z" style="fill-rule: nonzero; paint-order: fill; fill: none; stroke-width: 3px; stroke: url('#color-0');"/>
+    <path d="M 36.007 36.081 L 29.504 29.491" style="fill-rule: nonzero; paint-order: fill; stroke-width: 3px; stroke: url('#color-0');"/>
+  </g>
+</svg>
