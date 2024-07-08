@@ -2111,9 +2111,10 @@
       let now = new Date().getTime();
       let days;
       let plannedData;
-
       const data = currentRowJQ.data('data');
-      if (data.data.РемонтЗавершен) {
+      const isRepairFinished = data.data.РемонтЗавершен;
+
+      if (isRepairFinished) {
         targetDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
         plannedData = new Date(data.data['ПлановаяДатаГотовности']).getTime();
         finishDate = new Date(data.data['ФактическаяДатаГотовности']).getTime();
@@ -2129,7 +2130,7 @@
 
       $('#infoDays').val(secondToStringTime(distance));
 
-      if (data.data.РемонтЗавершен) {
+      if (isRepairFinished) {
         if (plannedData < finishDate) {
           $('#infoDays').addClass('dangerColor');
         } else {
@@ -2571,15 +2572,19 @@
     });
 
     $('#avatarViewContainer').on('click', '.card-avatar', function () {
-      console.log('click on avatarViewContainer ');
       clickAnimate(this);
       let uid = $(this).attr('uid');
+      console.log('this user', this);
+
       if ($(this).hasClass('selected')) {
         uid = '';
         $('.view-card').css('display', 'flex');
         $(`.card-avatar`).removeClass('selected');
       } else {
+        $(`#historyContainer .view-card`).show();
         $(`#historyContainer .view-card[uid]:not([uid="${uid}"])`).hide();
+        $(`#avatarViewContainer .card-avatar[uid]:not([uid="${uid}"])`).removeClass('selected');
+        $(`.card-avatar`).removeClass('selected');
         $(`.card-avatar[uid="${uid}"]`).addClass('selected');
       }
       // $(`#historyContainer .view-card`).css('display', 'flex');
