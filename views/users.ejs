@@ -485,7 +485,7 @@
                   console.log('response from reader.onloadend', response);
                   NProgress.done();
 
-                  if (response.detectFace) {
+                  if (response.detectFace && response.user) {
                     $('#infoForSelectedUserForVideoScaner').text(response.similarity + ' - ' + response.user.count);
                     $('#' + selectedUID + ' .userCountFaceID').text('' + response.user.count + ' шт');
                     toastr['info']('OK');
