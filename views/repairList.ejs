@@ -309,6 +309,10 @@
     color: darkorange;
   }
 
+  .pressed path {
+    fill: orange;
+  }
+
   #btnAdd {
     margin-left: auto;
   }
@@ -1655,7 +1659,8 @@
           if (sortDirection === '1') {
             console.log('зворотнє сортування від більшої до меншої дати');
           }
-          let separateData = `${currentDate} - ${currentShift}`;
+          let arrow = directOrderSort ? '<i class="bi bi-arrow-down-circle">' : '<i class="bi bi-arrow-up-circle">';
+          let separateData = `${arrow}</i>&nbsp; ${currentDate} - ${currentShift}`;
 
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
 
@@ -1846,6 +1851,10 @@
       clickAnimate(this);
       const activeOrders = !$(tableID).data('param').active;
 
+      let newSrc = activeOrders
+        ? `img/check-circle.svg?v=<%= version %>`
+        : `img/check-circle-done.svg?v=<%= version %>`;
+      $('#btnDone').attr('src', newSrc);
       $('#btnDone').toggleClass('pressed', !activeOrders);
       $(tableID).data('param', { active: activeOrders });
       $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
