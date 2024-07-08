@@ -1923,11 +1923,10 @@
       }
     });
 
-    function sortHandler(selector, sortValue, sortClass) {
+    function sortHandler(selector, sortValue, defaultSortDirection) {
       $(selector).on('click', function () {
         console.log('sortHandler', this);
 
-        const defaultSortDirection = '1';
         const sort = $(tableID).attr('sort') || '0';
         let sortDirection = $(tableID).attr('sortDirection') || defaultSortDirection;
         if (sort === sortValue) {
@@ -1946,10 +1945,10 @@
         makeDateSeparator();
       });
     }
-    sortHandler('#sortSrok', '0', 'srokSort');
-    sortHandler('#sortStatus', '2', 'statusSort');
-    sortHandler('#sortStanok', '1', 'stanokSort');
-    sortHandler('#sortDate', '3', 'dateSort');
+    sortHandler('#sortSrok', '0', '0');
+    sortHandler('#sortStatus', '2', '0');
+    sortHandler('#sortStanok', '1', '0');
+    sortHandler('#sortDate', '3', '1');
 
     // click on saveOrder
     $('#saveOrder').on('click', function () {
