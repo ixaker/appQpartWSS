@@ -1322,7 +1322,8 @@
     font-size: small;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    margin-top: 10px;
   }
 
   .visible {
@@ -1578,9 +1579,6 @@
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {};
 
-    let previousDate = 0;
-    let previousShift = '';
-
     let formatter = new Intl.DateTimeFormat('uk-UA', {
       day: '2-digit',
       month: '2-digit',
@@ -1601,9 +1599,6 @@
         $('#difficultButton').append(`<option value="${value.data['uid']}">${value.data['Наименование']}</option>`);
       });
       const sort = $('#ЗаявкаНаРемонт').attr('sort');
-      if (sort === '3') {
-        makeDateSeparator();
-      }
       $(tableID).attr('initDone', true);
     };
 
@@ -1615,45 +1610,60 @@
     function renderOrderTile() {}
 
     function makeDateSeparator() {
-      console.log('makeDateSeparator sort attribute', $(tableID).attr('sort'));
+      let previousDate = 0;
+      let previousShift = '';
+      const sortValue = $(tableID).attr('sort');
+      const sortDirection = $(tableID).attr('sortDirection');
+      const directOrderSort = sortDirection === '0';
+
       $('.separateDateLine').remove();
-      if ($(tableID).attr('sort') !== '3') return;
+      if (sortValue !== '3') return;
 
       let dataForSeparate = [];
       $('#ЗаявкаНаРемонт tr').each(function (index, el) {
         if ($(el).data('data') !== undefined) {
-          console.log('element', $(el).data('data').data);
           dataForSeparate.push($(el).data('data'));
         }
       });
 
-      // let firstRow = $('#ЗаявкаНаРемонт tr:first-child .tileContainer');
-      // firstRow.find('.tileContainer').before(dateLine);
+      let handledData;
+      if (directOrderSort) {
+        handledData = dataForSeparate;
+      } else {
+        handledData = [...dataForSeparate].reverse();
+      }
 
-      dataForSeparate.forEach(el => {
-        console.log('dataForSeparate.forEach el', el);
-
+      handledData.forEach(el => {
         let date = new Date(el.data['Дата']);
         let currentDate = formatter.format(date);
-        let currentTime = timeFormatter.format(date);
         let currentHour = date.getHours();
         let currentShift = '';
 
-        if (currentHour >= 7 && currentHour < 19) {
+        if (currentHour >= 7 && currentHour <= 18) {
           currentShift = 'Денна зміна';
         } else {
           currentShift = 'Нічна зміна';
         }
 
         let row = $('#' + el.data['uid']);
+        const tileContainer = row.find('.tileContainer');
 
         if (currentDate !== previousDate || currentShift !== previousShift) {
-          console.log('нова дата або зміна має бути тут');
+          if (sortDirection === '0') {
+            console.log('пряме сортування від меньшої до більшої дати');
+          }
+          if (sortDirection === '1') {
+            console.log('зворотнє сортування від більшої до меншої дати');
+          }
           let separateData = `${currentDate} - ${currentShift}`;
 
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
 
-          row.find('.tileContainer').before(dateLine);
+          if (directOrderSort) {
+            tileContainer.before(dateLine);
+          } else {
+            tileContainer.after(dateLine);
+          }
         }
 
         previousDate = currentDate;
