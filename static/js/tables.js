@@ -418,6 +418,7 @@ function sort(table) {
         $(table).trigger("update");
 
         let columnSort = parseInt($(table).attr('sort'));
+        let sortDirection = parseInt($(table).attr('sortdirection') || '0');
 
         if ($(table)[0].hasAttribute('sort_2')) {
             let columnSort_2 = parseInt($(table).attr('sort_2'));
@@ -425,7 +426,7 @@ function sort(table) {
             $(table).trigger("sorton", [[[columnSort, 0], [columnSort_2, 0]]]);
             // console.log("sort_2", [[[columnSort, 0],[columnSort_2, 0]]]);
         } else {
-            $(table).trigger("sorton", [[[columnSort, 0]]]);
+            $(table).trigger("sorton", [[[columnSort, sortDirection]]]);
         }
     }
 }
