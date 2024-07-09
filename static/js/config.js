@@ -29,7 +29,7 @@ $(function () {
 
     let timeout = 20000;
     if (testEnvironment) timeout = 70000;
-    console.log('timeout', timeout);
+
     $.ajaxSetup({
         timeout: timeout,
         error: function (jqXHR, textStatus, errorThrown) {
@@ -215,14 +215,12 @@ function initInputAutocomplete(element) {
                     data: JSON.stringify(data),
                     contentType: 'application/json',
                     success: function (data) {
-                        console.log('Отримані дані:', data);
                         res(data);
                     }
                 });
             },
             select: function (event, ui) {
                 $(this).attr('uid', ui.item.uid);
-                console.log('ui.item.uid', ui.item.uid)
                 setValid(this, true);
                 $(this).blur();
                 callbackFromAttr(this, 'callbackSelect', ui.item)
@@ -231,7 +229,6 @@ function initInputAutocomplete(element) {
 
             minLength: 1
         }).on("input", function () {
-            console.log('Подія input');
             $(element).attr('uid', '');
             setValid(element, false);
         }).on("blur", function () {
@@ -253,8 +250,6 @@ function initInputTimeMask(element) {
             selectOnFocus: true,
             clearIfNotMatch: true,
             onComplete: function (cep) {
-                console.log('onComplete cep', cep);
-
                 if (cep != '00:00') {
                     setValid(element, true);
                 }
@@ -271,7 +266,7 @@ function initInputTimeMask(element) {
                     $(element).val(newCep);
                 }
 
-                console.log(cep, parts, hours);
+
             }
         });
     } catch (error) {
@@ -295,7 +290,7 @@ function requestTo1C(patch, method, payload, callback) {
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: function (response) {
-            console.log('Response:', response);
+
             if (response.error) {
                 toastr.error('Ошибка', response['Причина']);
             } else {
