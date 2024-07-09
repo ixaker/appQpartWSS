@@ -237,6 +237,7 @@ function initInputAutocomplete(element) {
         }).on("blur", function () {
             if (($(element).attr('uid') || '') === '') {
                 $(element).val('');
+                callbackFromAttr(this, 'callbackBlurIfNone', element)
             }
         });
     } catch (error) {
