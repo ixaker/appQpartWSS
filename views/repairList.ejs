@@ -341,8 +341,15 @@
     id="newOrderStanok"
     class="form-control"
     callbackSelect="callbackSelectStanok"
+    callbackBlurIfNone="callbackBlurIfNoneStanok"
     class="form-control mr-sm-2"
   />
+
+  <div id="listRepairForStanok">
+    <div class="title">Список вже створених по станку заявок:</div>
+    <div class="listRepair" id="listRepair"></div>
+  </div>
+
   <textarea
     class="applicationText form-control"
     id="newOrderTopic"
@@ -477,6 +484,40 @@
     }
 
     #orderTitle {
+    }
+
+    .repairContainer {
+      margin-bottom: 10px;
+      font-size: small;
+      display: flex;
+      margin-bottom: 5px;
+      font-size: medium;
+      display: flex;
+      list-style-type: none;
+      border: 1px solid lightgrey;
+      border-radius: 5px;
+      box-shadow: 2px 3px 5px #999;
+      padding: 5px;
+      background-color: white;
+    }
+
+    #listRepairForStanok {
+      display: none;
+      padding: 0px 30px;
+    }
+
+    #listRepairForStanok .title {
+      font-size: small;
+      font-weight: bold;
+    }
+
+    .listRepair {
+    }
+
+    .repairTopic {
+    }
+
+    .repairText {
     }
 
     #newOrderStanok {
@@ -1746,6 +1787,8 @@
       let td = row.find('td.order');
       const isOrderInWork = $(tableID).data('param').active;
       let dateInSeconds = 0;
+      const stanokUID = data.data.Станок.uid || '';
+      $(row).attr('stanok', stanokUID);
 
       const stanok = data.data['Станок']['ИнвентарныйНомер'] || '';
       let stanokClass = '';
@@ -1802,17 +1845,57 @@
       }
     };
 
+    function getDataOfRepair(rows, currentStanokUID) {
+      let dataOfRepair = [];
+      rows.each(function () {
+        const rowStanokUID = $(this).attr('stanok');
+        if (rowStanokUID === currentStanokUID) {
+          dataOfRepair.push($(this).data('data').data);
+        }
+      });
+      return dataOfRepair;
+    }
+
+    function renderListOfRepairStanok(data, containerId) {
+      const container = $(`#${containerId}`);
+      container.empty();
+      const title = $('<did>').addClass('title').text('Список уже созданых по станку заявок:');
+
+      if (data.length > 0) {
+        container.show();
+        container.append(title);
+        data.forEach((el, index) => {
+          const ulContainer = $('<ul>').addClass('repairContainer');
+          const liElement = $('<li>').addClass('repairTopic').html(`${el.Тема}. ${el.Описание} `);
+          ulContainer.append(liElement);
+          container.append(ulContainer);
+        });
+      }
+    }
+
     callbackSelectStanok = function (data) {
-      console.log('callbackSelectStanok', data.fullName);
+      console.log('callbackSelectStanok', data);
       setTimeout(() => {
         $('#newOrderStanok').val(data.fullName);
         $('#newOrderStanok').data(data);
+
+        const rows = $('#ЗаявкаНаРемонт tbody tr');
+        const stanokUID = data.uid;
+        const dataOfReair = getDataOfRepair(rows, stanokUID);
+        renderListOfRepairStanok(dataOfReair, 'listRepairForStanok');
+
+        console.log('rows', rows);
       }, 10);
+    };
+
+    callbackBlurIfNoneStanok = function (data) {
+      $('#listRepairForStanok').hide();
     };
 
     function openFormOrder() {
       $('#addOrder').show(0);
       $('#main').hide(0);
+      $('#listRepair').empty();
     }
 
     function closeFormOrder() {
@@ -2011,11 +2094,13 @@
       });
       NProgress.done();
       document.body.style.overflow = '';
+      $('#listRepairForStanok').hide();
     });
 
     // click on cancelOrder
     $('#cancelOrder').on('click', function () {
       clickAnimate(this);
+      $('#listRepairForStanok').hide();
       closeFormOrder();
     });
 
