@@ -1342,12 +1342,14 @@
       <div class='tileStatus'>{{status}}</div>
       <div class='tileZakupka'><i class='bi bi-cart3'></i> {{readyZakupka}}/{{sumZakupka}}</div>
       <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{timer}}</div>
+
       <div class='tileEye'>
         {{#if showEyeIcon}}
           <i class='bi bi-eye-slash'></i>
         {{/if}}
       </div>
     </div>
+    <!-- <div class='tile3row'>{{date}}</div> -->
   </div>
 </script>
 
@@ -1568,7 +1570,6 @@
 
     function makeDateSeparator() {
       let previousDate = '0.0.0';
-      let previousDay = 0;
       let previousShift = '';
       const sortValue = $(tableID).attr('sort');
       const sortDirection = $(tableID).attr('sortDirection');
@@ -1578,23 +1579,19 @@
       if (sortValue !== '3') return;
 
       let dataForSeparate = [];
-      $('#ЗаявкаНаРемонт tr').each(function (index, el) {
-        if ($(el).data('data') !== undefined) {
-          dataForSeparate.push($(el).data('data'));
-        }
-      });
+      $('#ЗаявкаНаРемонт tr.rowData').each(function (index, el) {
+        console.log('el', el);
 
-      // let handledData;
-      // if (directOrderSort) {
-      //   handledData = dataForSeparate;
-      // } else {
-      //   handledData = [...dataForSeparate].reverse();
-      // }
+        const data = $(el).data('data');
+        console.log('data', data);
+
+        data.element = el;
+        dataForSeparate.push(data);
+      });
 
       dataForSeparate.forEach(el => {
         let date = new Date(el.data['Дата']);
         let currentDate = formatter.format(date);
-        let currentDay = date.getDate();
         let currentHour = date.getHours();
         let currentShift = '';
 
@@ -1602,52 +1599,27 @@
           currentShift = 'Денна зміна';
         } else {
           currentShift = 'Нічна зміна';
+
+          if (currentHour < 7) {
+            date.getDay - 1;
+            date.setDate(date.getDate() - 1);
+            currentDate = formatter.format(date);
+          }
         }
 
-        let row = $('#' + el.data['uid']);
-        const tileContainer = row.find('.tileContainer');
+        let tileContainer = $(el.element).find('.tileContainer');
 
         function addSeparation(currentDate, currentShift) {
           let separateData = `${currentDate} - ${currentShift}`;
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
           tileContainer.before(dateLine);
-          console.log('ставимо роздільник');
         }
 
-        function dateToMilliseconds(dateString) {
-          const parts = dateString.split('.');
-          const dateObject = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-          return dateObject.getTime();
-        }
-
-        console.log(
-          'Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate))',
-          Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate))
-        );
-
-        console.log('зміна', currentShift);
-        console.log('дата', currentDate);
-        console.log('час', currentHour);
-
-        if (
-          currentShift === previousShift &&
-          Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate)) > 12 * 60 * 60 * 1000
-        ) {
-          let dateForSeparation = currentDate;
-          if (currentShift === 'Нічна зміна' && 0 > currentHour > 7) {
-            let dateObject = new Date(`${currentDate.split('.').reverse().join('-')}T00:00:00`);
-            dateObject.setDate(dateObject.getDate() - 1);
-            dateForSeparation = `${dateObject.getDate().toString().padStart(2, '0')}.${(dateObject.getMonth() + 1)
-              .toString()
-              .padStart(2, '0')}.${dateObject.getFullYear()}`;
-          }
-          addSeparation(dateForSeparation, currentShift);
-        } else if (currentShift !== previousShift || currentDate !== previousDate) {
+        if (currentShift !== previousShift || currentDate !== previousDate) {
           addSeparation(currentDate, currentShift);
         }
 
         previousDate = currentDate;
-        previousDay = currentDay;
         previousShift = currentShift;
       });
     }
@@ -1734,6 +1706,7 @@
       let timerClass = data.data['РемонтЗавершен'] ? '' : 'activeTimer';
       let dateSrok = new Date(data.data['ПлановаяДатаГотовности']).getTime();
       let dateStart = new Date(data.data['Дата']);
+      let dateStr = data.data['Дата'];
       let now = new Date().getTime();
       if (data.data['РемонтЗавершен']) {
         now = new Date(data.data['Дата']).getTime();
@@ -1770,6 +1743,7 @@
         timer: strTimer,
         showEyeIcon: hasNewChanges(data, row),
         dateStart: dateStart,
+        date: dateStr,
       };
 
       generateFromTemplate('#tileTemplate', templateData, td);
