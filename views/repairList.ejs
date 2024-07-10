@@ -1644,7 +1644,7 @@
         if (currentDate !== previousDate && currentShift === previousShift) {
           console.log('currentDate !== previousDate && currentShift === previousShift');
 
-          if (Math.abs(currentDay - previousDay) !== 1 && currentShift !== 'Нічна зміна') {
+          if (Math.abs(currentDay - previousDay) > 1) {
             addSeparation();
           }
         }
