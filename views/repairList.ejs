@@ -1625,8 +1625,11 @@
         ) {
           let dateForSeparation = currentDate;
           if (currentShift === 'Нічна зміна' && currentDate !== previousDate) {
-            dateForSeparation = new Date(currentDate);
-            dateForSeparation.setDate(currentDate.getDate() - 1);
+            let dateObject = new Date(`${currentDate.split('.').reverse().join('-')}T00:00:00`);
+            dateObject.setDate(dateObject.getDate() - 1);
+            dateForSeparation = `${dateObject.getDate().toString().padStart(2, '0')}.${(dateObject.getMonth() + 1)
+              .toString()
+              .padStart(2, '0')}.${dateObject.getFullYear()}`;
           }
           addSeparation(dateForSeparation, currentShift);
         } else if (currentShift !== previousShift || currentDate !== previousDate) {
