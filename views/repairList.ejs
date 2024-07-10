@@ -1608,7 +1608,14 @@
         const tileContainer = row.find('.tileContainer');
 
         function addSeparation() {
-          let separateData = `${currentDate} - ${currentShift}`;
+          let currentDateForSeparate;
+          if (currentShift === 'Нічна зміна' && 0 > currentHour > 7) {
+            currentDateForSeparate = new Date(currentDate);
+            currentDateForSeparate.setDate(currentDate.getDate() - 1);
+          } else {
+            currentDateForSeparate = currentDate;
+          }
+          let separateData = `${currentDateForSeparate} - ${currentShift}`;
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
           tileContainer.before(dateLine);
         }
