@@ -1574,7 +1574,12 @@
       const sortValue = $(tableID).attr('sort');
       const sortDirection = $(tableID).attr('sortDirection');
       const directOrderSort = sortDirection === '0';
-
+      let nameKeyDate = 'Дата';
+      const param = $(tableID).data('param');
+      const isActiveOrder = param.active;
+      if (!isActiveOrder) {
+        nameKeyDate = 'ФактическаяДатаГотовности';
+      }
       $('.separateDateLine').remove();
       if (sortValue !== '3') return;
 
@@ -1609,7 +1614,7 @@
 
         let tileContainer = $(el.element).find('.tileContainer');
         delete el.element;
-        
+
         function addSeparation(currentDate, currentShift) {
           let separateData = `${currentDate} - ${currentShift}`;
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
