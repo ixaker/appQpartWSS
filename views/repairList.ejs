@@ -1651,7 +1651,10 @@
           console.log('currentDate !== previousDate && currentShift === previousShift');
 
           if (Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate)) > 12 * 60 * 60 * 1000) {
-            console.log('currentDay.getTime() - previousDay.getTime()', currentDay.getTime() - previousDay.getTime());
+            console.log(
+              'currentDay.getTime() - previousDay.getTime()',
+              dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate)
+            );
 
             addSeparation();
           }
