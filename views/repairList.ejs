@@ -1605,22 +1605,17 @@
         let row = $('#' + el.data['uid']);
         const tileContainer = row.find('.tileContainer');
 
-        if (currentDate !== previousDate || currentShift !== previousShift) {
+        if (currentHour > 6 && (currentDate !== previousDate || currentShift !== previousShift)) {
           let arrow = directOrderSort ? '<i class="bi bi-arrow-down-circle">' : '<i class="bi bi-arrow-up-circle">';
           let separateData = `${currentDate} - ${currentShift}`;
 
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
 
           tileContainer.before(dateLine);
-          // if (directOrderSort) {
-          //   tileContainer.before(dateLine);
-          // } else {
-          //   tileContainer.after(dateLine);
-          // }
-        }
 
-        previousDate = currentDate;
-        previousShift = currentShift;
+          previousDate = currentDate;
+          previousShift = currentShift;
+        }
       });
     }
 
@@ -1807,6 +1802,8 @@
       $('#addOrder').hide(0);
       $('#main').show(0);
     }
+
+    function clearForm(arrayOfFields) {}
 
     // клик по кнопке Добавить заявку
     $('#btnAdd').on('click', function (event) {
