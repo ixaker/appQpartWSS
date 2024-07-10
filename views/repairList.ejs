@@ -1608,7 +1608,8 @@
         }
 
         let tileContainer = $(el.element).find('.tileContainer');
-
+        delete el.element;
+        
         function addSeparation(currentDate, currentShift) {
           let separateData = `${currentDate} - ${currentShift}`;
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
