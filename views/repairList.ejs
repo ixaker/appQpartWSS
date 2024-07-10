@@ -1611,6 +1611,7 @@
           let separateData = `${currentDate} - ${currentShift}`;
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
           tileContainer.before(dateLine);
+          console.log('ставимо роздільник');
         }
 
         function dateToMilliseconds(dateString) {
@@ -1623,6 +1624,10 @@
           'Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate))',
           Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate))
         );
+
+        console.log('зміна', currentShift);
+        console.log('дата', currentDate);
+        console.log('час', currentHour);
 
         if (
           currentShift === previousShift &&
