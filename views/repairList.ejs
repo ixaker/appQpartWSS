@@ -1568,6 +1568,7 @@
 
     function makeDateSeparator() {
       let previousDate = 0;
+      let previousDay = 0;
       let previousShift = '';
       const sortValue = $(tableID).attr('sort');
       const sortDirection = $(tableID).attr('sortDirection');
@@ -1593,6 +1594,7 @@
       dataForSeparate.forEach(el => {
         let date = new Date(el.data['Дата']);
         let currentDate = formatter.format(date);
+        let currentDay = date.getDate();
         let currentHour = date.getHours();
         let currentShift = '';
 
@@ -1605,17 +1607,44 @@
         let row = $('#' + el.data['uid']);
         const tileContainer = row.find('.tileContainer');
 
-        if (currentHour > 6 && (currentDate !== previousDate || currentShift !== previousShift)) {
-          let arrow = directOrderSort ? '<i class="bi bi-arrow-down-circle">' : '<i class="bi bi-arrow-up-circle">';
+        function addSeparation() {
           let separateData = `${currentDate} - ${currentShift}`;
-
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
-
           tileContainer.before(dateLine);
-
-          previousDate = currentDate;
-          previousShift = currentShift;
         }
+
+        console.log('currentDate', currentDate);
+        console.log('previousDate', previousDate);
+        console.log('currentShift', currentShift);
+        console.log('previousShift', previousShift);
+        console.log('currentDay', currentDay);
+        console.log('previousDay', previousDay);
+        console.log('currentHour', currentHour);
+        console.log('currentDay - previousDay', currentDay - previousDay);
+
+        if (currentDate !== previousDate && currentShift !== previousShift) {
+          console.log('currentDate !== previousDate && currentShift !== previousShift');
+
+          addSeparation();
+        }
+
+        if (currentDate === previousDate && currentShift !== previousShift) {
+          console.log('currentDate === previousDate && currentShift !== previousShift');
+
+          addSeparation();
+        }
+
+        if (currentDate !== previousDate && currentShift === previousShift) {
+          console.log('currentDate !== previousDate && currentShift === previousShift');
+
+          if (Math.abs(currentDay - previousDay) !== 1 && currentShift !== 'Нічна зміна') {
+            addSeparation();
+          }
+        }
+
+        previousDate = currentDate;
+        previousDay = currentDay;
+        previousShift = currentShift;
       });
     }
 
