@@ -699,11 +699,6 @@
     align-items: center;
     position: relative;
   }
-  #btnAddForm {
-    margin: 0 auto;
-    font-size: xxx-large;
-    color: #007431;
-  }
 
   #btn-container {
     flex-direction: column;
@@ -1588,14 +1583,14 @@
         }
       });
 
-      let handledData;
-      if (directOrderSort) {
-        handledData = dataForSeparate;
-      } else {
-        handledData = [...dataForSeparate].reverse();
-      }
+      // let handledData;
+      // if (directOrderSort) {
+      //   handledData = dataForSeparate;
+      // } else {
+      //   handledData = [...dataForSeparate].reverse();
+      // }
 
-      handledData.forEach(el => {
+      dataForSeparate.forEach(el => {
         let date = new Date(el.data['Дата']);
         let currentDate = formatter.format(date);
         let currentHour = date.getHours();
@@ -1611,22 +1606,17 @@
         const tileContainer = row.find('.tileContainer');
 
         if (currentDate !== previousDate || currentShift !== previousShift) {
-          if (sortDirection === '0') {
-            console.log('пряме сортування від меньшої до більшої дати');
-          }
-          if (sortDirection === '1') {
-            console.log('зворотнє сортування від більшої до меншої дати');
-          }
           let arrow = directOrderSort ? '<i class="bi bi-arrow-down-circle">' : '<i class="bi bi-arrow-up-circle">';
-          let separateData = `${arrow}</i>&nbsp; ${currentDate} - ${currentShift}`;
+          let separateData = `${currentDate} - ${currentShift}`;
 
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
 
-          if (directOrderSort) {
-            tileContainer.before(dateLine);
-          } else {
-            tileContainer.after(dateLine);
-          }
+          tileContainer.before(dateLine);
+          // if (directOrderSort) {
+          //   tileContainer.before(dateLine);
+          // } else {
+          //   tileContainer.after(dateLine);
+          // }
         }
 
         previousDate = currentDate;
@@ -2016,17 +2006,9 @@
     $('#cancelOrder').on('click', function () {
       clickAnimate(this);
       $('#listRepairForStanok').hide();
+      $('#formZakupka').hide();
+      $('#main').show();
       closeFormOrder();
-    });
-
-    $('.all-work').on('click', function () {
-      $('.all-work').switchClass('btn-primary', 'btn-secondary');
-      $(this).switchClass('btn-secondary', 'btn-primary', 500);
-    });
-
-    $('.mech-el').on('click', function () {
-      $(this).toggleClass('btn-primary');
-      $(this).toggleClass('btn-secondary');
     });
 
     var formTemplate = Handlebars.compile($('#formTemplate').html());
@@ -2036,25 +2018,6 @@
         $('#btn-container').css('display', 'none');
       }, 200);
     }
-
-    // click on cancelOrder
-    $('#cancelOrder').on('click', function () {
-      clickAnimate(this);
-      $('#formZakupka').hide();
-      $('#main').show();
-    });
-
-    $('#btnAddForm').on('click', function () {
-      event.stopPropagation();
-      if ($('#btn-container').hasClass('showModal')) {
-        closeBtnContainer();
-      } else {
-        $('#btn-container').css('display', 'flex');
-        setTimeout(function () {
-          $('#btn-container').addClass('showModal');
-        }, 10);
-      }
-    });
 
     $(document).on('click', function (event) {
       closeBtnContainer();
