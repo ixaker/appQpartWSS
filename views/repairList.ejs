@@ -1619,6 +1619,11 @@
           return dateObject.getTime();
         }
 
+        console.log(
+          'Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate))',
+          Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate))
+        );
+
         if (
           currentShift === previousShift &&
           Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate)) > 12 * 60 * 60 * 1000
