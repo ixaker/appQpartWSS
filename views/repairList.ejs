@@ -1641,10 +1641,16 @@
           addSeparation();
         }
 
+        function dateToMilliseconds(dateString) {
+          const parts = dateString.split('.');
+          const dateObject = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          return dateObject.getTime();
+        }
+
         if (currentDate !== previousDate && currentShift === previousShift) {
           console.log('currentDate !== previousDate && currentShift === previousShift');
 
-          if (Math.abs(currentDate.getTime() - previousDate.getTime()) > 12 * 60 * 60 * 1000) {
+          if (Math.abs(dateToMilliseconds(currentDate) - dateToMilliseconds(previousDate)) > 12 * 60 * 60 * 1000) {
             console.log('currentDay.getTime() - previousDay.getTime()', currentDay.getTime() - previousDay.getTime());
 
             addSeparation();
