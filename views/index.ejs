@@ -73,9 +73,147 @@
         <!-- загружается при переходе по меню -->
       </div>
 
-      <div id="login" class="page" style="display: none">
-        <button id="btnStartVideo" type="button" class="btn btn-secondary btn-lg">Войти в программу</button>
-        <video id="video" style="display: none" autoplay></video>
+      <style>
+        #loginContainer {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          top: 0;
+
+          width: 100%;
+        }
+
+        #login {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 10px;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -40%);
+          z-index: 1;
+        }
+
+        .loginBtn {
+          width: 40%;
+          flex: 1;
+          border: none;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .btnImg {
+          width: 150px;
+          background-color: darkgreen;
+          border-radius: 20px;
+          padding: 10px;
+        }
+
+        #loginByPassowrd {
+          display: none;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .formContainer {
+          padding: 10px;
+        }
+
+        .group-button {
+          display: flex;
+          gap: 10px;
+        }
+
+        #loginByPassowrd .form-group {
+          display: flex;
+          flex-direction: column;
+          align-items: start;
+        }
+
+        #loginBtn,
+        #cancelBtn {
+          margin-top: 0;
+          flex-direction: column;
+          gap: 10px;
+          display: flex;
+          align-items: center;
+        }
+        .formBtn {
+        }
+
+        #video {
+          position: fixed;
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+
+      <video id="video" style="display: none" autoplay></video>
+      <div id="loginContainer">
+        <div id="login" class="page">
+          <button id="btnStartVideo" type="button" class="btn btn-lg loginBtn">
+            <img class="btnImg" src="img/faceid.svg" alt="face id" />
+            <div class="text">Face Id</div>
+          </button>
+          <button id="btnLoginPassword" type="button" class="btn btn-lg loginBtn">
+            <img class="btnImg" src="img/login.svg" alt="login password" />
+            <div class="text">Password</div>
+          </button>
+        </div>
+
+        <div id="loginByPassowrd" style="display: none">
+          <div class="formContainer" id="formContainer">
+            <form>
+              <div class="form-group">
+                <label for="username">Логін</label>
+                <input
+                  type="text"
+                  form-control-lg
+                  class="form-control form-control-lg"
+                  id="username"
+                  name="username"
+                  required
+                  placeholder="логін"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="form-group">
+                <label for="password">Пароль</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="password"
+                    class="form-control form-control-lg"
+                    id="password"
+                    name="password"
+                    required
+                    placeholder="пароль"
+                    autocomplete="off"
+                  />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="bi bi-eye" id="toggle-password"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="group-button">
+                <button type="button" id="cancelBtn" class="btn btn-lg btn-secondary btn-block formBtn">Отмена</button>
+                <button type="submit" id="loginBtn" class="btn btn-lg btn-success btn-block formBtn">Увійти</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
 
       <div id="formMainCamera" style="display: none">
@@ -127,49 +265,142 @@
     <script src="js/swipe.js?v=<%= version %>"></script>
 
     <script>
-      console.log('test, version', testEnvironment, version);
-      if (testEnvironment) {
-        const elements = document.querySelectorAll('.bg-dark');
-        elements.forEach(element => {
-          element.classList.remove('bg-dark');
-          element.classList.add('test');
+      $(document).ready(function () {
+        // history.pushState({ page: 'login' }, '', '');
+
+        console.log('test, version', testEnvironment, version);
+        if (testEnvironment) {
+          const elements = document.querySelectorAll('.bg-dark');
+          elements.forEach(element => {
+            element.classList.remove('bg-dark');
+            element.classList.add('test');
+          });
+        }
+
+        if (token !== '') {
+          $.cookie('token', token);
+        }
+
+        function openLoginPassword() {
+          console.log('openLoginPassword');
+          $('#login').hide();
+          // $('#loginContainer').hide();
+          $('#loginByPassowrd').show();
+          $('#username').val('');
+          $('#password').val('');
+          // history.pushState({ page: 'loginByPassword' }, '', '');
+        }
+
+        function closeLoginPassword() {
+          console.log('closeLoginPassword');
+
+          $('#login').show();
+          $('#loginByPassowrd').hide();
+        }
+
+        function closeLoginButtons() {
+          console.log('closeLoginButtons');
+          $('#loginContainer').hide();
+        }
+
+        $('#btnLoginPassword').on('click', function () {
+          console.log('btnLoginPassword click');
+
+          openLoginPassword();
         });
-      }
 
-      if (token !== '') {
-        $.cookie('token', token);
-      }
+        // window.addEventListener('popstate', handlePopState);
 
-      function screenSize() {
-        const screenWidth = window.screen.width;
-        const screenHeight = window.screen.height;
-        const availableScreenWidth = window.screen.availWidth;
-        const availableScreenHeight = window.screen.availHeight;
+        // function handlePopState(event) {
+        //   const state = event.state;
+        //   console.log('handlePopState state=', state);
 
-        alert(
-          'viewport width: ' +
-            window.innerWidth +
-            ', viewport height: ' +
-            window.innerHeight +
-            ', screen width: ' +
-            screenWidth +
-            ', screen height: ' +
-            screenHeight +
-            ', availableScreenWidth: ' +
-            availableScreenWidth +
-            ', availableScreenHeight: ' +
-            availableScreenHeight
-        );
-      }
-      // screenSize();
+        //   if (state) {
+        //     switch (state.page) {
+        //       case 'loginByPassword':
+        //         openLoginPassword();
+        //         break;
+        //       case 'login':
+        //         console.log('login');
+        //         closeLoginPassword();
+        //         break;
+        //       default:
+        //         break;
+        //     }
+        //   }
+        // }
 
-      function listenResize() {
-        window.addEventListener('resize', function () {
-          makeNavbarTextMove();
+        $('#cancelBtn').on('click', function () {
+          closeLoginPassword();
         });
-      }
 
-      listenResize();
+        $('#loginBtn').on('click', function () {
+          event.preventDefault();
+          const username = $('#username').val();
+          const password = $('#password').val();
+          console.log('username, password', username, password);
+          closeLoginPassword();
+
+          universalRequest(
+            'authorizationByPassword',
+            'POST',
+            { username: username, password: password },
+            {},
+            function onSuccess(response) {
+              console.log('onSuccess by password', response);
+
+              if (response.detectUser) {
+                closeLoginPassword();
+                closeLoginButtons();
+                loadMenu(response.user, response.token, response.version);
+                return;
+              }
+            },
+            function onError(error) {
+              console.log('Error callback:', error);
+            },
+            function onComplete() {
+              console.log('Request completed');
+            }
+          );
+        });
+
+        $('#toggle-password').click(function () {
+          $(this).toggleClass('bi-eye bi-eye-slash');
+          var type = $(this).hasClass('bi-eye') ? 'password' : 'text';
+          $('#password').attr('type', type);
+        });
+
+        function screenSize() {
+          const screenWidth = window.screen.width;
+          const screenHeight = window.screen.height;
+          const availableScreenWidth = window.screen.availWidth;
+          const availableScreenHeight = window.screen.availHeight;
+
+          alert(
+            'viewport width: ' +
+              window.innerWidth +
+              ', viewport height: ' +
+              window.innerHeight +
+              ', screen width: ' +
+              screenWidth +
+              ', screen height: ' +
+              screenHeight +
+              ', availableScreenWidth: ' +
+              availableScreenWidth +
+              ', availableScreenHeight: ' +
+              availableScreenHeight
+          );
+        }
+
+        function listenResize() {
+          window.addEventListener('resize', function () {
+            makeNavbarTextMove();
+          });
+        }
+
+        listenResize();
+      });
     </script>
   </body>
 </html>
