@@ -12,18 +12,19 @@ body {
 body,
 html {
   max-width: 100%;
+  height: 100%;
 }
 
 #container {
   max-width: 1280px;
   margin: auto;
+  height: 100vh;
 }
 
 #login {
   max-width: 450px;
   margin: auto;
   min-width: 200px;
-  padding-top: 50px;
 }
 
 .spinner {
@@ -65,7 +66,7 @@ html {
   z-index: 1000; /* Z-index достаточно высок, чтобы быть над другими элементами */
 }
 
-#btnStartVideo {
+/* #btnStartVideo {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -73,7 +74,7 @@ html {
   height: 50px;
   transform: translate(-50%, -50%);
   background-color: darkgreen;
-}
+} */
 
 #video {
   position: fixed;
@@ -82,6 +83,7 @@ html {
   width: 100%;
   height: calc(100% - 56px);
   object-fit: contain;
+  z-index: 1000;
 }
 
 .noColorImg {
