@@ -18,6 +18,8 @@ const telegramBot = require('./services/telegramBot.js');
 const faceID = require('./services/faceID.js');
 const func1C = require('./services/1C.js');
 
+const base = process.env.base;
+
 exec('kill -9 $(lsof -t -i :443)');
 
 const envFilePath = path.join(__dirname, '.env');
@@ -181,10 +183,6 @@ app.get('/' + adminRoute, (req, res) => {
   // res.sendFile(createPath('admin.html'));
 });
 
-
-
-
-
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
   log.data('app.post /dataUpdated');
@@ -228,7 +226,35 @@ app.post('/dataUpdated', (req, res) => {
   return;
 });
 
+app.post('/authorizationByPassword', async (req, res) => {
+  try {
+    log.info('authorizationByPassword req.body', req.body);
+    const { username, password } = req.body;
+    const baseUrl = process.env.BASE_URL.replace(/^https?:\/\//, '');
+    const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
 
+    log.info('login password, url', username, password, url);
+    const response = await axios.get(url);
+    log.info('login password, url', username, password, url);
+
+    log.info('response status', response.status);
+    log.info('response headers keys', Object.keys(response.headers), Object.keys(response), response.status, response.data.uid);
+
+    if (response.status === 200) {
+      let result = { detectUser: true };
+      result.user = faceID.getUserInfoID(response.data.uid);
+      result.token = jwt.sign(result.user, secret, options);
+      result.version = version;
+
+      res.send(result);
+    } else {
+      res.status(500).send('Помилка сервера. Спробуйте пізніше.');
+    }
+  } catch (error) {
+    // log.error('Помилка під час обробки запиту:', error);
+    res.status(500).send(error);
+  }
+});
 
 app.post('/detectFace', async (req, res) => {
   let result = await faceID.findUserOnFoto(req.body);
@@ -244,12 +270,10 @@ app.post('/detectFace', async (req, res) => {
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
           telegramBot.sendImageAndMessage(req.body.photo, message);
         } else {
-
         }
       }
     }
   } catch (error) {
-
   }
   res.send(result);
 });
@@ -282,9 +306,9 @@ app.use('/appPOST', async (req, res) => {
   newTarget.searchParams.set('uid', req.user.uid);
   const path = newTarget.toString().replace('http://localhost', '');
 
-  log.data('path', path, req.body);
+  // log.data('path', path, req.body);
   const response = await func1C.request1C('POST', path, {}, req.body);
-  console.log('appPOST', response);
+  // console.log('appPOST', response);
   res.send(response.data);
 })
 
@@ -303,7 +327,7 @@ app.post('/authentication', async (req, res) => {
 
 // add headers for cache
 app.post('/uploadPhoto', async (req, res) => {
-  log.info('post uploadPhoto', req.body);
+  // log.info('post uploadPhoto', req.body);
 
 
   await func1C.request1C('POST', '/uploadPhotoNomenklatura', req.body);
@@ -548,7 +572,7 @@ wss.on('connection', (ws, request) => {
         const response = await func1C.request1C('POST', '/updateData', {}, data);
 
         if (response.status === 200) {
-          log.data('updateData response', response.data);
+          // log.data('updateData response', response.data);
 
           if (!response.data.result) {
             log.error("updateData error", response.data['Причина']);
