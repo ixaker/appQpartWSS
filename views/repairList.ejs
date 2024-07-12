@@ -653,7 +653,7 @@
       <td title="СтатусЗаявки" name="СтатусЗаявки" style="display: none" headerClass="statusSort">
         <div class="dataCell textAlignCenter"></div>
       </td>
-      <td title="Дата" name="Дата" style="display: none" headerClass="dateSort">
+      <td title="Дата" name="Дата" style="display: none" id="dateSort" headerClass="dateSort">
         <div class="dataCell textAlignCenter createDate"></div>
       </td>
       <td title="Тема" name="Тема" class="order" style="width: 60%"></td>
@@ -1496,6 +1496,7 @@
     let tableID = '#ЗаявкаНаРемонт';
     let currentRowJQ;
     $(tableID).data('param', { active: true });
+    history.pushState({ page: 'repair' }, '', '');
 
     initTables();
     initInputAutocomplete('#executor');
@@ -1569,7 +1570,7 @@
     function renderOrderTile() {}
 
     function makeDateSeparator() {
-      let previousDate = '0.0.0';
+      let previousDate = '0';
       let previousShift = '';
       const sortValue = $(tableID).attr('sort');
       const sortDirection = $(tableID).attr('sortDirection');
@@ -1595,7 +1596,7 @@
       });
 
       dataForSeparate.forEach(el => {
-        let date = new Date(el.data['Дата']);
+        let date = new Date(el.data[nameKeyDate]);
         let currentDate = formatter.format(date);
         let currentHour = date.getHours();
         let currentShift = '';
@@ -1696,6 +1697,7 @@
     // callback после внесения изменений в строку с сервера
     callbackAfterWrite = function (data) {
       console.log('callbackAfterWrite', data.data['Дни']);
+      console.log('$(#dateSort).attr(name)', $('#dateSort').attr('name'));
       let row = $('#' + data.data['uid']);
       let td = row.find('td.order');
       const isOrderInWork = $(tableID).data('param').active;
@@ -1848,6 +1850,15 @@
       console.log('btnDone click');
       clickAnimate(this);
       const activeOrders = !$(tableID).data('param').active;
+      newAttr = activeOrders ? 'Дата' : 'ФактическаяДатаГотовности';
+      /*       $('#dateSort').attr('name', newAttr);
+      $('#dateSort').attr('dddd', newAttr); */
+
+      /*       let element = document.getElementById('dateSort');
+      element.setAttribute('name', newAttr); */
+
+      const tableJQ = $(tableID);
+      tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
 
       let newSrc = activeOrders
         ? `img/check-circle.svg?v=<%= version %>`
@@ -2300,13 +2311,13 @@
 
     window.addEventListener('popstate', handlePopState);
 
-    function handlePopState() {
-      console.log('handlePopState');
+    function handlePopState(event) {
       const state = event.state;
+      console.log('handlePopState state=', state);
       if (state) {
         switch (state.page) {
           case 'newOrder':
-            console.log('newOrder0');
+            console.log('newOrder');
             closeAll();
             openFormOrder();
             break;
@@ -2319,6 +2330,11 @@
             console.log('formZakupka');
             closeAll();
             addZakupka();
+            break;
+          case 'repair':
+            console.log('repair');
+            closeAll();
+
             break;
           case 'someOtherState':
             break;
@@ -2403,7 +2419,7 @@
       if (!$(this).is(':checked')) {
       }
       data.edited['РемонтЗавершен'] = $(this).is(':checked');
-      data.edited['СтатусЗаявки'] = isChecked ? 'Выполнена' : 'Ремонт';
+      // data.edited['СтатусЗаявки'] = isChecked ? 'Выполнена' : 'Ремонт';
       console.log('checkbox ремонт завершен: ', $(this).val());
       sendDataTo1C(data, 'PUT');
     });
