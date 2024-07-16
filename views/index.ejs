@@ -75,13 +75,14 @@
 
       <style>
         #loginContainer {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          top: 0;
-
           width: 100%;
+        }
+
+        .loginTitle {
+          font-size: xx-large;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
         #login {
@@ -117,13 +118,15 @@
         #loginByPassowrd {
           display: none;
           display: flex;
-          width: 100%;
+          max-width: 600px;
+          min-width: 320px;
           align-items: center;
           justify-content: center;
           position: fixed;
-          top: 50%;
+          top: 30%;
           left: 50%;
           transform: translate(-50%, -50%);
+          font-size: 1.25rem;
         }
 
         .formContainer {
@@ -139,6 +142,18 @@
           display: flex;
           flex-direction: column;
           align-items: start;
+          position: relative;
+        }
+
+        #loginLoader {
+          position: fixed;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 9999;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
         }
 
         #loginBtn,
@@ -157,18 +172,37 @@
           width: 100%;
           height: 100%;
         }
+
+        .input-group {
+          gap: 0;
+          align-items: normal;
+        }
+
+        #eye-password {
+          border-radius: 0 0.25rem 0.25rem 0;
+          margin-left: -1px;
+        }
       </style>
 
       <video id="video" style="display: none" autoplay></video>
+
+      <div style="display: none" id="loginLoader">
+        <div class="loader-text">Завантаження...</div>
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+
       <div id="loginContainer">
-        <div id="login" class="page">
+        <!-- <div class="loginTitle">Выберите способ входа</div> -->
+        <div id="login" class="page" style="display: none">
           <button id="btnStartVideo" type="button" class="btn btn-lg loginBtn">
             <img class="btnImg" src="img/faceid.svg" alt="face id" />
-            <div class="text">Face Id</div>
+            <div class="text">По лицу</div>
           </button>
           <button id="btnLoginPassword" type="button" class="btn btn-lg loginBtn">
             <img class="btnImg" src="img/login.svg" alt="login password" />
-            <div class="text">Password</div>
+            <div class="text">По паролю</div>
           </button>
         </div>
 
@@ -185,28 +219,26 @@
                   name="username"
                   required
                   placeholder="логін"
-                  autocomplete="off"
                 />
               </div>
               <div class="form-group">
                 <label for="password">Пароль</label>
-                <div class="input-group mb-3">
+                <div class="input-group input-group-lg mb-3">
                   <input
                     type="password"
-                    class="form-control form-control-lg"
+                    class="form-control form-control"
                     id="password"
                     name="password"
                     required
                     placeholder="пароль"
-                    autocomplete="off"
                   />
-                  <div class="input-group-append">
-                    <span class="input-group-text">
-                      <i class="bi bi-eye" id="toggle-password"></i>
-                    </span>
-                  </div>
+
+                  <span class="input-group-text" id="eye-password">
+                    <i class="bi bi-eye" id="toggle-password"></i>
+                  </span>
                 </div>
               </div>
+
               <div class="group-button">
                 <button type="button" id="cancelBtn" class="btn btn-lg btn-secondary btn-block formBtn">Отмена</button>
                 <button type="submit" id="loginBtn" class="btn btn-lg btn-success btn-block formBtn">Увійти</button>
@@ -277,15 +309,20 @@
           });
         }
 
+        console.log('token from index.js ', token);
         if (token !== '') {
+          console.log('token from index.js записаний в кукіс');
+
           $.cookie('token', token);
         }
 
         function openLoginPassword() {
           console.log('openLoginPassword');
           $('#login').hide();
+          $('#loginBtn').prop('disabled', false);
           // $('#loginContainer').hide();
-          $('#loginByPassowrd').show();
+          $('#loginByPassowrd').show(300);
+          $('#username').focus();
           $('#username').val('');
           $('#password').val('');
           // history.pushState({ page: 'loginByPassword' }, '', '');
@@ -293,18 +330,19 @@
 
         function closeLoginPassword() {
           console.log('closeLoginPassword');
-
-          $('#login').show();
-          $('#loginByPassowrd').hide();
+          $('#loginLoader').css('display', 'none');
+          $('#login').show(300);
+          $('#loginByPassowrd').hide(300);
         }
 
         function closeLoginButtons() {
           console.log('closeLoginButtons');
-          $('#loginContainer').hide();
+          $('#loginContainer').css('display', 'none');
+          // $('#loginContainer').hide();
         }
 
         $('#btnLoginPassword').on('click', function () {
-          console.log('btnLoginPassword click');
+          clickAnimate(this);
 
           openLoginPassword();
         });
@@ -336,10 +374,30 @@
 
         $('#loginBtn').on('click', function () {
           event.preventDefault();
+          clickAnimate(this);
           const username = $('#username').val();
           const password = $('#password').val();
           console.log('username, password', username, password);
-          closeLoginPassword();
+          const loginButton = $(this);
+
+          loginButton.prop('disabled', true);
+
+          if (!username || !password) {
+            toastr.error('Заповніть всі поля!');
+
+            if (!username) {
+              $('#username').addClass('is-invalid');
+              $('#username').focus();
+            }
+            if (!password) {
+              $('#password').addClass('is-invalid');
+            }
+            $(this).prop('disabled', false);
+            $('#username').focus();
+            return;
+          }
+
+          $('#loginLoader').css('display', 'flex');
 
           universalRequest(
             'authorizationByPassword',
@@ -349,23 +407,59 @@
             function onSuccess(response) {
               console.log('onSuccess by password', response);
 
+              console.log('response', response);
               if (response.detectUser) {
                 closeLoginPassword();
-                closeLoginButtons();
+                // closeLoginButtons();
                 loadMenu(response.user, response.token, response.version);
                 return;
+              } else {
+                toastr.error('Авторизація не успішна. Спробуйте ще раз');
+                loginButton.prop('disabled', false);
               }
+
+              $('#loginLoader').hide();
             },
             function onError(error) {
-              console.log('Error callback:', error);
+              console.log('Error callback:', error, error.responseText, error.status);
+
+              const errorStatus = error.status;
+
+              if (errorStatus === 401) {
+                toastr.error('Не вірний логін або пароль');
+                $('#username').focus();
+              } else if (errorStatus === 530) {
+                toastr.error('Помилка авторизації. Причина: ' + error.responseText || '');
+                $('#username').focus();
+                s;
+              } else {
+                toastr.error('Помилка авторизації');
+              }
+
+              loginButton.prop('disabled', false);
+              $('#loginLoader').hide();
             },
             function onComplete() {
-              console.log('Request completed');
+              $(this).prop('disabled', false);
+              // $('#loginLoader').hide();
             }
           );
         });
 
+        $('#username').on('input', function () {
+          if ($(this).val().trim() !== '') {
+            $(this).removeClass('is-invalid');
+          }
+        });
+
+        $('#password').on('input', function () {
+          if ($(this).val().trim() !== '') {
+            $(this).removeClass('is-invalid');
+          }
+        });
+
         $('#toggle-password').click(function () {
+          clickAnimate(this);
           $(this).toggleClass('bi-eye bi-eye-slash');
           var type = $(this).hasClass('bi-eye') ? 'password' : 'text';
           $('#password').attr('type', type);
