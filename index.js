@@ -235,7 +235,9 @@ app.post('/authorizationByPassword', async (req, res) => {
     log.info('authorizationByPassword req.body', req.body);
     const { username, password } = req.body;
     const baseUrl = process.env.BASE_URL.replace(/^https?:\/\//, '');
-    const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
+    const url = `http://${username}:${password}@10.8.0.3:23456/Production/hs/client/authentication`
+    // const url = `http://${username}:${password}@ http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication/${base}/hs/client/authentication`
+
     log.info('url', url);
     const response = await axios.get(url);
 
@@ -255,7 +257,10 @@ app.post('/authorizationByPassword', async (req, res) => {
       res.status(error.response.status).send(error.response.data);
     } else {
       log.error('Error in request setup:', error.message);
-      res.status(500).send('Внутрішня помилка сервера.', url);
+      res.status(500).send({
+        message: 'Внутрішня помилка сервера.',
+        url: url
+      });
     }
   }
 });
