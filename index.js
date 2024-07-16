@@ -255,7 +255,7 @@ app.post('/authorizationByPassword', async (req, res) => {
       res.status(error.response.status).send(error.response.data);
     } else {
       log.error('Error in request setup:', error.message);
-      res.status(500).send('Внутрішня помилка сервера.');
+      res.status(500).send('Внутрішня помилка сервера.', error);
     }
   }
 });
