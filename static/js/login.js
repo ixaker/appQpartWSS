@@ -142,6 +142,7 @@ function authentication() {
 $(function () {
     $('#btnStartVideo').on("click", function (event) {
         console.log("click - #btnStartVideo");
+        clickAnimate(this);
         startCamera();
     });
 
