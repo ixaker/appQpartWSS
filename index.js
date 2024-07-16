@@ -236,7 +236,7 @@ app.post('/authorizationByPassword', async (req, res) => {
     const { username, password } = req.body;
     const baseUrl = process.env.BASE_URL.replace(/^https?:\/\//, '');
     const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
-
+    log.info('url', url);
     const response = await axios.get(url);
 
     if (response.status === 200) {
@@ -255,7 +255,7 @@ app.post('/authorizationByPassword', async (req, res) => {
       res.status(error.response.status).send(error.response.data);
     } else {
       log.error('Error in request setup:', error.message);
-      res.status(500).send('Внутрішня помилка сервера.', error);
+      res.status(500).send('Внутрішня помилка сервера.', url);
     }
   }
 });
