@@ -38,7 +38,7 @@ if (!fs.existsSync(envFilePath)) {
 }
 
 const secret = process.env.secret || 'my-secret-key';
-const options = { expiresIn: '3h' };
+const options = { expiresIn: '1w' };
 
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
@@ -156,6 +156,25 @@ app.post('/saveFile', (req, res) => {
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.json({ limit: '100mb' }));
 
+
+
+// + Страничка - Оболочка с автоматической авторизацией
+app.get('/' + adminRoute, (req, res) => {
+  log.info('----------- app.get to admin part -------------');
+
+  const user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
+  const token = jwt.sign(user, secret, options);
+
+  res.cookie('token', token);
+
+  res.render('index', {
+    version: version,
+    token: token,
+    test: test
+  });
+  // res.sendFile(createPath('admin.html'));
+});
+
 // + Страничка - Оболочка
 app.get('/', (req, res) => {
   log.info('app.get send index.html')
@@ -166,21 +185,6 @@ app.get('/', (req, res) => {
     token: '',
     test: test,
   });
-});
-
-// + Страничка - Оболочка с автоматической авторизацией
-app.get('/' + adminRoute, (req, res) => {
-  log.info('----------- app.get to admin part -------------');
-
-  const user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
-  const token = jwt.sign(user, secret, options);
-
-  res.render('index', {
-    version: version,
-    token: token,
-    test: test
-  });
-  // res.sendFile(createPath('admin.html'));
 });
 
 // Обработчик запросов из 1С об изменениях данных
@@ -233,28 +237,30 @@ app.post('/authorizationByPassword', async (req, res) => {
     const baseUrl = process.env.BASE_URL.replace(/^https?:\/\//, '');
     const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
 
-    log.info('login password, url', username, password, url);
     const response = await axios.get(url);
-    log.info('login password, url', username, password, url);
-
-    log.info('response status', response.status);
-    log.info('response headers keys', Object.keys(response.headers), Object.keys(response), response.status, response.data.uid);
 
     if (response.status === 200) {
       let result = { detectUser: true };
       result.user = faceID.getUserInfoID(response.data.uid);
       result.token = jwt.sign(result.user, secret, options);
       result.version = version;
-
       res.send(result);
     } else {
-      res.status(500).send('Помилка сервера. Спробуйте пізніше.');
+      res.status(res.status).send('Помилка сервера. Спробуйте пізніше.', res.status);
     }
   } catch (error) {
-    // log.error('Помилка під час обробки запиту:', error);
-    res.status(500).send(error);
+    log.error('Помилка під час обробки запиту:', error);
+    if (error.response) {
+      log.error('Server response error:', error.response.status, error.response.data);
+      res.status(error.response.status).send(error.response.data);
+    } else {
+      log.error('Error in request setup:', error.message);
+      res.status(500).send('Внутрішня помилка сервера.');
+    }
   }
 });
+
+
 
 app.post('/detectFace', async (req, res) => {
   let result = await faceID.findUserOnFoto(req.body);
@@ -281,6 +287,7 @@ app.post('/detectFace', async (req, res) => {
 // Мідлвар для перевірки авторизації
 app.use((req, res, next) => {
   log.warn('app.use verify', `Request - method: ${req.method}  path: ${req.path}`);
+  log.info('req.cookies.token', req.cookies.token);
 
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
@@ -549,7 +556,7 @@ wss.on('connection', (ws, request) => {
           if (err) {
             try {
               const decoded_token = jwt.decode(payload, secret);
-              //log.info('decoded_token', decoded_token);
+              log.info('decoded_token', decoded_token);
 
               if (!decoded_token) { throw new Error('Empty token'); }
               if (typeof decoded_token !== 'object') { throw new Error('Invalid token format'); }
@@ -575,7 +582,7 @@ wss.on('connection', (ws, request) => {
           // log.data('updateData response', response.data);
 
           if (!response.data.result) {
-            log.error("updateData error", response.data['Причина']);
+            // log.error("updateData error", response.data['Причина']);
 
             const msg = {
               topic: 'notification',
@@ -597,7 +604,7 @@ wss.on('connection', (ws, request) => {
             ws.send(JSON.stringify(msg));
           }
         } else {
-          log.error("updateData error", response.data['Причина']);
+          // log.error("updateData error", response.data['Причина']);
         }
 
         // await axios.post(`${API_1C_URL}/updateData`, JSON.parse(message), {
