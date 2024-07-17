@@ -235,6 +235,9 @@ app.post('/authorizationByPassword', async (req, res) => {
     log.info('authorizationByPassword req.body', req.body);
     const { username, password } = req.body;
     const baseUrl = process.env.BASE_URL.replace(/^http?:\/\//, '');
+    // const url = 'http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication';
+    // const url = 'http://Holub:1@10.8.0.3:23456/Production/hs/client/authentication';
+    // const url = 'http://Holub:1@10.8.0.3:80/Production/hs/client/authentication';
     const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
     // const url = `http://${username}:${password}@ http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication/${base}/hs/client/authentication`
 
@@ -491,7 +494,11 @@ app.get('/12345', async function (req, res) {
 });
 
 app.get('/zakupka', async function (req, res) {
-  return res.render('zakupka');
+  res.render('zakupka', {
+    version: version,
+    token: '',
+    test: test,
+  });
 });
 
 app.get('/repairList', async function (req, res) {
@@ -567,7 +574,7 @@ wss.on('connection', (ws, request) => {
               client.user = userFromToken;
 
             } catch (error) {
-              log.error(error);
+              // log.error(error);
               ws.close();
             }
           } else {
