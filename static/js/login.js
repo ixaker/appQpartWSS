@@ -1,6 +1,7 @@
 const video = document.getElementById('video');
 const canvas = document.createElement('canvas');
 let oldPageUID = localStorage.getItem('PageUID') || false;
+const haveDeviceCamera = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
 
 let loadedDataListeners = true;
 
@@ -8,13 +9,14 @@ var couterRequest = 0;
 
 function startCamera() {
     console.log("start startCamera");
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (haveDeviceCamera) {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
             video.srcObject = stream;
 
             couterRequest = 0;
 
             $('#btnStartVideo').hide();
+            $('#login').hide();
             $('#video').show();
 
             // setTimeout(function () {
