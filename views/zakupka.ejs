@@ -1,28 +1,37 @@
 <style>
+  #content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
   #ЗаявкаНаЗакупку {
     font-size: 1em;
+    background-color: inherit;
+  }
+
+  thead {
+    display: none;
   }
 
   td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    border: none;
   }
 
-  /* #addNew {
+  #modal .form-control {
+    width: 60%;
+    margin-left: auto;
+  }
+
+  .commandBtn {
     margin-left: auto;
     font-size: xxx-large;
-    color: #007431;
-    margin-right: 10px;
-  } */
+    color: darkgreen;
+    line-height: 1em;
+  }
 
-  /* #formNew {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  } */
   #formNew {
     width: 80%;
     font-size: 30px;
@@ -75,6 +84,16 @@
     user-select: text;
   }
 
+  .form-control {
+    font-size: 1em;
+    background-color: white !important;
+  }
+
+  mark {
+    background: yellow;
+    padding: 0;
+  }
+
   #textFull {
     margin: 5px 0;
     white-space: break-spaces;
@@ -116,11 +135,128 @@
   #doneZayavka {
     margin-left: 30px;
   }
+
+  #addNew {
+    margin-right: 10px;
+  }
 </style>
 
-<div id="commandPanel">
-  <h3 class="titlePage">Заявки на закупку</h3>
-  <i class="bi bi-plus-circle btnAdd" id="addNew"></i>
+<div id="main">
+  <div id="commandPanel" class="commandPanel">
+    <div class="titleContainer">
+      <h3 class="titlePage2">Заявки на закупку</h3>
+      <div id="statusMark" class="status">в работе</div>
+    </div>
+
+    <div class="commandRow">
+      <div class="input-group-search rounded groupSearch" id="groupSearch">
+        <input
+          type="search"
+          id="search"
+          class="form-control rounded"
+          placeholder="Поиск"
+          aria-label="Search"
+          aria-describedby="search-addon"
+        />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <div class="btnContainer">
+        <div id="sortContainer">
+          <img src="img/sort.svg?v=<%= version %>" alt="sort icon" class="commandImg" id="btnSort" />
+          <div id="sortList">
+            <ul>
+              <li id="sortSrok">срок</li>
+              <li id="sortStatus">статус</li>
+              <li id="sortStanok">станок</li>
+              <li id="sortDate">дата</li>
+            </ul>
+          </div>
+        </div>
+        <img src="img/check-circle.svg?v=<%= version %>" alt="check icon" class="commandImg commandBtn" id="btnDone" />
+        <img src="img/plus-circle.svg?v=<%= version %>" alt="plus icon" class="commandImg commandBtn" id="addNew" />
+      </div>
+    </div>
+  </div>
+
+  <table
+    id="ЗаявкаНаЗакупку"
+    name="ЗаявкаНаЗакупку"
+    url="/app/zakupka"
+    callbackBeforeInitTable="callbackBeforeDone"
+    filter="callbackFilter"
+    callbackAfterInitTable="callbackAfterDone"
+    addNevRow="callbackAddNewRow"
+    callbackAfterWrite="callbackAfterWrite"
+    append="up"
+    init
+    header
+  >
+    <tr class="config" style="display: none">
+      <td
+        title="Дата"
+        name="Дата"
+        headerClass="colunmDate"
+        class="colunmDate"
+        style="width: 25%; white-space: normal; display: none"
+      >
+        <div class="dataCell textAlignCenter" mask="DD.MM HH:mm" typeData="date"></div>
+      </td>
+      <td title="Текст заявки" class="main" name="ТекстЗаявки" style="width: 55%"></td>
+      <td
+        title="Автор"
+        name="АвторЗаявки"
+        headerClass="colunmAuthor"
+        class="colunmAuthor"
+        style="width: 30%; display: none"
+      >
+        <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
+      </td>
+      <td
+        title="Статус"
+        name="СтатусЗаявки"
+        headerClass="colunmStatus"
+        class="colunmStatus"
+        style="width: 30%; display: none"
+      >
+        <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
+      </td>
+    </tr>
+
+    <tr id="infoRow" class="hide">
+      <td colspan="3" style="background-color: aliceblue">
+        <div id="infoForm">
+          <div style="display: flex; margin: 5px 0; padding: 5px 0px">
+            Номер:
+            <div id="kod"></div>
+            Статус:
+            <div id="status"></div>
+            <div id="priority"></div>
+          </div>
+          <div id="textFull"></div>
+          <div id="buttons" style="display: flex; margin-bottom: 20px">
+            <button type="button" class="btn btn-secondary" id="cancelZayavka">Отменить</button>
+            <button type="button" class="btn btn-success" id="doneZayavka">Готово</button>
+          </div>
+          <div id="historyComment"></div>
+          <div id="blockNewComment" style="display: flex; margin: 5px 0">
+            <input
+              id="newComment"
+              type="text"
+              class="form-control"
+              placeholder="новый комментарий..."
+              aria-describedby="basic-addon2"
+            />
+            <div class="input-group-append">
+              <button id="btnAddNewComment" class="btn btn-success" type="button">Сохранить</button>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
 </div>
 
 <div id="formNew" class="formContainer" style="display: none">
@@ -137,66 +273,118 @@
   </div>
 </div>
 
-<table
-  id="ЗаявкаНаЗакупку"
-  name="ЗаявкаНаЗакупку"
-  url="/app/zakupka"
-  callbackBeforeInitTable="callbackBeforeDone"
-  filter="callbackFilter"
-  callbackAfterInitTable="callbackAfterDone"
-  addNevRow="callbackAddNewRow"
-  callbackAfterWrite="callbackAfterWrite"
-  append="up"
-  init
-  header
->
-  <tr class="config" style="display: none">
-    <td title="Дата" name="Дата" headerClass="colunmDate" class="colunmDate" style="width: 25%; white-space: normal">
-      <div class="dataCell textAlignCenter" mask="DD.MM HH:mm" typeData="date"></div>
-    </td>
-    <td title="Текст заявки" name="ТекстЗаявки" style="width: 55%">
-      <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
-    </td>
-    <td title="Автор" name="АвторЗаявки" headerClass="colunmAuthor" class="colunmAuthor" style="width: 30%">
-      <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
-    </td>
-    <td title="Статус" name="СтатусЗаявки" headerClass="colunmStatus" class="colunmStatus" style="width: 15%">
-      <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
-    </td>
-  </tr>
+<!-- template for tile -->
+<style>
+  .tileContainer {
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 8px;
+    padding: 5px 5px 1px 5px;
+    box-shadow: 2px 3px 5px #999;
+  }
 
-  <tr id="infoRow" class="hide">
-    <td colspan="3" style="background-color: aliceblue">
-      <div id="infoForm">
-        <div style="display: flex; margin: 5px 0; padding: 5px 0px">
-          Номер:
-          <div id="kod"></div>
-          Статус:
-          <div id="status"></div>
-          <div id="priority"></div>
-        </div>
-        <div id="textFull"></div>
-        <div id="buttons" style="display: flex; margin-bottom: 20px">
-          <button type="button" class="btn btn-secondary" id="cancelZayavka">Отменить</button>
-          <button type="button" class="btn btn-success" id="doneZayavka">Готово</button>
-        </div>
-        <div id="historyComment"></div>
-        <div id="blockNewComment" style="display: flex; margin: 5px 0">
-          <input
-            id="newComment"
-            type="text"
-            class="form-control"
-            placeholder="новый комментарий..."
-            aria-describedby="basic-addon2"
-          />
-          <div class="input-group-append">
-            <button id="btnAddNewComment" class="btn btn-success" type="button">Сохранить</button>
-          </div>
-        </div>
+  .separateDateLine {
+    display: flex;
+
+    font-size: small;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+
+  .visible {
+    display: flex;
+  }
+
+  .backgroundYellow {
+    background-color: lightyellow;
+  }
+
+  .tile1row {
+    display: flex;
+    font-size: large;
+    margin-bottom: 1px;
+  }
+
+  .tileText {
+    color: black;
+    font-weight: bold;
+    margin-right: 10px;
+    text-wrap: wrap;
+  }
+
+  .tileTopic {
+  }
+
+  .tile2row {
+    display: flex;
+    justify-content: space-between;
+    font-size: small;
+    color: darkgray;
+  }
+
+  .tileStatus {
+    width: 30%;
+  }
+
+  .tileZakupka {
+    width: 20%;
+  }
+  .tileTimer {
+    width: 40%;
+    text-align: end;
+  }
+
+  .tileEye {
+    width: 10%;
+    text-align: end;
+  }
+</style>
+
+<script id="tileTemplate" type="text/x-handlebars-template">
+  <div class='tileContainer {{doneClass}}'>
+    <div class='tile2row'>
+      <div class='tileStatus'>{{date}}</div>
+      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{status}}</div>
+
+      <div class='tileEye'>
+        {{#if showEyeIcon}}
+          <i class='bi bi-eye-slash'></i>
+        {{/if}}
       </div>
-    </td>
-  </tr>
-</table>
+    </div>
+
+    <div class='tile1row'>
+      <div class='tileText'>{{text}}</div>
+    </div>
+
+  </div>
+</script>
+
+<!-- zakupka info -->
+<div id="zakupkaInfo" style="display: none">
+  <div class="commandPanel">
+    <h4 class="titlePage2">Заявка на закупку</h4>
+    <h4 id="orderNum" class="titlePage2">0001</h4>
+    <i id="closeZakupkaInfo" class="bi bi-x-circle commandBtn"></i>
+  </div>
+  <div id="zakupkaContainer">
+    <div class="form-group">
+      <pre id="zakupkaText">Текс закупки</pre>
+    </div>
+    <div class="form-group" id="zakupkaPhoto"></div>
+    <div class="form-group">
+      <label>Дата:</label>
+      <input type="text" readonly class="form-control" id="zakupkaDate" />
+    </div>
+    <div class="form-group">
+      <label>Автор:</label>
+      <input type="text" readonly class="form-control" id="zakupkaAuthor" />
+    </div>
+  </div>
+</div>
 
 <script>
   $(document).ready(function () {
@@ -236,21 +424,18 @@
 
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {
-      console.log('callbackBeforeDone', data);
-
-      if (data.hasOwnProperty('full')) {
-        viewRowAllUsers = data.full;
-      }
-
-      console.log('viewRowAllUsers', viewRowAllUsers);
-
-      if (viewRowAllUsers) {
-        $('.colunmAuthor').show();
-        $('.colunmStatus').hide();
-      } else {
-        $('.colunmAuthor').hide();
-        $('.colunmStatus').show();
-      }
+      // console.log('callbackBeforeDone', data);
+      // if (data.hasOwnProperty('full')) {
+      //   viewRowAllUsers = data.full;
+      // }
+      // console.log('viewRowAllUsers', viewRowAllUsers);
+      // if (viewRowAllUsers) {
+      //   $('.colunmAuthor').show();
+      //   $('.colunmStatus').hide();
+      // } else {
+      //   $('.colunmAuthor').hide();
+      //   $('.colunmStatus').show();
+      // }
     };
 
     // callback после отрисовки таблицы
@@ -269,12 +454,71 @@
 
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
+      let currentRow = $('#' + data.data['uid']);
+      currentRow.attr('uid', data.data['uid']);
+      let cellForTemplate = currentRow.find('td.main');
+
       const cell = $(row).find('div[name="АвторЗаявки"]');
 
       $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
 
       updateHistory();
+
+      const text = data.data.ТекстЗаявки;
+      const date = formatDateTime(data.data.Дата);
+      const status = data.data.СтатусЗаявки;
+
+      const templateData = {
+        text: text,
+        date: date,
+        status: status,
+        showEyeIcon: false,
+      };
+
+      generateFromTemplate('#tileTemplate', templateData, cellForTemplate);
     };
+
+    $('#search').on('input', function () {
+      console.log('search');
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
+      $('.rowData').each(function () {
+        console.log('row', this);
+
+        let found = true;
+        let elements = $(this)
+          .find('.tileText')
+          .map(function () {
+            return { el: $(this) };
+          })
+          .get();
+
+        elements.forEach(element => {
+          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+        });
+
+        if (searchTerms.length > 0) {
+          found = searchTerms.every(term => {
+            const regex = new RegExp(`(${term})`, 'gi');
+            return elements.some(element => {
+              if (element.text.match(regex)) {
+                element.text = element.text.replace(regex, '<mark>$1</mark>');
+                return true;
+              }
+              return false;
+            });
+          });
+        }
+
+        $(this).find('.tileContainer').parent().toggleClass('hide', !found);
+        console.log('parent', $(this).find('.tileContainer').parent());
+
+        elements.forEach(element => {
+          element.el.html(element.text);
+        });
+
+        console.log('elements', elements);
+      });
+    });
 
     $('#textNew').on('change', function () {
       const value = $(this).val();
@@ -286,9 +530,25 @@
       }
     });
 
+    function openNewOrder(time) {
+      console.log('openNewOrder');
+
+      $('#textNew').val(time);
+      $('#main').hide(time);
+      $('#formNew').show(time);
+    }
+
+    function hideNewOrder(time) {
+      $('#formNew').hide(time);
+      $('#main').show(time);
+    }
+
     // клик по кнопке Добавить отчет
     $('#addNew').on('click', function (event) {
       clickAnimate(this);
+
+      openNewOrder();
+      // return;
 
       setTimeout(() => {
         $('#formNew').show(300);
@@ -349,24 +609,58 @@
       }).always(function () {
         NProgress.done();
       });
+
+      hideNewOrder();
     });
 
     $('#cancelNew').on('click', function (event) {
       clickAnimate(this);
+      hideNewOrder();
 
-      setTimeout(() => {
-        $('#formNew').hide(300);
-      }, 200);
-      setTimeout(() => {
-        $('#addNew').show(300);
-      }, 200);
+      $('#formNew').hide();
+
+      $('#addNew').show();
     });
 
+    function openZakupkaInfo(zakupkaUID) {
+      $('#main').hide();
+      $('#zakupkaInfo').show();
+    }
+
+    function closeZakupkaInfo() {
+      $('#zakupkaInfo').hide();
+      $('#main').show();
+    }
+
+    $('#closeZakupkaInfo').on('click', function () {
+      closeZakupkaInfo();
+    });
     $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
       console.log('click rowData');
 
       let curentRowID = $(this).attr('id');
       let prevRowID = $('#infoRow').attr('curentRow') || '';
+      console.log('current row', $(this), $(this).attr('uid'));
+      const zakupkaUID = $(this).attr('uid');
+
+      universalRequest(
+        '/app/zakupka',
+        'GET',
+        {},
+        { uid: zakupkaUID },
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+        },
+        function onComplete() {
+          console.log('Request completed');
+        }
+      );
+
+      openZakupkaInfo();
+      return;
 
       if (curentRowID === prevRowID) {
         $('#infoRow').toggleClass('hide', true);
@@ -396,6 +690,16 @@
         updateHistory();
       }
     });
+
+    function renderZakupkaInfo(data) {
+      const uid = data.data.uid;
+      const zakupkaText = data.data.ТекстЗаявки;
+      const zakupkaDate = data.data.Дата;
+      const zakupkaAuthor = data.data.Сотрудник.Наименование;
+
+      $('#zakupkaInfo').attr('uid', uid);
+      $('#zakupkaText').val(`${date}`);
+    }
 
     function updateHistory() {
       let curentrow = $('#infoRow').attr('curentrow') || '';
