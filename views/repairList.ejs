@@ -2185,33 +2185,6 @@
       }
     }
 
-    function sendDataTo1C(data, method = 'GET', callback) {
-      universalRequest(
-        '/app/repairOrder',
-        method,
-        data,
-        {},
-        function onSuccess(response) {
-          console.log('Success callback:', response);
-          if (response.error) {
-            toastr.error('Помилка звязку', response['Причина']);
-          } else {
-            toastr.success('Дані сохранено');
-            if (typeof callback === 'function') {
-              callback(response);
-            }
-          }
-        },
-        function onError(error) {
-          console.log('Error callback:', error);
-          toastr.error('Error', error);
-        },
-        function onComplete() {
-          console.log('Request completed');
-        }
-      );
-    }
-
     function putDataTo1C(fieldId, fieldName) {
       $(`${fieldId}`).on('blur', function () {
         const data = currentRowJQ.data('data');
