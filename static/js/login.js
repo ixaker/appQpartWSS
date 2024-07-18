@@ -1,7 +1,9 @@
 const video = document.getElementById('video');
 const canvas = document.createElement('canvas');
 let oldPageUID = localStorage.getItem('PageUID') || false;
-const haveDeviceCamera = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+const hasDeviceCamera = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+console.log('hasDeviceCamera', hasDeviceCamera);
+
 
 let loadedDataListeners = true;
 
@@ -9,7 +11,7 @@ var couterRequest = 0;
 
 function startCamera() {
     console.log("start startCamera");
-    if (haveDeviceCamera) {
+    if (hasDeviceCamera) {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
             video.srcObject = stream;
 
