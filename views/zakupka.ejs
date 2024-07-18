@@ -660,6 +660,9 @@
       );
 
       openZakupkaInfo();
+      const data = $(this).data('data');
+      renderZakupkaInfo(data);
+
       return;
 
       if (curentRowID === prevRowID) {
@@ -694,11 +697,13 @@
     function renderZakupkaInfo(data) {
       const uid = data.data.uid;
       const zakupkaText = data.data.ТекстЗаявки;
-      const zakupkaDate = data.data.Дата;
+      const zakupkaDate = formatDateTime(data.data.Дата);
       const zakupkaAuthor = data.data.Сотрудник.Наименование;
 
       $('#zakupkaInfo').attr('uid', uid);
-      $('#zakupkaText').val(`${date}`);
+      $('#zakupkaText').val(zakupkaText);
+      $('#zakupkaDate').val(zakupkaDate);
+      $('#zakupkaAuthor').val(zakupkaAuthor);
     }
 
     function updateHistory() {
