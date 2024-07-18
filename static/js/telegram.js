@@ -3,6 +3,8 @@
 // Объявляем переменные chatId и botToken
 const chatId = "672754822";
 const botToken = "5506317678:AAEst0pLX1pEIEDqTCqGZ8ZVk-DMj6nx278";
+const botTokenForPhoto = "5963182008:AAEAaqku-cJbC6Er7GHgYtVOZuR-8QO1fps";
+
 
 // Функция отправки сообщения (текстового или с фотографией)
 function sendToTelegram(message, file = null) {
@@ -53,8 +55,10 @@ function sendTextToTelegram(message) {
 
 // Функция отправки фотографии
 function sendPhotoToTelegram(message, file) {
-    const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+    const url = `https://api.telegram.org/bot${botTokenForPhoto}/sendPhoto`;
     const formData = new FormData();
+    message = '‼️' + message;
+    console.log('message', message);
     formData.append('chat_id', chatId);
     formData.append('caption', message);
     formData.append('photo', file);
