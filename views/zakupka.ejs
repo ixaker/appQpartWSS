@@ -388,6 +388,8 @@
 
 <script>
   $(document).ready(function () {
+    let tableID = '#ЗаявкаНаЗакупку';
+    $(tableID).data('param', { active: true });
     var viewRowAllUsers = false;
 
     initTables();
@@ -647,7 +649,7 @@
         '/app/zakupka',
         'GET',
         {},
-        { uid: zakupkaUID },
+        { doc: zakupkaUID },
         function onSuccess(response) {
           console.log('Success callback:', response);
         },
