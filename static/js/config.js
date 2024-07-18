@@ -379,3 +379,53 @@ function universalRequest(url, method = 'GET', payload = {}, params = {}, onSucc
         if (typeof onError === 'function') { onError(ajaxError); }
     }
 }
+
+function sendDataTo1C(data, method = 'GET', callback) {
+    universalRequest(
+        '/app/repairOrder',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+            console.log('Success callback:', response);
+            if (response.error) {
+                toastr.error('Помилка звязку', response['Причина']);
+            } else {
+                toastr.success('Дані сохранено');
+                if (typeof callback === 'function') {
+                    callback(response);
+                }
+            }
+        },
+        function onError(error) {
+            console.log('Error callback:', error);
+            toastr.error('Error', error);
+        },
+        function onComplete() {
+            console.log('Request completed');
+        }
+    );
+}
+
+function sortHandler1(selector, sortValue, defaultSortDirection, tableID) {
+    $(selector).on('click', function () {
+        console.log('sortHandler', this);
+
+        const sort = $(tableID).attr('sort') || '0';
+        let sortDirection = $(tableID).attr('sortDirection') || defaultSortDirection;
+        if (sort === sortValue) {
+            sortDirection = sortDirection === '0' ? '1' : '0';
+        } else {
+            sortDirection = defaultSortDirection;
+        }
+
+        $(tableID).attr('sort', sortValue);
+        $(tableID).attr('sortDirection', sortDirection);
+
+        $(tableID).trigger('sorton', [[[parseInt(sortValue), parseInt(sortDirection)]]]);
+        // $(`th.${sortClass}`).click();
+        $('#sortList').hide();
+        $('#sortList').toggleClass('active');
+
+    });
+}
