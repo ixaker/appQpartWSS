@@ -235,14 +235,24 @@ app.post('/authorizationByPassword', async (req, res) => {
     log.info('authorizationByPassword req.body', req.body);
     const { username, password } = req.body;
     const baseUrl = process.env.BASE_URL.replace(/^http?:\/\//, '');
+    const Authorization = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+    authHeaders = {
+      'Authorization': Authorization,
+    }
     // const url = 'http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication';
     // const url = 'http://Holub:1@10.8.0.3:23456/Production/hs/client/authentication';
     // const url = 'http://Holub:1@10.8.0.3:80/Production/hs/client/authentication';
-    const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
+    // const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
+    const url = `http://${baseUrl}/${base}/hs/client/authentication`
     // const url = `http://${username}:${password}@ http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication/${base}/hs/client/authentication`
 
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      headers: authHeaders,
+    });
+
     log.info('url', url);
-    const response = await axios.get(url);
 
     if (response.status === 200) {
       let result = { detectUser: true };
