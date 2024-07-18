@@ -8,7 +8,6 @@ $(document).ready(function () {
 
     let nextEvent = '';
     hammerGlobal.on('panstart', function (event) {
-        console.log('swipejs panstart');
         const end = event.center.x;
         const screenWidth = window.innerWidth;
         if (end < 50 || end > (screenWidth - 50)) {
@@ -19,9 +18,7 @@ $(document).ready(function () {
     });
 
     hammerGlobal.on('panend', function (event) {
-        console.log('swipejs panend')
         if (nextEvent === 'close') {
-            console.log('swipejs panend close')
             window.dispatchEvent(edgeSwipe);
 
             event.srcEvent.preventDefault();
