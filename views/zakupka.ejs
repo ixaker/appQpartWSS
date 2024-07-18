@@ -20,9 +20,36 @@
     border: none;
   }
 
-  #modal .form-control {
+  #zakupkaInfo .form-control {
     width: 60%;
     margin-left: auto;
+  }
+
+  #zakupkaContainer {
+    font-size: large;
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .form-group label {
+    margin-bottom: 0;
+    transition: 2s;
+    width: 40%;
+  }
+
+  #doneGroup {
+    justify-content: space-between;
+  }
+
+  #doneGroup label {
+    width: 70%;
+  }
+
+  .pressed {
+    color: darkorange;
   }
 
   .commandBtn {
@@ -170,7 +197,7 @@
             <ul>
               <li id="sortSrok">срок</li>
               <li id="sortStatus">статус</li>
-              <li id="sortStanok">станок</li>
+              <li id="sortPriority">приоритет</li>
               <li id="sortDate">дата</li>
             </ul>
           </div>
@@ -193,17 +220,25 @@
     append="up"
     init
     header
+    sort="0"
   >
     <tr class="config" style="display: none">
-      <td
-        title="Дата"
-        name="Дата"
-        headerClass="colunmDate"
-        class="colunmDate"
-        style="width: 25%; white-space: normal; display: none"
-      >
-        <div class="dataCell textAlignCenter" mask="DD.MM HH:mm" typeData="date"></div>
+      <td title="ПлановаяДата" name="ПлановаяДата" id="srokSort" headerClass="srokSort" style="display: none">
+        <div class="dataCell"></div>
       </td>
+
+      <td title="СтатусЗаявки" name="СтатусЗаявки" id="statusSort" headerClass="statusSort" style="display: none">
+        <div class="dataCell"></div>
+      </td>
+
+      <td title="Приоритет" name="Приоритет" id="prioritySort" headerClass="prioritySort" style="display: none">
+        <div class="dataCell"></div>
+      </td>
+
+      <td title="Дата" name="Дата" id="dateSort" headerClass="dateSort" style="display: none">
+        <div class="dataCell"></div>
+      </td>
+
       <td title="Текст заявки" class="main" name="ТекстЗаявки" style="width: 55%"></td>
       <td
         title="Автор"
@@ -259,6 +294,102 @@
   </table>
 </div>
 
+<style>
+  .applicationForm {
+    position: relative;
+    margin: 20px auto 40px auto;
+    background-color: aliceblue;
+    max-width: 600px;
+    min-width: 320px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 0.5rem;
+  }
+
+  .applicationTitle {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  #orderButtonGroup {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #newOrderButtonGroup {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  #formZakupka #orderButtonGroup {
+    flex-direction: column;
+  }
+
+  #statusZakupka {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #statusZakupka label {
+    font-size: 1.25rem;
+  }
+
+  #statusZakupka .btn-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .btn-container button {
+    flex: 1;
+  }
+
+  #groupButton {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .applicationText {
+    font-size: 1.25rem;
+    width: 100%;
+  }
+</style>
+
+<div id="formZakupka" class="applicationForm" style="display: none">
+  <div class="applicationTitle">Новая заявка на закупку</div>
+  <textarea class="applicationText form-control" id="newZakupkaText" rows="3" placeholder="Текст заявки..."></textarea>
+
+  <div class="form-group" id="orderButtonGroup">
+    <!-- <button type="button" class="btn btn-secondary btn-lg" id="setPriorityZakupka">Срочно</button> -->
+    <div id="statusZakupka">
+      <label class="form-label">Приоритет:</label>
+      <div class="btn-container">
+        <input type="hidden" id="priority" name="priority" value="Нормально" />
+        <button type="button" class="btn btn-secondary" id="srochno" data-priority="Срочно">Срочно</button>
+        <button type="button" class="btn btn-secondary" id="now" data-priority="На сейчас">На сейчас</button>
+      </div>
+    </div>
+
+    <div id="groupButton">
+      <button type="button" class="btn btn-secondary btn-lg" id="cancelZakupka">Отмена</button>
+      <button type="button" class="btn btn-success btn-lg" id="saveZakupka">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <div id="formNew" class="formContainer" style="display: none">
   <h5 class="formTitle">Новая заявка на закупку</h5>
 
@@ -302,36 +433,80 @@
     background-color: lightyellow;
   }
 
+  .tileNumber {
+    width: 15%;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .tileAuthor {
+    width: 42%;
+  }
+
+  .tileExecutor {
+    width: 43%;
+  }
+
+  .tileMarkValue {
+    display: flex;
+    flex-direction: row;
+  }
+  .tileMark {
+    color: gray;
+    font-size: small;
+    margin-right: 3px;
+  }
+
+  .tileValue {
+    color: gray;
+    font-size: small;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   .tile1row {
     display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     font-size: large;
-    margin-bottom: 1px;
+    margin-bottom: 3px;
+    gap: 10px;
   }
 
   .tileText {
     color: black;
-    font-weight: bold;
+    font-size: medium;
+    font-weight: normal;
     margin-right: 10px;
     text-wrap: wrap;
   }
 
-  .tileTopic {
+  .tileText a {
+    color: darkblue;
+    font-size: smaller;
   }
 
   .tile2row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     font-size: small;
     color: darkgray;
+    margin-bottom: 5px;
+  }
+
+  .tile3row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: small;
+    margin-bottom: 1px;
   }
 
   .tileStatus {
     width: 30%;
   }
 
-  .tileZakupka {
-    width: 20%;
-  }
   .tileTimer {
     width: 40%;
     text-align: end;
@@ -345,10 +520,29 @@
 
 <script id="tileTemplate" type="text/x-handlebars-template">
   <div class='tileContainer {{doneClass}}'>
-    <div class='tile2row'>
-      <div class='tileStatus'>{{date}}</div>
-      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{status}}</div>
+    <div class='tile1row'>
+      <div class='tileMarkValue tileNumber'>
+        <div class='tileMark'>N</div>
+        <div class='tileValue'>{{orderNumber}}</div>
+      </div>
+      <div class='tileAuthor tileMarkValue'>
+        <div class='tileMark'>от: </div>
+        <div class='tileValue'>{{author}}</div>
+      </div>
+      <div class='tileMarkValue tileExecutor'>
+        <div class='tileMark'>закупщик: </div>
+        <div class='tileValue'>{{executor}}</div>
+      </div>
+    </div>
 
+    <div class='tile2row'>
+      <div class='tileText'>{{{text}}}</div>
+    </div>
+
+    <div class='tile3row'>
+      <div class='tileStatus'>{{status}}</div>
+      <div class='tilePriority'>Приоритет: {{priority}}</div>
+      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{term}}</div>
       <div class='tileEye'>
         {{#if showEyeIcon}}
           <i class='bi bi-eye-slash'></i>
@@ -356,14 +550,35 @@
       </div>
     </div>
 
-    <div class='tile1row'>
-      <div class='tileText'>{{text}}</div>
-    </div>
-
   </div>
 </script>
 
 <!-- zakupka info -->
+<style>
+  #zakupkaText {
+    text-wrap: wrap;
+    border: 1px solid lightgrey;
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0;
+    background-color: white;
+    font-size: large;
+    font-family: inherit;
+    color: #495057;
+    white-space: pre-wrap;
+  }
+
+  #zakupkaPhoto {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+</style>
+
 <div id="zakupkaInfo" style="display: none">
   <div class="commandPanel">
     <h4 class="titlePage2">Заявка на закупку</h4>
@@ -381,14 +596,266 @@
     </div>
     <div class="form-group">
       <label>Автор:</label>
-      <input type="text" readonly class="form-control" id="zakupkaAuthor" />
+      <div id="zakupkaAuthor" class="form-control" style=""></div>
+    </div>
+    <div class="form-group">
+      <label for="status">Статус:</label>
+      <select id="zakupkaStatus" class="form-control">
+        <option value="Ремонт">Ремонт</option>
+        <option value="Выполнена">Выполнена</option>
+      </select>
+    </div>
+    <div class="form-group" id="doneGroup">
+      <label for="done">Закупка выполнена:</label>
+      <input
+        type="checkbox"
+        class="form-control"
+        id="done"
+        aria-describedby="basic-addon3"
+        data-editable="true"
+        readonly
+      />
     </div>
   </div>
+
+  <style>
+    #actions {
+      font-size: xxx-large;
+      color: darkgreen;
+      margin-right: 0px;
+      margin-top: auto;
+      /* width: 74px; */
+      line-height: 55px;
+      padding: 10px 10px 5px 0;
+      align-self: flex-end;
+    }
+
+    #sendComment {
+    }
+
+    #attachPhoto {
+    }
+
+    #commentForm {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background-color: white;
+      border-radius: 12px 12px 12px 12px !important;
+      margin-bottom: 10px !important;
+    }
+
+    #comment {
+      border: none;
+      font-size: large;
+      resize: none;
+      border-radius: 12px;
+      align-self: flex-start;
+    }
+
+    #attachedFiles {
+      display: none;
+      gap: 5px;
+      padding: 5px;
+    }
+
+    .attachedImg {
+      width: 46px;
+      height: 60px;
+      position: relative;
+      border: 1px solid;
+      align-items: center;
+      display: flex;
+      margin-bottom: 1rem;
+      flex: 0 0 auto;
+    }
+
+    #showViews {
+      display: none;
+      margin: 0 auto 10px;
+      font-size: 0.8rem;
+      border-radius: 5px;
+      padding: 3px 10px;
+      background-color: white;
+      text-align: center;
+      width: fit-content;
+    }
+  </style>
+
+  <div class="input-group" id="commentForm">
+    <textarea class="form-control" id="comment" rows="1" placeholder="написать сообщение..."></textarea>
+    <div id="actions">
+      <i class="bi bi-send" id="sendComment"></i>
+    </div>
+  </div>
+
+  <div id="formContainer" style="display: none"></div>
+
+  <div id="showViews">показать просмотры</div>
+  <div id="avatarViewContainer"></div>
+  <div id="historyContainer"></div>
 </div>
+
+<!-- card styles -->
+<style>
+  .card {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    max-width: 600px;
+    background-color: inherit;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .view-card {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+    display: none;
+  }
+
+  .view-card .card-body {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .view-card .card-head {
+    width: 70%;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .view-card .card-author {
+    width: 60%;
+  }
+
+  .view-card .card-text {
+    color: darkgrey;
+    font-size: 0.7em;
+  }
+
+  .view-card .card-date {
+    font-size: 0.7em;
+    color: darkgrey;
+  }
+
+  .card-author,
+  .card-author:link,
+  .card-author:visited,
+  .card-author:hover,
+  .card-author:active {
+    font-weight: bold;
+    color: #8275eb;
+    font-size: 0.9em;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .card-avatar {
+    border-radius: 50%;
+    background-color: white;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-avatar.selected {
+    border: 2px solid darkgreen;
+  }
+
+  .card-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .card-body {
+    background-color: white;
+    border-radius: 0px 12px 12px 12px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: min-content;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-text {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .card-date {
+    font-size: 0.7em;
+    color: darkgrey;
+    text-align: right;
+  }
+
+  #choiceDifficult {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cardLabel {
+    margin: 0;
+  }
+
+  #commandBtns {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .select {
+    font-weight: bold;
+    color: darkred;
+  }
+</style>
+
+<!-- Шаблон картки -->
+<script id="card-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='card {{additionalClass}}' uid='{{avatar}}'>
+      <div class='card-avatar' uid='{{avatar}}'>
+        <img
+          src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
+          onerror="this.onerror=null;this.src='/img/avatar.png';"
+          alt='avatar'
+        />
+
+      </div>
+      <div class='card-body'>
+        <div class='card-head'>
+          <a href='tel:{{tel}}' class='card-author'>{{author}}</a>
+          <div class='card-date'>{{date}}</div>
+        </div>
+
+        <p class='card-text'>{{text}}</p>
+
+      </div>
+    </div>
+  {{/each}}
+</script>
 
 <script>
   $(document).ready(function () {
     let tableID = '#ЗаявкаНаЗакупку';
+    let currentRowJQ;
     $(tableID).data('param', { active: true });
     var viewRowAllUsers = false;
 
@@ -457,7 +924,9 @@
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
       let currentRow = $('#' + data.data['uid']);
-      currentRow.attr('uid', data.data['uid']);
+      console.log('data.list.uid', data, data.data['uid']);
+
+      // currentRow.attr('uid', data.data['uid']);
       let cellForTemplate = currentRow.find('td.main');
 
       const cell = $(row).find('div[name="АвторЗаявки"]');
@@ -466,15 +935,28 @@
 
       updateHistory();
 
+      const orderNumber = data.data.НомерЗаявки || '2034';
+      const author = data.data.Сотрудник.Наименование;
+      const executor = data.data.ОтветственыйСнабженец.Наименование || 'не назначен';
       const text = data.data.ТекстЗаявки;
-      const date = formatDateTime(data.data.Дата);
       const status = data.data.СтатусЗаявки;
+      const priority = data.data.Приоритет;
+      const term = '';
+      const showEyeIcon = false;
+      const linkedText = text.replace(
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+        '<a href="$1" target="_blank">$1</a>'
+      );
 
       const templateData = {
-        text: text,
-        date: date,
+        orderNumber: orderNumber,
+        author: author,
+        executor: executor,
+        text: linkedText,
         status: status,
-        showEyeIcon: false,
+        priority: priority,
+        term: term,
+        showEyeIcon: showEyeIcon,
       };
 
       generateFromTemplate('#tileTemplate', templateData, cellForTemplate);
@@ -488,7 +970,7 @@
 
         let found = true;
         let elements = $(this)
-          .find('.tileText')
+          .find('.tileText, .tileValue, .tileStatus, .tilePriority')
           .map(function () {
             return { el: $(this) };
           })
@@ -535,22 +1017,62 @@
     function openNewOrder(time) {
       console.log('openNewOrder');
 
-      $('#textNew').val(time);
+      $('#newZakupkaText').val(time);
       $('#main').hide(time);
-      $('#formNew').show(time);
+      $('#formZakupka').show(time);
     }
 
     function hideNewOrder(time) {
-      $('#formNew').hide(time);
+      $('#formZakupka').hide(time);
       $('#main').show(time);
     }
 
-    // клик по кнопке Добавить отчет
+    $('#btnSort').on('click', function () {
+      let sortList = $('#sortList');
+      clickAnimate(this);
+
+      sortList.toggle();
+      sortList.toggleClass('active');
+    });
+
+    sortHandler1('#sortSrok', '0', '0', tableID);
+    sortHandler1('#sortStatus', '1', '0', tableID);
+    sortHandler1('#sortPriority', '2', '0', tableID);
+    sortHandler1('#sortDate', '3', '', tableID);
+
+    $('#btnDone').on('click', function (event) {
+      console.log('btnDone click');
+      clickAnimate(this);
+      const activeOrders = !$(tableID).data('param').active;
+      newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
+      /*       $('#dateSort').attr('name', newAttr);
+      $('#dateSort').attr('dddd', newAttr); */
+
+      /*       let element = document.getElementById('dateSort');
+      element.setAttribute('name', newAttr); */
+
+      const tableJQ = $(tableID);
+      tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
+
+      let newSrc = activeOrders
+        ? `img/check-circle.svg?v=<%= version %>`
+        : `img/check-circle-done.svg?v=<%= version %>`;
+      $('#btnDone').attr('src', newSrc);
+      $('#btnDone').toggleClass('pressed', !activeOrders);
+      $(tableID).data('param', { active: activeOrders });
+      $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
+      $('#statusMark').toggleClass('pressed', !activeOrders);
+      abortAllRequests();
+      initTable(tableID);
+      console.log('state of params ', $(tableID).data('param').active);
+    });
+
+    // клик по кнопке Добавить закупку
     $('#addNew').on('click', function (event) {
       clickAnimate(this);
 
       openNewOrder();
-      // return;
+      return;
 
       setTimeout(() => {
         $('#formNew').show(300);
@@ -624,6 +1146,86 @@
       $('#addNew').show();
     });
 
+    function addZakupka() {
+      $('#modal').hide();
+      $('#formZakupka').show();
+    }
+
+    $('#btnAddZakupka').on('click', function () {
+      $('#newZakupkaText').val('');
+      setValid('#textNew', false);
+      let priority = '';
+
+      $('#setPriorityZakupka').removeClass('btn-danger');
+      $('#setPriorityZakupka').addClass('btn-secondary');
+      $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-secondary');
+      statusZakupka = '';
+
+      addZakupka();
+      history.pushState({ page: 'formZakupka' }, '', '');
+      $('#newZakupkaText').focus();
+    });
+
+    $('#cancelZakupka').on('click', function (event) {
+      hideNewOrder();
+    });
+
+    function toggleStatusButtons(element) {
+      if (element.hasClass('active')) {
+        priority = 'Нормально';
+        element.removeClass('active btn-danger').addClass('btn-secondary');
+        console.log('has class active');
+      } else {
+        $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-secondary');
+        $(element).removeClass('btn-secondary').addClass('btn-danger active');
+        console.log('dont has class active');
+      }
+
+      console.log(element);
+    }
+
+    let priority = 'Нормально';
+    $('#srochno').on('click', () => {
+      priority = 'Срочно';
+      toggleStatusButtons($('#srochno'));
+    });
+    $('#now').on('click', () => {
+      priority = 'НаСейчас';
+      toggleStatusButtons($('#now'));
+    });
+
+    $('#saveZakupka').on('click', function () {
+      console.log('saveZakupka on click');
+      clickAnimate(this);
+      const zakupkaText = $('#newZakupkaText').val();
+      const srochno = $('#setPriorityZakupka').hasClass('btn-danger');
+      const currentRow = $('#modal').data('data');
+
+      const data = {
+        textNew: zakupkaText,
+        priority: priority,
+        srochno: false,
+      };
+
+      NProgress.start();
+      console.log('data', data);
+      console.log('statusZakupka', statusZakupka);
+
+      requestTo1C('/zakupka', 'POST', data, function (response) {
+        console.log('Callback executed with response:', response);
+        closeZakupkaInfo();
+      });
+      priority = 'Нормально';
+    });
+
+    $('#setPriorityZakupka').on('click', function (event) {
+      if ($(this).hasClass('btn-secondary')) {
+        $(this).switchClass('btn-secondary', 'btn-danger');
+      } else {
+        $(this).switchClass('btn-danger', 'btn-secondary');
+      }
+    });
+
     function openZakupkaInfo(zakupkaUID) {
       $('#main').hide();
       $('#zakupkaInfo').show();
@@ -637,75 +1239,152 @@
     $('#closeZakupkaInfo').on('click', function () {
       closeZakupkaInfo();
     });
-    $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
-      console.log('click rowData');
 
-      let curentRowID = $(this).attr('id');
-      let prevRowID = $('#infoRow').attr('curentRow') || '';
-      console.log('current row', $(this), $(this).attr('uid'));
-      const zakupkaUID = $(this).attr('uid');
+    // $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
+    //   console.log('click rowData');
 
-      universalRequest(
-        '/app/zakupka',
-        'GET',
-        {},
-        { doc: zakupkaUID },
-        function onSuccess(response) {
-          console.log('Success callback:', response);
-        },
-        function onError(error) {
-          console.log('Error callback:', error);
-        },
-        function onComplete() {
-          console.log('Request completed');
-        }
-      );
+    //   let curentRowID = $(this).attr('id');
+    //   let prevRowID = $('#infoRow').attr('curentRow') || '';
+    //   currentRowJQ = $(this);
+    //   const data = $(this).data('data');
 
-      openZakupkaInfo();
-      const data = $(this).data('data');
-      renderZakupkaInfo(data);
+    //   let dataforZakupkaInfo;
+    //   universalRequest(
+    //     '/app/zakupka',
+    //     'PATCH',
+    //     data,
+    //     { doc: curentRowID },
+    //     function onSuccess(response) {
+    //       console.log('Success callback:', response);
+    //       openZakupkaInfo();
+    //       renderZakupkaInfo(response.order);
+    //       const cardsData = response.order.data.ИсторияКомментариев;
+    //       const cardsForTemplate = getCardsForTemplate(cardsData);
+    //       generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+    //     },
+    //     function onError(error) {
+    //       console.log('Error callback:', error);
+    //     },
+    //     function onComplete() {
+    //       console.log('Request completed');
+    //     }
+    //   );
 
-      return;
+    //   // renderZakupkaInfo(dataforZakupkaInfo);
 
-      if (curentRowID === prevRowID) {
-        $('#infoRow').toggleClass('hide', true);
-        $('#infoRow').attr('curentRow', '');
-      } else {
-        $('#infoRow').toggleClass('hide', false);
-        $('#infoRow').attr('curentRow', curentRowID);
-        $('#infoRow').insertAfter(this);
+    //   return;
 
-        let data = $(this).data('data').data;
+    //   if (curentRowID === prevRowID) {
+    //     $('#infoRow').toggleClass('hide', true);
+    //     $('#infoRow').attr('curentRow', '');
+    //   } else {
+    //     $('#infoRow').toggleClass('hide', false);
+    //     $('#infoRow').attr('curentRow', curentRowID);
+    //     $('#infoRow').insertAfter(this);
 
-        $('#kod').text(data['Номер']);
-        $('#status').text(data['СтатусЗаявки']);
+    //     let data = $(this).data('data').data;
 
-        if (data['Приоритет'] === 'Срочно') {
-          $('#priority').text('Срочно');
-          $('#priority').addClass('srochno');
-        } else {
-          $('#priority').text('');
-          $('#priority').removeClass('srochno');
-        }
+    //     $('#kod').text(data['Номер']);
+    //     $('#status').text(data['СтатусЗаявки']);
 
-        $('#newComment').val('');
-        setValid('#newComment', false);
+    //     if (data['Приоритет'] === 'Срочно') {
+    //       $('#priority').text('Срочно');
+    //       $('#priority').addClass('srochno');
+    //     } else {
+    //       $('#priority').text('');
+    //       $('#priority').removeClass('srochno');
+    //     }
 
-        $('#textFull').text(data['ТекстЗаявки']);
-        updateHistory();
+    //     $('#newComment').val('');
+    //     setValid('#newComment', false);
+
+    //     $('#textFull').text(data['ТекстЗаявки']);
+    //     updateHistory();
+    //   }
+    // });
+
+    $('#sendComment').on('click', function () {
+      clickAnimateColor(this);
+      console.log('sendComment', currentRowJQ.data('data'));
+      let data = currentRowJQ.data('data');
+      data.edited['Комментарий'] = $('#comment').val();
+      if ($('#comment').val() === '') {
+        return;
       }
+      console.log(data.edited);
+
+      sendDataTo1C(data, 'PUT');
+      $('#comment').val('');
     });
 
+    function fillSelectOprions(optionsList, selectId) {
+      console.log('optionsList', optionsList);
+
+      $(selectId).empty();
+      optionsList.forEach(function (option) {
+        $(selectId).append(
+          $('<option>', {
+            value: option.value,
+            text: option.text,
+          })
+        );
+      });
+    }
+
     function renderZakupkaInfo(data) {
+      console.log('renderZakupkaInfo', data.data.uid);
+
       const uid = data.data.uid;
       const zakupkaText = data.data.ТекстЗаявки;
       const zakupkaDate = formatDateTime(data.data.Дата);
       const zakupkaAuthor = data.data.Сотрудник.Наименование;
+      const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона;
+      const zakupkaStatus = data.data.СтатусЗаявки;
+
+      const statusList = $(tableID).data('response').listStatus;
+      console.log('statusList', statusList);
+
+      fillSelectOprions(statusList, '#zakupkaStatus');
+
+      const linkedText = zakupkaText.replace(
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+        '<a href="$1" target="_blank">$1</a>'
+      );
+
+      $('#zakupkaText').html(linkedText);
 
       $('#zakupkaInfo').attr('uid', uid);
-      $('#zakupkaText').val(zakupkaText);
       $('#zakupkaDate').val(zakupkaDate);
-      $('#zakupkaAuthor').val(zakupkaAuthor);
+
+      const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
+      $('#zakupkaAuthor').html(authorLink);
+      $('#zakupkaStatus').val(zakupkaStatus);
+    }
+
+    function getCardsForTemplate(data) {
+      console.log('getCardsForTemplate data', data);
+
+      let cards = [];
+      data.forEach(element => {
+        const card = {
+          additionalClass: element.Просмотр ? 'view-card' : '',
+          text: element.Комментарий,
+          date: formatDateTime(element.Дата),
+          avatar: element['Сотрудник']['uid'],
+          author: element['Сотрудник']['Наименование'],
+          tel: element['Сотрудник']['ОсновнойНомерТелефона'],
+        };
+
+        if (element.Просмотр) {
+          if (user.uid === element['Сотрудник']['uid']) {
+            return;
+          }
+        }
+
+        cards.push(card);
+      });
+
+      return cards;
     }
 
     function updateHistory() {
