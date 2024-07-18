@@ -3,10 +3,6 @@
     max-width: 500px;
     margin: 0 auto;
   }
-  .titlePage {
-    font-size: x-large;
-    position: relative;
-  }
 
   thead {
     display: none;
@@ -14,29 +10,6 @@
 
   td {
     height: 0;
-  }
-
-  /*   .titlePage::after {
-    content: attr(data-status);
-    font-size: x-small;
-    background-color: aliceblue;
-    top: -20px;
-    right: 20%;
-    padding: 2px 3px;
-    position: relative;
-  } */
-
-  .status {
-    position: relative;
-    font-size: x-small;
-    border-radius: 5px;
-    padding: 3px;
-    top: -5px;
-    text-align: end;
-    display: block;
-    text-align: end;
-    display: block;
-    color: darkgreen;
   }
 
   .eye-container {
@@ -162,146 +135,9 @@
     border: none;
   }
 
-  #commandPanel {
-    margin-bottom: 9px;
-  }
-
-  .commandPanel {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-  }
-
-  .titleContainer {
-    align-self: flex-start;
-  }
-
-  .commandRow {
-    display: flex;
-    position: relative;
-    align-items: center;
-    align-self: flex-end;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .groupSearch {
-    width: 170px;
-    border: 1px solid #aaa;
-    background-color: #fff;
-    display: flex;
-    align-items: center;
-    font-size: large;
-  }
-
-  #groupSearch {
-    margin: 0;
-  }
-
-  .groupSearch:focus-within {
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  }
-
-  #search {
-    border: none;
-    line-height: 100%;
-    height: 100%;
-    padding-right: 0;
-  }
-  #searchInput {
-    box-shadow: none;
-  }
-
-  #search:focus {
-    box-shadow: none;
-  }
-
-  #search-addon {
-    background-color: #fff;
-  }
-
-  .groupSearch input {
-    border: none;
-  }
-
   mark {
     background: yellow;
     padding: 0;
-  }
-
-  .btnContainer {
-    margin-left: auto;
-    margin-right: 0;
-    display: flex;
-    gap: 10px;
-  }
-
-  .commandImg {
-    height: 100%;
-    width: 48px;
-  }
-
-  #sortContainer {
-    position: relative;
-  }
-
-  #sortList {
-    display: none;
-    height: 0;
-    position: absolute;
-    font-size: x-large;
-    width: max-content;
-    padding: 10px;
-    top: 100%;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 01s, visibility 0.3s, transform 0.3s ease-out;
-    transform: translateY(-10px);
-  }
-
-  #sortList.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(5px);
-    height: auto;
-    background-color: rgba(255, 255, 255, 0.9);
-  }
-
-  #sortList ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  #sortList li {
-    padding: 10px 20px 10px 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-  }
-
-  #sortList li:hover {
-    background-color: #f0f0f0;
-  }
-
-  #sortList li::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 10px;
-    background-color: darkgreen;
   }
 
   .pressed {
@@ -381,7 +217,7 @@
 <div id="main">
   <div id="commandPanel" class="commandPanel">
     <div class="titleContainer">
-      <h4 class="titlePage" style="line-height: normal">Заявки на ремонт</h4>
+      <h4 class="titlePage2">Заявки на ремонт</h4>
       <div id="statusMark" class="status">в работе</div>
     </div>
 
@@ -773,8 +609,8 @@
 
 <div id="modal" style="display: none">
   <div class="commandPanel">
-    <h4 class="titlePage">Заявка на ремонт</h4>
-    <h4 id="orderNum" class="titlePage">0001</h4>
+    <h4 class="titlePage2">Заявка на ремонт</h4>
+    <h4 id="orderNum" class="titlePage2">0001</h4>
     <i id="closeBtn" class="bi bi-x-circle commandBtn"></i>
   </div>
 
