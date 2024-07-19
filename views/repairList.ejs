@@ -1493,7 +1493,9 @@
     }
 
     function rewriteDateInSeconds(data, row) {
-      const dateStart = new Date(data.data['Дата']);
+      const elemTd = row.children('#dateSort');
+      const name = elemTd.attr('name');
+      const dateStart = new Date(data.data[name]);
       dateInSeconds = Math.floor(dateStart.getTime() / 1000);
       row.find('.createDate').text(dateInSeconds);
     }
@@ -2301,6 +2303,33 @@
       clickAnimate(this);
       startAttachPhotoVideo(this);
     });
+
+    function sendDataTo1C(data, method = 'GET', callback) {
+      universalRequest(
+        '/app/repairOrder',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Дані сохранено');
+            if (typeof callback === 'function') {
+              callback(response);
+            }
+          }
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+          toastr.error('Error', error);
+        },
+        function onComplete() {
+          console.log('Request completed');
+        }
+      );
+    }
   });
 </script>
 
