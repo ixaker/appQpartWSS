@@ -380,32 +380,7 @@ function universalRequest(url, method = 'GET', payload = {}, params = {}, onSucc
     }
 }
 
-function sendDataTo1C(data, method = 'GET', callback) {
-    universalRequest(
-        '/app/repairOrder',
-        method,
-        data,
-        {},
-        function onSuccess(response) {
-            console.log('Success callback:', response);
-            if (response.error) {
-                toastr.error('Помилка звязку', response['Причина']);
-            } else {
-                toastr.success('Дані сохранено');
-                if (typeof callback === 'function') {
-                    callback(response);
-                }
-            }
-        },
-        function onError(error) {
-            console.log('Error callback:', error);
-            toastr.error('Error', error);
-        },
-        function onComplete() {
-            console.log('Request completed');
-        }
-    );
-}
+
 
 function sortHandler1(selector, sortValue, defaultSortDirection, tableID) {
     $(selector).on('click', function () {
@@ -428,4 +403,51 @@ function sortHandler1(selector, sortValue, defaultSortDirection, tableID) {
         $('#sortList').toggleClass('active');
 
     });
+}
+
+function formatSecondToStringTime(seconds) {
+    const isNegative = seconds < 0;
+    seconds = Math.abs(seconds);
+
+    const days = Math.floor(seconds / (24 * 3600));
+    const hours = Math.floor((seconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const sec = Math.floor(seconds % 60);
+
+    const hoursStr = String(hours).padStart(2, '0');
+    const minutesStr = String(minutes).padStart(2, '0');
+    const secondsStr = String(sec).padStart(2, '0');
+
+    const formattedTime = `${days} д ${hoursStr}:${minutesStr}:${secondsStr}`;
+    return isNegative ? `-${formattedTime}` : formattedTime;
+}
+
+
+function formattedTimeToSeconds(formattedTime) {
+    console.log('formattedTimeToSeconds start');
+    console.log('formattedTime', formattedTime);
+
+    const regex = /(-?)\s*(\d+) д (\d{2}):(\d{2}):(\d{2})/;
+    console.log('regex', regex);
+
+    const matches = formattedTime.match(regex);
+    console.log('matches', matches);
+
+
+    if (matches) {
+        const isNegative = matches[1] === '-';
+        const days = parseInt(matches[2], 10);
+        const hours = parseInt(matches[3], 10);
+        const minutes = parseInt(matches[4], 10);
+        const seconds = parseInt(matches[5], 10);
+
+        console.log('matches', matches);
+        console.log('totalSecond', totalSeconds);
+
+        const totalSeconds = days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+        return isNegative ? -totalSeconds : totalSeconds;
+    }
+
+    console.error('Invalid time format:', formattedTime);
+    return 0;
 }
