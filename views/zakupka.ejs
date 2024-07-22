@@ -23,6 +23,9 @@
   #zakupkaInfo .form-control {
     width: 60%;
     margin-left: auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   #zakupkaContainer {
@@ -127,18 +130,12 @@
   }
 
   #kod {
-    /*         border: 1px solid #aaa;
-        border-radius: 3px;
-        padding: 1px 5px; */
     margin-right: 30px;
     font-weight: 600;
     margin-left: 5px;
   }
 
   #status {
-    /*         border: 1px solid #aaa;
-        border-radius: 3px;
-        padding: 1px 5px; */
     margin-right: 30px;
     font-weight: 600;
     margin-left: 5px;
@@ -337,22 +334,38 @@
     width: 100%;
     display: flex;
     justify-content: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
     gap: 10px;
   }
 
   #statusZakupka label {
     font-size: 1.25rem;
+    margin: 0;
   }
 
   #statusZakupka .btn-container {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    width: 100%;
+  }
+
+  #statusZakupka .btn-group {
+    width: 100%;
+  }
+
+  #srochno,
+  #now {
+    border: 1px solid grey;
   }
 
   .btn-container button {
     flex: 1;
+  }
+
+  #attachPhotoVideoForNewOrder {
+    font-size: xxx-large;
+    margin-right: auto;
   }
 
   #groupButton {
@@ -370,36 +383,24 @@
 
 <div id="formZakupka" class="applicationForm" style="display: none">
   <div class="applicationTitle">Новая заявка на закупку</div>
+  <div id="statusZakupka">
+    <label class="form-label">Приоритет:</label>
+    <div class="btn-container">
+      <div class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-light" id="srochno" data-priority="Срочно">Срочно</button>
+        <button type="button" class="btn btn-light" id="now" data-priority="На сейчас">На сейчас</button>
+      </div>
+    </div>
+  </div>
   <textarea class="applicationText form-control" id="newZakupkaText" rows="3" placeholder="Текст заявки..."></textarea>
 
   <div class="form-group" id="orderButtonGroup">
     <!-- <button type="button" class="btn btn-secondary btn-lg" id="setPriorityZakupka">Срочно</button> -->
-    <div id="statusZakupka">
-      <label class="form-label">Приоритет:</label>
-      <div class="btn-container">
-        <input type="hidden" id="priority" name="priority" value="Нормально" />
-        <button type="button" class="btn btn-secondary" id="srochno" data-priority="Срочно">Срочно</button>
-        <button type="button" class="btn btn-secondary" id="now" data-priority="На сейчас">На сейчас</button>
-      </div>
-    </div>
 
     <div id="groupButton">
+      <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
       <button type="button" class="btn btn-secondary btn-lg" id="cancelZakupka">Отмена</button>
       <button type="button" class="btn btn-success btn-lg" id="saveZakupka">Сохранить</button>
-    </div>
-  </div>
-</div>
-
-<div id="formNew" class="formContainer" style="display: none">
-  <h5 class="formTitle">Новая заявка на закупку</h5>
-
-  <textarea id="textNew" style="width: 100%; padding: 5px" placeholder="Напишите что и сколько нужно..."></textarea>
-
-  <div class="buttonContainer">
-    <button type="button" class="btn btn-secondary formButton" id="setPriority">Срочно</button>
-    <div class="rightButtons">
-      <button type="button" class="btn btn-success formButton" id="saveNew">Сохранить</button>
-      <button type="button" class="btn btn-secondary formButton" id="cancelNew">Отмена</button>
     </div>
   </div>
 </div>
@@ -434,17 +435,18 @@
   }
 
   .tileNumber {
-    width: 15%;
+    width: 25%;
     display: flex;
     flex-direction: row;
   }
 
   .tileAuthor {
-    width: 42%;
+    width: 45%;
   }
 
   .tileExecutor {
-    width: 43%;
+    width: 30%;
+    justify-content: flex-end;
   }
 
   .tileMarkValue {
@@ -522,15 +524,16 @@
   <div class='tileContainer {{doneClass}}'>
     <div class='tile1row'>
       <div class='tileMarkValue tileNumber'>
-        <div class='tileMark'>N</div>
-        <div class='tileValue'>{{orderNumber}}</div>
+        <div class='tileMark'></div>
+        <div class='tileValue'>{{orderNumber}} / {{date}}</div>
       </div>
+
       <div class='tileAuthor tileMarkValue'>
         <div class='tileMark'>от: </div>
         <div class='tileValue'>{{author}}</div>
       </div>
       <div class='tileMarkValue tileExecutor'>
-        <div class='tileMark'>закупщик: </div>
+        <div class='tileMark'></div>
         <div class='tileValue'>{{executor}}</div>
       </div>
     </div>
@@ -542,12 +545,13 @@
     <div class='tile3row'>
       <div class='tileStatus'>{{status}}</div>
       <div class='tilePriority'>Приоритет: {{priority}}</div>
-      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{term}}</div>
       <div class='tileEye'>
         {{#if showEyeIcon}}
           <i class='bi bi-eye-slash'></i>
         {{/if}}
       </div>
+      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{term}}</div>
+
     </div>
 
   </div>
@@ -599,11 +603,24 @@
       <div id="zakupkaAuthor" class="form-control" style=""></div>
     </div>
     <div class="form-group">
+      <label for="zakupkaExecutor">Исполнитель:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="zakupkaExecutor"
+        url="/app/autocompleteSotrydnik"
+        aria-describedby="basic-addon3"
+        data-editable="true"
+        readonly
+      />
+    </div>
+    <div class="form-group">
+      <label for="priority">Приоритет:</label>
+      <select id="zakupkaPriority" class="form-control"></select>
+    </div>
+    <div class="form-group">
       <label for="status">Статус:</label>
-      <select id="zakupkaStatus" class="form-control">
-        <option value="Ремонт">Ремонт</option>
-        <option value="Выполнена">Выполнена</option>
-      </select>
+      <select id="zakupkaStatus" class="form-control"></select>
     </div>
     <div class="form-group" id="doneGroup">
       <label for="done">Закупка выполнена:</label>
@@ -858,8 +875,29 @@
     let currentRowJQ;
     $(tableID).data('param', { active: true });
     var viewRowAllUsers = false;
+    let listStatus = [];
+    let listPriority = [];
+
+    initInputAutocomplete('#zakupkaExecutor');
 
     initTables();
+
+    // handle right to edit
+    const usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
+
+    const canUserEdit = (user, usersAllowToEdit) => usersAllowToEdit.includes(user.name);
+
+    const setEditableState = (selector, state) => {
+      $(selector).prop('readonly', !state);
+      $(selector).prop('disabled', !state);
+    };
+
+    const toggleEditability = (user, usersAllowToEdit) => {
+      const isEditable = canUserEdit(user, usersAllowToEdit);
+      setEditableState('[data-editable="true"]', isEditable);
+    };
+
+    toggleEditability(user, usersAllowToEdit);
 
     addSubscribeWSS('ЗаявкаНаЗакупку_all');
 
@@ -893,6 +931,11 @@
 
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {
+      console.log('callbackBeforeDone');
+
+      listPriority = $(tableID).data('response').listPriority;
+      listStatus = $(tableID).data('response').listStatus;
+
       // console.log('callbackBeforeDone', data);
       // if (data.hasOwnProperty('full')) {
       //   viewRowAllUsers = data.full;
@@ -924,7 +967,7 @@
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
       let currentRow = $('#' + data.data['uid']);
-      console.log('data.list.uid', data, data.data['uid']);
+      const activeOrders = $(tableID).data('param').active;
 
       // currentRow.attr('uid', data.data['uid']);
       let cellForTemplate = currentRow.find('td.main');
@@ -933,15 +976,36 @@
 
       $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
 
-      updateHistory();
+      let timeToCompliteOrder;
+      let dateForComplite;
+      let dateStart;
+      let timerClass;
+      if (activeOrders) {
+        dateForComplite = new Date(data.data.ПлановаяДата);
+        dateStart = new Date();
+        timerClass = 'timer';
+      } else {
+        dateForComplite = new Date(data.data.ДатаЗакрытияЗаявки);
+        dateStart = new Date(data.data.Дата);
+        timerClass = '';
+      }
 
-      const orderNumber = data.data.НомерЗаявки || '2034';
-      const author = data.data.Сотрудник.Наименование;
+      timeToCompliteOrder = dateForComplite - dateStart;
+      console.log('timeToCompliteOrder', timeToCompliteOrder, formatSecondToStringTime(timeToCompliteOrder));
+
+      updateHistory();
+      listPriority = $(tableID).data('response').listPriority;
+      listStatus = $(tableID).data('response').listStatus;
+      const orderNumber = data.data.Номер || 'б.н.';
+      const author = data.data.Сотрудник.Наименование || '';
       const executor = data.data.ОтветственыйСнабженец.Наименование || 'не назначен';
-      const text = data.data.ТекстЗаявки;
-      const status = data.data.СтатусЗаявки;
-      const priority = data.data.Приоритет;
-      const term = '';
+      const text = data.data.ТекстЗаявки || '';
+      const status =
+        (listStatus && listStatus[data.data.СтатусЗаявки] && listStatus[data.data.СтатусЗаявки].text) || '';
+      const priority =
+        (listPriority && listPriority[data.data.Приоритет] && listPriority[data.data.Приоритет].text) || '';
+      const date = formatDate(data.data.Дата) || '';
+      const term = formatSecondToStringTime(timeToCompliteOrder);
       const showEyeIcon = false;
       const linkedText = text.replace(
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
@@ -955,7 +1019,9 @@
         text: linkedText,
         status: status,
         priority: priority,
+        timerClass: timerClass,
         term: term,
+        date: date,
         showEyeIcon: showEyeIcon,
       };
 
@@ -1033,6 +1099,13 @@
 
       sortList.toggle();
       sortList.toggleClass('active');
+    });
+
+    $(document).on('click', function () {
+      if (!$(event.target).closest('#sortList').length && !$(event.target).is('#btnSort')) {
+        $('#sortList').hide();
+        $('#sortList').removeClass('active');
+      }
     });
 
     sortHandler1('#sortSrok', '0', '0', tableID);
@@ -1173,11 +1246,11 @@
     function toggleStatusButtons(element) {
       if (element.hasClass('active')) {
         priority = 'Нормально';
-        element.removeClass('active btn-danger').addClass('btn-secondary');
+        element.removeClass('active btn-danger').addClass('btn-light');
         console.log('has class active');
       } else {
-        $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-secondary');
-        $(element).removeClass('btn-secondary').addClass('btn-danger active');
+        $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-light');
+        $(element).removeClass('btn-light').addClass('btn-danger active');
         console.log('dont has class active');
       }
 
@@ -1192,6 +1265,11 @@
     $('#now').on('click', () => {
       priority = 'НаСейчас';
       toggleStatusButtons($('#now'));
+    });
+
+    $('#attachPhotoVideoForNewOrder').on('click', function () {
+      clickAnimate(this);
+      startAttachPhotoVideo(this);
     });
 
     $('#saveZakupka').on('click', function () {
@@ -1240,68 +1318,75 @@
       closeZakupkaInfo();
     });
 
-    // $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
-    //   console.log('click rowData');
+    $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
+      console.log('click rowData');
 
-    //   let curentRowID = $(this).attr('id');
-    //   let prevRowID = $('#infoRow').attr('curentRow') || '';
-    //   currentRowJQ = $(this);
-    //   const data = $(this).data('data');
+      let curentRowID = $(this).attr('id');
+      let prevRowID = $('#infoRow').attr('curentRow') || '';
+      currentRowJQ = $(this);
+      const data = $(this).data('data');
 
-    //   let dataforZakupkaInfo;
-    //   universalRequest(
-    //     '/app/zakupka',
-    //     'PATCH',
-    //     data,
-    //     { doc: curentRowID },
-    //     function onSuccess(response) {
-    //       console.log('Success callback:', response);
-    //       openZakupkaInfo();
-    //       renderZakupkaInfo(response.order);
-    //       const cardsData = response.order.data.ИсторияКомментариев;
-    //       const cardsForTemplate = getCardsForTemplate(cardsData);
-    //       generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
-    //     },
-    //     function onError(error) {
-    //       console.log('Error callback:', error);
-    //     },
-    //     function onComplete() {
-    //       console.log('Request completed');
-    //     }
-    //   );
+      let dataforZakupkaInfo;
+      universalRequest(
+        '/app/zakupka',
+        'PATCH',
+        data,
+        { doc: curentRowID },
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+          openZakupkaInfo();
+          renderZakupkaInfo(response.order);
+          const cardsData = response.order.data.ИсторияКомментариев;
+          const cardsForTemplate = getCardsForTemplate(cardsData);
+          generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+        },
+        function onComplete() {
+          console.log('Request completed');
+        }
+      );
 
-    //   // renderZakupkaInfo(dataforZakupkaInfo);
+      // renderZakupkaInfo(dataforZakupkaInfo);
 
-    //   return;
+      return;
 
-    //   if (curentRowID === prevRowID) {
-    //     $('#infoRow').toggleClass('hide', true);
-    //     $('#infoRow').attr('curentRow', '');
-    //   } else {
-    //     $('#infoRow').toggleClass('hide', false);
-    //     $('#infoRow').attr('curentRow', curentRowID);
-    //     $('#infoRow').insertAfter(this);
+      if (curentRowID === prevRowID) {
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
+      } else {
+        $('#infoRow').toggleClass('hide', false);
+        $('#infoRow').attr('curentRow', curentRowID);
+        $('#infoRow').insertAfter(this);
 
-    //     let data = $(this).data('data').data;
+        let data = $(this).data('data').data;
 
-    //     $('#kod').text(data['Номер']);
-    //     $('#status').text(data['СтатусЗаявки']);
+        $('#kod').text(data['Номер']);
+        $('#status').text(data['СтатусЗаявки']);
 
-    //     if (data['Приоритет'] === 'Срочно') {
-    //       $('#priority').text('Срочно');
-    //       $('#priority').addClass('srochno');
-    //     } else {
-    //       $('#priority').text('');
-    //       $('#priority').removeClass('srochno');
-    //     }
+        if (data['Приоритет'] === 'Срочно') {
+          $('#priority').text('Срочно');
+          $('#priority').addClass('srochno');
+        } else {
+          $('#priority').text('');
+          $('#priority').removeClass('srochno');
+        }
 
-    //     $('#newComment').val('');
-    //     setValid('#newComment', false);
+        $('#newComment').val('');
+        setValid('#newComment', false);
 
-    //     $('#textFull').text(data['ТекстЗаявки']);
-    //     updateHistory();
-    //   }
-    // });
+        $('#textFull').text(data['ТекстЗаявки']);
+        updateHistory();
+      }
+    });
+
+    $('#zakupkaExecutor').on('blur', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['Ответственный'] = $('#executor').attr('uid');
+      console.log('executor', data.edited);
+      sendDataTo1C(data, 'PUT');
+    });
 
     $('#sendComment').on('click', function () {
       clickAnimateColor(this);
@@ -1332,19 +1417,40 @@
     }
 
     function renderZakupkaInfo(data) {
-      console.log('renderZakupkaInfo', data.data.uid);
+      console.log('renderZakupkaInfo', data);
+
+      $('#zakupkaText').html('');
+      $('#orderNum').text('');
+      $('#zakupkaInfo').removeAttr('uid');
+      $('#zakupkaDate').val('');
+      $('#zakupkaAuthor').html('');
+
+      $('#zakupkaExecutor').html('');
+      console.log('zakupka executor after clear', $('#zakupkaExecutor').text());
+      $('#zakupkaStatus').val('');
+      $('#zakupkaPriority').val('');
 
       const uid = data.data.uid;
+      const zakupkaNumber = data.data.Номер || 'б.н.';
       const zakupkaText = data.data.ТекстЗаявки;
       const zakupkaDate = formatDateTime(data.data.Дата);
       const zakupkaAuthor = data.data.Сотрудник.Наименование;
+      const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || 'не призначено';
+      console.log('zakupkaExecutor', zakupkaExecutor);
+
       const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона;
-      const zakupkaStatus = data.data.СтатусЗаявки;
+      const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
+      const zakupkaPriority = data.data.Приоритет || '  не визначено';
+      console.log('data.data.СтатусЗаявки', data.data.СтатусЗаявки, zakupkaStatus);
+
+      console.log('response', $(tableID).data('response').listStatus);
 
       const statusList = $(tableID).data('response').listStatus;
+      const priorityList = $(tableID).data('response').listPriority;
       console.log('statusList', statusList);
 
       fillSelectOprions(statusList, '#zakupkaStatus');
+      fillSelectOprions(priorityList, '#zakupkaPriority');
 
       const linkedText = zakupkaText.replace(
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
@@ -1352,13 +1458,15 @@
       );
 
       $('#zakupkaText').html(linkedText);
+      $('#orderNum').text(zakupkaNumber);
 
       $('#zakupkaInfo').attr('uid', uid);
       $('#zakupkaDate').val(zakupkaDate);
-
       const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
       $('#zakupkaAuthor').html(authorLink);
+      $('#zakupkaExecutor').html(zakupkaExecutor);
       $('#zakupkaStatus').val(zakupkaStatus);
+      $('#zakupkaPriority').val(zakupkaPriority);
     }
 
     function getCardsForTemplate(data) {
@@ -1503,5 +1611,79 @@
         $('#infoRow').attr('curentRow', '');
       });
     });
+
+    function formattedTimeToSeconds(formattedTime) {
+      const regex = /(\d+) д (\d{2}):(\d{2}):(\d{2})/;
+      const matches = formattedTime.match(regex);
+
+      if (matches) {
+        const days = parseInt(matches[1], 10);
+        const hours = parseInt(matches[2], 10);
+        const minutes = parseInt(matches[3], 10);
+        const seconds = parseInt(matches[4], 10);
+
+        return days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+      }
+
+      return 0;
+    }
+
+    function sendDataTo1C(data, method = 'GET', callback) {
+      universalRequest(
+        '/app/zakupka',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Дані сохранено');
+            if (typeof callback === 'function') {
+              callback(response);
+            }
+          }
+        },
+        function onError(error) {
+          toastr.error('Error', error);
+        },
+        function onComplete() {}
+      );
+    }
+
+    const timerManager = (() => {
+      const decreaseValue = value => value - 1;
+
+      const updateElementText = (element, value) => {
+        formattedValue = formatSecondToStringTime(value);
+        $(element).text(formatSecondToStringTime(value));
+      };
+
+      const getElementValue = element => {
+        const text = $(element).text();
+        return formattedTimeToSeconds(text);
+      };
+
+      const processTimer = element => {
+        const currentValue = getElementValue(element);
+        const newValue = decreaseValue(currentValue);
+        updateElementText(element, newValue);
+      };
+
+      const updateTimers = elementClass => {
+        $(elementClass).each(function () {
+          processTimer($(this));
+        });
+      };
+
+      return {
+        updateTimers,
+      };
+    })();
+
+    callbackFuncSecondInterval = function () {
+      timerManager.updateTimers('.timer');
+    };
   });
 </script>
