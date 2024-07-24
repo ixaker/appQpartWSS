@@ -199,6 +199,8 @@ function loadMenu(userInfo, token, version) {
         success: function (response) {
             $('#menu').html(response.menu);
             $('#menu').data('userInfo', userInfo);
+            $('#menu').data('response', response);
+            $('#menu').data('userRight', response.userRights);
 
             $('.nav-item a').each((index, element) => {
                 // console.log('element old url', element);

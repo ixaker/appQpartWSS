@@ -75,10 +75,6 @@
     box-shadow: none;
   }
 
-  .form-control:focus {
-    box-shadow: none;
-  }
-
   #infoTopic {
     border: 1px solid lightgrey;
     width: 100%;
@@ -1735,6 +1731,7 @@
 
       let media = [];
       let names = [];
+
       $('#attachedFilesForNewOrder')
         .children()
         .each((index, child) => {
@@ -1765,6 +1762,9 @@
         newOrderText: newOrderText,
         files: names,
       };
+
+      // media = getMedia(selector);
+      // names = getNames(selector);
 
       sendDataTo1C(data, 'POST', async function (response) {
         await saveFilesToStorage(media, response.uid, response.uid);
@@ -2281,7 +2281,7 @@
 
 <script>
   $(document).ready(function () {
-    usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
+    usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий', 'Кошубський Олександр '];
     function canUserEdit(user, usersAllowToEdit) {
       return usersAllowToEdit.some(name => name === user.name);
     }
@@ -2294,7 +2294,7 @@
       $('[data-editable="true"]').prop('disabled', true);
     }
 
-    const usersCanShowViews = ['Голуб Виталий'];
+    const usersCanShowViews = ['Голуб Виталий', 'Кошубський Олександр '];
     console.log('canUserEdit', canUserEdit(user, usersCanShowViews));
     if (canUserEdit(user, usersCanShowViews)) {
       $('#showViews').show();

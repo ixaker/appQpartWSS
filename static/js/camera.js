@@ -9,6 +9,7 @@ function startAttachPhotoVideo(btnAttach) {
 
     console.log('elementForAttach', elementForAttach);
     document.body.style.overflow = "hidden";
+    $('#formZalupka').hide();
     $('#formMainCamera').show();
 
     attachedPhotoVideo = [];

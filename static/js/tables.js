@@ -1,5 +1,6 @@
 var highlight = false;
 var highlightTimerId;
+let totalPageCount;
 
 // инициализация всех таблиц на форме
 async function initTables() {
@@ -13,11 +14,47 @@ async function initTables() {
     enableHighlightElement();
 }
 
+function prepareData(response) {
+
+    function mapAndAssignValues(source, target, mapping) {
+        for (let key in mapping) {
+            const value = mapping[key];
+
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                target[key] = {};
+                mapAndAssignValues(source, target[key], mapping[key]);
+            } else {
+                target[key] = source[value];
+            }
+
+        }
+    }
+
+    if ("KeyMapping" in response) {
+        response.list = [];
+
+        response.data.forEach(element => {
+            const item = {};
+            mapAndAssignValues(element, item, response.KeyMapping);
+            response.list.push({ data: item });
+        });
+    }
+
+    if ("Имя" in response) {
+        response.list.forEach(element => {
+            element.data["Имя"] = response["Имя"];
+            element.data["ТипСсылки"] = response["ТипСсылки"];
+        });
+    }
+    console.log('response prepareData finish', response);
+}
+
 // инициализация таблицы
 async function initTable(table) {
     console.log('--- initTable ---')
     console.log('initTable', table);
     const tableJQ = $(table);
+    tableJQ.data('isLoading', true);
 
     createHeaderForTable(tableJQ);
 
@@ -25,7 +62,7 @@ async function initTable(table) {
         tableJQ.tablesorter();
     }
 
-    tableJQ.children('tbody').children('.rowData').remove();
+    // tableJQ.children('tbody').children('.rowData').remove();
 
     try {
         let param = tableJQ.data('param') || {};
@@ -38,7 +75,11 @@ async function initTable(table) {
             url: `${tableJQ.attr('url')}`, type: 'GET', dataType: 'json', data: param, success: async function (response) {
                 console.log('initTable response', tableJQ);
 
+
+                tableJQ.children('tbody').children('.rowData').remove();
                 if (!response.error) {
+
+                    totalPageCount = response.totalPages || 100;
 
                     function mapAndAssignValues(source, target, mapping) {
                         for (let key in mapping) {
@@ -85,7 +126,7 @@ async function initTable(table) {
                     // }
 
                     console.log('response arter rename', response);
-
+                    tableJQ.data('response', response);
                     callbackFromAttr(table, 'callbackBeforeInitTable', response);
 
                     // remove attr, save attr
@@ -127,7 +168,6 @@ async function initTable(table) {
                             item['tableID'] = tableID;
                             // callbackTable2(item);
                             addNewRow(tableJQ, item);
-
                         })
 
                         // Розв'язуємо всі обіцянки і чекаємо їхнього завершення
@@ -152,13 +192,14 @@ async function initTable(table) {
                     }
 
                     addSubscribeWSS(tableJQ.attr('id'));
-                    tableJQ.data('response', response);
+
 
                     callbackFromAttr(table, 'callbackAfterInitTable', response);
                 }
             }, complete: function (response) {
                 NProgress.done();
                 //console.log('initTable_complete', response, table);
+                tableJQ.data('isLoading', false);
 
                 delete activeRequests[id_response];
 
@@ -174,8 +215,92 @@ async function initTable(table) {
     } catch (error) {
         //toastr["error"]('Ошибка запроса к 1С'); 
         NProgress.done();
+        tableJQ.data('isLoading', false);
     }
     //console.log('end initTable');
+}
+
+async function loadAdditionalData(tableJQ) {
+
+    console.log('--- loadAdditionalData ---')
+    const attrSort = tableJQ.attr("sort");
+    let isLoading = tableJQ.data('isLoading') || false;
+    console.log('start loadAdditional isLoading', isLoading);
+
+    try {
+        let param = tableJQ.data('param') || {};
+        param.page += 1;
+        tableJQ.data('param', param);
+        let id_response = tableJQ.attr('id') + Date.now();
+        console.log('param', param)
+
+
+
+        await $.ajax({
+            url: `${tableJQ.attr('url')}`, type: 'GET', dataType: 'json', data: param, success: async function (response) {
+                console.log('loadAdditionalData response', tableJQ);
+
+                if (!response.error) {
+
+                    prepareData(response);
+
+                    // tableJQ.data('response', response);
+
+                    response.list.forEach(async (item) => {
+                        item.data["skipFilter"] = true;
+                    });
+
+                    callbackFromAttr(table, 'callbackBeforeInitTable', response);
+
+                    async function executeAsync() {
+                        // Створюємо масив обіцянок для кожного виклику callbackTable
+                        const promises = response.list.map(item => {
+
+                            const tableID = tableJQ.attr('id');
+                            item['tableID'] = tableID;
+                            addNewRow(tableJQ, item);
+                        })
+
+                        // Розв'язуємо всі обіцянки і чекаємо їхнього завершення
+                        await Promise.all(promises);
+
+                        console.log('executeAsync end');
+                    }
+
+                    // Викликаємо функцію для виконання асинхронного циклу
+                    const result = await executeAsync();
+
+                    if (attrSort !== undefined) {
+                        tableJQ.attr("sort", attrSort)
+                        console.log('Back attr in table', tableJQ.attr("sort"));
+                        sort(tableJQ);
+                    }
+
+                    callbackFromAttr(tableJQ, 'callbackAfterInitTable', response);
+                }
+                // tableJQ.data('isLoading', false);
+            }, complete: function (response) {
+                delete activeRequests[id_response];
+
+            }, beforeSend: function (response) {
+                activeRequests[id_response] = response;
+
+            }, always: function (response) {
+                console.log('isloading=false1');
+
+                // tableJQ.data('isLoading', false);
+            }
+        });
+    } catch (error) {
+        console.error('error', error);
+
+        console.log('isloading=false2');
+
+        tableJQ.data('isLoading', false);
+    } finally {
+        console.log('isloading=false');
+        tableJQ.data('isLoading', false);
+    }
 }
 
 // создание стороки заголовков таблицы
@@ -412,7 +537,6 @@ function fillData(row, newData, oldData) {
 }
 
 function sort(table) {
-    console.log('Sort first');
     if ($(table)[0].hasAttribute('sort')) {
         console.log('Sort real');
         $(table).trigger("update");
@@ -650,6 +774,37 @@ function test(func, count, name, ...args) {
     const timeStop = Date.now();
     console.log(`time work ${name} - `, timeStop - timeStart);
 }
+
+let debounceTimer;
+const debounceDelay = 200;
+
+$(window).on('scroll', function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async function () {
+        const scrollTop = $(this).scrollTop();
+        const windowHeight = $(this).height();
+        const documentHeight = $(document).height();
+        const isPositionForLoading = scrollTop + windowHeight >= documentHeight - windowHeight
+
+
+        $('#content table').each(async function () {
+            const tableJQ = $(this);
+            const param = tableJQ.data('param') || {};
+            const page = param.page || 0;
+
+            if (param.hasOwnProperty('page') && tableJQ.is(':visible')) {
+                const isLoading = tableJQ.data('isLoading') || false;
+                const isAdditionalPage = page < totalPageCount;
+
+                if (!isLoading && isPositionForLoading && isAdditionalPage) {
+                    tableJQ.data('isLoading', true);
+                    await loadAdditionalData(tableJQ);
+                }
+            }
+        });
+    }.bind(this), debounceDelay);
+});
+
 
 // const elem = document.getElementById('content');
 

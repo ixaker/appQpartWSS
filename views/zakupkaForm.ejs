@@ -1,0 +1,277 @@
+<style>
+  .zakupkaContainer {
+    position: absolute;
+    width: 100%;
+    height: calc(100vh - 56px);
+    background-color: #eee;
+    top: 56px;
+    left: 0;
+    padding: 10px;
+  }
+
+  .applicationForm {
+    position: relative;
+    margin: 20px auto 40px auto;
+    background-color: aliceblue;
+    max-width: 600px;
+    min-width: 320px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 0.5rem;
+  }
+
+  .applicationTitle {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  #orderButtonGroup {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #newOrderButtonGroup {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  #formZakupka #orderButtonGroup {
+    flex-direction: column;
+  }
+
+  #statusZakupka {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  #statusZakupka label {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  #statusZakupka .btn-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  #statusZakupka .btn-group {
+    width: 100%;
+  }
+
+  #srochno,
+  #now {
+    border: 1px solid grey;
+  }
+
+  .btn-container button {
+    flex: 1;
+  }
+
+  #groupButton {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .applicationText {
+    font-size: 1.25rem;
+    width: 100%;
+  }
+
+  #attachedFilesForNewOrder {
+    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+</style>
+<div id="formZakupka" class="zakupkaContainer" style="display: none">
+  <div class="applicationForm">
+    <div class="applicationTitle">Новая заявка на закупку</div>
+    <div id="statusZakupka">
+      <label class="form-label">Приоритет:</label>
+      <div class="btn-container">
+        <div class="btn-group" role="group" aria-label="...">
+          <button type="button" class="btn btn-light" id="srochno" data-priority="Срочно">Срочно</button>
+          <button type="button" class="btn btn-light" id="now" data-priority="На сейчас">На сейчас</button>
+        </div>
+      </div>
+    </div>
+    <textarea
+      class="applicationText form-control"
+      id="newZakupkaText"
+      rows="3"
+      placeholder="Текст заявки..."
+    ></textarea>
+
+    <div id="attachedFilesForNewOrder"></div>
+    <div class="form-group" id="orderButtonGroup">
+      <div id="groupButton">
+        <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
+        <button type="button" class="btn btn-secondary btn-lg" id="cancelZakupka">Отмена</button>
+        <button type="button" class="btn btn-success btn-lg" id="saveZakupka">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#cancelZakupka').on('click', function (event) {
+      console.log('cancelZakupka');
+
+      $('#formZakupka').hide();
+      $('#content').show();
+    });
+
+    function toggleStatusButtons(element) {
+      if (element.hasClass('active')) {
+        priority = 'Нормально';
+        element.removeClass('active btn-danger').addClass('btn-light');
+        console.log('has class active');
+      } else {
+        $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-light');
+        $(element).removeClass('btn-light').addClass('btn-danger active');
+        console.log('dont has class active');
+      }
+
+      console.log(element);
+    }
+
+    let priority = 'Нормально';
+    $('#srochno').on('click', () => {
+      priority = 'Срочно';
+      toggleStatusButtons($('#srochno'));
+    });
+    $('#now').on('click', () => {
+      priority = 'НаСейчас';
+      toggleStatusButtons($('#now'));
+    });
+
+    $('#attachPhotoVideoForNewOrder').on('click', function () {
+      clickAnimate(this);
+      startAttachPhotoVideo(this);
+    });
+
+    $('#newZakupkaText').on('input', function () {
+      console.log('newZakupkaText change');
+      $('#saveZakupka').prop('disabled', false);
+      if ($(this).val().trim() === '') {
+        $(this).addClass('is-invalid');
+        $('#saveZakupka').prop('disabled', true);
+      } else {
+        $(this).removeClass('is-invalid');
+      }
+    });
+
+    $('#saveZakupka').on('click', function () {
+      console.log('saveZakupka on click');
+      clickAnimate(this);
+      const zakupkaText = $('#newZakupkaText').val();
+      if (zakupkaText === '') {
+        toastr.error('Заповніть текст закупки');
+        $('#newZakupkaText').focus();
+        return;
+      }
+      const srochno = $('#setPriorityZakupka').hasClass('btn-danger');
+      const currentRow = $('#modal').data('data');
+
+      NProgress.start();
+      console.log('statusZakupka', statusZakupka);
+
+      let media = [];
+      let names = [];
+      $('#attachedFilesForNewOrder')
+        .children()
+        .each((index, child) => {
+          const blob = $(child).children('.source').data('blob');
+          const blobPreview = $(child).children('.preview').data('blob');
+
+          let file = { data: blob };
+          let filePreview = { data: blobPreview };
+          if (blob.type === 'image/jpeg') {
+            file.name = index.toString() + '.png';
+            filePreview.name = 'p' + index.toString() + '.png';
+          } else if (blob.type === 'video/mp4') {
+            file.name = index.toString() + '.mp4';
+            filePreview.name = 'p' + index.toString() + '.png';
+          } else {
+            file.name = index.toString() + '.none';
+            console.log('unknown type of blob', blob.type, file.name);
+          }
+
+          media.push(file);
+          media.push(filePreview);
+          names.push(file.name);
+        });
+
+      const data = {
+        textNew: zakupkaText,
+        priority: priority,
+        files: names,
+      };
+
+      console.log('data from zakupkaForm', data);
+
+      sendDataTo1C(data, 'POST', async function (response) {
+        await saveFilesToStorage(media, response.uid, response.uid);
+        $('#formZakupka').hide();
+        $('#content').show();
+      });
+      NProgress.done();
+    });
+
+    // requestTo1C('/zakupka', 'POST', data, function (response) {
+    //   console.log('Callback executed with response:', response);
+    //   $('#formZakupka').hide();
+    //   $('#content').show();
+    // });
+    // priority = 'Нормально';
+    // });
+
+    $('#setPriorityZakupka').on('click', function (event) {
+      if ($(this).hasClass('btn-secondary')) {
+        $(this).switchClass('btn-secondary', 'btn-danger');
+      } else {
+        $(this).switchClass('btn-danger', 'btn-secondary');
+      }
+    });
+
+    function sendDataTo1C(data, method = 'GET', callback) {
+      universalRequest(
+        '/app/zakupka',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Дані сохранено');
+            if (typeof callback === 'function') {
+              callback(response);
+            }
+          }
+        },
+        function onError(error) {
+          toastr.error('Error', error);
+        },
+        function onComplete() {}
+      );
+    }
+  });
+</script>

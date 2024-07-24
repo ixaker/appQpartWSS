@@ -51,6 +51,10 @@
     width: 70%;
   }
 
+  #doneGroup input {
+    width: 12% !important;
+  }
+
   .pressed {
     color: darkorange;
   }
@@ -117,6 +121,10 @@
   .form-control {
     font-size: 1em;
     background-color: white !important;
+  }
+
+  .form-control:focus {
+    box-shadow: none;
   }
 
   mark {
@@ -193,6 +201,7 @@
           <div id="sortList">
             <ul>
               <li id="sortSrok">срок</li>
+              <li id="sortDateDone" style="display: none">срок</li>
               <li id="sortStatus">статус</li>
               <li id="sortPriority">приоритет</li>
               <li id="sortDate">дата</li>
@@ -214,13 +223,18 @@
     callbackAfterInitTable="callbackAfterDone"
     addNevRow="callbackAddNewRow"
     callbackAfterWrite="callbackAfterWrite"
-    append="up"
+    append="end"
     init
     header
-    sort="0"
   >
     <tr class="config" style="display: none">
-      <td title="ПлановаяДата" name="ПлановаяДата" id="srokSort" headerClass="srokSort" style="display: none">
+      <td
+        title="ПлановаяДатаСлужебная"
+        name="ПлановаяДатаСлужебная"
+        id="srokSort"
+        headerClass="srokSort"
+        style="display: none"
+      >
         <div class="dataCell"></div>
       </td>
 
@@ -256,42 +270,10 @@
         <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
       </td>
     </tr>
-
-    <tr id="infoRow" class="hide">
-      <td colspan="3" style="background-color: aliceblue">
-        <div id="infoForm">
-          <div style="display: flex; margin: 5px 0; padding: 5px 0px">
-            Номер:
-            <div id="kod"></div>
-            Статус:
-            <div id="status"></div>
-            <div id="priority"></div>
-          </div>
-          <div id="textFull"></div>
-          <div id="buttons" style="display: flex; margin-bottom: 20px">
-            <button type="button" class="btn btn-secondary" id="cancelZayavka">Отменить</button>
-            <button type="button" class="btn btn-success" id="doneZayavka">Готово</button>
-          </div>
-          <div id="historyComment"></div>
-          <div id="blockNewComment" style="display: flex; margin: 5px 0">
-            <input
-              id="newComment"
-              type="text"
-              class="form-control"
-              placeholder="новый комментарий..."
-              aria-describedby="basic-addon2"
-            />
-            <div class="input-group-append">
-              <button id="btnAddNewComment" class="btn btn-success" type="button">Сохранить</button>
-            </div>
-          </div>
-        </div>
-      </td>
-    </tr>
   </table>
 </div>
 
-<style>
+<!-- <style>
   .applicationForm {
     position: relative;
     margin: 20px auto 40px auto;
@@ -374,6 +356,12 @@
     font-size: 1.25rem;
     width: 100%;
   }
+
+  #attachedFilesForNewOrder {
+    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+  }
 </style>
 
 <div id="formZakupka" class="applicationForm" style="display: none">
@@ -389,16 +377,15 @@
   </div>
   <textarea class="applicationText form-control" id="newZakupkaText" rows="3" placeholder="Текст заявки..."></textarea>
 
+  <div id="attachedFilesForNewOrder"></div>
   <div class="form-group" id="orderButtonGroup">
-    <!-- <button type="button" class="btn btn-secondary btn-lg" id="setPriorityZakupka">Срочно</button> -->
-
     <div id="groupButton">
       <i class="bi bi-camera" id="attachPhotoVideoForNewOrder" elementForAttach="attachedFilesForNewOrder"></i>
       <button type="button" class="btn btn-secondary btn-lg" id="cancelZakupka">Отмена</button>
       <button type="button" class="btn btn-success btn-lg" id="saveZakupka">Сохранить</button>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- template for tile -->
 <style>
@@ -451,7 +438,7 @@
   .tileMark {
     color: gray;
     font-size: small;
-    margin-right: 3px;
+    margin-right: 5px;
   }
 
   .tileValue {
@@ -480,16 +467,19 @@
   }
 
   .tileText a {
-    color: darkblue;
-    font-size: smaller;
+    text-decoration: underline;
   }
 
   .tile2row {
-    display: flex;
-    justify-content: flex-start;
-    font-size: small;
-    color: darkgray;
+    /* display: flex; /
+    / justify-content: flex-start; /
+    / font-size: small; /
+    / color: darkgray; */
     margin-bottom: 5px;
+    background-color: #f0f8ff42;
+    border: 1px solid #dde7f0b0;
+    border-radius: 5px;
+    padding: 3px;
   }
 
   .tile3row {
@@ -519,17 +509,17 @@
   <div class='tileContainer {{doneClass}}'>
     <div class='tile1row'>
       <div class='tileMarkValue tileNumber'>
-        <div class='tileMark'></div>
-        <div class='tileValue'>{{orderNumber}} / {{date}}</div>
+        <div class=''></div>
+        <div class='tileValue'>{{{orderNumber}}}</div>
       </div>
 
       <div class='tileAuthor tileMarkValue'>
-        <div class='tileMark'>от: </div>
-        <div class='tileValue'>{{author}}</div>
+        <div class='tileMark'>{{date}} от </div>
+        <div class='tileValue'>{{{author}}}</div>
       </div>
       <div class='tileMarkValue tileExecutor'>
         <div class='tileMark'></div>
-        <div class='tileValue'>{{executor}}</div>
+        <div class='tileValue'>{{{executor}}}</div>
       </div>
     </div>
 
@@ -538,14 +528,14 @@
     </div>
 
     <div class='tile3row'>
-      <div class='tileStatus'>{{status}}</div>
-      <div class='tilePriority'>Приоритет: {{priority}}</div>
+      <div class='tileStatus'>{{{status}}}</div>
+      <div class='tilePriority'>Приоритет: {{{priority}}}</div>
       <div class='tileEye'>
         {{#if showEyeIcon}}
           <i class='bi bi-eye-slash'></i>
         {{/if}}
       </div>
-      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{term}}</div>
+      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{{term}}}</div>
 
     </div>
 
@@ -568,6 +558,15 @@
     white-space: pre-wrap;
   }
 
+  #filesAuthorOrder {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
   #zakupkaPhoto {
     gap: 5px;
     display: flex;
@@ -575,6 +574,21 @@
     margin-bottom: 0;
     flex-wrap: nowrap;
     overflow-x: auto;
+  }
+
+  #zakupkaAuthor {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .zakupkaDelete {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #zakupkaDelete {
+    font-size: xx-large;
+    color: red;
   }
 </style>
 
@@ -588,14 +602,25 @@
     <div class="form-group">
       <pre id="zakupkaText">Текс закупки</pre>
     </div>
-    <div class="form-group" id="zakupkaPhoto"></div>
+
+    <div class="form-group" id="filesAuthorOrder"></div>
+
+    <div class="form-group" id="attachedImg"></div>
     <div class="form-group">
       <label>Дата:</label>
       <input type="text" readonly class="form-control" id="zakupkaDate" />
     </div>
     <div class="form-group">
       <label>Автор:</label>
-      <div id="zakupkaAuthor" class="form-control" style=""></div>
+      <div id="zakupkaAuthor" class="form-control"></div>
+    </div>
+    <div class="form-group">
+      <label>Осталось:</label>
+      <div class="form-control remainTime" id="remainTime"></div>
+    </div>
+    <div class="form-group">
+      <label>Плановая дата:</label>
+      <input type="text" class="form-control" id="planeDate" placeholder="дд/мм/гггг" />
     </div>
     <div class="form-group">
       <label for="zakupkaExecutor">Исполнитель:</label>
@@ -610,13 +635,14 @@
       />
     </div>
     <div class="form-group">
-      <label for="priority">Приоритет:</label>
-      <select id="zakupkaPriority" class="form-control"></select>
+      <label for="zakupkaPriority">Приоритет:</label>
+      <select id="zakupkaPriority" class="form-control" disabled></select>
     </div>
     <div class="form-group">
-      <label for="status">Статус:</label>
-      <select id="zakupkaStatus" class="form-control"></select>
+      <label for="zakupkaStatus">Статус:</label>
+      <select id="zakupkaStatus" class="form-control" disabled></select>
     </div>
+
     <div class="form-group" id="doneGroup">
       <label for="done">Закупка выполнена:</label>
       <input
@@ -627,6 +653,9 @@
         data-editable="true"
         readonly
       />
+    </div>
+    <div class="form-group zakupkaDelete">
+      <i class="bi bi-trash" id="zakupkaDelete"></i>
     </div>
   </div>
 
@@ -640,12 +669,6 @@
       line-height: 55px;
       padding: 10px 10px 5px 0;
       align-self: flex-end;
-    }
-
-    #sendComment {
-    }
-
-    #attachPhoto {
     }
 
     #commentForm {
@@ -864,35 +887,95 @@
   {{/each}}
 </script>
 
+<style>
+  #filesAuthorOrder {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .imgSmall {
+    width: 100%;
+    /* height: 150px; */
+    border: 1px solid #aaa;
+  }
+</style>
+
+<script id="img-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='attachedImg'>
+      <img src='{{src}}' src-source='{{source}}' class='imgSmall src-source' />
+    </div>
+  {{/each}}
+</script>
+
 <script>
   $(document).ready(function () {
+    table = $('#content table');
     let tableID = '#ЗаявкаНаЗакупку';
+    let tableJQ = $(tableID);
     let currentRowJQ;
-    $(tableID).data('param', { active: true });
+    $(tableID).data('param', { active: true, limit: 20, page: 0, sortColumn: 'Дата', sortDirection: '0', term: '' });
     var viewRowAllUsers = false;
     let listStatus = [];
     let listPriority = [];
+    let scrollPosition = 0;
+    const pageUID = '750bb924-e106-11ee-822c-000c29006152';
+    const userRights = $('#menu').data('userRight')[pageUID];
+
+    $.datepicker.setDefaults($.datepicker.regional['ua']);
+
+    $('#planeDate').datepicker({
+      changeMonth: true,
+      showOtherMonths: true,
+      selectOtherMonths: true,
+      dateFormat: 'dd.mm.yy',
+    });
 
     initInputAutocomplete('#zakupkaExecutor');
 
     initTables();
 
-    // handle right to edit
-    const usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
+    const updateParam = (tableJQ, key, value) => {
+      let param = tableJQ.data('param') || {};
+      param[key] = value;
+      tableJQ.data('param', param);
+    };
 
-    const canUserEdit = (user, usersAllowToEdit) => usersAllowToEdit.includes(user.name);
+    // handle right to edit
+    // const usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
+
+    // const whatUserCan = userRights[pageUID];
+    console.log('userRights', userRights, pageUID, userRights);
+
+    // const canUserEdit = (user, usersAllowToEdit) => usersAllowToEdit.includes(user.name);
 
     const setEditableState = (selector, state) => {
       $(selector).prop('readonly', !state);
       $(selector).prop('disabled', !state);
     };
 
-    const toggleEditability = (user, usersAllowToEdit) => {
-      const isEditable = canUserEdit(user, usersAllowToEdit);
-      setEditableState('[data-editable="true"]', isEditable);
-    };
+    console.log('userRights', userRights);
+    setEditableState('#zakupkaExecutor', userRights.canChangeExecutor);
+    setEditableState('#planeDate', userRights.canChangeDate);
+    setEditableState('#zakupkaPriority', userRights.canChangePriority);
+    setEditableState('#zakupkaStatus', userRights.canChangeStatus);
+    setEditableState('#done', userRights.canChangeOrderDone);
 
-    toggleEditability(user, usersAllowToEdit);
+    // const toggleEditability = (user, usersAllowToEdit) => {
+    //   const isEditableExecutor = canUserEdit(user, usersAllowToEdit);
+    //   console.log('isEditableExecutor', isEditableExecutor);
+
+    //   const isEditable = false;
+    //   setEditableState('#zakupkaExecutor', isEditableExecutor);
+    //   setEditableState('#zakupkaPriority', isEditableExecutor);
+    //   setEditableState('#zakupkaStatus', isEditableExecutor);
+    // };
+
+    // toggleEditability(user, usersAllowToEdit);
 
     addSubscribeWSS('ЗаявкаНаЗакупку_all');
 
@@ -904,7 +987,12 @@
     // callback при изменении данных в строке для определения показать или убрать строку
     callbackFilter = function (data, result = true) {
       console.log('callbackFilter', data);
+      const cardsData = data.ИсторияКомментариев;
+      const cardsForTemplate = getCardsForTemplate(cardsData);
+      generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
 
+      console.log('userRights', userRights.canViewAllOrders);
+      viewRowAllUsers = userRights.canViewAllOrders;
       if (!viewRowAllUsers) {
         console.log('check access');
 
@@ -925,11 +1013,16 @@
     };
 
     // callback перед отрисовкой таблицы
-    callbackBeforeDone = function (data) {
+    callbackBeforeDone = function (response) {
       console.log('callbackBeforeDone');
 
-      listPriority = $(tableID).data('response').listPriority;
-      listStatus = $(tableID).data('response').listStatus;
+      // listPriority = $(tableID).data('response').listPriority;
+      // listStatus = $(tableID).data('response').listStatus;
+
+      // response.list.forEach(element => {
+      //   element.data.СтатусЗаявки = listStatus[element.data.СтатусЗаявки].value;
+      //   element.data.Приоритет = listPriority[element.data.Приоритет].value;
+      // });
 
       // console.log('callbackBeforeDone', data);
       // if (data.hasOwnProperty('full')) {
@@ -955,14 +1048,39 @@
       console.log('callbackAddNewRow', data);
     };
 
+    function getDateInSeconds(date) {
+      const targetDate = new Date(date);
+      console.log('targetDate', targetDate);
+
+      dateInSeconds = Math.floor(targetDate.getTime() / 1000);
+      return dateInSeconds;
+    }
+
     // callback после внесения изменений в строку с сервера
     callbackAfterWrite = function (data) {
-      console.log('callbackAfterWrite', data);
+      console.log('callbackAfterWrite renderZakupkaInfo', data);
+      renderZakupkaInfo(data);
 
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
       let currentRow = $('#' + data.data['uid']);
+      console.log('currentRow', currentRow);
+
       const activeOrders = $(tableID).data('param').active;
+
+      if (activeOrders) {
+        console.log(
+          'getDateInSeconds(data.data.ПлановаяДатаСлужебная)',
+          getDateInSeconds(data.data.ПлановаяДатаСлужебная),
+          data.data.ПлановаяДатаСлужебная
+        );
+
+        console.log('plane date', currentRow.find('.planeDate'));
+
+        currentRow.find('.planeDate').text(getDateInSeconds(data.data.ПлановаяДатаСлужебная));
+      } else {
+        getDateInSeconds(data.data.ДатаЗакрытияЗаявки);
+      }
 
       // currentRow.attr('uid', data.data['uid']);
       let cellForTemplate = currentRow.find('td.main');
@@ -976,35 +1094,41 @@
       let dateStart;
       let timerClass;
       if (activeOrders) {
-        dateForComplite = new Date(data.data.ПлановаяДата);
+        dateForComplite = new Date(data.data.ПлановаяДатаСлужебная);
         dateStart = new Date();
         timerClass = 'timer';
       } else {
         dateForComplite = new Date(data.data.ДатаЗакрытияЗаявки);
         dateStart = new Date(data.data.Дата);
-        timerClass = '';
+        datePlane = new Date(data.data.ПлановаяДата);
+
+        if (dateForComplite > datePlane) {
+          timerClass = 'dangerColor';
+        } else {
+          timerClass = '';
+        }
       }
 
       timeToCompliteOrder = dateForComplite - dateStart;
-      console.log('timeToCompliteOrder', timeToCompliteOrder, formatSecondToStringTime(timeToCompliteOrder));
 
       updateHistory();
       listPriority = $(tableID).data('response').listPriority;
       listStatus = $(tableID).data('response').listStatus;
       const orderNumber = data.data.Номер || 'б.н.';
       const author = data.data.Сотрудник.Наименование || '';
-      const executor = data.data.ОтветственыйСнабженец.Наименование || 'не назначен';
+      const executor = data.data.ОтветственыйСнабженец.Наименование || '';
       const text = data.data.ТекстЗаявки || '';
-      const status =
-        (listStatus && listStatus[data.data.СтатусЗаявки] && listStatus[data.data.СтатусЗаявки].text) || '';
-      const priority =
-        (listPriority && listPriority[data.data.Приоритет] && listPriority[data.data.Приоритет].text) || '';
+
+      const status = data.data.СтатусЗаявки || '';
+      console.log('status callbackAfterWrite', status);
+      const priority = data.data.Приоритет || '';
       const date = formatDate(data.data.Дата) || '';
-      const term = formatSecondToStringTime(timeToCompliteOrder);
+      const planeDate = formatDate(data.data.ПлановаяДата).split('T')[0];
+      const term = formatSecondToStringTime(timeToCompliteOrder / 1000);
       const showEyeIcon = false;
       const linkedText = text.replace(
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
-        '<a href="$1" target="_blank">$1</a>'
+        '<a href="$1" target="_blank">ccылка</a>'
       );
 
       const templateData = {
@@ -1017,52 +1141,59 @@
         timerClass: timerClass,
         term: term,
         date: date,
+        planeDate: planeDate,
         showEyeIcon: showEyeIcon,
       };
 
       generateFromTemplate('#tileTemplate', templateData, cellForTemplate);
     };
 
-    $('#search').on('input', function () {
-      console.log('search');
+    $('#search').on('input', async function () {
       let searchTerms = $(this).val().split(' ').filter(Boolean);
-      $('.rowData').each(function () {
-        console.log('row', this);
+      const termString = $(this).val();
+      const replaceSpaces = str => str.replace(/ /g, '~');
+      const modifiedString = replaceSpaces(termString);
+      updateParam(tableJQ, 'term', '');
 
-        let found = true;
-        let elements = $(this)
-          .find('.tileText, .tileValue, .tileStatus, .tilePriority')
-          .map(function () {
-            return { el: $(this) };
-          })
-          .get();
+      if (termString.length > 1) {
+        updateParam(tableJQ, 'term', modifiedString);
+      }
 
-        elements.forEach(element => {
-          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
-        });
+      await initTable(table);
 
-        if (searchTerms.length > 0) {
-          found = searchTerms.every(term => {
-            const regex = new RegExp(`(${term})`, 'gi');
-            return elements.some(element => {
-              if (element.text.match(regex)) {
-                element.text = element.text.replace(regex, '<mark>$1</mark>');
-                return true;
-              }
-              return false;
-            });
-          });
-        }
+      // $('.rowData').each(function () {
+      //   let found = true;
+      //   let elements = $(this)
+      //     .find('.tileText, .tileValue, .tileStatus, .tilePriority')
+      //     .map(function () {
+      //       return { el: $(this) };
+      //     })
+      //     .get();
 
-        $(this).find('.tileContainer').parent().toggleClass('hide', !found);
-        console.log('parent', $(this).find('.tileContainer').parent());
+      //   elements.forEach(element => {
+      //     element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+      //   });
 
-        elements.forEach(element => {
-          element.el.html(element.text);
-        });
+      //   if (searchTerms.length > 0) {
+      //     found = searchTerms.every(term => {
+      //       const regex = new RegExp(`(${term})`, 'gi');
+      //       return elements.some(element => {
+      //         console.log('search element');
+      //         if (element.text.match(regex) && term.length > 1) {
+      //           element.text = element.text.replace(regex, '<mark>$1</mark>');
+      //           return true;
+      //         }
+      //         return false;
+      //       });
+      //     });
+      //   }
 
-        console.log('elements', elements);
-      });
+      //   // $(this).find('.tileContainer').parent().toggleClass('hide', !found);
+
+      //   elements.forEach(element => {
+      //     element.el.html(element.text);
+      //   });
+      // });
     });
 
     $('#textNew').on('change', function () {
@@ -1076,11 +1207,11 @@
     });
 
     function openNewOrder(time) {
-      console.log('openNewOrder');
-
       $('#newZakupkaText').val(time);
-      $('#main').hide(time);
+      $('#saveZakupka').prop('disabled', true);
+      $('#content').hide(time);
       $('#formZakupka').show(time);
+      $('#attachedFilesForNewOrder').empty();
     }
 
     function hideNewOrder(time) {
@@ -1100,17 +1231,46 @@
       if (!$(event.target).closest('#sortList').length && !$(event.target).is('#btnSort')) {
         $('#sortList').hide();
         $('#sortList').removeClass('active');
+        event.stopImmediatePropagation();
       }
     });
 
-    sortHandler1('#sortSrok', '0', '0', tableID);
-    sortHandler1('#sortStatus', '1', '0', tableID);
-    sortHandler1('#sortPriority', '2', '0', tableID);
-    sortHandler1('#sortDate', '3', '', tableID);
+    function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
+      $(selector).on('click', function () {
+        const sort = $(tableID).data('param').sortColumn;
+        // ('sortColumn') || 'ПлановаяДатаСлужебная';
+        let sortDirection = $(tableID).data('param').sortDirection;
+        // ('sortDirection') || defaultSortDirection;
+        if (sort === sortColumn) {
+          sortDirection = sortDirection === '0' ? '1' : '0';
+        } else {
+          sortDirection = defaultSortDirection;
+        }
+
+        updateParam(tableJQ, 'sortColumn', sortColumn);
+        updateParam(tableJQ, 'sortDirection', sortDirection);
+        updateParam(tableJQ, 'page', 0);
+        // $(tableID).attr('sort', sortValue);
+        // $(tableID).attr('sortDirection', sortDirection);
+
+        $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
+        // $(`th.${sortClass}`).click();
+        $('#sortList').hide();
+        $('#sortList').toggleClass('active');
+        initTable($('#content table'));
+      });
+    }
+
+    sortHandler('#sortSrok', '0', '0', tableID, 'ПлановаяДатаСлужебная');
+    sortHandler('#sortStatus', '1', '0', tableID, 'СтатусЗаявки');
+    sortHandler('#sortPriority', '2', '0', tableID, 'Приоритет');
+    sortHandler('#sortDate', '3', '', tableID, 'Дата');
+    sortHandler('#sortDateDone', '3', '', tableID, 'ДатаЗакрытияЗаявки');
 
     $('#btnDone').on('click', function (event) {
-      console.log('btnDone click');
       clickAnimate(this);
+      $('#sortSrok').toggle();
+      $('#sortDateDone').toggle();
       const activeOrders = !$(tableID).data('param').active;
       newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
       /*       $('#dateSort').attr('name', newAttr);
@@ -1127,12 +1287,12 @@
         : `img/check-circle-done.svg?v=<%= version %>`;
       $('#btnDone').attr('src', newSrc);
       $('#btnDone').toggleClass('pressed', !activeOrders);
-      $(tableID).data('param', { active: activeOrders });
+      updateParam(tableJQ, 'page', 0);
+      updateParam(tableJQ, 'active', activeOrders);
       $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
       $('#statusMark').toggleClass('pressed', !activeOrders);
       abortAllRequests();
       initTable(tableID);
-      console.log('state of params ', $(tableID).data('param').active);
     });
 
     // клик по кнопке Добавить закупку
@@ -1190,14 +1350,15 @@
 
       NProgress.start();
 
+      data.files = names;
+      data.a = 'a';
+      console.log('data', data);
       $.ajax({
         url: '/app/zakupka',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(data),
-        success: function (data, status) {
-          console.log('success POST', status, data);
-        },
+        success: function (data, status) {},
       }).always(function () {
         NProgress.done();
       });
@@ -1234,79 +1395,16 @@
       $('#newZakupkaText').focus();
     });
 
-    $('#cancelZakupka').on('click', function (event) {
-      hideNewOrder();
-    });
-
-    function toggleStatusButtons(element) {
-      if (element.hasClass('active')) {
-        priority = 'Нормально';
-        element.removeClass('active btn-danger').addClass('btn-light');
-        console.log('has class active');
-      } else {
-        $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-light');
-        $(element).removeClass('btn-light').addClass('btn-danger active');
-        console.log('dont has class active');
-      }
-
-      console.log(element);
-    }
-
-    let priority = 'Нормально';
-    $('#srochno').on('click', () => {
-      priority = 'Срочно';
-      toggleStatusButtons($('#srochno'));
-    });
-    $('#now').on('click', () => {
-      priority = 'НаСейчас';
-      toggleStatusButtons($('#now'));
-    });
-
-    $('#attachPhotoVideoForNewOrder').on('click', function () {
-      clickAnimate(this);
-      startAttachPhotoVideo(this);
-    });
-
-    $('#saveZakupka').on('click', function () {
-      console.log('saveZakupka on click');
-      clickAnimate(this);
-      const zakupkaText = $('#newZakupkaText').val();
-      const srochno = $('#setPriorityZakupka').hasClass('btn-danger');
-      const currentRow = $('#modal').data('data');
-
-      const data = {
-        textNew: zakupkaText,
-        priority: priority,
-        srochno: false,
-      };
-
-      NProgress.start();
-      console.log('data', data);
-      console.log('statusZakupka', statusZakupka);
-
-      requestTo1C('/zakupka', 'POST', data, function (response) {
-        console.log('Callback executed with response:', response);
-        closeZakupkaInfo();
-      });
-      priority = 'Нормально';
-    });
-
-    $('#setPriorityZakupka').on('click', function (event) {
-      if ($(this).hasClass('btn-secondary')) {
-        $(this).switchClass('btn-secondary', 'btn-danger');
-      } else {
-        $(this).switchClass('btn-danger', 'btn-secondary');
-      }
-    });
-
     function openZakupkaInfo(zakupkaUID) {
       $('#main').hide();
       $('#zakupkaInfo').show();
+      window.scrollTo(0, 0);
     }
 
     function closeZakupkaInfo() {
       $('#zakupkaInfo').hide();
       $('#main').show();
+      window.scrollTo(0, scrollPosition);
     }
 
     $('#closeZakupkaInfo').on('click', function () {
@@ -1314,8 +1412,7 @@
     });
 
     $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
-      console.log('click rowData');
-
+      scrollPosition = window.scrollY;
       let curentRowID = $(this).attr('id');
       let prevRowID = $('#infoRow').attr('curentRow') || '';
       currentRowJQ = $(this);
@@ -1328,58 +1425,85 @@
         data,
         { doc: curentRowID },
         function onSuccess(response) {
-          console.log('Success callback:', response);
           openZakupkaInfo();
+          console.log('response.order', response.order);
           renderZakupkaInfo(response.order);
           const cardsData = response.order.data.ИсторияКомментариев;
+
           const cardsForTemplate = getCardsForTemplate(cardsData);
           generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
         },
-        function onError(error) {
-          console.log('Error callback:', error);
-        },
-        function onComplete() {
-          console.log('Request completed');
-        }
+        function onError(error) {},
+        function onComplete() {}
       );
 
       // renderZakupkaInfo(dataforZakupkaInfo);
+    });
 
-      return;
+    $('#planeDate').on('change', function () {
+      const data = currentRowJQ.data('data');
 
-      if (curentRowID === prevRowID) {
-        $('#infoRow').toggleClass('hide', true);
-        $('#infoRow').attr('curentRow', '');
-      } else {
-        $('#infoRow').toggleClass('hide', false);
-        $('#infoRow').attr('curentRow', curentRowID);
-        $('#infoRow').insertAfter(this);
+      const date = $(this).datepicker('getDate');
+      const dateStr = date.toISOString();
+      console.log('date', date);
+      date.setUTCHours(date.getUTCHours() + 3);
+      const newDateStr = date.toISOString();
+      data.edited['ПлановаяДата'] = date;
+      console.log('date, newDateStr', dateStr, newDateStr);
+      // console.log('плановая дата', $(this).val());
 
-        let data = $(this).data('data').data;
-
-        $('#kod').text(data['Номер']);
-        $('#status').text(data['СтатусЗаявки']);
-
-        if (data['Приоритет'] === 'Срочно') {
-          $('#priority').text('Срочно');
-          $('#priority').addClass('srochno');
-        } else {
-          $('#priority').text('');
-          $('#priority').removeClass('srochno');
-        }
-
-        $('#newComment').val('');
-        setValid('#newComment', false);
-
-        $('#textFull').text(data['ТекстЗаявки']);
-        updateHistory();
-      }
+      console.log('executor', data.edited);
+      sendDataTo1C(data, 'PUT');
     });
 
     $('#zakupkaExecutor').on('blur', function () {
       const data = currentRowJQ.data('data');
-      data.edited['Ответственный'] = $('#executor').attr('uid');
+      data.edited['ОтветственыйСнабженец'] = $('#zakupkaExecutor').attr('uid');
+      console.log('Ответственный uid', $('#zakupkaExecutor').attr('uid'));
+
       console.log('executor', data.edited);
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#zakupkaPriority').on('change', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['Приоритет'] = $(this).val();
+      console.log($(this).val());
+      sendDataTo1C(data, 'PUT');
+    });
+
+    function showHideDoneDelete(zakupkaStatus) {
+      if (zakupkaStatus === 'Готово') {
+        console.log('zakupkaStatus === Готово');
+
+        $('#doneGroup').show();
+        $('#zakupkaDelete').hide();
+      } else if (zakupkaStatus === 'Новая') {
+        console.log('zakupkaStatus === Новая');
+        $('#zakupkaDelete').show();
+        $('#doneGroup').hide();
+      } else {
+        console.log('zakupkaStatus === Інша');
+        $('#doneGroup').hide();
+        $('#zakupkaDelete').hide();
+      }
+    }
+
+    $('#zakupkaStatus').on('change', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['СтатусЗаявки'] = $(this).val();
+      showHideDoneDelete($(this).val());
+      console.log($(this).val());
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#done').on('change', function () {
+      const data = currentRowJQ.data('data');
+      const isChecked = $(this).is(':checked');
+
+      if (!$(this).is(':checked')) {
+      }
+      data.edited['ЗакупкаВыполнена'] = $(this).is(':checked');
       sendDataTo1C(data, 'PUT');
     });
 
@@ -1425,17 +1549,53 @@
       $('#zakupkaStatus').val('');
       $('#zakupkaPriority').val('');
 
-      const uid = data.data.uid;
+      console.log('data.data.uid', data.data.uid);
+      const uid = data.data.uid || '';
       const zakupkaNumber = data.data.Номер || 'б.н.';
       const zakupkaText = data.data.ТекстЗаявки;
       const zakupkaDate = formatDateTime(data.data.Дата);
-      const zakupkaAuthor = data.data.Сотрудник.Наименование;
-      const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || 'не призначено';
+      const targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+      const planeDate = new Date(data.data.ПлановаяДата) || '';
+      const minDate = new Date(data.data.Дата);
+      const maxDate = new Date(minDate);
+      maxDate.setDate(maxDate.getDate() + 50);
+
+      $('#planeDate').datepicker('option', 'minDate', minDate);
+      $('#planeDate').datepicker('option', 'maxDate', maxDate);
+
+      const currentTime = new Date();
+      const remainTime = formatSecondToStringTime((targetDate - currentTime) / 1000);
+      const listImgZakupka = data.data['Файлы'] || [];
+      const imgs = [];
+      console.log('listImgZakupka', listImgZakupka);
+
+      listImgZakupka.forEach(function (element) {
+        if (element.ИД === uid) {
+          const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
+          const source = `${pathToStorage}/${uid}/${element.ИД}/${element.Файл}`;
+          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, -3)}png`;
+          console.log('src ', src);
+          imgs.push({ source: source, src: src });
+        }
+      });
+
+      generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
+
+      console.log('targetDate, currentTime, remainTime ', targetDate, currentTime, remainTime);
+
+      const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
+      const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.UID || '';
+      const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
       console.log('zakupkaExecutor', zakupkaExecutor);
 
       const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона;
       const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
+      console.log('zakupkaStatus', zakupkaStatus);
+
       const zakupkaPriority = data.data.Приоритет || '  не визначено';
+      const done = data.data.Виполнено || false;
+
+      showHideDoneDelete(zakupkaStatus);
       console.log('data.data.СтатусЗаявки', data.data.СтатусЗаявки, zakupkaStatus);
 
       console.log('response', $(tableID).data('response').listStatus);
@@ -1457,11 +1617,26 @@
 
       $('#zakupkaInfo').attr('uid', uid);
       $('#zakupkaDate').val(zakupkaDate);
+      $('#remainTime').text(remainTime);
+      $('#planeDate').datepicker('setDate', planeDate);
+
       const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
       $('#zakupkaAuthor').html(authorLink);
-      $('#zakupkaExecutor').html(zakupkaExecutor);
+      $('#zakupkaExecutor').attr('uid', zakupkaExecutorUID);
+      $('#zakupkaExecutor').val(zakupkaExecutor);
       $('#zakupkaStatus').val(zakupkaStatus);
+      // var statusValue = $('#zakupkaStatus option')
+      //   .filter(function () {
+      //     return $(this).text() === zakupkaStatus;
+      //   })
+      //   .val();
       $('#zakupkaPriority').val(zakupkaPriority);
+      $('#done').prop('checked', done);
+
+      callbackFuncSecondInterval = function () {
+        timerManager.updateTimers('#zakupkaInfo', '.remainTime');
+        timerManager.updateTimers('.rowData', '.timer');
+      };
     }
 
     function getCardsForTemplate(data) {
@@ -1486,6 +1661,7 @@
 
         cards.push(card);
       });
+      console.log('cards -------', cards);
 
       return cards;
     }
@@ -1647,38 +1823,35 @@
       );
     }
 
-    const timerManager = (() => {
-      const decreaseValue = value => value - 1;
-
-      const updateElementText = (element, value) => {
-        formattedValue = formatSecondToStringTime(value);
-        $(element).text(formatSecondToStringTime(value));
+    const limitDate = (() => {
+      const formatDate = date => {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
       };
 
-      const getElementValue = element => {
-        const text = $(element).text();
-        return formattedTimeToSeconds(text);
-      };
+      const init = () => {
+        const today = new Date();
+        const tenDaysAhead = new Date();
+        tenDaysAhead.setDate(today.getDate() + 10);
 
-      const processTimer = element => {
-        const currentValue = getElementValue(element);
-        const newValue = decreaseValue(currentValue);
-        updateElementText(element, newValue);
-      };
+        const minDate = formatDate(today);
+        const maxDate = formatDate(tenDaysAhead);
 
-      const updateTimers = elementClass => {
-        $(elementClass).each(function () {
-          processTimer($(this));
-        });
+        //$('#planeDate').attr('min', minDate).attr('max', maxDate);
       };
 
       return {
-        updateTimers,
+        init,
       };
     })();
 
+    limitDate.init();
+
     callbackFuncSecondInterval = function () {
-      timerManager.updateTimers('.timer');
+      timerManager.updateTimers('#zakupkaInfo', '.remainTime');
+      timerManager.updateTimers('.rowData', '.timer');
     };
   });
 </script>

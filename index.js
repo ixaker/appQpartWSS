@@ -86,6 +86,7 @@ app.use(express.static('static', {
   }
 }));
 app.use('/foto', express.static('foto'));
+app.use('/lib', express.static('lib'));
 app.use(cookieParser());
 
 // + Обработчик админского обхода авторизации
@@ -146,7 +147,7 @@ app.post('/saveFile', (req, res) => {
     }
   });
 
-  // Обработка ошибок чтения данных
+  // Обработка ошибок чтения данных 
   req.on('error', (err) => {
     console.error('Error reading request:', err);
     res.status(500).send('Internal Server Error');
@@ -283,12 +284,12 @@ app.post('/detectFace', async (req, res) => {
 
   try {
     if (result.detectFace) {
-      let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
+      let message = `Similarity - ${result.similarity}, Distancess - ${result.finded.distance}, Score - ${result.score}`;
 
       if (result.uid !== '') {
         if (result.finded.similarity > 0.72) {
           result.token = jwt.sign(result.user, secret, options);
-          result.version = version;
+          result.version = version; і
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
           telegramBot.sendImageAndMessage(req.body.photo, message);
         } else {

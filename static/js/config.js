@@ -424,15 +424,12 @@ function formatSecondToStringTime(seconds) {
 
 
 function formattedTimeToSeconds(formattedTime) {
-    console.log('formattedTimeToSeconds start');
-    console.log('formattedTime', formattedTime);
+
 
     const regex = /(-?)\s*(\d+) д (\d{2}):(\d{2}):(\d{2})/;
-    console.log('regex', regex);
+
 
     const matches = formattedTime.match(regex);
-    console.log('matches', matches);
-
 
     if (matches) {
         const isNegative = matches[1] === '-';
@@ -441,13 +438,132 @@ function formattedTimeToSeconds(formattedTime) {
         const minutes = parseInt(matches[4], 10);
         const seconds = parseInt(matches[5], 10);
 
-        console.log('matches', matches);
-        console.log('totalSecond', totalSeconds);
-
         const totalSeconds = days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
         return isNegative ? -totalSeconds : totalSeconds;
     }
 
     console.error('Invalid time format:', formattedTime);
     return 0;
+}
+const getMediaFromElement = (child, index) => {
+    const blob = $(child).children('.source').data('blob');
+    const blobPreview = $(child).children('.preview').data('blob');
+
+    const getFileDetails = (blob, prefix) => {
+        let file = { data: blob };
+        switch (blob.type) {
+            case 'image/jpeg':
+                file.name = `${prefix}${index}.png`;
+                break;
+            case 'video/mp4':
+                file.name = `${prefix}${index}.mp4`;
+                break;
+            default:
+                file.name = `${prefix}${index}.none`;
+                console.log('unknown type of blob', blob.type, file.name);
+        }
+        return file;
+    };
+
+    return {
+        file: getFileDetails(blob, ''),
+        filePreview: getFileDetails(blobPreview, 'p'),
+    };
+};
+
+const processMediaElements = selector => {
+    let media = [];
+    let names = [];
+
+    $(selector)
+        .children()
+        .each((index, child) => {
+            const { file, filePreview } = getMediaFromElement(child, index);
+
+            media.push(file);
+            media.push(filePreview);
+            names.push(file.name);
+        });
+
+    return { media, names };
+};
+
+const getMedia = (selector) => {
+    const { media } = processMediaElements(selector);
+    return media;
+};
+
+const getNames = (selector) => {
+    const { names } = processMediaElements(selector);
+    return names;
+};
+
+const timerManager = (() => {
+    const decreaseValue = value => value - 1;
+
+    const updateElementText = (element, value) => {
+        formattedValue = formatSecondToStringTime(value);
+        $(element).text(formatSecondToStringTime(value));
+    };
+
+    const getElementValue = element => {
+        const text = $(element).text();
+        // console.log('text from getElementValue', element, text);
+        // console.log('text, formattedTimeToSeconds(text)', text, formattedTimeToSeconds(text));
+        return formattedTimeToSeconds(text);
+    };
+
+    const processTimer = element => {
+        const currentValue = getElementValue(element);
+        // console.log('currentValue', currentValue);
+        const newValue = decreaseValue(currentValue);
+        // console.log('newValue', newValue);
+
+        updateElementText(element, newValue);
+        highlightTimer(element, newValue);
+    };
+
+    const highlightTimer = (element, value) => {
+        // console.log('highliter ', value, 60 * 60);
+
+        if (value <= 60 * 60) {
+            $(element).css('color', 'red');
+        } else {
+            $(element).css('color', '');
+        }
+    };
+
+    const updateTimers = (containerClass, elementClass) => {
+        // console.log('updateTimers run for', containerClass, elementClass);
+
+        $(`${containerClass} ${elementClass}`).each(function () {
+            // console.log('one element updateTimers', this);
+
+            processTimer($(this));
+        });
+    };
+
+    return {
+        updateTimers,
+    };
+})();
+
+function isElementVisible(el) {
+    var rect = el.getBoundingClientRect(),
+        vWidth = window.innerWidth || document.documentElement.clientWidth,
+        vHeight = window.innerHeight || document.documentElement.clientHeight,
+        efp = function (x, y) { return document.elementFromPoint(x, y) };
+
+    // Return false if it's not in the viewport
+    if (rect.right < 0 || rect.bottom < 0
+        || rect.left > vWidth || rect.top > vHeight)
+        return false;
+
+    // Return true if any of its four corners are visible
+    return (
+        el.contains(efp(rect.left, rect.top))
+        || el.contains(efp(rect.right, rect.top))
+        || el.contains(efp(rect.right, rect.bottom))
+        || el.contains(efp(rect.left, rect.bottom))
+    );
 }
