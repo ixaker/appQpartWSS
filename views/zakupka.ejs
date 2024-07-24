@@ -987,9 +987,6 @@
     // callback при изменении данных в строке для определения показать или убрать строку
     callbackFilter = function (data, result = true) {
       console.log('callbackFilter', data);
-      const cardsData = data.ИсторияКомментариев;
-      const cardsForTemplate = getCardsForTemplate(cardsData);
-      generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
 
       console.log('userRights', userRights.canViewAllOrders);
       viewRowAllUsers = userRights.canViewAllOrders;
@@ -1059,7 +1056,23 @@
     // callback после внесения изменений в строку с сервера
     callbackAfterWrite = function (data) {
       console.log('callbackAfterWrite renderZakupkaInfo', data);
-      renderZakupkaInfo(data);
+      const oldData = $('#zakupkaInfo').data('data');
+      if (oldData !== undefined) {
+        const currentUID = $('#zakupkaInfo').data('data').data.uid;
+
+        const newUID = data.data.uid;
+        console.log('currentUID', currentUID);
+        console.log('newUID', newUID);
+        console.log('before if');
+        console.log('currentUID === newUID', currentUID === newUID, currentUID, newUID);
+
+        console.log('$(#zakupkaInfo).is(:visible)', $('#zakupkaInfo').is(':visible'));
+        if (currentUID === newUID && $('#zakupkaInfo').is(':visible')) {
+          console.log('after if');
+          renderZakupkaInfo(data);
+        }
+      }
+      console.log('$(#zakupkaInfo).data(data)', $('#zakupkaInfo').data('data'));
 
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
@@ -1428,10 +1441,10 @@
           openZakupkaInfo();
           console.log('response.order', response.order);
           renderZakupkaInfo(response.order);
-          const cardsData = response.order.data.ИсторияКомментариев;
+          // const cardsData = response.order.data.ИсторияКомментариев;
 
-          const cardsForTemplate = getCardsForTemplate(cardsData);
-          generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+          // const cardsForTemplate = getCardsForTemplate(cardsData);
+          // generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
         },
         function onError(error) {},
         function onComplete() {}
@@ -1537,7 +1550,7 @@
 
     function renderZakupkaInfo(data) {
       console.log('renderZakupkaInfo', data);
-
+      $('#zakupkaInfo').data('data', data);
       $('#zakupkaText').html('');
       $('#orderNum').text('');
       $('#zakupkaInfo').removeAttr('uid');
@@ -1637,6 +1650,10 @@
         timerManager.updateTimers('#zakupkaInfo', '.remainTime');
         timerManager.updateTimers('.rowData', '.timer');
       };
+
+      const cardsData = data.data.ИсторияКомментариев;
+      const cardsForTemplate = getCardsForTemplate(cardsData);
+      generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
     }
 
     function getCardsForTemplate(data) {
