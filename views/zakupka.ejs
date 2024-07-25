@@ -1123,7 +1123,7 @@
       } else {
         dateForComplite = new Date(data.data.ДатаЗакрытияЗаявки);
         dateStart = new Date(data.data.Дата);
-        datePlane = new Date(data.data.ПлановаяДатаСлужебная);
+        datePlane = new Date(data.data.ПлановаяДата);
         console.log('dateForComplite, datePlane', dateForComplite, datePlane);
         if (dateForComplite > datePlane) {
           timerClass = 'dangerColor';
@@ -1590,7 +1590,6 @@
       const zakupkaText = data.data.ТекстЗаявки;
       const zakupkaDate = formatDateTime(data.data.Дата);
 
-      const planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
       const minDate = new Date(data.data.Дата);
       const maxDate = new Date(minDate);
       maxDate.setDate(maxDate.getDate() + 50);
@@ -1601,13 +1600,16 @@
       let currentTime;
       let targetDate;
       let remainTimeText;
+      let planeDate;
       if (activeOrders) {
         targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+        planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
         currentTime = new Date();
         remainTimeText = 'Осталось:';
       } else {
         targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
         currentTime = new Date(data.data.Дата);
+        planeDate = new Date(data.data.ПлановаяДата) || '';
         remainTimeText = 'Выполнено за:';
       }
       const isZakupkaOverdue = targetDate > planeDate;
