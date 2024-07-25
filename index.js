@@ -284,12 +284,12 @@ app.post('/detectFace', async (req, res) => {
 
   try {
     if (result.detectFace) {
-      let message = `Similarity - ${result.similarity}, Distancess - ${result.finded.distance}, Score - ${result.score}`;
+      let message = `Similarity - ${result.similarity}, Distance - ${result.finded.distance}, Score - ${result.score}`;
 
       if (result.uid !== '') {
         if (result.finded.similarity > 0.72) {
           result.token = jwt.sign(result.user, secret, options);
-          result.version = version; і
+          result.version = version;
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
           telegramBot.sendImageAndMessage(req.body.photo, message);
         } else {
