@@ -529,7 +529,7 @@
 
     <div class='tile3row'>
       <div class='tileStatus'>{{{status}}}</div>
-      <div class='tilePriority'>Приоритет: {{{priority}}}</div>
+      <div class='tilePriority dangerColor'>{{{priority}}}</div>
       <div class='tileEye'>
         {{#if showEyeIcon}}
           <i class='bi bi-eye-slash'></i>
@@ -615,8 +615,8 @@
       <div id="zakupkaAuthor" class="form-control"></div>
     </div>
     <div class="form-group">
-      <label>Осталось:</label>
-      <div class="form-control remainTime" id="remainTime"></div>
+      <label id="remainTimeLabel">Осталось:</label>
+      <div class="form-control" id="remainTime"></div>
     </div>
     <div class="form-group">
       <label>Плановая дата:</label>
@@ -932,6 +932,7 @@
     let scrollPosition = 0;
     const pageUID = '750bb924-e106-11ee-822c-000c29006152';
     const userRights = $('#menu').data('userRight')[pageUID];
+    let activeOrders;
 
     $.datepicker.setDefaults($.datepicker.regional['ua']);
 
@@ -998,20 +999,22 @@
       console.log('userRights', userRights.canViewAllOrders);
       viewRowAllUsers = userRights.canViewAllOrders;
       if (!viewRowAllUsers) {
-        console.log('check access');
+        console.log('check access callbackFilter');
 
         if (data['Сотрудник']['uid'] !== user.uid) {
           result = false;
         }
       }
 
-      if (data['СтатусЗаявки'] === 'Готово') {
-        result = false;
-      }
+      // if (data['СтатусЗаявки'] === 'Готово') {
+      //   console.log('status = gotovo callbackFilter');
+      //   result = false;
+      // }
 
-      if (data['СтатусЗаявки'] === 'Отменена') {
-        result = false;
-      }
+      // if (data['СтатусЗаявки'] === 'Отменена') {
+      //   console.log('status = canceled callbackFilter');
+      //   result = false;
+      // }
 
       return result;
     };
@@ -1086,7 +1089,7 @@
       let currentRow = $('#' + data.data['uid']);
       console.log('currentRow', currentRow);
 
-      const activeOrders = $(tableID).data('param').active;
+      activeOrders = $(tableID).data('param').active;
 
       if (activeOrders) {
         console.log(
@@ -1120,8 +1123,8 @@
       } else {
         dateForComplite = new Date(data.data.ДатаЗакрытияЗаявки);
         dateStart = new Date(data.data.Дата);
-        datePlane = new Date(data.data.ПлановаяДата);
-
+        datePlane = new Date(data.data.ПлановаяДатаСлужебная);
+        console.log('dateForComplite, datePlane', dateForComplite, datePlane);
         if (dateForComplite > datePlane) {
           timerClass = 'dangerColor';
         } else {
@@ -1141,7 +1144,17 @@
 
       const status = data.data.СтатусЗаявки || '';
       console.log('status callbackAfterWrite', status);
-      const priority = data.data.Приоритет || '';
+
+      const priorityValue = data.data.Приоритет || '';
+      let priority;
+      console.log('priorityValue', priorityValue);
+      if (priorityValue === 'Срочно' || priorityValue === 'На сейчас') {
+        priority = priorityValue;
+      } else {
+        priority = '';
+      }
+      console.log('priorityValue', priority);
+
       const date = formatDate(data.data.Дата) || '';
       const planeDate = formatDate(data.data.ПлановаяДата).split('T')[0];
       const term = formatSecondToStringTime(timeToCompliteOrder / 1000);
@@ -1289,7 +1302,7 @@
       clickAnimate(this);
       $('#sortSrok').toggle();
       $('#sortDateDone').toggle();
-      const activeOrders = !$(tableID).data('param').active;
+      activeOrders = !$(tableID).data('param').active;
       newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
 
       const tableJQ = $(tableID);
@@ -1558,7 +1571,7 @@
     }
 
     function renderZakupkaInfo(data) {
-      console.log('renderZakupkaInfo', data);
+      console.log('renderZakupkaInfo activeOrders', data, activeOrders);
       $('#zakupkaInfo').data('data', data);
       $('#zakupkaText').html('');
       $('#orderNum').text('');
@@ -1576,8 +1589,8 @@
       const zakupkaNumber = data.data.Номер || 'б.н.';
       const zakupkaText = data.data.ТекстЗаявки;
       const zakupkaDate = formatDateTime(data.data.Дата);
-      const targetDate = new Date(data.data.ПлановаяДатаСлужебная);
-      const planeDate = new Date(data.data.ПлановаяДата) || '';
+
+      const planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
       const minDate = new Date(data.data.Дата);
       const maxDate = new Date(minDate);
       maxDate.setDate(maxDate.getDate() + 50);
@@ -1585,7 +1598,21 @@
       $('#planeDate').datepicker('option', 'minDate', minDate);
       $('#planeDate').datepicker('option', 'maxDate', maxDate);
 
-      const currentTime = new Date();
+      let currentTime;
+      let targetDate;
+      let remainTimeText;
+      if (activeOrders) {
+        targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+        currentTime = new Date();
+        remainTimeText = 'Осталось:';
+      } else {
+        targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
+        currentTime = new Date(data.data.Дата);
+        remainTimeText = 'Выполнено за:';
+      }
+      const isZakupkaOverdue = targetDate > planeDate;
+      console.log('isZakupkaOverdue, targetDate, planeDate', isZakupkaOverdue, targetDate, planeDate);
+
       const remainTime = formatSecondToStringTime((targetDate - currentTime) / 1000);
       const listImgZakupka = data.data['Файлы'] || [];
       const imgs = [];
@@ -1632,7 +1659,14 @@
       $('#orderNum').text(zakupkaNumber);
       $('#zakupkaInfo').attr('uid', uid);
       $('#zakupkaDate').val(zakupkaDate);
+
+      $('#remainTimeLabel').text(remainTimeText);
       $('#remainTime').text(remainTime);
+      if (activeOrders) {
+      }
+      $('#remainTime').toggleClass('remainTime', activeOrders);
+
+      $('#remainTime').toggleClass('dangerColor', isZakupkaOverdue);
       $('#planeDate').datepicker('setDate', planeDate);
       const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
       $('#zakupkaAuthor').html(authorLink);
