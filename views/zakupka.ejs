@@ -918,7 +918,14 @@
     let tableID = '#ЗаявкаНаЗакупку';
     let tableJQ = $(tableID);
     let currentRowJQ;
-    $(tableID).data('param', { active: true, limit: 20, page: 0, sortColumn: 'Дата', sortDirection: '0', term: '' });
+    $(tableID).data('param', {
+      active: true,
+      limit: 20,
+      page: 0,
+      sortColumn: 'ПлановаяДатаСлужебная',
+      sortDirection: '0',
+      term: '',
+    });
     var viewRowAllUsers = false;
     let listStatus = [];
     let listPriority = [];
@@ -1263,8 +1270,6 @@
         updateParam(tableJQ, 'sortColumn', sortColumn);
         updateParam(tableJQ, 'sortDirection', sortDirection);
         updateParam(tableJQ, 'page', 0);
-        // $(tableID).attr('sort', sortValue);
-        // $(tableID).attr('sortDirection', sortDirection);
 
         $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
         // $(`th.${sortClass}`).click();
@@ -1594,17 +1599,11 @@
 
       generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
 
-      console.log('targetDate, currentTime, remainTime ', targetDate, currentTime, remainTime);
-
       const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
-      const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.UID || '';
+      const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.uid || '';
       const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
-      console.log('zakupkaExecutor', zakupkaExecutor);
-
       const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона;
       const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
-      console.log('zakupkaStatus', zakupkaStatus);
-
       const zakupkaPriority = data.data.Приоритет || '  не визначено';
       const done = data.data.Виполнено || false;
 
@@ -1627,12 +1626,10 @@
 
       $('#zakupkaText').html(linkedText);
       $('#orderNum').text(zakupkaNumber);
-
       $('#zakupkaInfo').attr('uid', uid);
       $('#zakupkaDate').val(zakupkaDate);
       $('#remainTime').text(remainTime);
       $('#planeDate').datepicker('setDate', planeDate);
-
       const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
       $('#zakupkaAuthor').html(authorLink);
       $('#zakupkaExecutor').attr('uid', zakupkaExecutorUID);
