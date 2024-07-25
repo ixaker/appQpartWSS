@@ -1291,11 +1291,6 @@
       $('#sortDateDone').toggle();
       const activeOrders = !$(tableID).data('param').active;
       newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
-      /*       $('#dateSort').attr('name', newAttr);
-      $('#dateSort').attr('dddd', newAttr); */
-
-      /*       let element = document.getElementById('dateSort');
-      element.setAttribute('name', newAttr); */
 
       const tableJQ = $(tableID);
       tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
@@ -1305,8 +1300,17 @@
         : `img/check-circle-done.svg?v=<%= version %>`;
       $('#btnDone').attr('src', newSrc);
       $('#btnDone').toggleClass('pressed', !activeOrders);
+
+      let sortValue;
+      if (activeOrders) {
+        sortValue = 'ПлановаяДатаСлужебная';
+      } else {
+        sortValue = 'ДатаЗакрытияЗаявки';
+      }
       updateParam(tableJQ, 'page', 0);
+      updateParam(tableJQ, 'sortColumn', sortValue);
       updateParam(tableJQ, 'active', activeOrders);
+
       $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
       $('#statusMark').toggleClass('pressed', !activeOrders);
       abortAllRequests();
