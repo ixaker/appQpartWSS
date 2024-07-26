@@ -136,10 +136,6 @@
     padding: 0;
   }
 
-  .pressed {
-    color: darkorange;
-  }
-
   .pressed path {
     fill: orange;
   }
@@ -213,8 +209,11 @@
 <div id="main">
   <div id="commandPanel" class="commandPanel">
     <div class="titleContainer">
-      <h4 class="titlePage2">Заявки на ремонт</h4>
-      <div id="statusMark" class="status">в работе</div>
+      <i class="bi bi-tools" id="pageIcon"></i>
+      <div id="titleText">
+        <h4 class="titlePage2">Заявки на ремонт</h4>
+        <div id="statusMark" class="status">в работе</div>
+      </div>
     </div>
 
     <div class="commandRow">
@@ -1288,12 +1287,6 @@
     // callback перед отрисовкой таблицы
     callbackBeforeDone = function (data) {};
 
-    let formatter = new Intl.DateTimeFormat('uk-UA', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-
     let timeFormatter = new Intl.DateTimeFormat('uk-UA', {
       hour: '2-digit',
       minute: '2-digit',
@@ -1616,6 +1609,7 @@
         : `img/check-circle-done.svg?v=<%= version %>`;
       $('#btnDone').attr('src', newSrc);
       $('#btnDone').toggleClass('pressed', !activeOrders);
+      $('#pageIcon').toggleClass('pressed', !activeOrders);
       $(tableID).data('param', { active: activeOrders });
       $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
       $('#statusMark').toggleClass('pressed', !activeOrders);
