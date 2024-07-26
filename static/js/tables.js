@@ -172,18 +172,12 @@ async function initTable(table) {
 
                         // Розв'язуємо всі обіцянки і чекаємо їхнього завершення
                         await Promise.all(promises);
-
-
                         console.log('executeAsync end');
-
-
-
                         // sort(table);
                     }
 
                     // Викликаємо функцію для виконання асинхронного циклу
                     const result = await executeAsync();
-
 
                     if (attrSort !== undefined) {
                         tableJQ.attr("sort", attrSort)
