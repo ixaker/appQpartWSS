@@ -1472,7 +1472,7 @@
     $('#zakupkaStatus').on('change', function () {
       const data = currentRowJQ.data('data');
       data.edited['СтатусЗаявки'] = $(this).val();
-      showHideDoneDelete($(this).val());
+      // showHideDoneDelete($(this).val());
       console.log($(this).val());
       sendDataTo1C(data, 'PUT');
     });
@@ -1598,7 +1598,8 @@
       const zakupkaPriority = data.data.Приоритет || '  не визначено';
       const done = data.data.ЗаявкаПодтверждена || false;
       const userInfo = $('#menu').data('userInfo');
-      const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid;
+      console.log('renderInfo userRights', userRights);
+      const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid || userRights.canChangeOrderDone;
       showHideDoneDelete(zakupkaStatus, canChangeOrderDone);
 
       const statusList = $(tableID).data('response').listStatus;
