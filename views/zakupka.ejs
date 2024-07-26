@@ -1071,7 +1071,7 @@
         console.log('targetDate, planeDate', targetDate, planeDate);
       }
 
-      const isZakupkaOverdue = targetDate > planeDate;
+      const isZakupkaOverdue = targetDate < dateStart;
 
       if (isZakupkaOverdue) {
         timerClass = 'dangerColor';
