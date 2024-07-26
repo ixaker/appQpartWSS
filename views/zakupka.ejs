@@ -1050,26 +1050,36 @@
       $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
 
       let timeToCompliteOrder;
-      let dateForComplite;
+      let targetDate;
       let dateStart;
       let timerClass;
+      let planeDate;
       if (activeOrders) {
-        dateForComplite = new Date(data.data.ПлановаяДатаСлужебная);
+        targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+        planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
+        const dayOfWeek = targetDate.getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        if (isWeekend) {
+          targetDate.setDate(targetDate.getDate() + 2);
+        }
         dateStart = new Date();
         timerClass = 'timer';
       } else {
-        dateForComplite = new Date(data.data.ДатаЗакрытияЗаявки);
+        targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
         dateStart = new Date(data.data.Дата);
-        datePlane = new Date(data.data.ПлановаяДата);
-        console.log('dateForComplite, datePlane', dateForComplite, datePlane);
-        if (dateForComplite > datePlane) {
-          timerClass = 'dangerColor';
-        } else {
-          timerClass = '';
-        }
+        planeDate = new Date(data.data.ПлановаяДата);
+        console.log('targetDate, planeDate', targetDate, planeDate);
       }
 
-      timeToCompliteOrder = dateForComplite - dateStart;
+      const isZakupkaOverdue = targetDate > planeDate;
+
+      if (isZakupkaOverdue) {
+        timerClass = 'dangerColor';
+      } else {
+        timerClass = '';
+      }
+
+      timeToCompliteOrder = targetDate - dateStart;
 
       const orderNumber = data.data.Номер || 'б.н.';
       const author = data.data.Сотрудник.Наименование || '';
@@ -1090,7 +1100,7 @@
       console.log('priorityValue', priority);
 
       const date = formatDate(data.data.Дата) || '';
-      const planeDate = formatDate(data.data.ПлановаяДата).split('T')[0];
+      const planingDate = formatDate(data.data.ПлановаяДата).split('T')[0];
       const term = formatSecondToStringTime(timeToCompliteOrder / 1000);
       const showEyeIcon = false;
       const linkedText = text.replace(
@@ -1108,7 +1118,7 @@
         timerClass: timerClass,
         term: term,
         date: date,
-        planeDate: planeDate,
+        planeDate: planingDate,
         showEyeIcon: showEyeIcon,
       };
 
@@ -1550,10 +1560,15 @@
       let currentTime;
       let targetDate;
       let remainTimeText;
-      let planeDate;
+      // let planeDate;
       if (activeOrders) {
         targetDate = new Date(data.data.ПлановаяДатаСлужебная);
         planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
+        const dayOfWeek = targetDate.getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        if (isWeekend) {
+          targetDate.setDate(targetDate.getDate() + 2);
+        }
         currentTime = new Date();
         remainTimeText = 'Осталось:';
         $('.zakupkaFinish').hide();
