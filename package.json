@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch index.js index.js",
+    "dev": "nodemon --watch . --ext js,json,ejs index.js",
     "start": "node index.js"
   },
   "author": "Holub",
