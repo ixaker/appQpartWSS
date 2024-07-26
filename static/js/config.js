@@ -424,11 +424,7 @@ function formatSecondToStringTime(seconds) {
 
 
 function formattedTimeToSeconds(formattedTime) {
-
-
     const regex = /(-?)\s*(\d+) д (\d{2}):(\d{2}):(\d{2})/;
-
-
     const matches = formattedTime.match(regex);
 
     if (matches) {
@@ -445,6 +441,13 @@ function formattedTimeToSeconds(formattedTime) {
     console.error('Invalid time format:', formattedTime);
     return 0;
 }
+
+let formatter = new Intl.DateTimeFormat('uk-UA', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+});
+
 const getMediaFromElement = (child, index) => {
     const blob = $(child).children('.source').data('blob');
     const blobPreview = $(child).children('.preview').data('blob');
