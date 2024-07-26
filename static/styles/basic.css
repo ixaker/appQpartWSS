@@ -380,6 +380,15 @@ input[type='number']::-webkit-outer-spin-button {
   width: 48px;
 }
 
+#pageIcon {
+  font-size: 35px;
+  color: darkgreen;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
 .status {
   position: relative;
   font-size: x-small;
@@ -393,7 +402,13 @@ input[type='number']::-webkit-outer-spin-button {
   color: darkgreen;
 }
 
+.pressed {
+  color: darkorange !important;
+}
+
 .titleContainer {
+  display: flex;
+  flex-direction: row;
   align-self: flex-start;
 }
 
@@ -509,11 +524,15 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 #sortList li {
-  padding: 10px 20px 10px 5px;
+  padding: 10px;
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
   align-items: center;
+}
+
+#sortList li.active {
+  background-color: aliceblue;
 }
 
 #sortList li:hover {
