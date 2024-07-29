@@ -1895,7 +1895,7 @@
       const stanokName = data.data['Станок']['Наименование'];
       const author = data.data['Сотрудник']['Наименование'];
       const topic = data.data['Тема'];
-      const description = data.data['Описание'];
+      const description = data.data['Описание'] || '';
       const sotrudnik = data.data['Ответственный'];
       const diagnosticText = data.data['РезультатДиагностики'];
       const orderDone = data.data['РемонтЗавершен'];
@@ -1903,6 +1903,14 @@
       const difficult = data.data['Сложность']['uid'];
       const executor = data.data['Ответственный']['Наименование'];
       const done = data.data['РемонтЗавершен'];
+
+      if (description === '') {
+        // $('#infoText').hide();
+        $('#infoText').closest('.form-group').hide();
+      } else {
+        $('#infoText').closest('.form-group').show();
+        // $('#infoText').show();
+      }
 
       $('#modal').attr('uid', uid);
       $('#modal').data('data', data);
@@ -1968,12 +1976,6 @@
 
       stanokNumber === undefined ? $('#infoStanok').parent().hide() : $('#infoStanok').parent().show();
       topic === '' ? $('#infoTopic').hide() : $('#infoTopic').show();
-      if (description === '') {
-        $('#infoText').hide();
-        $('#infoText').closest('.form-group').hide();
-      } else {
-        $('#infoText').show();
-      }
 
       // timer back
       const dateSrok = new Date(data.data['ПлановаяДатаГотовности']).getTime();
