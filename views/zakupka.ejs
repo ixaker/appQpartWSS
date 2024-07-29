@@ -27,6 +27,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    position: relative;
   }
 
   .executorContainer .form-control {
@@ -479,8 +480,17 @@
     width: 30%;
   }
 
+  .tilePriority {
+    width: 30%;
+  }
+
+  .tileEye {
+    width: 10%;
+    display: flex;
+    justify-content: flex-end;
+  }
   .tileTimer {
-    width: 40%;
+    width: 30%;
     text-align: end;
   }
 
@@ -1196,7 +1206,7 @@
       const date = formatDate(data.data.Дата) || '';
       const planingDate = formatDate(data.data.ПлановаяДата).split('T')[0];
       const term = formatSecondToStringTime(timeToCompliteOrder / 1000);
-      const showEyeIcon = false;
+      const showEyeIcon = hasUserSeenLastChanges(user.uid, data.data.Просмотры, data.data.ДатаПоследнейАктивности);
       const linkedText = text.replace(
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
         '<a href="$1" class="zakupkaLink" target="_blank">ccылка</a>'
@@ -1940,6 +1950,26 @@
       }
 
       return 0;
+    }
+
+    function hasUserSeenLastChanges(userUID, infoAboutView, dateOflastActivity) {
+      console.log('userUID, infoAboutView, dateOflastActivity', userUID, infoAboutView, dateOflastActivity);
+      const userInfo = infoAboutView.find(item => {
+        console.log('row.Сотрудник.uid, user.uid ', item.Сотрудник.uid, userUID);
+        return item.Сотрудник.uid === userUID;
+      });
+
+      if (userInfo !== undefined) {
+        dateOfLastView = userInfo.ДатаПросмотра;
+      } else {
+        dateOfLastView = '1970-01-01T00:00:00 000000';
+      }
+      console.log('dateOfLastView < dateOflastActivity', dateOfLastView, dateOflastActivity);
+      if (dateOfLastView < dateOflastActivity) {
+        return true;
+      } else {
+        return false;
+      }
     }
 
     function sendDataTo1C(data, method = 'GET', callback) {
