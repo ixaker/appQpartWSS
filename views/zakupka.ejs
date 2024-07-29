@@ -639,11 +639,11 @@
       <select id="zakupkaStatus" class="form-control" disabled></select>
     </div>
 
-    <div class="form-group" id="doneGroup">
+    <div class="form-group" id="doneGroup" style="display: none">
       <label for="done">Подтвердить закупку:</label>
       <input type="checkbox" class="form-control" id="done" aria-describedby="basic-addon3" readonly />
     </div>
-    <div class="form-group zakupkaDelete">
+    <div class="form-group zakupkaDelete" style="display: none">
       <i class="bi bi-trash" id="zakupkaDelete"></i>
     </div>
   </div>
@@ -987,7 +987,7 @@
       const viewsVisible = $('.view-card').is(':visible');
       console.log('showViews', viewsVisible);
 
-      if (viewsVisible) {
+      if (viewsVisible || button.text() !== 'показать просмотры') {
         $('#avatarViewContainer').hide();
         $('.view-card').css('display', 'none');
         $('#showViews').text('показать просмотры');
