@@ -277,15 +277,37 @@
         <div class="dataCell"></div>
       </td>
 
-      <td title="СтатусЗаявки" name="СтатусЗаявки" id="statusSort" headerClass="statusSort" style="display: none">
+      <td
+        title="СтатусЗаявкиПорядок"
+        name="СтатусЗаявкиПорядок"
+        id="statusSort"
+        headerClass="statusSort"
+        style="display: none"
+      >
         <div class="dataCell"></div>
       </td>
 
-      <td title="Приоритет" name="Приоритет" id="prioritySort" headerClass="prioritySort" style="display: none">
+      <td
+        title="ПриоритетПорядок"
+        name="ПриоритетПорядок"
+        id="prioritySort"
+        headerClass="prioritySort"
+        style="display: none"
+      >
         <div class="dataCell"></div>
       </td>
 
       <td title="Дата" name="Дата" id="dateSort" headerClass="dateSort" style="display: none">
+        <div class="dataCell"></div>
+      </td>
+
+      <td
+        title="ДатаЗакрытияЗаявки"
+        name="ДатаЗакрытияЗаявки"
+        id="dateSort"
+        headerClass="dateSort"
+        style="display: none"
+      >
         <div class="dataCell"></div>
       </td>
 
@@ -311,6 +333,36 @@
     </tr>
   </table>
 </div>
+
+<style>
+  #avatarViewContainer {
+    display: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 5px;
+    overflow: auto;
+    padding-bottom: 5px;
+  }
+
+  #avatarViewContainer .card-avatar {
+    width: 40px;
+    height: 40px;
+  }
+</style>
+
+<script id="viewAvatar-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='card-avatar' uid='{{this}}'>
+      <img
+        src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{this}}.jpg'
+        onerror="this.onerror=null;this.src='/img/avatar.png';"
+        alt='avatar'
+      />
+    </div>
+
+  {{/each}}
+</script>
 
 <!-- template for tile -->
 <style>
@@ -468,7 +520,7 @@
           <i class='bi bi-eye-slash'></i>
         {{/if}}
       </div>
-      <div class='tileTimer {{timerClass}}' date='{{dateSrok}}'>{{{term}}}</div>
+      <div class='tileTimer {{timerClass}} {{dangerClass}}' date='{{dateSrok}}'>{{{term}}}</div>
 
     </div>
 
@@ -867,6 +919,7 @@
     let listStatus = [];
     let listPriority = [];
     let scrollPosition = 0;
+    let isSingleDataUpdate = false;
     const pageUID = '750bb924-e106-11ee-822c-000c29006152';
     const userRights = $('#menu').data('userRight')[pageUID];
     let activeOrders;
@@ -921,11 +974,60 @@
 
     // toggleEditability(user, usersAllowToEdit);
 
+    const usersCanShowViews = ['Голуб Виталий', 'Кошубський Олександр '];
+
+    console.log('userRights.canViewViews', userRights.canViewViews);
+    if (userRights.canViewViews) {
+      $('#showViews').show();
+    }
+
+    $('#showViews').on('click', function () {
+      console.log('showViews');
+      const button = $(this);
+      const viewsVisible = $('.view-card').is(':visible');
+      console.log('showViews', viewsVisible);
+
+      if (viewsVisible) {
+        $('#avatarViewContainer').hide();
+        $('.view-card').css('display', 'none');
+        $('#showViews').text('показать просмотры');
+      } else {
+        $('#avatarViewContainer').css('display', 'flex');
+        $('.view-card').css('display', 'flex');
+        button.text('скрыть просмотры');
+      }
+    });
+
+    $('#avatarViewContainer').on('click', '.card-avatar', function () {
+      clickAnimate(this);
+      let uid = $(this).attr('uid');
+      console.log('this user', this);
+
+      if ($(this).hasClass('selected')) {
+        uid = '';
+        $('.view-card').css('display', 'flex');
+        $(`.card-avatar`).removeClass('selected');
+      } else {
+        $(`#historyContainer .view-card`).show();
+        $(`#historyContainer .view-card[uid]:not([uid="${uid}"])`).hide();
+        $(`#avatarViewContainer .card-avatar[uid]:not([uid="${uid}"])`).removeClass('selected');
+        $(`.card-avatar`).removeClass('selected');
+        $(`.card-avatar[uid="${uid}"]`).addClass('selected');
+      }
+      // $(`#historyContainer .view-card`).css('display', 'flex');
+      // $(`.card-avatar`).removeClass('selected');
+
+      console.log('elements for show', $('.view-card'));
+      // console.log($(`#historyContainer .view-card[uid]:not([uid="${uid}"])`));
+    });
+
     addSubscribeWSS('ЗаявкаНаЗакупку_all');
 
     // callback при получении данных от сервера по wss
     callbackWSS = async function (data) {
       callbackTable(data);
+      console.log('calbackWSS');
+      isSingleDataUpdate = true;
     };
 
     // callback при изменении данных в строке для определения показать или убрать строку
@@ -976,9 +1078,6 @@
       listPriority = $(tableID).data('response').listPriority;
       listStatus = $(tableID).data('response').listStatus;
       listColors = $(tableID).data('response').Цвет;
-      console.log('listColors', listColors);
-      console.log('listStatus', listStatus);
-      console.log('listPriority', listPriority);
     };
 
     // callback после отрисовки таблицы
@@ -994,8 +1093,6 @@
 
     function getDateInSeconds(date) {
       const targetDate = new Date(date);
-      console.log('targetDate', targetDate);
-
       dateInSeconds = Math.floor(targetDate.getTime() / 1000);
       return dateInSeconds;
     }
@@ -1008,18 +1105,11 @@
         const currentUID = $('#zakupkaInfo').data('data').data.uid;
 
         const newUID = data.data.uid;
-        console.log('currentUID', currentUID);
-        console.log('newUID', newUID);
-        console.log('before if');
-        console.log('currentUID === newUID', currentUID === newUID, currentUID, newUID);
-
-        console.log('$(#zakupkaInfo).is(:visible)', $('#zakupkaInfo').is(':visible'));
         if (currentUID === newUID && $('#zakupkaInfo').is(':visible')) {
           console.log('after if');
           renderZakupkaInfo(data);
         }
       }
-      console.log('$(#zakupkaInfo).data(data)', $('#zakupkaInfo').data('data'));
 
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
@@ -1052,8 +1142,10 @@
       let timeToCompliteOrder;
       let targetDate;
       let dateStart;
+      console.log('let dateStart');
       let timerClass;
       let planeDate;
+      let isZakupkaOverdue;
       if (activeOrders) {
         targetDate = new Date(data.data.ПлановаяДатаСлужебная);
         planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
@@ -1063,20 +1155,24 @@
           targetDate.setDate(targetDate.getDate() + 2);
         }
         dateStart = new Date();
+        console.log('dateStart', dateStart);
         timerClass = 'timer';
+        isZakupkaOverdue = (targetDate - dateStart) / (60 * 1000) < 60;
       } else {
         targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
         dateStart = new Date(data.data.Дата);
         planeDate = new Date(data.data.ПлановаяДата);
+        isZakupkaOverdue = targetDate < dateStart;
         console.log('targetDate, planeDate', targetDate, planeDate);
       }
 
-      const isZakupkaOverdue = targetDate < dateStart;
+      // const isZakupkaOverdue = (targetDate - dateStart) / (60 * 1000) < 60;
+      // console.log('isZakupkaOverdue, targetDate-dateStart', isZakupkaOverdue, (targetDate - dateStart) / (60 * 1000));
 
       if (isZakupkaOverdue) {
-        timerClass = 'dangerColor';
+        dangerClass = 'dangerColor';
       } else {
-        timerClass = '';
+        dangerClass = '';
       }
 
       timeToCompliteOrder = targetDate - dateStart;
@@ -1086,18 +1182,16 @@
       const executor = data.data.ОтветственыйСнабженец.Наименование || '';
       const text = data.data.ТекстЗаявки || '';
 
-      const status = data.data.СтатусЗаявки || '';
+      const status = data.data.СтатусЗаявкиПорядок || '';
       console.log('status callbackAfterWrite', status);
 
-      const priorityValue = data.data.Приоритет || '';
+      const priorityValue = data.data.ПриоритетПорядок || '';
       let priority;
-      console.log('priorityValue', priorityValue);
       if (priorityValue === 'Срочно' || priorityValue === 'На сейчас') {
         priority = priorityValue;
       } else {
         priority = '';
       }
-      console.log('priorityValue', priority);
 
       const date = formatDate(data.data.Дата) || '';
       const planingDate = formatDate(data.data.ПлановаяДата).split('T')[0];
@@ -1116,9 +1210,10 @@
         status: status,
         priority: priority,
         timerClass: timerClass,
+        dangerClass: dangerClass,
         term: term,
         date: date,
-        planeDate: planingDate,
+        planeDate: targetDate,
         showEyeIcon: showEyeIcon,
       };
 
@@ -1129,6 +1224,14 @@
       console.log('colorIndex', colorIndex, tileColor, typeof tileColor, `rgb(${tileColor})`);
       console.log('row.find(.tileContainer)', row, currentRow.find('.tileContainer'));
       currentRow.find('.tileColor').css('color', `rgb(${tileColor})`);
+
+      if (isSingleDataUpdate) {
+        console.log('isSingleDataUpdate');
+        const param = $(tableID).data('param');
+        sortByParam(param.sortColumn, param.sortDirection);
+        makeDateSeparator();
+        isSingleDataUpdate = false;
+      }
     };
 
     $('#search').on('input', async function () {
@@ -1142,6 +1245,8 @@
         updateParam(tableJQ, 'term', modifiedString);
       }
 
+      abortAllRequests();
+      console.log('after abortAllRequests');
       await initTable(table);
     });
 
@@ -1186,6 +1291,10 @@
     $(document).on('click', '.attachedImg', function () {
       mediaviewer(this);
     });
+
+    function sortByParam(sortColumn, sortDirection) {
+      $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
+    }
 
     function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
       $(selector).on('click', function () {
@@ -1320,7 +1429,7 @@
 
       data.files = names;
       data.a = 'a';
-      console.log('data', data);
+
       $.ajax({
         url: '/app/zakupka',
         method: 'POST',
@@ -1533,6 +1642,13 @@
       });
     }
 
+    function hideAvatarViewContainer() {
+      console.log('hideAvatarViewContainer');
+      $('#avatarViewContainer').hide();
+      $('.view-card').css('display', 'none');
+      $('#showViews').text('показать просмотры');
+    }
+
     function renderZakupkaInfo(data) {
       console.log('renderZakupkaInfo activeOrders', data, activeOrders);
       $('#zakupkaInfo').data('data', data);
@@ -1557,10 +1673,9 @@
       $('#planeDate').datepicker('option', 'minDate', minDate);
       $('#planeDate').datepicker('option', 'maxDate', maxDate);
 
-      let currentTime;
+      let dateStart;
       let targetDate;
       let remainTimeText;
-      // let planeDate;
       if (activeOrders) {
         targetDate = new Date(data.data.ПлановаяДатаСлужебная);
         planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
@@ -1569,19 +1684,20 @@
         if (isWeekend) {
           targetDate.setDate(targetDate.getDate() + 2);
         }
-        currentTime = new Date();
+        console.log('targetDate after weekend', targetDate, formatDateInDateTime(targetDate));
+        dateStart = new Date();
         remainTimeText = 'Осталось:';
         $('.zakupkaFinish').hide();
       } else {
         targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
-        currentTime = new Date(data.data.Дата);
+        dateStart = new Date(data.data.Дата);
         planeDate = new Date(data.data.ПлановаяДата) || '';
         remainTimeText = 'Выполнено за:';
         $('.zakupkaFinish').show();
       }
-      const isZakupkaOverdue = targetDate > planeDate;
+      const isZakupkaOverdue = targetDate < dateStart;
 
-      const remainTime = formatSecondToStringTime((targetDate - currentTime) / 1000);
+      const remainTime = formatSecondToStringTime((targetDate - dateStart) / 1000);
       const listImgZakupka = data.data['Файлы'] || [];
       const imgs = [];
 
@@ -1655,6 +1771,10 @@
       const cardsData = data.data.ИсторияКомментариев;
       const cardsForTemplate = getCardsForTemplate(cardsData);
       generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+
+      const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
+      let uniqueUidsWithoutMe = uniqueUids.filter(item => item !== user.uid);
+      generateFromTemplate('#viewAvatar-template', uniqueUidsWithoutMe, '#avatarViewContainer');
     }
 
     function getCardsForTemplate(data) {
@@ -1764,11 +1884,7 @@
 
       let dataForSeparate = [];
       $('#ЗаявкаНаЗакупку tr.rowData').each(function (index, el) {
-        console.log('el', el);
-
         const data = $(el).data('data');
-        console.log('data', data);
-
         data.element = el;
         dataForSeparate.push(data);
       });
@@ -1877,6 +1993,7 @@
     limitDate.init();
 
     callbackFuncSecondInterval = function () {
+      // console.log('callbackFuncSecondInterval');
       timerManager.updateTimers('#zakupkaInfo', '.remainTime');
       timerManager.updateTimers('.rowData', '.timer');
     };

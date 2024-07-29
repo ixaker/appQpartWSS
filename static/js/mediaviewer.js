@@ -18,6 +18,8 @@ function mediaviewer(element) {
     function updateOverlayContent(src, $element) {
         console.log('updateOverlayContent', src, typeof (src));
         $overlay.find('img, video').remove();
+        $overlay.find('.play-icon').remove();
+
 
         const startWord = src.slice(0, 4);
         console.log('startWord', startWord);
@@ -29,8 +31,51 @@ function mediaviewer(element) {
                 elementName = 'video';
             }
 
-            $overlay.append(`<${elementName} src="${src}">`);
+            const $mediaElement = $(`<${elementName} src="${src}"></${elementName}>`);
+            if (elementName === 'video') {
+                console.log('element is video');
 
+                // Add play icon
+                const $playIcon = $('<i class="bi bi-play media-viewer-play-icon play-icon"></i>');
+                $overlay.append($playIcon);
+
+                // Play/pause video on clicking video element
+                $mediaElement.on('click', function () {
+                    console.log('click on video');
+                    if (this.paused) {
+                        this.play();
+                    } else {
+                        this.pause();
+                    }
+                });
+
+                // Play/pause video on clicking play icon
+                $playIcon.on('click', function () {
+                    console.log('click on play icon');
+                    clickAnimate(this);
+                    if ($mediaElement[0].paused) {
+                        $mediaElement[0].play();
+                    } else {
+                        $mediaElement[0].pause();
+                    }
+                });
+
+                $mediaElement.on('play', function () {
+                    console.log('video started playing');
+                    $playIcon.removeClass('bi-play').addClass('bi-pause');
+                });
+
+                $mediaElement.on('pause', function () {
+                    console.log('video paused');
+                    $playIcon.removeClass('bi-pause').addClass('bi-play');
+                });
+
+                // Add play icon after video has loaded
+                $mediaElement.on('loadeddata', function () {
+                    // Play icon already appended
+                });
+            }
+            $overlay.append($mediaElement);
         } else if (startWord === 'blob') {
             const newElem = $element.clone().removeClass('source');
             $overlay.append(newElem);
@@ -39,6 +84,9 @@ function mediaviewer(element) {
 
             if (newElem.prop('tagName') === 'VIDEO') {
                 newElem.attr('autoplay', '');
+
+                const $playIcon = $('<i class="bi bi-play media-viewer-play-icon play-icon"></i>');
+                $overlay.append($playIcon);
             }
         }
     }

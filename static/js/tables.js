@@ -26,7 +26,6 @@ function prepareData(response) {
             } else {
                 target[key] = source[value];
             }
-
         }
     }
 
@@ -75,7 +74,6 @@ async function initTable(table) {
             url: `${tableJQ.attr('url')}`, type: 'GET', dataType: 'json', data: param, success: async function (response) {
                 console.log('initTable response', tableJQ);
 
-
                 tableJQ.children('tbody').children('.rowData').remove();
                 if (!response.error) {
 
@@ -91,7 +89,6 @@ async function initTable(table) {
                             } else {
                                 target[key] = source[value];
                             }
-
                         }
                     }
 
@@ -186,7 +183,6 @@ async function initTable(table) {
                     }
 
                     addSubscribeWSS(tableJQ.attr('id'));
-
 
                     callbackFromAttr(table, 'callbackAfterInitTable', response);
                 }
@@ -309,7 +305,7 @@ function createHeaderForTable(tableJQ) {
     }
     let newRow = $(`<tr></tr>`);
     tableJQ.children('tbody').children('.config').children().each(function () {
-        console.log('append', $(this).attr('title'))
+        // console.log('append', $(this).attr('title'))
         newRow.append($(`<th class="${$(this).attr('headerClass') || ''}" style="${$(this).attr('style')}">${$(this).attr('title')}</th>`));
     });
 

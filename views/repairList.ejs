@@ -2006,15 +2006,8 @@
 
       const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
       let uniqueUidsWithoutMe = uniqueUids.filter(item => item !== user.uid);
-      // uniqueUidsWithoutMe.push('btnAllUsers');
-      // for (let i = 0; i < 14; i++) {
-      //   uniqueUids.push('f9c18a95-123c-11ed-81c1-000c29006152');
-      // }
 
       generateFromTemplate('#viewAvatar-template', uniqueUidsWithoutMe, '#avatarViewContainer');
-      // const btnAllUsers = $('.card-avatar[uid="btnAllUsers"]').find('img');
-      // btnAllUsers.attr('src', '/img/allUsers.png');
-      // btnAllUsers.parent().addClass('selected');
     }
 
     // click on tableRow

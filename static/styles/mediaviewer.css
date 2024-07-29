@@ -20,11 +20,11 @@
   position: fixed;
   top: 50%;
   font-size: xxx-large;
-  color: darkgreen;
+  color: white;
   cursor: pointer;
   z-index: 10000;
-  background-color: lightgrey;
-  opacity: 0.8;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* opacity: 0.8; */
   border-radius: 50%;
   width: 70px;
   height: 70px;
@@ -42,4 +42,20 @@
 }
 .media-viewer-next {
   right: 20px;
+}
+
+.play-icon {
+  position: absolute;
+  /* top: 50%; */
+  /* left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  font-size: 3rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* Ensure play icon is on top */
 }

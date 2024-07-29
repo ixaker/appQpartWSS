@@ -250,6 +250,12 @@
       }
     });
 
+    $(document).on('click', '.deleteBtn', function (event) {
+      event.stopPropagation();
+      deleteMeParent(this);
+    });
+
+
     function sendDataTo1C(data, method = 'GET', callback) {
       universalRequest(
         '/app/zakupka',

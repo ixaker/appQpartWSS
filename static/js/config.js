@@ -45,6 +45,11 @@ $(function () {
                     return;
                 }
 
+                if (textStatus === 'abort') {
+                    console.log('Request was aborted by the user');
+                    return;
+                }
+
                 if (textStatus === 'timeout' && jqXHR.responseText !== "Структура") {
                     toastr["error"]("Немає зв'язку з сервером 1С");
                 }
@@ -448,6 +453,28 @@ let formatter = new Intl.DateTimeFormat('uk-UA', {
     year: 'numeric',
 });
 
+function formatDateInDateTime(date) {
+    const optionsDate = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    };
+
+    const optionsTime = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+
+    const formatterDate = new Intl.DateTimeFormat('uk-UA', optionsDate);
+    const formatterTime = new Intl.DateTimeFormat('uk-UA', optionsTime);
+
+    const datePart = formatterDate.format(date);
+    const timePart = formatterTime.format(date);
+
+    return `${datePart.replace('/', '.')} ${timePart}`;
+}
+
 const getMediaFromElement = (child, index) => {
     const blob = $(child).children('.source').data('blob');
     const blobPreview = $(child).children('.preview').data('blob');
@@ -523,7 +550,7 @@ const timerManager = (() => {
         // console.log('newValue', newValue);
 
         updateElementText(element, newValue);
-        highlightTimer(element, newValue);
+        // highlightTimer(element, newValue);
     };
 
     const highlightTimer = (element, value) => {
