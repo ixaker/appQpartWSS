@@ -1954,6 +1954,10 @@
 
     function hasUserSeenLastChanges(userUID, infoAboutView, dateOflastActivity) {
       console.log('userUID, infoAboutView, dateOflastActivity', userUID, infoAboutView, dateOflastActivity);
+      if (!userUID || !infoAboutView || !dateOflastActivity) {
+        console.log('One or more arguments are missing');
+        return false;
+      }
       const userInfo = infoAboutView.find(item => {
         console.log('row.Сотрудник.uid, user.uid ', item.Сотрудник.uid, userUID);
         return item.Сотрудник.uid === userUID;
