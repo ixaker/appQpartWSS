@@ -1,0 +1,338 @@
+<style>
+  #content {
+    padding: 10px 5px;
+  }
+
+  #tableList {
+    width: 100%;
+    font-size: small;
+    background-color: #ffffff;
+  }
+
+  th {
+    background: #007431;
+    color: white;
+    padding: 0 5px 0 5px;
+    border-color: black;
+  }
+
+  .kontragent {
+    font-weight: bold;
+    height: 20px;
+    overflow-y: hidden;
+    padding: 0 5px 2px 5px;
+  }
+
+  .groupSumm {
+    display: flex;
+    padding: 1px 5px;
+    margin-left: 40px;
+  }
+
+  .debet {
+    width: 30%;
+    text-align: end;
+    margin-left: auto;
+    padding: 0 10px;
+    border-right: 1px solid #000000;
+  }
+
+  .kredit {
+    width: 30%;
+    text-align: end;
+    padding: 0 10px;
+    border-right: 1px solid #000000;
+  }
+
+  .total {
+    width: 30%;
+  }
+
+  .greenValue {
+    color: #007431;
+  }
+
+  .redValue {
+    color: red;
+  }
+
+  #groupDate {
+    display: flex;
+    margin-bottom: 10px;
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+
+  #date {
+    width: 100%;
+    margin-left: 20px;
+    margin-right: 20px;
+    text-align: center;
+    font-size: x-large;
+    height: 36px;
+    margin-top: 5px;
+  }
+
+  .btnArrow {
+    font-size: xx-large;
+  }
+
+  #detail {
+    padding: 5px;
+    background-color: aliceblue;
+  }
+
+  .userFoto {
+    width: 180px;
+    height: 210px;
+    margin: 5px;
+  }
+
+  td {
+    text-align: center;
+  }
+
+  .sotrudnik {
+    text-align: left;
+  }
+
+  .sotrudnik {
+    width: 44%;
+  }
+  .shift {
+    width: 5%;
+  }
+  .arrival {
+    width: 14%;
+  }
+  .departure {
+    width: 14%;
+  }
+  .duration {
+    width: 14%;
+  }
+  .total {
+    width: 14%;
+  }
+
+  #textInfo {
+    text-align: left;
+    font-size: small;
+  }
+
+  dl {
+    display: flex;
+    margin-bottom: 0;
+  }
+
+  dt {
+    width: 70%;
+  }
+
+  .stanok {
+    width: 20%;
+  }
+
+  .detail {
+    width: 17%;
+  }
+
+  .stage {
+    width: 45%;
+  }
+
+  .count {
+    width: 18%;
+  }
+</style>
+
+<div id="groupDate">
+  <div id="btnDown"><i class="bi bi-arrow-left-circle btnArrow"></i></div>
+  <input id="date" name="date" type="text" readonly />
+  <div id="btnUp"><i class="bi bi-arrow-right-circle btnArrow"></i></div>
+</div>
+<div id="containerTable">
+  <table id="tableList" border="1" cellpadding="1" cellspacing="0">
+    <thead>
+      <tr>
+        <th class="sotrudnik">Сотрудник</th>
+        <th class="shift"></th>
+        <th class="arrival">Прих.</th>
+        <th class="departure">Уход</th>
+        <th class="duration">Длит.</th>
+        <th class="total">Итого</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script id="row-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <tr class='rowData' uid='{{uid}}'>
+      <td class='sotrudnik'>{{Сотрудник}}</td>
+      <td class='shift'>{{C}}</td>
+      <td class='arrival'>{{ВремяПрихода}}</td>
+      <td class='departure'>{{ВремяУхода}}</td>
+      <td class='duration'>{{Длит}}</td>
+      <td class='total'>{{Итого}}</td>
+    </tr>
+  {{/each}}
+</script>
+
+<script id="userInfo" type="text/x-handlebars-template">
+  <td id='detail' colspan='6'>
+    <div style='display:flex;'>
+      <img
+        class='userFoto'
+        src='https://test.qpart.com.ua/auth_files/photo/{{emp_code_ZKTeco}}.jpg'
+        alt='Фото користувача {{uid}}'
+      />
+      <div id='textInfo' style='width: 200px;'>
+        <div class='user-info'>
+          <p>{{Должность}}</p>
+          <p>Оформлен : {{ДатаОформления}}</p>
+          <a href='tel:+380 (63) 675 23 76'>{{ОсновнойНомерТелефона}}</a>
+          <address>{{address}}</address>
+          <div class='fieldContainer'>
+            <dl>
+              <dt>Трудовая книга:</dt>
+              <dd>{{#if ТрудоваяКнига}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>Копия паспорта:</dt>
+              <dd>{{#if КопияПаспорта}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>Копия ИНН:</dt>
+              <dd>{{#if КопияИНН}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>Неразглашение:</dt>
+              <dd>{{#if isNDA}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>{{#if НеМестный}} Не местный {{/if}}</dt>
+              <dd></dd>
+            </dl>
+
+          </div>
+        </div>
+        <!-- <div class='debt' style='color: red;'>Долг : {{debt}}</div> -->
+      </div>
+
+    </div>
+    <div class='orderContainer'>
+      <table>
+        <thead>
+          <tr>
+            <th class='stanok'>Станок</th>
+            <th class='detail'>Деталь</th>
+            <th class='stage'>Этап</th>
+            <th class='count'>Кол-во</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each СписокОтчетов}}
+            <tr>
+              <td>{{СтанокИнвентарныйНомер}}</td>
+              <td>{{ДетальАртикул}}</td>
+              <td>{{ЭтапПроизводстваНаименование}}</td>
+              <td>{{КоличествоИзготовлено}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+  </td>
+</script>
+
+<script>
+  $(document).ready(function () {
+    const tableID = '#tableList';
+    let options = { year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'UTC' };
+    let date = new Date();
+    let oneDay = 1000 * 60 * 60 * 24;
+
+    $('#date').val(date.toLocaleString('ru', options));
+
+    $('#btnDown').on('click', function (event) {
+      date = new Date(date - oneDay);
+      $('#date').val(date.toLocaleString('ru', options));
+      getData();
+    });
+
+    $('#btnUp').on('click', function (event) {
+      date = new Date(date * 1 + oneDay);
+      $('#date').val(date.toLocaleString('ru', options));
+      getData();
+    });
+
+    $(tableID).on('click', '.rowData', function () {
+      const uid = $(this).attr('uid') || '';
+      console.log('uid', uid);
+      const infoElement = $('#infoRow');
+      const isInfoPresent = infoElement.length > 0;
+      const oldUID = isInfoPresent ? infoElement.attr('uid') || '' : '';
+      const needRender = !isInfoPresent || uid !== oldUID;
+
+      if (isInfoPresent) {
+        infoElement.remove();
+      }
+
+      if (needRender) {
+        render(uid, this);
+        console.log('needRender');
+      }
+    });
+
+    function render(uid, targetRow) {
+      console.log('render', this, uid);
+      let newRow = $(`<tr id='infoRow'>row about user</tr>`);
+      $(targetRow).after(newRow);
+      $('#infoRow').attr('uid', uid);
+      const data = {
+        date: date.toISOString(),
+        userUID: uid,
+      };
+      getUserInfo(data);
+    }
+
+    function getUserInfo(data) {
+      console.log('data', data);
+      universalRequest(
+        '/app/tabel',
+        'POST',
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback', response.data);
+          generateFromTemplate('#userInfo', response.data, '#infoRow');
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+        },
+        () => {}
+      );
+    }
+
+    function getData() {
+      universalRequest(
+        '/app/tabel',
+        'GET',
+        {},
+        { date: date.toISOString() },
+        function onSuccess(response) {
+          console.log('Success callback', response.list);
+          generateFromTemplate('#row-template', response.list, '#tableBody');
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+        },
+        () => {}
+      );
+    }
+    getData();
+  });
+</script>
