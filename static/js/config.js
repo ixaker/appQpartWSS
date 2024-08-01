@@ -597,3 +597,26 @@ function isElementVisible(el) {
         || el.contains(efp(rect.left, rect.bottom))
     );
 }
+
+const isEmpty = (value) => {
+    if (Array.isArray(value)) {
+        return value.length === 0;
+    } else if (value && typeof value === 'object') {
+        return Object.keys(value).length === 0 && value.constructor === Object;
+    }
+    return false;
+};
+
+function getDataRow() {
+    console.log('start getDataRow');
+    $('#ЗаявкаНаЗакупку tr.rowData').each(function () {
+        const tileText = $(this).find('.tileText').text();
+        console.log('getDataRow tr tr.data', $(this), $(this).data('data'), tileText);
+    });
+}
+
+function getLengthOfDataRow(place) {
+    console.log(`getLengthOfDataRow ${place} length = `, $('#ЗаявкаНаЗакупку tr.rowData').length);
+}
+
+window.getDataRow = getDataRow;
