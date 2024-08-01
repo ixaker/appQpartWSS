@@ -342,7 +342,12 @@ async function addNewRow(table, newData) {
     newRow.show();
     newRow.data('data', { data: {}, edited: {}, tableID: tableID });
 
-    const append = table.attr('append') || '';
+    let append = table.attr('append') || '';
+
+    if (newData.hasOwnProperty('isSingleDataUpdate')) {
+
+        append = 'start';
+    }
 
     if (append === 'end') {
         table.children('tbody').append(newRow);
