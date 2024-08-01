@@ -4,6 +4,7 @@ const https = require('https');
 const fs = require('fs');
 const WebSocket = require('ws');
 const express = require('express');
+const proxy = require('express-http-proxy');
 
 const path = require('path');
 const jwt = require('jsonwebtoken');
@@ -85,8 +86,20 @@ app.use(express.static('static', {
     res.setHeader('ETag', true);
   }
 }));
-app.use('/foto', express.static('foto'));
-app.use('/lib', express.static('lib'));
+
+// Прокси для всех запросов к /auth_files/photo/*
+app.use('/auth_files/photo/*', proxy('http://10.8.0.4', {
+  proxyReqPathResolver: (req) => {
+    // Перенаправляем запрос к тому же пути на внутреннем сервере
+    return req.originalUrl;
+  },
+  userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+    // Устанавливаем тип контента
+    userRes.setHeader('Content-Type', 'image/jpeg'); // Замените на нужный вам тип изображения
+    return proxyResData;
+  }
+}));
+
 app.use(cookieParser());
 
 // + Обработчик админского обхода авторизации
@@ -512,8 +525,24 @@ app.get('/zakupka', async function (req, res) {
   });
 });
 
+app.get('/shipment', async function (req, res) {
+  res.render('shipment', {
+    version: version,
+    token: '',
+    test: test,
+  });
+});
+
 app.get('/repairList', async function (req, res) {
   res.render('repairList', {
+    version: version,
+    token: '',
+    test: test,
+  });
+});
+
+app.get('/tabel', async function (req, res) {
+  res.render('tabel', {
     version: version,
     token: '',
     test: test,
