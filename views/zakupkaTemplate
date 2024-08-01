@@ -1,0 +1,2035 @@
+<style>
+  #content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  #ЗаявкаНаЗакупку {
+    font-size: 1em;
+    background-color: inherit;
+  }
+
+  thead {
+    display: none;
+  }
+
+  td {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border: none;
+  }
+
+  #zakupkaInfo .form-control,
+  .executorContainer {
+    width: 60%;
+    margin-left: auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .executorContainer .form-control {
+    width: 100% !important;
+    position: relative;
+  }
+
+  #zakupkaAuthorLink {
+    position: absolute;
+    right: 12px;
+  }
+
+  #zakupkaContainer {
+    font-size: large;
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .form-group label {
+    margin-bottom: 0;
+    transition: 2s;
+    width: 40%;
+  }
+
+  #doneGroup {
+    justify-content: space-between;
+  }
+
+  #doneGroup label {
+    width: 70%;
+  }
+
+  #doneGroup input {
+    width: 12% !important;
+  }
+
+  .commandBtn {
+    margin-left: auto;
+    font-size: xxx-large;
+    color: darkgreen;
+    line-height: 1em;
+  }
+
+  #formNew {
+    width: 80%;
+    font-size: 30px;
+  }
+
+  #saveNew {
+    margin-left: auto;
+    margin-right: 0.6em;
+  }
+
+  .buttonContainer {
+    display: flex;
+    margin-top: 0.5em;
+    justify-content: space-between;
+  }
+
+  .rightButtons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 600px) {
+    #formNew {
+      font-size: 18px;
+      width: 90%;
+    }
+
+    #saveNew {
+      margin-right: 3%;
+    }
+  }
+
+  .hide {
+    display: none;
+  }
+
+  .itemComent {
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    /* margin: 10px; */
+    margin: 5px 0;
+    padding: 5px 10px;
+    background-color: white;
+  }
+
+  #infoForm {
+    max-width: 500px;
+    margin: auto;
+    padding: 0px 5px;
+    user-select: text;
+  }
+
+  .form-control {
+    font-size: 1em;
+    background-color: white !important;
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+  }
+
+  mark {
+    background: yellow;
+    padding: 0;
+  }
+
+  #textFull {
+    margin: 5px 0;
+    white-space: break-spaces;
+  }
+
+  #kod {
+    margin-right: 30px;
+    font-weight: 600;
+    margin-left: 5px;
+  }
+
+  #status {
+    margin-right: 30px;
+    font-weight: 600;
+    margin-left: 5px;
+  }
+
+  #priority {
+    /* margin-right: 30px; */
+    font-weight: 600;
+    /* margin-left: 5px; */
+  }
+
+  .srochno {
+    color: red;
+    margin-left: auto;
+  }
+
+  #cancelZayavka {
+    margin-left: auto;
+  }
+
+  #doneZayavka {
+    margin-left: 30px;
+  }
+
+  #addNew {
+    margin-right: 10px;
+  }
+
+  #btnSort {
+    width: 48px;
+    height: 48px;
+    border: none;
+  }
+
+  #btnSort.up {
+    background-image: url('img/sortup.svg?v=<%= version %>');
+  }
+
+  #btnSort.down {
+    background-image: url('img/sortdown.svg?v=<%= version %>');
+  }
+
+  #btnDone {
+    width: 48px;
+    height: 48px;
+    border: none;
+  }
+
+  #btnDone.active-orders {
+    background-image: url('img/check-circle.svg?v=<%= version %>');
+  }
+
+  #btnDone.done-orders {
+    background-image: url('img/check-circle-done.svg?v=<%= version %>');
+  }
+</style>
+
+<div id="main">
+  <div id="commandPanel" class="commandPanel">
+    <div class="titleContainer">
+      <i class="bi bi-cart3" id="pageIcon"></i>
+      <div id="titleText">
+        <h3 class="titlePage2">Заявки на закупку</h3>
+        <div id="statusMark" class="status">в работе</div>
+      </div>
+    </div>
+
+    <div class="commandRow">
+      <div class="input-group-search rounded groupSearch" id="groupSearch">
+        <input
+          type="search"
+          id="search"
+          class="form-control rounded"
+          placeholder="Поиск"
+          aria-label="Search"
+          aria-describedby="search-addon"
+        />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <div class="btnContainer">
+        <div id="sortContainer">
+          <!-- <img src="img/sort.svg?v=<%= version %>" alt=" sort icon" class="commandImg" id="btnSort" /> -->
+          <button class="commandImg commandBtn down" id="btnSort"></button>
+          <div id="sortList">
+            <ul>
+              <li id="sortSrok">срок</li>
+              <li id="sortDateDone" style="display: none">срок</li>
+              <li id="sortStatus">статус</li>
+              <li id="sortPriority">приоритет</li>
+              <li id="sortDate" class="active">дата</li>
+            </ul>
+          </div>
+        </div>
+        <button class="commandImg commandBtn active-orders" id="btnDone"></button>
+        <img src="img/plus-circle.svg?v=<%= version %>" alt="plus icon" class="commandImg commandBtn" id="addNew" />
+      </div>
+    </div>
+  </div>
+
+  <table
+    id="ЗаявкаНаЗакупку"
+    name="ЗаявкаНаЗакупку"
+    url="/app/zakupka"
+    callbackBeforeInitTable="callbackBeforeDone"
+    filter="callbackFilter"
+    callbackAfterInitTable="callbackAfterDone"
+    addNevRow="callbackAddNewRow"
+    callbackAfterWrite="callbackAfterWrite"
+    append="end"
+    init
+    header
+  >
+    <tr class="config" style="display: none">
+      <td
+        title="ПлановаяДатаСлужебная"
+        name="ПлановаяДатаСлужебная"
+        id="srokSort"
+        headerClass="srokSort"
+        style="display: none"
+      >
+        <div class="dataCell"></div>
+      </td>
+
+      <td
+        title="СтатусЗаявкиПорядок"
+        name="СтатусЗаявкиПорядок"
+        id="statusSort"
+        headerClass="statusSort"
+        style="display: none"
+      >
+        <div class="dataCell"></div>
+      </td>
+
+      <td
+        title="ПриоритетПорядок"
+        name="ПриоритетПорядок"
+        id="prioritySort"
+        headerClass="prioritySort"
+        style="display: none"
+      >
+        <div class="dataCell"></div>
+      </td>
+
+      <td title="Дата" name="Дата" id="dateSort" headerClass="dateSort" style="display: none">
+        <div class="dataCell"></div>
+      </td>
+
+      <td
+        title="ДатаЗакрытияЗаявки"
+        name="ДатаЗакрытияЗаявки"
+        id="dateSort"
+        headerClass="dateSort"
+        style="display: none"
+      >
+        <div class="dataCell"></div>
+      </td>
+
+      <td title="Текст заявки" class="main" name="ТекстЗаявки" style="width: 55%"></td>
+      <td
+        title="Автор"
+        name="АвторЗаявки"
+        headerClass="colunmAuthor"
+        class="colunmAuthor"
+        style="width: 30%; display: none"
+      >
+        <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
+      </td>
+      <td
+        title="Статус"
+        name="СтатусЗаявки"
+        headerClass="colunmStatus"
+        class="colunmStatus"
+        style="width: 30%; display: none"
+      >
+        <div class="dataCell textAlignLeft" style="padding: 5px; overflow: hidden; text-overflow: ellipsis"></div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<style>
+  #avatarViewContainer {
+    display: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 5px;
+    overflow: auto;
+    padding-bottom: 5px;
+  }
+
+  #avatarViewContainer .card-avatar {
+    width: 40px;
+    height: 40px;
+  }
+</style>
+
+<script id="viewAvatar-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='card-avatar' uid='{{this}}'>
+      <img
+        src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{this}}.jpg'
+        onerror="this.onerror=null;this.src='/img/avatar.png';"
+        alt='avatar'
+      />
+    </div>
+
+  {{/each}}
+</script>
+
+<!-- template for tile -->
+<style>
+  .tileContainer {
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 8px;
+    padding: 5px 5px 1px 5px;
+    box-shadow: 2px 3px 5px #999;
+  }
+
+  .separateDateLine {
+    display: flex;
+
+    font-size: small;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+
+  .visible {
+    display: flex;
+  }
+
+  .backgroundYellow {
+    background-color: lightyellow;
+  }
+
+  .tileNumber {
+    width: 25%;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .tileAuthor {
+    width: 45%;
+  }
+
+  .tileExecutor {
+    width: 30%;
+    justify-content: flex-end;
+  }
+
+  .tileMarkValue {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .tileMark {
+    color: gray;
+    font-size: small;
+    margin-right: 5px;
+  }
+
+  .tileValue {
+    color: gray;
+    font-size: small;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 1;
+  }
+
+  .tileColor {
+    font-size: small;
+    margin-left: 5px;
+    line-height: 1;
+  }
+
+  .tile1row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    font-size: large;
+    margin-bottom: 3px;
+    gap: 10px;
+  }
+
+  .tileText {
+    color: black;
+    font-size: medium;
+    font-weight: normal;
+    margin-right: 10px;
+    text-wrap: wrap;
+  }
+
+  .tileText a {
+    text-decoration: underline;
+  }
+
+  .tile2row {
+    /* display: flex; /
+    / justify-content: flex-start; /
+    / font-size: small; /
+    / color: darkgray; */
+    margin-bottom: 5px;
+    background-color: #f0f8ff42;
+    border: 1px solid #dde7f0b0;
+    border-radius: 5px;
+    padding: 3px;
+  }
+
+  .tile3row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: small;
+    margin-bottom: 1px;
+  }
+
+  .tileStatus {
+    width: 30%;
+  }
+
+  .tilePriority {
+    width: 30%;
+  }
+
+  .tileEye {
+    width: 10%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .tileTimer {
+    width: 30%;
+    text-align: end;
+  }
+
+  .tileEye {
+    width: 10%;
+    text-align: end;
+  }
+</style>
+
+<script id="tileTemplate" type="text/x-handlebars-template">
+  <div class='tileContainer'>
+    <div class='tile1row'>
+      <div class='tileMarkValue tileNumber'>
+        <div class='tileValue'>{{{orderNumber}}}</div>
+        <div class='tileColor'><i class='bi bi-circle-fill'></i></div>
+      </div>
+
+      <div class='tileAuthor tileMarkValue'>
+        <div class='tileMark'>{{date}} от </div>
+        <div class='tileValue'>{{{author}}}</div>
+      </div>
+      <div class='tileMarkValue tileExecutor'>
+        <div class='tileMark'></div>
+        <div class='tileValue'>{{{executor}}}</div>
+      </div>
+    </div>
+
+    <div class='tile2row'>
+      <div class='tileText'>{{{text}}}</div>
+    </div>
+
+    <div class='tile3row'>
+      <div class='tileStatus'>{{{status}}}</div>
+      <div class='tilePriority dangerColor'>{{{priority}}}</div>
+      <div class='tileEye'>
+        {{#if showEyeIcon}}
+          <i class='bi bi-eye-slash'></i>
+        {{/if}}
+      </div>
+      <div class='tileTimer {{timerClass}} {{dangerClass}}' date='{{dateSrok}}'>{{{term}}}</div>
+
+    </div>
+
+  </div>
+</script>
+
+<!-- zakupka info -->
+<style>
+  #zakupkaText {
+    text-wrap: wrap;
+    border: 1px solid lightgrey;
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0;
+    background-color: white;
+    font-size: large;
+    font-family: inherit;
+    color: #495057;
+    white-space: pre-wrap;
+  }
+
+  #filesAuthorOrder {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  #zakupkaPhoto {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  #zakupkaAuthor {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .zakupkaDelete {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #zakupkaDelete {
+    font-size: xxx-large;
+    color: red;
+  }
+
+  #zakupkaText:focus {
+    outline: none;
+  }
+</style>
+
+<div id="zakupkaInfo" style="display: none">
+  <div class="commandPanel">
+    <h4 class="titlePage2">Заявка на закупку</h4>
+    <h4 id="orderNum" class="titlePage2">0001</h4>
+    <i id="closeZakupkaInfo" class="bi bi-x-circle commandBtn"></i>
+  </div>
+  <div id="zakupkaContainer">
+    <div class="form-group">
+      <input type="text" id="zakupkaText" readonly />
+    </div>
+
+    <div class="form-group" id="filesAuthorOrder"></div>
+
+    <div class="form-group" id="attachedImg"></div>
+    <div class="form-group">
+      <label>Дата:</label>
+      <input type="text" readonly class="form-control" id="zakupkaDate" />
+    </div>
+    <div class="form-group">
+      <label>Автор:</label>
+      <div id="zakupkaAuthor" class="form-control"></div>
+    </div>
+    <div class="form-group">
+      <label id="remainTimeLabel">Осталось:</label>
+      <div class="form-control" id="remainTime"></div>
+    </div>
+    <div class="form-group">
+      <label>Плановая дата:</label>
+      <input type="text" class="form-control" id="planeDate" placeholder="дд/мм/гггг" />
+    </div>
+    <div class="form-group">
+      <label for="zakupkaExecutor">Исполнитель:</label>
+      <div class="d-flex align-items-center executorContainer">
+        <input
+          type="text"
+          class="form-control"
+          id="zakupkaExecutor"
+          url="/app/autocompleteSotrydnik"
+          aria-describedby="basic-addon3"
+          data-editable="true"
+          readonly
+        />
+        <span id="zakupkaAuthorLink" class="ml-2"></span>
+      </div>
+    </div>
+    <div class="form-group zakupkaFinish">
+      <label>Дата выполнения:</label>
+      <div class="form-control" id="zakupkaFinish"></div>
+    </div>
+    <div class="form-group">
+      <label for="zakupkaPriority">Приоритет:</label>
+      <select id="zakupkaPriority" class="form-control" disabled></select>
+    </div>
+    <div class="form-group">
+      <label for="zakupkaStatus">Статус:</label>
+      <select id="zakupkaStatus" class="form-control" disabled></select>
+    </div>
+
+    <div class="form-group" id="doneGroup" style="display: none">
+      <label for="done">Подтвердить закупку:</label>
+      <input type="checkbox" class="form-control" id="done" aria-describedby="basic-addon3" readonly />
+    </div>
+    <div class="form-group zakupkaDelete" style="display: none">
+      <i class="bi bi-trash" id="zakupkaDelete"></i>
+    </div>
+  </div>
+
+  <style>
+    #actions {
+      font-size: xxx-large;
+      color: darkgreen;
+      margin-right: 0px;
+      margin-top: auto;
+      /* width: 74px; */
+      line-height: 55px;
+      padding: 10px 10px 5px 0;
+      align-self: flex-end;
+    }
+
+    #commentForm {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background-color: white;
+      border-radius: 12px 12px 12px 12px !important;
+      margin-bottom: 10px !important;
+    }
+
+    #comment {
+      border: none;
+      font-size: large;
+      resize: none;
+      border-radius: 12px;
+      align-self: flex-start;
+    }
+
+    #attachedFiles {
+      display: none;
+      gap: 5px;
+      padding: 5px;
+    }
+
+    .attachedImg {
+      width: 46px;
+      height: 60px;
+      position: relative;
+      border: 1px solid;
+      align-items: center;
+      display: flex;
+      margin-bottom: 1rem;
+      flex: 0 0 auto;
+    }
+
+    #showViews {
+      display: none;
+      margin: 0 auto 10px;
+      font-size: 0.8rem;
+      border-radius: 5px;
+      padding: 3px 10px;
+      background-color: white;
+      text-align: center;
+      width: fit-content;
+    }
+  </style>
+
+  <div class="input-group" id="commentForm">
+    <textarea class="form-control" id="comment" rows="1" placeholder="написать сообщение..."></textarea>
+    <div id="actions">
+      <i class="bi bi-send" id="sendComment"></i>
+    </div>
+  </div>
+
+  <div id="formContainer" style="display: none"></div>
+
+  <div id="showViews">показать просмотры</div>
+  <div id="avatarViewContainer"></div>
+  <div id="historyContainer"></div>
+</div>
+
+<!-- card styles -->
+<style>
+  .card {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    max-width: 600px;
+    background-color: inherit;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .view-card {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+    display: none;
+  }
+
+  .view-card .card-body {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .view-card .card-head {
+    width: 70%;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .view-card .card-author {
+    width: 60%;
+  }
+
+  .view-card .card-text {
+    color: darkgrey;
+    font-size: 0.7em;
+  }
+
+  .view-card .card-date {
+    font-size: 0.7em;
+    color: darkgrey;
+  }
+
+  .card-author,
+  .card-author:link,
+  .card-author:visited,
+  .card-author:hover,
+  .card-author:active {
+    font-weight: bold;
+    color: #8275eb;
+    font-size: 0.9em;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .card-avatar {
+    border-radius: 50%;
+    background-color: white;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-avatar.selected {
+    border: 2px solid darkgreen;
+  }
+
+  .card-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .card-body {
+    background-color: white;
+    border-radius: 0px 12px 12px 12px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: min-content;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-text {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .card-date {
+    font-size: 0.7em;
+    color: darkgrey;
+    text-align: right;
+  }
+
+  #choiceDifficult {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cardLabel {
+    margin: 0;
+  }
+
+  #commandBtns {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .select {
+    font-weight: bold;
+    color: darkred;
+  }
+</style>
+
+<!-- Шаблон картки -->
+<script id="card-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='card {{additionalClass}}' uid='{{avatar}}'>
+      <div class='card-avatar' uid='{{avatar}}'>
+        <img
+          src='https://a7b85a942d4082eb.cdn.express/mediaFiles/foto/{{avatar}}.jpg'
+          onerror="this.onerror=null;this.src='/img/avatar.png';"
+          alt='avatar'
+        />
+
+      </div>
+      <div class='card-body'>
+        <div class='card-head'>
+          <a href='tel:{{tel}}' class='card-author'>{{author}}</a>
+          <div class='card-date'>{{date}}</div>
+        </div>
+
+        <p class='card-text'>{{text}}</p>
+
+      </div>
+    </div>
+  {{/each}}
+</script>
+
+<style>
+  #filesAuthorOrder {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .imgSmall {
+    width: 100%;
+    /* height: 150px; */
+    border: 1px solid #aaa;
+  }
+</style>
+
+<script id="img-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='attachedImg'>
+      <img src='{{src}}' src-source='{{source}}' class='imgSmall src-source' />
+    </div>
+  {{/each}}
+</script>
+
+<script>
+  $(document).ready(function () {
+    table = $('#content table');
+    let tableID = '#ЗаявкаНаЗакупку';
+    let tableJQ = $(tableID);
+    let currentRowJQ;
+    $(tableID).data('param', {
+      active: true,
+      limit: 20,
+      page: 0,
+      sortColumn: 'Дата',
+      sortDirection: '1',
+      term: '',
+    });
+    var viewRowAllUsers = false;
+    let listStatus = [];
+    let listPriority = [];
+    let scrollPosition = 0;
+    let isSingleDataUpdate = false;
+    const pageUID = '750bb924-e106-11ee-822c-000c29006152';
+    const userRights = $('#menu').data('userRight')[pageUID];
+    let activeOrders;
+
+    $.datepicker.setDefaults($.datepicker.regional['ua']);
+
+    $('#planeDate').datepicker({
+      changeMonth: true,
+      showOtherMonths: true,
+      selectOtherMonths: true,
+      dateFormat: 'dd.mm.yy',
+    });
+
+    initInputAutocomplete('#zakupkaExecutor');
+
+    initTables();
+
+    const updateParam = (tableJQ, key, value) => {
+      let param = tableJQ.data('param') || {};
+      param[key] = value;
+      tableJQ.data('param', param);
+    };
+
+    // handle right to edit ва
+    // const usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
+
+    // const whatUserCan = userRights[pageUID];
+    console.log('userRights', userRights, pageUID, userRights);
+
+    // const canUserEdit = (user, usersAllowToEdit) => usersAllowToEdit.includes(user.name);
+
+    const setEditableState = (selector, state) => {
+      $(selector).prop('readonly', !state);
+      $(selector).prop('disabled', !state);
+    };
+
+    console.log('userRights', userRights);
+    setEditableState('#zakupkaExecutor', userRights.canChangeExecutor);
+    setEditableState('#planeDate', userRights.canChangeDate);
+    setEditableState('#zakupkaPriority', userRights.canChangePriority);
+    setEditableState('#zakupkaStatus', userRights.canChangeStatus);
+
+    // const toggleEditability = (user, usersAllowToEdit) => {
+    //   const isEditableExecutor = canUserEdit(user, usersAllowToEdit);
+    //   console.log('isEditableExecutor', isEditableExecutor);
+
+    //   const isEditable = false;
+    //   setEditableState('#zakupkaExecutor', isEditableExecutor);
+    //   setEditableState('#zakupkaPriority', isEditableExecutor);
+    //   setEditableState('#zakupkaStatus', isEditableExecutor);
+    // };
+
+    // toggleEditability(user, usersAllowToEdit);
+
+    const usersCanShowViews = ['Голуб Виталий', 'Кошубський Олександр '];
+
+    console.log('userRights.canViewViews', userRights.canViewViews);
+    if (userRights.canViewViews) {
+      $('#showViews').show();
+    }
+
+    $('#showViews').on('click', function () {
+      console.log('showViews');
+      const button = $(this);
+      const viewsVisible = $('.view-card').is(':visible');
+      console.log('showViews', viewsVisible);
+
+      if (viewsVisible || button.text() !== 'показать просмотры') {
+        $('#avatarViewContainer').hide();
+        $('.view-card').css('display', 'none');
+        $('#showViews').text('показать просмотры');
+      } else {
+        $('#avatarViewContainer').css('display', 'flex');
+        $('.view-card').css('display', 'flex');
+        button.text('скрыть просмотры');
+      }
+    });
+
+    $('#avatarViewContainer').on('click', '.card-avatar', function () {
+      clickAnimate(this);
+      let uid = $(this).attr('uid');
+      console.log('this user', this);
+
+      if ($(this).hasClass('selected')) {
+        uid = '';
+        $('.view-card').css('display', 'flex');
+        $(`.card-avatar`).removeClass('selected');
+      } else {
+        $(`#historyContainer .view-card`).show();
+        $(`#historyContainer .view-card[uid]:not([uid="${uid}"])`).hide();
+        $(`#avatarViewContainer .card-avatar[uid]:not([uid="${uid}"])`).removeClass('selected');
+        $(`.card-avatar`).removeClass('selected');
+        $(`.card-avatar[uid="${uid}"]`).addClass('selected');
+      }
+      // $(`#historyContainer .view-card`).css('display', 'flex');
+      // $(`.card-avatar`).removeClass('selected');
+
+      console.log('elements for show', $('.view-card'));
+      // console.log($(`#historyContainer .view-card[uid]:not([uid="${uid}"])`));
+    });
+
+    addSubscribeWSS('ЗаявкаНаЗакупку_all');
+
+    // callback при получении данных от сервера по wss
+    callbackWSS = async function (data) {
+      callbackTable(data);
+      console.log('calbackWSS');
+      isSingleDataUpdate = true;
+    };
+
+    // callback при изменении данных в строке для определения показать или убрать строку
+    callbackFilter = function (data, result = true) {
+      console.log('callbackFilter', data);
+      console.log(
+        'callbackFilter activeOrders data[Сотрудник][uid] user.uid',
+        activeOrders,
+        data['Сотрудник']['uid'],
+        user.uid
+      );
+
+      console.log('userRights', userRights.canViewAllOrders);
+      viewRowAllUsers = userRights.canViewAllOrders;
+      if (!viewRowAllUsers) {
+        console.log('check access callbackFilter');
+
+        if (data['Сотрудник']['uid'] !== user.uid) {
+          result = false;
+        }
+      }
+
+      if (activeOrders) {
+        if (data['ЗаявкаПодтверждена']) {
+          result = false;
+        }
+      } else {
+        if (data['ЗаявкаПодтверждена']) {
+          result = false;
+        }
+      }
+      // if (data['ЗаявкаПодтверждена'] === 'Готово') {
+      //   console.log('status = gotovo callbackFilter');
+      //   result = false;
+      // }
+
+      // if (data['СтатусЗаявки'] === 'Отменена') {
+      //   console.log('status = canceled callbackFilter');
+      //   result = false;
+      // }
+
+      return result;
+    };
+
+    // callback перед отрисовкой таблицы
+    callbackBeforeDone = function (response) {
+      console.log('callbackBeforeDone');
+      listPriority = $(tableID).data('response').listPriority;
+      listStatus = $(tableID).data('response').listStatus;
+      listColors = $(tableID).data('response').Цвет;
+    };
+
+    // callback после отрисовки таблицы
+    callbackAfterDone = function (data) {
+      console.log('callbackAfterDone', data);
+      makeDateSeparator();
+    };
+
+    // callback после вставки новой пустой строки, перед заполнением данными
+    callbackAddNewRow = function (data) {
+      console.log('callbackAddNewRow', data);
+    };
+
+    function getDateInSeconds(date) {
+      const targetDate = new Date(date);
+      dateInSeconds = Math.floor(targetDate.getTime() / 1000);
+      return dateInSeconds;
+    }
+
+    // callback после внесения изменений в строку с сервера
+    callbackAfterWrite = function (data) {
+      console.log('callbackAfterWrite renderZakupkaInfo', data);
+      const oldData = $('#zakupkaInfo').data('data');
+      if (oldData !== undefined) {
+        const currentUID = $('#zakupkaInfo').data('data').data.uid;
+
+        const newUID = data.data.uid;
+        if (currentUID === newUID && $('#zakupkaInfo').is(':visible')) {
+          console.log('after if');
+          renderZakupkaInfo(data);
+        }
+      }
+
+      const table = $(`#${data.tableID}`);
+      const row = $(table).find('#' + data.uid);
+      let currentRow = $('#' + data.data['uid']);
+      console.log('currentRow', currentRow);
+
+      activeOrders = $(tableID).data('param').active;
+
+      if (activeOrders) {
+        console.log(
+          'getDateInSeconds(data.data.ПлановаяДатаСлужебная)',
+          getDateInSeconds(data.data.ПлановаяДатаСлужебная),
+          data.data.ПлановаяДатаСлужебная
+        );
+
+        console.log('plane date', currentRow.find('.planeDate'));
+
+        currentRow.find('.planeDate').text(getDateInSeconds(data.data.ПлановаяДатаСлужебная));
+      } else {
+        getDateInSeconds(data.data.ДатаЗакрытияЗаявки);
+      }
+
+      // currentRow.attr('uid', data.data['uid']);
+      let cellForTemplate = currentRow.find('td.main');
+
+      const cell = $(row).find('div[name="АвторЗаявки"]');
+
+      $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
+
+      let timeToCompliteOrder;
+      let targetDate;
+      let dateStart;
+      console.log('let dateStart');
+      let timerClass;
+      let planeDate;
+      let isZakupkaOverdue;
+      if (activeOrders) {
+        targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+        planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
+        const dayOfWeek = targetDate.getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        if (isWeekend) {
+          targetDate.setDate(targetDate.getDate() + 2);
+        }
+        dateStart = new Date();
+        console.log('dateStart', dateStart);
+        timerClass = 'timer';
+        isZakupkaOverdue = (targetDate - dateStart) / (60 * 1000) < 60;
+      } else {
+        targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
+        dateStart = new Date(data.data.Дата);
+        planeDate = new Date(data.data.ПлановаяДата);
+        isZakupkaOverdue = targetDate < dateStart;
+        console.log('targetDate, planeDate', targetDate, planeDate);
+      }
+
+      // const isZakupkaOverdue = (targetDate - dateStart) / (60 * 1000) < 60;
+      // console.log('isZakupkaOverdue, targetDate-dateStart', isZakupkaOverdue, (targetDate - dateStart) / (60 * 1000));
+
+      if (isZakupkaOverdue) {
+        dangerClass = 'dangerColor';
+      } else {
+        dangerClass = '';
+      }
+
+      timeToCompliteOrder = targetDate - dateStart;
+
+      const orderNumber = data.data.Номер || 'б.н.';
+      const author = data.data.Сотрудник.Наименование || '';
+      const executor = data.data.ОтветственыйСнабженец.Наименование || '';
+      const text = data.data.ТекстЗаявки || '';
+
+      const status = data.data.СтатусЗаявкиПорядок || '';
+      console.log('status callbackAfterWrite', status);
+
+      const priorityValue = data.data.ПриоритетПорядок || '';
+      let priority;
+      if (priorityValue === 'Срочно' || priorityValue === 'На сейчас') {
+        priority = priorityValue;
+      } else {
+        priority = '';
+      }
+
+      const date = formatDate(data.data.Дата) || '';
+      const planingDate = formatDate(data.data.ПлановаяДата).split('T')[0];
+      const term = formatSecondToStringTime(timeToCompliteOrder / 1000);
+      const showEyeIcon = hasUserSeenLastChanges(user.uid, data.data.Просмотры, data.data.ДатаПоследнейАктивности);
+      const linkedText = text.replace(
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+        '<a href="$1" class="zakupkaLink" target="_blank">ccылка</a>'
+      );
+
+      const templateData = {
+        orderNumber: orderNumber,
+        author: author,
+        executor: executor,
+        text: linkedText,
+        status: status,
+        priority: priority,
+        timerClass: timerClass,
+        dangerClass: dangerClass,
+        term: term,
+        date: date,
+        planeDate: targetDate,
+        showEyeIcon: showEyeIcon,
+      };
+
+      generateFromTemplate('#tileTemplate', templateData, cellForTemplate);
+
+      const colorIndex = data.data.Цвет;
+      const tileColor = listColors[colorIndex];
+      console.log('colorIndex', colorIndex, tileColor, typeof tileColor, `rgb(${tileColor})`);
+      console.log('row.find(.tileContainer)', row, currentRow.find('.tileContainer'));
+      currentRow.find('.tileColor').css('color', `rgb(${tileColor})`);
+
+      if (isSingleDataUpdate) {
+        console.log('isSingleDataUpdate');
+        const param = $(tableID).data('param');
+        sortByParam(param.sortColumn, param.sortDirection);
+        makeDateSeparator();
+        isSingleDataUpdate = false;
+      }
+    };
+
+    $('#search').on('input', async function () {
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
+      const termString = $(this).val();
+      const replaceSpaces = str => str.replace(/ /g, '~');
+      const modifiedString = replaceSpaces(termString);
+      updateParam(tableJQ, 'term', '');
+
+      if (termString.length > 1) {
+        updateParam(tableJQ, 'term', modifiedString);
+      }
+
+      abortAllRequests();
+      console.log('after abortAllRequests');
+      await initTable(table);
+    });
+
+    $('#textNew').on('change', function () {
+      const value = $(this).val();
+
+      if (value === '') {
+        setValid(this, false);
+      } else {
+        setValid(this, true);
+      }
+    });
+
+    function openNewOrder(time) {
+      $('#newZakupkaText').val(time);
+      $('#saveZakupka').prop('disabled', true);
+      $('#content').hide(time);
+      $('#formZakupka').show(time);
+      $('#attachedFilesForNewOrder').empty();
+    }
+
+    function hideNewOrder(time) {
+      $('#formZakupka').hide(time);
+      $('#main').show(time);
+    }
+
+    $('#btnSort').on('click', function () {
+      let sortList = $('#sortList');
+      clickAnimate(this);
+
+      sortList.toggle();
+      sortList.toggleClass('active');
+    });
+
+    $(document).on('click', function () {
+      if (!$(event.target).closest('#sortList').length && !$(event.target).is('#btnSort')) {
+        $('#sortList').hide();
+        $('#sortList').removeClass('active');
+      }
+    });
+
+    $(document).on('click', '.attachedImg', function () {
+      mediaviewer(this);
+    });
+
+    function sortByParam(sortColumn, sortDirection) {
+      $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
+    }
+
+    function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
+      $(selector).on('click', function () {
+        $(selector).siblings().removeClass('active');
+        $(selector).addClass('active');
+        const sort = $(tableID).data('param').sortColumn;
+        // ('sortColumn') || 'ПлановаяДатаСлужебная';
+        let sortDirection = $(tableID).data('param').sortDirection;
+        // ('sortDirection') || defaultSortDirection;
+        console.log('sort', sort);
+        console.log('sortColumn', sortColumn);
+        if (sort === sortColumn) {
+          sortDirection = sortDirection === '0' ? '1' : '0';
+        } else {
+          sortDirection = defaultSortDirection;
+        }
+
+        console.log('sortDirection', sortDirection, typeof sortDirection);
+        if (sortDirection === '0') {
+          console.log('sortDirection = 0');
+          $('#btnSort').removeClass('down');
+          $('#btnSort').addClass('up');
+        } else {
+          console.log('sortDirection = 1');
+          $('#btnSort').removeClass('up');
+          $('#btnSort').addClass('down');
+        }
+
+        updateParam(tableJQ, 'sortColumn', sortColumn);
+        updateParam(tableJQ, 'sortDirection', sortDirection);
+        updateParam(tableJQ, 'page', 0);
+
+        $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
+        // $(`th.${sortClass}`).click();
+        $('#sortList').hide();
+        $('#sortList').toggleClass('active');
+        initTable($('#content table'));
+      });
+    }
+
+    sortHandler('#sortSrok', '0', '0', tableID, 'ПлановаяДатаСлужебная');
+    sortHandler('#sortStatus', '1', '0', tableID, 'СтатусЗаявкиПорядок');
+    sortHandler('#sortPriority', '2', '0', tableID, 'ПриоритетПорядок');
+    sortHandler('#sortDate', '3', '', tableID, 'Дата');
+    sortHandler('#sortDateDone', '3', '', tableID, 'ДатаЗакрытияЗаявки');
+
+    $('#btnDone').on('click', function (event) {
+      clickAnimate(this);
+      $('#sortSrok').toggle();
+      $('#sortDateDone').toggle();
+      activeOrders = !$(tableID).data('param').active;
+      newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
+
+      const tableJQ = $(tableID);
+      tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
+
+      if (activeOrders) {
+        btnDone.classList.remove('done-orders');
+        btnDone.classList.add('active-orders');
+      } else {
+        btnDone.classList.remove('active-orders');
+        btnDone.classList.add('done-orders');
+      }
+
+      let sortValue = activeOrders ? 'Дата' : 'Дата';
+
+      updateParam(tableJQ, 'page', 0);
+      updateParam(tableJQ, 'sortColumn', sortValue);
+      updateParam(tableJQ, 'active', activeOrders);
+
+      $('#statusMark').text(activeOrders ? 'в работе' : 'выполненные');
+      $('#statusMark').toggleClass('pressed', !activeOrders);
+      $('#pageIcon').toggleClass('pressed', !activeOrders);
+      abortAllRequests();
+      initTable(tableID);
+    });
+
+    // клик по кнопке Добавить закупку
+    $('#addNew').on('click', function (event) {
+      clickAnimate(this);
+
+      openNewOrder();
+      return;
+
+      setTimeout(() => {
+        $('#formNew').show(300);
+      }, 200);
+      setTimeout(() => {
+        $('#addNew').hide(300);
+      }, 200);
+
+      $('#saveNew').prop('disabled', false);
+
+      $('#textNew').val('');
+      setValid('#textNew', false);
+
+      $('#setPriority').removeClass('btn-danger');
+      $('#setPriority').addClass('btn-secondary');
+
+      setTimeout(() => {
+        $('#textNew').focus();
+      }, 500);
+      window.scrollBy(0, 80);
+    });
+
+    $('#saveNew').on('click', function (event) {
+      clickAnimate(this);
+
+      $(this).prop('disabled', true);
+
+      const textNew = $('#textNew');
+
+      if (textNew.hasClass('invalid')) {
+        toastr.error('Напишите что нужно купить!');
+        return;
+      }
+
+      const srochno = $('#setPriority').hasClass('btn-danger');
+
+      setTimeout(() => {
+        $('#formNew').hide(300);
+      }, 200);
+      setTimeout(() => {
+        $('#addNew').show(300);
+      }, 200);
+
+      const data = {};
+      data.textNew = textNew.val();
+      data.srochno = srochno;
+
+      NProgress.start();
+
+      data.files = names;
+      data.a = 'a';
+
+      $.ajax({
+        url: '/app/zakupka',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (data, status) {},
+      }).always(function () {
+        NProgress.done();
+      });
+
+      hideNewOrder();
+    });
+
+    $('#cancelNew').on('click', function (event) {
+      clickAnimate(this);
+      hideNewOrder();
+
+      $('#formNew').hide();
+
+      $('#addNew').show();
+    });
+
+    function addZakupka() {
+      $('#modal').hide();
+      $('#formZakupka').show();
+    }
+
+    $('#btnAddZakupka').on('click', function () {
+      $('#newZakupkaText').val('');
+      setValid('#textNew', false);
+      let priority = '';
+
+      $('#setPriorityZakupka').removeClass('btn-danger');
+      $('#setPriorityZakupka').addClass('btn-secondary');
+      $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-secondary');
+      statusZakupka = '';
+
+      addZakupka();
+      history.pushState({ page: 'formZakupka' }, '', '');
+      $('#newZakupkaText').focus();
+    });
+
+    function openZakupkaInfo(zakupkaUID) {
+      $('#main').hide();
+      $('#zakupkaInfo').show();
+      window.scrollTo(0, 0);
+    }
+
+    function closeZakupkaInfo() {
+      $('#zakupkaInfo').hide();
+      $('#main').show();
+      window.scrollTo(0, scrollPosition);
+    }
+
+    $('#closeZakupkaInfo').on('click', function () {
+      closeZakupkaInfo();
+    });
+
+    $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
+      if (event.target.tagName === 'A') {
+        event.stopPropagation();
+        return;
+      }
+
+      if ($('#sortList').is(':visible')) {
+        return;
+      }
+
+      scrollPosition = window.scrollY;
+      let curentRowID = $(this).attr('id');
+      let prevRowID = $('#infoRow').attr('curentRow') || '';
+      currentRowJQ = $(this);
+      const data = $(this).data('data');
+
+      let dataforZakupkaInfo;
+      universalRequest(
+        '/app/zakupka',
+        'PATCH',
+        data,
+        { doc: curentRowID },
+        function onSuccess(response) {
+          openZakupkaInfo();
+          console.log('response.order', response.order);
+          renderZakupkaInfo(response.order);
+          // const cardsData = response.order.data.ИсторияКомментариев;
+
+          // const cardsForTemplate = getCardsForTemplate(cardsData);
+          // generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+        },
+        function onError(error) {},
+        function onComplete() {}
+      );
+
+      // renderZakupkaInfo(dataforZakupkaInfo);
+    });
+
+    $('#zakupkaText').on('click', function () {
+      console.log('zakupkaText click');
+      clickAnimate(this);
+      copiedText = $(this).val();
+      navigator.clipboard.writeText(copiedText);
+      toastr.success('Текс заявки скопирован.');
+    });
+
+    $('#planeDate').on('change', function () {
+      const data = currentRowJQ.data('data');
+
+      const date = $(this).datepicker('getDate');
+      const dateStr = date.toISOString();
+      console.log('date', date);
+      date.setUTCHours(date.getUTCHours() + 3);
+      const newDateStr = date.toISOString();
+      data.edited['ПлановаяДата'] = date;
+      console.log('date, newDateStr', dateStr, newDateStr);
+      // console.log('плановая дата', $(this).val());
+
+      console.log('executor', data.edited);
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#zakupkaExecutor').on('blur', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['ОтветственыйСнабженец'] = $('#zakupkaExecutor').attr('uid');
+      console.log('Ответственный uid', $('#zakupkaExecutor').attr('uid'));
+
+      console.log('executor', data.edited);
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#zakupkaPriority').on('change', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['Приоритет'] = $(this).val();
+      console.log($(this).val());
+      sendDataTo1C(data, 'PUT');
+    });
+
+    function showHideDoneDelete(zakupkaStatus, canChangeOrderDone = true) {
+      console.log('showHideDoneDelete', zakupkaStatus, canChangeOrderDone);
+      if (canChangeOrderDone) {
+        if (zakupkaStatus === 'Готово' || zakupkaStatus === 'Отменена') {
+          console.log('showHideDoneDelete zakupkaStatus === Готово');
+          $('#doneGroup').show();
+          $('#zakupkaDelete').hide();
+        } else if (zakupkaStatus === 'Новая') {
+          console.log('showHideDoneDelete zakupkaStatus === Новая');
+          $('#zakupkaDelete').show();
+          $('#doneGroup').hide();
+        } else {
+          console.log('showHideDoneDelete zakupkaStatus === Інша');
+          $('#doneGroup').hide();
+          $('#zakupkaDelete').hide();
+        }
+      } else {
+        $('#doneGroup').hide();
+        $('#zakupkaDelete').hide();
+      }
+    }
+
+    $('#zakupkaStatus').on('change', function () {
+      const data = currentRowJQ.data('data');
+      data.edited['СтатусЗаявки'] = $(this).val();
+      // showHideDoneDelete($(this).val());
+      console.log($(this).val());
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#zakupkaDelete').on('click', function () {
+      console.log('click delete');
+      const data = currentRowJQ.data('data');
+      data.edited['СтатусЗаявки'] = 'Отменена';
+      data.edited['ЗакупкаВыполнена'] = true;
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#done').on('change', function () {
+      const data = currentRowJQ.data('data');
+      const isChecked = $(this).is(':checked');
+
+      if (!$(this).is(':checked')) {
+      }
+      data.edited['ЗаявкаПодтверждена'] = $(this).is(':checked');
+      sendDataTo1C(data, 'PUT');
+    });
+
+    $('#sendComment').on('click', function () {
+      clickAnimateColor(this);
+      console.log('sendComment', currentRowJQ.data('data'));
+      let data = currentRowJQ.data('data');
+      data.edited['Комментарий'] = $('#comment').val();
+      if ($('#comment').val() === '') {
+        return;
+      }
+      console.log(data.edited);
+
+      sendDataTo1C(data, 'PUT');
+      $('#comment').val('');
+    });
+
+    function fillSelectOptions(optionsList, selectId) {
+      console.log('optionsList', optionsList);
+
+      $(selectId).empty();
+      optionsList.forEach(function (option) {
+        $(selectId).append(
+          $('<option>', {
+            value: option.value,
+            text: option.text,
+          })
+        );
+      });
+    }
+
+    function hideAvatarViewContainer() {
+      console.log('hideAvatarViewContainer');
+      $('#avatarViewContainer').hide();
+      $('.view-card').css('display', 'none');
+      $('#showViews').text('показать просмотры');
+    }
+
+    function renderZakupkaInfo(data) {
+      console.log('renderZakupkaInfo activeOrders', data, activeOrders);
+      $('#zakupkaInfo').data('data', data);
+      $('#zakupkaText').val('');
+      $('#orderNum').text('');
+      $('#zakupkaInfo').removeAttr('uid');
+      $('#zakupkaDate').val('');
+      $('#zakupkaAuthor').html('');
+      $('#zakupkaExecutor').html('');
+      $('#zakupkaExecutor').removeClass('invalid');
+      $('#zakupkaFinish').html('');
+      $('#zakupkaStatus').val('');
+      $('#zakupkaPriority').val('');
+
+      const uid = data.data.uid || '';
+      const zakupkaNumber = data.data.Номер || 'б.н.';
+      const zakupkaText = data.data.ТекстЗаявки;
+      const zakupkaDate = formatDateTime(data.data.Дата);
+      const minDate = new Date(data.data.Дата);
+      const maxDate = new Date(minDate);
+      maxDate.setDate(maxDate.getDate() + 50);
+      $('#planeDate').datepicker('option', 'minDate', minDate);
+      $('#planeDate').datepicker('option', 'maxDate', maxDate);
+
+      let dateStart;
+      let targetDate;
+      let remainTimeText;
+      if (activeOrders) {
+        targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+        planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
+        const dayOfWeek = targetDate.getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        if (isWeekend) {
+          targetDate.setDate(targetDate.getDate() + 2);
+        }
+        console.log('targetDate after weekend', targetDate, formatDateInDateTime(targetDate));
+        dateStart = new Date();
+        remainTimeText = 'Осталось:';
+        $('.zakupkaFinish').hide();
+      } else {
+        targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
+        dateStart = new Date(data.data.Дата);
+        planeDate = new Date(data.data.ПлановаяДата) || '';
+        remainTimeText = 'Выполнено за:';
+        $('.zakupkaFinish').show();
+      }
+      const isZakupkaOverdue = targetDate < dateStart;
+
+      const remainTime = formatSecondToStringTime((targetDate - dateStart) / 1000);
+      const listImgZakupka = data.data['Файлы'] || [];
+      const imgs = [];
+
+      listImgZakupka.forEach(function (element) {
+        if (element.ИД === uid) {
+          const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
+          const source = `${pathToStorage}/${uid}/${element.ИД}/${element.Файл}`;
+          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, -3)}png`;
+          console.log('src ', src);
+          imgs.push({ source: source, src: src });
+        }
+      });
+
+      generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
+
+      const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
+      const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона || '';
+      const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
+      const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.uid || '';
+      const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
+      const executorPhoneNumber = data.data.ОтветственыйСнабженец.ОсновнойНомерТелефона || '';
+      const executorLink =
+        executorPhoneNumber !== ''
+          ? `<a href="tel:${executorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`
+          : '';
+      const zakupkaFinish = formatDateTime(data.data.ДатаЗакрытияЗаявки) || '';
+      console.log('zakupkaFinish', zakupkaFinish);
+      const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
+      const zakupkaPriority = data.data.Приоритет || '  не визначено';
+      const done = data.data.ЗаявкаПодтверждена || false;
+      const userInfo = $('#menu').data('userInfo');
+      console.log('renderInfo userRights', userRights);
+      const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid || userRights.canChangeOrderDone;
+      showHideDoneDelete(zakupkaStatus, canChangeOrderDone);
+
+      const statusList = $(tableID).data('response').listStatus;
+      const priorityList = $(tableID).data('response').listPriority;
+      console.log('statusList', statusList);
+
+      fillSelectOptions(statusList, '#zakupkaStatus');
+      fillSelectOptions(priorityList, '#zakupkaPriority');
+
+      const linkedText = zakupkaText.replace(
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+        '<a href="$1" target="_blank">$1</a>'
+      );
+
+      $('#zakupkaText').val(linkedText);
+      $('#orderNum').text(zakupkaNumber);
+      $('#zakupkaInfo').attr('uid', uid);
+      $('#zakupkaDate').val(zakupkaDate);
+      $('#remainTimeLabel').text(remainTimeText);
+      $('#remainTime').text(remainTime);
+      $('#remainTime').toggleClass('remainTime', activeOrders);
+      $('#remainTime').toggleClass('dangerColor', isZakupkaOverdue);
+      $('#planeDate').datepicker('setDate', planeDate);
+      $('#zakupkaAuthor').html(authorLink);
+      $('#zakupkaExecutor').attr('uid', zakupkaExecutorUID);
+      $('#zakupkaExecutor').val(zakupkaExecutor);
+      $('#zakupkaAuthorLink').html(executorLink);
+      $('#zakupkaFinish').text(zakupkaFinish);
+      $('#zakupkaStatus').val(zakupkaStatus);
+      $('#zakupkaPriority').val(zakupkaPriority);
+      $('#done').prop('checked', done);
+
+      callbackFuncSecondInterval = function () {
+        timerManager.updateTimers('#zakupkaInfo', '.remainTime');
+        timerManager.updateTimers('.rowData', '.timer');
+      };
+
+      const cardsData = data.data.ИсторияКомментариев;
+      const cardsForTemplate = getCardsForTemplate(cardsData);
+      generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+
+      const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
+      let uniqueUidsWithoutMe = uniqueUids.filter(item => item !== user.uid);
+      generateFromTemplate('#viewAvatar-template', uniqueUidsWithoutMe, '#avatarViewContainer');
+    }
+
+    function getCardsForTemplate(data) {
+      console.log('getCardsForTemplate data', data);
+
+      let cards = [];
+      data.forEach(element => {
+        const card = {
+          additionalClass: element.Просмотр ? 'view-card' : '',
+          text: element.Комментарий,
+          date: formatDateTime(element.Дата),
+          avatar: element['Сотрудник']['uid'],
+          author: element['Сотрудник']['Наименование'],
+          tel: element['Сотрудник']['ОсновнойНомерТелефона'],
+        };
+
+        if (element.Просмотр) {
+          if (user.uid === element['Сотрудник']['uid']) {
+            return;
+          }
+        }
+
+        cards.push(card);
+      });
+      console.log('cards -------', cards);
+
+      return cards;
+    }
+
+    $('#setPriority').on('click', function (event) {
+      if ($('#setPriority').hasClass('btn-secondary')) {
+        $('#setPriority').removeClass('btn-secondary');
+        $('#setPriority').addClass('btn-danger');
+      } else {
+        $('#setPriority').removeClass('btn-danger');
+        $('#setPriority').addClass('btn-secondary');
+      }
+    });
+
+    $('#cancelZayavka').on('click', function (event) {
+      clickAnimate(this);
+
+      const data = {};
+      data.change = [{ key: 'СтатусЗаявки', value: 'Отменена' }];
+      data.curentrow = $('#infoRow').attr('curentrow');
+
+      NProgress.start();
+
+      $.ajax({
+        url: '/app/zakupka',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (data, status) {
+          console.log('success POST', status, data);
+        },
+      }).always(function () {
+        NProgress.done();
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
+      });
+    });
+
+    $('#doneZayavka').on('click', function (event) {
+      clickAnimate(this);
+
+      const data = {};
+      data.change = [{ key: 'СтатусЗаявки', value: 'Готово' }];
+      data.curentrow = $('#infoRow').attr('curentrow');
+
+      NProgress.start();
+
+      $.ajax({
+        url: '/app/zakupka',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (data, status) {
+          console.log('success POST', status, data);
+        },
+      }).always(function () {
+        NProgress.done();
+        $('#infoRow').toggleClass('hide', true);
+        $('#infoRow').attr('curentRow', '');
+      });
+    });
+
+    function makeDateSeparator() {
+      console.log('makeDateSeparator');
+      let previousDate = '0';
+      let previousShift = '';
+      const param = $(tableID).data('param');
+      const sortValue = param.sortColumn;
+      let nameKeyDate = sortValue;
+      const sortDirection = param.sortDirection;
+      const directOrderSort = sortDirection === '0';
+      const isActiveOrder = param.active;
+      // if (!isActiveOrder) {
+      //   nameKeyDate = 'Дата';
+      // }
+      $('.separateDateLine').remove();
+
+      const sortValuesForSeparation = ['Дата'];
+      needSeparation = sortValuesForSeparation.includes(sortValue);
+      console.log('needSeparation', needSeparation);
+      if (!needSeparation) return;
+
+      let dataForSeparate = [];
+      $('#ЗаявкаНаЗакупку tr.rowData').each(function (index, el) {
+        const data = $(el).data('data');
+        data.element = el;
+        dataForSeparate.push(data);
+      });
+
+      console.log('dataForSeparate', dataForSeparate);
+      dataForSeparate.forEach(el => {
+        let date = new Date(el.data[nameKeyDate]);
+        let currentDate = formatter.format(date);
+        let currentHour = date.getHours();
+        let currentShift = '';
+
+        if (currentHour >= 7 && currentHour <= 18) {
+          currentShift = 'Денна зміна';
+        } else {
+          currentShift = 'Нічна зміна';
+
+          if (currentHour < 7) {
+            date.getDay - 1;
+            date.setDate(date.getDate() - 1);
+            currentDate = formatter.format(date);
+          }
+        }
+
+        let tileContainer = $(el.element).find('.tileContainer');
+        delete el.element;
+
+        function addSeparation(currentDate, currentShift) {
+          let separateData = `${currentDate} - ${currentShift}`;
+          const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
+          tileContainer.before(dateLine);
+        }
+
+        if (currentShift !== previousShift || currentDate !== previousDate) {
+          addSeparation(currentDate, currentShift);
+        }
+
+        previousDate = currentDate;
+        previousShift = currentShift;
+      });
+    }
+
+    function formattedTimeToSeconds(formattedTime) {
+      const regex = /(\d+) д (\d{2}):(\d{2}):(\d{2})/;
+      const matches = formattedTime.match(regex);
+
+      if (matches) {
+        const days = parseInt(matches[1], 10);
+        const hours = parseInt(matches[2], 10);
+        const minutes = parseInt(matches[3], 10);
+        const seconds = parseInt(matches[4], 10);
+
+        return days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+      }
+
+      return 0;
+    }
+
+    function hasUserSeenLastChanges(userUID, infoAboutView, dateOflastActivity) {
+      console.log('userUID, infoAboutView, dateOflastActivity', userUID, infoAboutView, dateOflastActivity);
+      if (!userUID || !infoAboutView || !dateOflastActivity) {
+        console.log('One or more arguments are missing');
+        return false;
+      }
+      const userInfo = infoAboutView.find(item => {
+        console.log('row.Сотрудник.uid, user.uid ', item.Сотрудник.uid, userUID);
+        return item.Сотрудник.uid === userUID;
+      });
+
+      if (userInfo !== undefined) {
+        dateOfLastView = userInfo.ДатаПросмотра;
+      } else {
+        dateOfLastView = '1970-01-01T00:00:00 000000';
+      }
+      console.log('dateOfLastView < dateOflastActivity', dateOfLastView, dateOflastActivity);
+      if (dateOfLastView < dateOflastActivity) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function sendDataTo1C(data, method = 'GET', callback) {
+      universalRequest(
+        '/app/zakupka',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Дані сохранено');
+            if (typeof callback === 'function') {
+              callback(response);
+            }
+          }
+        },
+        function onError(error) {
+          toastr.error('Error', error);
+        },
+        function onComplete() {}
+      );
+    }
+
+    const limitDate = (() => {
+      const formatDate = date => {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+      };
+
+      const init = () => {
+        const today = new Date();
+        const tenDaysAhead = new Date();
+        tenDaysAhead.setDate(today.getDate() + 10);
+
+        const minDate = formatDate(today);
+        const maxDate = formatDate(tenDaysAhead);
+
+        //$('#planeDate').attr('min', minDate).attr('max', maxDate);
+      };
+
+      return {
+        init,
+      };
+    })();
+
+    limitDate.init();
+
+    callbackFuncSecondInterval = function () {
+      // console.log('callbackFuncSecondInterval');
+      timerManager.updateTimers('#zakupkaInfo', '.remainTime');
+      timerManager.updateTimers('.rowData', '.timer');
+    };
+  });
+</script>
