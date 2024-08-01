@@ -33,6 +33,14 @@
   .executorContainer .form-control {
     width: 100% !important;
     position: relative;
+    border: none;
+  }
+
+  .executorContainer {
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+    background-color: white;
+    padding-right: 12px;
   }
 
   #zakupkaAuthorLink {
@@ -545,6 +553,7 @@
     color: #495057;
     white-space: pre-wrap;
     resize: none;
+    overflow: hidden;
   }
 
   #zakupkaText:hover {
@@ -657,7 +666,7 @@
       <label for="done">Подтвердить закупку:</label>
       <input type="checkbox" class="form-control" id="done" aria-describedby="basic-addon3" readonly />
     </div>
-    <div class="form-group zakupkaDelete" id="zakupkaDeleteContainer">
+    <div class="form-group zakupkaDelete" id="zakupkaDeleteContainer" style="display: none">
       <i class="bi bi-trash" id="zakupkaDelete"></i>
     </div>
   </div>
@@ -1351,39 +1360,77 @@
       $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
     }
 
-    function setActiveClass(selector) {
-      $(selector).siblings().removeClass('active');
-      $(selector).addClass('active');
-    }
+    // function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
+    //   $(selector).on('click', function () {
+    //     $(selector).siblings().removeClass('active');
+    //     $(selector).addClass('active');
+    //     const sort = $(tableID).data('param').sortColumn;
+    //     // ('sortColumn') || 'ПлановаяДатаСлужебная';
+    //     let sortDirection = $(tableID).data('param').sortDirection;
+    //     // ('sortDirection') || defaultSortDirection;
+    //     console.log('sort', sort);
+    //     console.log('sortColumn', sortColumn);
+    //     if (sort === sortColumn) {
+    //       sortDirection = sortDirection === '0' ? '1' : '0';
+    //     } else {
+    //       sortDirection = defaultSortDirection;
+    //     }
+
+    //     console.log('sortDirection', sortDirection, typeof sortDirection);
+    //     if (sortDirection === '0') {
+    //       console.log('sortDirection = 0');
+    //       $('#btnSort').removeClass('down');
+    //       $('#btnSort').addClass('up');
+    //     } else {
+    //       console.log('sortDirection = 1');
+    //       $('#btnSort').removeClass('up');
+    //       $('#btnSort').addClass('down');
+    //     }
+
+    //     updateParam(tableJQ, 'sortColumn', sortColumn);
+    //     updateParam(tableJQ, 'sortDirection', sortDirection);
+    //     updateParam(tableJQ, 'page', 0);
+
+    //     $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
+    //     // $(`th.${sortClass}`).click();
+    //     $('#sortList').hide();
+    //     $('#sortList').toggleClass('active');
+    //     initTable($('#content table'));
+    //   });
+    // }
 
     function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
-      setActiveClass(selector);
-      const currentSortColumn = $(tableID).data('param').sortColumn;
-      let sortDirection = $(tableID).data('param').sortDirection;
+      $(selector).on('click', function () {
+        $(selector).siblings().removeClass('active');
+        $(selector).addClass('active');
+        const currentSortColumn = $(tableID).data('param').sortColumn;
+        let sortDirection = $(tableID).data('param').sortDirection;
 
-      if (currentSortColumn === sortColumn) {
-        sortDirection = sortDirection === '0' ? '1' : '0';
-      } else {
-        sortDirection = defaultSortDirection;
-      }
+        if (currentSortColumn === sortColumn) {
+          sortDirection = sortDirection === '0' ? '1' : '0';
+        } else {
+          sortDirection = defaultSortDirection;
+        }
 
-      updateParam(tableJQ, 'sortColumn', sortColumn);
-      updateParam(tableJQ, 'sortDirection', sortDirection);
-      updateParam(tableJQ, 'page', 0);
+        updateParam(tableJQ, 'sortColumn', sortColumn);
+        updateParam(tableJQ, 'sortDirection', sortDirection);
+        updateParam(tableJQ, 'page', 0);
 
-      console.log('sortDirection', sortDirection, typeof sortDirection);
-      if (sortDirection === '0') {
-        console.log('sortDirection = 0');
-        $('#btnSort').removeClass('down');
-        $('#btnSort').addClass('up');
-      } else {
-        console.log('sortDirection = 1');
-        $('#btnSort').removeClass('up');
-        $('#btnSort').addClass('down');
-      }
+        console.log('sortDirection', sortDirection, typeof sortDirection);
+        if (sortDirection === '0') {
+          console.log('sortDirection = 0');
+          $('#btnSort').removeClass('down');
+          $('#btnSort').addClass('up');
+        } else {
+          console.log('sortDirection = 1');
+          $('#btnSort').removeClass('up');
+          $('#btnSort').addClass('down');
+        }
 
-      $('#sortList').hide();
-      $('#sortList').toggleClass('active');
+        $('#sortList').hide();
+        $('#sortList').toggleClass('active');
+        initTable($('#content table'));
+      });
     }
 
     sortHandler('#sortSrok', '0', '0', tableID, 'ПлановаяДатаСлужебная');
@@ -1624,14 +1671,14 @@
         if (zakupkaStatus === 'Готово' || zakupkaStatus === 'Отменена' || zakupkaStatus === 'Выдано') {
           console.log('showHideDoneDelete zakupkaStatus === Готово');
           $('#doneGroup').show();
-          $('#zakupkaDeleteContainer').hide();
+          // $('#zakupkaDeleteContainer').hide();
         } else if (zakupkaStatus === 'Новая') {
           console.log('showHideDoneDelete zakupkaStatus === Новая');
-          $('#zakupkaDeleteContainer').show();
+          // $('#zakupkaDeleteContainer').show();
           // $('#doneGroup').hide();
         } else {
           console.log('showHideDoneDelete zakupkaStatus === Інша');
-          $('#zakupkaDeleteContainer').show();
+          // $('#zakupkaDeleteContainer').show();
           // $('#doneGroup').hide();
         }
       } else {
