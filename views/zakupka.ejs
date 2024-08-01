@@ -168,14 +168,6 @@
     margin-left: auto;
   }
 
-  #cancelZayavka {
-    margin-left: auto;
-  }
-
-  #doneZayavka {
-    margin-left: 30px;
-  }
-
   #addNew {
     margin-right: 10px;
   }
@@ -237,6 +229,7 @@
       <div class="btnContainer">
         <div id="sortContainer">
           <!-- <img src="img/sort.svg?v=<%= version %>" alt=" sort icon" class="commandImg" id="btnSort" /> -->
+
           <button class="commandImg commandBtn down" id="btnSort"></button>
           <div id="sortList">
             <ul>
@@ -305,7 +298,7 @@
       <td
         title="ДатаЗакрытияЗаявки"
         name="ДатаЗакрытияЗаявки"
-        id="dateSort"
+        id="dateClose"
         headerClass="dateSort"
         style="display: none"
       >
@@ -458,9 +451,9 @@
 
   .tile2row {
     /* display: flex; /
-    / justify-content: flex-start; /
-    / font-size: small; /
-    / color: darkgray; */
+      / justify-content: flex-start; /
+      / font-size: small; /
+      / color: darkgray; */
     margin-bottom: 5px;
     background-color: #f0f8ff42;
     border: 1px solid #dde7f0b0;
@@ -551,15 +544,16 @@
     font-family: inherit;
     color: #495057;
     white-space: pre-wrap;
+    resize: none;
   }
 
-  #filesAuthorOrder {
-    gap: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 0;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+  #zakupkaText:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+  }
+
+  #zakupkaText:focus {
+    outline: none;
   }
 
   #zakupkaPhoto {
@@ -585,10 +579,6 @@
     font-size: xxx-large;
     color: red;
   }
-
-  #zakupkaText:focus {
-    outline: none;
-  }
 </style>
 
 <div id="zakupkaInfo" style="display: none">
@@ -599,12 +589,18 @@
   </div>
   <div id="zakupkaContainer">
     <div class="form-group">
-      <input type="text" id="zakupkaText" readonly />
+      <div class="zakupkaText" id="zakupkaText" placeholder="Введіть текст" title="Натисніть, щоб скопіювати"></div>
+    </div>
+
+    <div class="form-group">
+      <div class="orderGroupContainer">
+        <div class="orderTitle">Список по складскому учету</div>
+        <div class="orderText" id="orderText" placeholder="Введіть текст" title="Натисніть, щоб скопіювати"></div>
+      </div>
     </div>
 
     <div class="form-group" id="filesAuthorOrder"></div>
 
-    <div class="form-group" id="attachedImg"></div>
     <div class="form-group">
       <label>Дата:</label>
       <input type="text" readonly class="form-control" id="zakupkaDate" />
@@ -616,6 +612,14 @@
     <div class="form-group">
       <label id="remainTimeLabel">Осталось:</label>
       <div class="form-control" id="remainTime"></div>
+    </div>
+    <div class="form-group" style="display: none">
+      <label>Доставка:</label>
+      <input type="text" class="form-control" id="zakupkaDelivery" placeholder="дд/мм/гггг" />
+    </div>
+    <div class="form-group" style="display: none">
+      <label>Изготовление:</label>
+      <input type="text" class="form-control" id="zakupkaProduction" placeholder="дд/мм/гггг" />
     </div>
     <div class="form-group">
       <label>Плановая дата:</label>
@@ -633,7 +637,7 @@
           data-editable="true"
           readonly
         />
-        <span id="zakupkaAuthorLink" class="ml-2"></span>
+        <span id="zakupkaExecutorLink" class="ml-2"></span>
       </div>
     </div>
     <div class="form-group zakupkaFinish">
@@ -642,21 +646,83 @@
     </div>
     <div class="form-group">
       <label for="zakupkaPriority">Приоритет:</label>
-      <select id="zakupkaPriority" class="form-control" disabled></select>
+      <select id="zakupkaPriority" class="form-control" disabled readonly></select>
     </div>
     <div class="form-group">
       <label for="zakupkaStatus">Статус:</label>
-      <select id="zakupkaStatus" class="form-control" disabled></select>
+      <select id="zakupkaStatus" class="form-control" disabled readonly></select>
     </div>
 
     <div class="form-group" id="doneGroup" style="display: none">
       <label for="done">Подтвердить закупку:</label>
       <input type="checkbox" class="form-control" id="done" aria-describedby="basic-addon3" readonly />
     </div>
-    <div class="form-group zakupkaDelete" style="display: none">
+    <div class="form-group zakupkaDelete" id="zakupkaDeleteContainer">
       <i class="bi bi-trash" id="zakupkaDelete"></i>
     </div>
   </div>
+
+  <style>
+    .orderGroupContainer {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    #orderText {
+      border: 1px solid lightgrey;
+      width: 100%;
+      padding: 5px;
+      border-radius: 4px;
+      margin: 0;
+      background-color: white;
+      font-size: large;
+      color: #495057;
+      overflow: hidden;
+    }
+
+    .orderTitle {
+      font-size: small;
+    }
+
+    .orderContainer {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      max-height: 120px;
+    }
+
+    .orderRow {
+      display: flex;
+    }
+
+    .orderNumber {
+      width: 5%;
+    }
+    .orderName {
+      width: 65%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
+    }
+
+    .orderStatus {
+      width: 30%;
+    }
+  </style>
+  <!-- Order template -->
+  <script id="order-template" type="text/x-handlebars-template">
+    <div class='orderContainer'>
+      {{#each this}}
+        <div class='orderRow'>
+          <div class='orderNumber'>{{orderNumber}}</div>
+          <div class='orderName'>{{orderName}}</div>
+          <div class='orderStatus'>{{orderStatus}}</div>
+        </div>
+      {{/each}}
+    </div>
+  </script>
 
   <style>
     #actions {
@@ -913,10 +979,12 @@
 
 <script>
   $(document).ready(function () {
+    console.log('script start');
     table = $('#content table');
     let tableID = '#ЗаявкаНаЗакупку';
     let tableJQ = $(tableID);
     let currentRowJQ;
+
     $(tableID).data('param', {
       active: true,
       limit: 20,
@@ -929,7 +997,6 @@
     let listStatus = [];
     let listPriority = [];
     let scrollPosition = 0;
-    let isSingleDataUpdate = false;
     const pageUID = '750bb924-e106-11ee-822c-000c29006152';
     const userRights = $('#menu').data('userRight')[pageUID];
     let activeOrders;
@@ -948,6 +1015,7 @@
     initTables();
 
     const updateParam = (tableJQ, key, value) => {
+      console.log('updateParam');
       let param = tableJQ.data('param') || {};
       param[key] = value;
       tableJQ.data('param', param);
@@ -969,8 +1037,8 @@
     console.log('userRights', userRights);
     setEditableState('#zakupkaExecutor', userRights.canChangeExecutor);
     setEditableState('#planeDate', userRights.canChangeDate);
-    setEditableState('#zakupkaPriority', userRights.canChangePriority);
-    setEditableState('#zakupkaStatus', userRights.canChangeStatus);
+    // setEditableState('#zakupkaPriority', userRights.canChangePriority);
+    // setEditableState('#zakupkaStatus', userRights.canChangeStatus);
 
     // const toggleEditability = (user, usersAllowToEdit) => {
     //   const isEditableExecutor = canUserEdit(user, usersAllowToEdit);
@@ -994,10 +1062,9 @@
     $('#showViews').on('click', function () {
       console.log('showViews');
       const button = $(this);
-      const viewsVisible = $('.view-card').is(':visible');
-      console.log('showViews', viewsVisible);
+      const areViewsVisible = () => $('.view-card').is(':visible');
 
-      if (viewsVisible || button.text() !== 'показать просмотры') {
+      if (areViewsVisible() || button.text() !== 'показать просмотры') {
         $('#avatarViewContainer').hide();
         $('.view-card').css('display', 'none');
         $('#showViews').text('показать просмотры');
@@ -1005,6 +1072,10 @@
         $('#avatarViewContainer').css('display', 'flex');
         $('.view-card').css('display', 'flex');
         button.text('скрыть просмотры');
+
+        if (!areViewsVisible()) {
+          $('#avatarViewContainer').text('немає переглядів').css('font-size', '0.8rem');
+        }
       }
     });
 
@@ -1035,9 +1106,9 @@
 
     // callback при получении данных от сервера по wss
     callbackWSS = async function (data) {
+      data.isSingleDataUpdate = true;
       callbackTable(data);
       console.log('calbackWSS');
-      isSingleDataUpdate = true;
     };
 
     // callback при изменении данных в строке для определения показать или убрать строку
@@ -1093,7 +1164,7 @@
     // callback после отрисовки таблицы
     callbackAfterDone = function (data) {
       console.log('callbackAfterDone', data);
-      makeDateSeparator();
+      // makeDateSeparator();
     };
 
     // callback после вставки новой пустой строки, перед заполнением данными
@@ -1111,51 +1182,42 @@
     callbackAfterWrite = function (data) {
       console.log('callbackAfterWrite renderZakupkaInfo', data);
       const oldData = $('#zakupkaInfo').data('data');
+      console.log('callbackAfterWrite oldData', oldData);
       if (oldData !== undefined) {
         const currentUID = $('#zakupkaInfo').data('data').data.uid;
-
         const newUID = data.data.uid;
         if (currentUID === newUID && $('#zakupkaInfo').is(':visible')) {
           console.log('after if');
           renderZakupkaInfo(data);
         }
       }
-
       const table = $(`#${data.tableID}`);
       const row = $(table).find('#' + data.uid);
       let currentRow = $('#' + data.data['uid']);
-      console.log('currentRow', currentRow);
-
+      console.log('currentRow', currentRow.children('td#dateSort'));
+      currentRow.children('td#dateSort').text(new Date(data.data.Дата));
       activeOrders = $(tableID).data('param').active;
-
       if (activeOrders) {
         console.log(
           'getDateInSeconds(data.data.ПлановаяДатаСлужебная)',
           getDateInSeconds(data.data.ПлановаяДатаСлужебная),
           data.data.ПлановаяДатаСлужебная
         );
-
         console.log('plane date', currentRow.find('.planeDate'));
-
         currentRow.find('.planeDate').text(getDateInSeconds(data.data.ПлановаяДатаСлужебная));
       } else {
         getDateInSeconds(data.data.ДатаЗакрытияЗаявки);
       }
-
-      // currentRow.attr('uid', data.data['uid']);
       let cellForTemplate = currentRow.find('td.main');
-
       const cell = $(row).find('div[name="АвторЗаявки"]');
-
       $(cell).html(`<a href="tel:${data.data['Сотрудник']['ОсновнойНомерТелефона']}">${data.data['АвторЗаявки']}</a>`);
-
       let timeToCompliteOrder;
       let targetDate;
       let dateStart;
-      console.log('let dateStart');
       let timerClass;
       let planeDate;
       let isZakupkaOverdue;
+      let hideRemainingTime;
       if (activeOrders) {
         targetDate = new Date(data.data.ПлановаяДатаСлужебная);
         planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
@@ -1165,7 +1227,6 @@
           targetDate.setDate(targetDate.getDate() + 2);
         }
         dateStart = new Date();
-        console.log('dateStart', dateStart);
         timerClass = 'timer';
         isZakupkaOverdue = (targetDate - dateStart) / (60 * 1000) < 60;
       } else {
@@ -1173,28 +1234,22 @@
         dateStart = new Date(data.data.Дата);
         planeDate = new Date(data.data.ПлановаяДата);
         isZakupkaOverdue = targetDate < dateStart;
-        console.log('targetDate, planeDate', targetDate, planeDate);
+        const dateFinishOrder = data.data.ДатаЗакрытияЗаявки;
+        const nullDate = '0001-01-01T00:00:00';
+        hideRemainingTime = dateFinishOrder === nullDate;
       }
-
-      // const isZakupkaOverdue = (targetDate - dateStart) / (60 * 1000) < 60;
-      // console.log('isZakupkaOverdue, targetDate-dateStart', isZakupkaOverdue, (targetDate - dateStart) / (60 * 1000));
-
       if (isZakupkaOverdue) {
         dangerClass = 'dangerColor';
       } else {
         dangerClass = '';
       }
-
+      console.log('targetDate, dateStart ', targetDate, dateStart);
       timeToCompliteOrder = targetDate - dateStart;
-
       const orderNumber = data.data.Номер || 'б.н.';
       const author = data.data.Сотрудник.Наименование || '';
       const executor = data.data.ОтветственыйСнабженец.Наименование || '';
       const text = data.data.ТекстЗаявки || '';
-
       const status = data.data.СтатусЗаявкиПорядок || '';
-      console.log('status callbackAfterWrite', status);
-
       const priorityValue = data.data.ПриоритетПорядок || '';
       let priority;
       if (priorityValue === 'Срочно' || priorityValue === 'На сейчас') {
@@ -1202,16 +1257,17 @@
       } else {
         priority = '';
       }
-
       const date = formatDate(data.data.Дата) || '';
       const planingDate = formatDate(data.data.ПлановаяДата).split('T')[0];
-      const term = formatSecondToStringTime(timeToCompliteOrder / 1000);
+      let term = formatSecondToStringTime(timeToCompliteOrder / 1000);
+      if (hideRemainingTime) {
+        term = '';
+      }
       const showEyeIcon = hasUserSeenLastChanges(user.uid, data.data.Просмотры, data.data.ДатаПоследнейАктивности);
       const linkedText = text.replace(
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
         '<a href="$1" class="zakupkaLink" target="_blank">ccылка</a>'
       );
-
       const templateData = {
         orderNumber: orderNumber,
         author: author,
@@ -1228,20 +1284,9 @@
       };
 
       generateFromTemplate('#tileTemplate', templateData, cellForTemplate);
-
       const colorIndex = data.data.Цвет;
       const tileColor = listColors[colorIndex];
-      console.log('colorIndex', colorIndex, tileColor, typeof tileColor, `rgb(${tileColor})`);
-      console.log('row.find(.tileContainer)', row, currentRow.find('.tileContainer'));
       currentRow.find('.tileColor').css('color', `rgb(${tileColor})`);
-
-      if (isSingleDataUpdate) {
-        console.log('isSingleDataUpdate');
-        const param = $(tableID).data('param');
-        sortByParam(param.sortColumn, param.sortDirection);
-        makeDateSeparator();
-        isSingleDataUpdate = false;
-      }
     };
 
     $('#search').on('input', async function () {
@@ -1256,7 +1301,6 @@
       }
 
       abortAllRequests();
-      console.log('after abortAllRequests');
       await initTable(table);
     });
 
@@ -1303,6 +1347,7 @@
     });
 
     function sortByParam(sortColumn, sortDirection) {
+      console.log('sortByParam ', sortColumn, sortDirection);
       $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
     }
 
@@ -1352,14 +1397,15 @@
     sortHandler('#sortDateDone', '3', '', tableID, 'ДатаЗакрытияЗаявки');
 
     $('#btnDone').on('click', function (event) {
+      console.log('btnDone click');
       clickAnimate(this);
       $('#sortSrok').toggle();
       $('#sortDateDone').toggle();
       activeOrders = !$(tableID).data('param').active;
-      newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
+      // newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
 
       const tableJQ = $(tableID);
-      tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
+      // tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
 
       if (activeOrders) {
         btnDone.classList.remove('done-orders');
@@ -1379,6 +1425,7 @@
       $('#statusMark').toggleClass('pressed', !activeOrders);
       $('#pageIcon').toggleClass('pressed', !activeOrders);
       abortAllRequests();
+      $('#ЗаявкаНаЗакупку tr.rowData').each(function (index, el) {});
       initTable(tableID);
     });
 
@@ -1499,6 +1546,7 @@
     });
 
     $('#ЗаявкаНаЗакупку').on('click', '.rowData', function (event) {
+      console.log('click на закупку this', this);
       if (event.target.tagName === 'A') {
         event.stopPropagation();
         return;
@@ -1511,8 +1559,10 @@
       scrollPosition = window.scrollY;
       let curentRowID = $(this).attr('id');
       let prevRowID = $('#infoRow').attr('curentRow') || '';
+
       currentRowJQ = $(this);
       const data = $(this).data('data');
+      console.log('click на закупку prevRowID, currentRowJQ, data', curentRowID, prevRowID, currentRowJQ, data);
 
       let dataforZakupkaInfo;
       universalRequest(
@@ -1523,6 +1573,10 @@
         function onSuccess(response) {
           openZakupkaInfo();
           console.log('response.order', response.order);
+          if (!response.order) {
+            console.log('response order does not exist');
+            return;
+          }
           renderZakupkaInfo(response.order);
           // const cardsData = response.order.data.ИсторияКомментариев;
 
@@ -1578,23 +1632,24 @@
 
     function showHideDoneDelete(zakupkaStatus, canChangeOrderDone = true) {
       console.log('showHideDoneDelete', zakupkaStatus, canChangeOrderDone);
-      if (canChangeOrderDone) {
-        if (zakupkaStatus === 'Готово' || zakupkaStatus === 'Отменена') {
+      if (true) {
+        if (zakupkaStatus === 'Готово' || zakupkaStatus === 'Отменена' || zakupkaStatus === 'Выдано') {
           console.log('showHideDoneDelete zakupkaStatus === Готово');
           $('#doneGroup').show();
-          $('#zakupkaDelete').hide();
+          $('#zakupkaDeleteContainer').hide();
         } else if (zakupkaStatus === 'Новая') {
           console.log('showHideDoneDelete zakupkaStatus === Новая');
-          $('#zakupkaDelete').show();
+          $('#zakupkaDeleteContainer').show();
           $('#doneGroup').hide();
         } else {
           console.log('showHideDoneDelete zakupkaStatus === Інша');
+          $('#zakupkaDeleteContainer').show();
           $('#doneGroup').hide();
-          $('#zakupkaDelete').hide();
+          // $('#zakupkaDeleteContainer').hide();
         }
       } else {
         $('#doneGroup').hide();
-        $('#zakupkaDelete').hide();
+        $('#zakupkaDeleteContainer').hide();
       }
     }
 
@@ -1607,10 +1662,17 @@
     });
 
     $('#zakupkaDelete').on('click', function () {
-      console.log('click delete');
+      const userInfo = $('#menu').data('userInfo');
+      const authorUID = $('#zakupkaAuthor').data('autorUID');
       const data = currentRowJQ.data('data');
+      console.log('zakupkaDelete data before, userInfo.uid = authorUID', data, userInfo.uid === authorUID);
       data.edited['СтатусЗаявки'] = 'Отменена';
-      data.edited['ЗакупкаВыполнена'] = true;
+      if (userInfo.uid === authorUID) {
+        data.edited['ЗаявкаПодтверждена'] = true;
+      } else {
+        data.edited['ЗаявкаПодтверждена'] = false;
+      }
+      console.log('zakupkaDelete data', data);
       sendDataTo1C(data, 'PUT');
     });
 
@@ -1662,30 +1724,212 @@
     function renderZakupkaInfo(data) {
       console.log('renderZakupkaInfo activeOrders', data, activeOrders);
       $('#zakupkaInfo').data('data', data);
-      $('#zakupkaText').val('');
-      $('#orderNum').text('');
+
+      clearZakupkaInfo();
+      const formattedData = handleData(data);
+
+      const uid = data.data.uid || '';
+      // console.log('renderZakupkaInfo uid', data.data.uid);
+      // const zakupkaNumber = data.data.Номер || 'б.н.';
+      // const zakupkaText = data.data.ТекстЗаявки;
+      // const linkedText = zakupkaText.replace(
+      //   /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+      //   '<a href="$1" target="_blank">$1</a>'
+      // );
+      // const listOfProducts = data.data.СписокТоваровИзСчета || [];
+      // const orderData = listOfProducts.map((product, index) => {
+      //   return { orderNumber: `${index + 1}.`, orderName: product.Наименование, orderStatus: product.СтатусТовара };
+      // });
+      // const zakupkaDate = formatDateTime(data.data.Дата);
+      // const minDate = new Date(data.data.Дата);
+      // const maxDate = new Date(minDate);
+      // maxDate.setDate(maxDate.getDate() + 50);
+      // const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
+      // console.log('renderZakupkaInfo uid', data.data.Сотрудник.uid);
+      // const zakupkaAuthorUID = data.data.Сотрудник.uid || '';
+      // const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона || '';
+      // const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
+      // console.log('renderZakupkaInfo uid', data.data.ОтветственыйСнабженец.uid);
+      // const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.uid || '';
+      // const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
+      // const executorPhoneNumber = data.data.ОтветственыйСнабженец.ОсновнойНомерТелефона || '';
+      // const executorLink =
+      //   executorPhoneNumber !== ''
+      //     ? `<a href="tel:${executorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`
+      //     : '';
+      // const zakupkaFinish = formatDateTime(data.data.ДатаЗакрытияЗаявки) || '';
+      // console.log('zakupkaFinish', zakupkaFinish);
+      // const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
+      // console.log('zakupkaStatus', zakupkaStatus);
+      // const zakupkaPriority = data.data.Приоритет || '  не визначено';
+      // const done = data.data.ЗаявкаПодтверждена || false;
+      // const userInfo = $('#menu').data('userInfo');
+      // console.log('renderInfo userRights', userRights);
+      // console.log('renderZakupkaInfo uid', data.data.Сотрудник.uid);
+      // const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid || userRights.canChangeOrderDone;
+      // showHideDoneDelete(zakupkaStatus, canChangeOrderDone);
+      // console.log('renderZakupkaInfo uid', userInfo.uid);
+      // isUserAuthor = userInfo.uid === zakupkaAuthorUID;
+      // console.log('renderZakupkaInfo isUserAuthor', isUserAuthor);
+      // $('#done').prop('disabled', !isUserAuthor);
+      // const statusList = $(tableID).data('response').listStatus;
+      // const priorityList = $(tableID).data('response').listPriority;
+
+      if (formattedData.listOfProducts.length === 0) {
+        console.log('listOfProducts null');
+        $('#orderText').closest('.form-group').hide();
+      } else {
+        $('#orderText').closest('.form-group').show();
+      }
+
+      const listImgZakupka = data.data['Файлы'] || [];
+      const imgs = [];
+
+      listImgZakupka.forEach(function (element) {
+        console.log('renderZakupkaInfo uid', uid);
+        if (element.ИД === uid) {
+          const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
+          const source = `${pathToStorage}/${uid}/${element.ИД}/${element.Файл}`;
+          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, -3)}png`;
+          console.log('src ', src);
+          imgs.push({ source: source, src: src });
+        }
+      });
+      generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
+
+      // // timer block
+      // let dateStart;
+      // let targetDate;
+      // let remainTimeText;
+      // if (activeOrders) {
+      //   targetDate = new Date(data.data.ПлановаяДатаСлужебная);
+      //   planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
+      //   const dayOfWeek = targetDate.getDay();
+      //   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      //   if (isWeekend) {
+      //     targetDate.setDate(targetDate.getDate() + 2);
+      //   }
+      //   dateStart = new Date();
+      //   remainTimeText = 'Осталось:';
+      //   $('.zakupkaFinish').hide();
+      // } else {
+      //   targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
+      //   dateStart = new Date(data.data.Дата);
+      //   planeDate = new Date(data.data.ПлановаяДата) || '';
+      //   remainTimeText = 'Выполнено за:';
+      //   $('.zakupkaFinish').show();
+      // }
+      // const isZakupkaOverdue = targetDate < dateStart;
+      // const remainTime = formatSecondToStringTime((targetDate - dateStart) / 1000);
+
+      const statusList = $(tableID).data('response').listStatus;
+      const priorityList = $(tableID).data('response').listPriority;
+      fillSelectOptions(statusList, '#zakupkaStatus');
+      fillSelectOptions(priorityList, '#zakupkaPriority');
+      fillZakupkaInfo(formattedData);
+
+      // $('#zakupkaText').html(linkedText);
+      // $('#orderNum').text(zakupkaNumber);
+      // $('#zakupkaInfo').attr('uid', uid);
+      // $('#zakupkaDate').val(zakupkaDate);
+      // $('#remainTimeLabel').text(remainTimeText);
+      // $('#remainTime').text(remainTime);
+      // $('#remainTime').toggleClass('remainTime', activeOrders);
+      // $('#remainTime').toggleClass('dangerColor', isZakupkaOverdue);
+      // $('#planeDate').datepicker('option', 'minDate', minDate);
+      // $('#planeDate').datepicker('option', 'maxDate', maxDate);
+      // $('#planeDate').datepicker('setDate', planeDate);
+      // $('#zakupkaAuthor').html(authorLink);
+      // $('#zakupkaAuthor').data('autorUID', zakupkaAuthorUID);
+      // $('#zakupkaExecutor').attr('uid', zakupkaExecutorUID);
+      // $('#zakupkaExecutor').val(zakupkaExecutor);
+      // $('#zakupkaAuthorLink').html(executorLink);
+      // $('#zakupkaFinish').text(zakupkaFinish);
+      // $('#zakupkaStatus').val(zakupkaStatus);
+      // $('#zakupkaPriority').val(zakupkaPriority);
+      // $('#done').prop('checked', done);
+
+      callbackFuncSecondInterval = function () {
+        timerManager.updateTimers('#zakupkaInfo', '.remainTime');
+        timerManager.updateTimers('.rowData', '.timer');
+      };
+
+      // generate comments
+      const cardsData = data.data.ИсторияКомментариев;
+      const cardsForTemplate = getCardsForTemplate(cardsData);
+      generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+
+      // generate views
+      const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
+      let uniqueUidsWithoutMe = uniqueUids.filter(item => item !== user.uid);
+      generateFromTemplate('#viewAvatar-template', uniqueUidsWithoutMe, '#avatarViewContainer');
+    }
+
+    function clearZakupkaInfo() {
       $('#zakupkaInfo').removeAttr('uid');
+      $('#orderNum').text('');
+      $('#zakupkaText').html('');
+      $('#orderText').html('');
       $('#zakupkaDate').val('');
       $('#zakupkaAuthor').html('');
+      $('#remainTime').html('');
+      $('#zakupkaDelivery').html('');
+      $('#zakupkaProduction').html('');
+      $('#planeDate').html('');
       $('#zakupkaExecutor').html('');
+      $('#zakupkaExecutorLink').html('');
       $('#zakupkaExecutor').removeClass('invalid');
       $('#zakupkaFinish').html('');
-      $('#zakupkaStatus').val('');
       $('#zakupkaPriority').val('');
+      $('#zakupkaStatus').val('');
+      $('#comment').val('');
+    }
 
+    function handleData(data) {
       const uid = data.data.uid || '';
       const zakupkaNumber = data.data.Номер || 'б.н.';
       const zakupkaText = data.data.ТекстЗаявки;
+      const linkedText = zakupkaText.replace(
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+        '<a href="$1" target="_blank">$1</a>'
+      );
+      const listOfProducts = data.data.СписокТоваровИзСчета || [];
+      const orderData = listOfProducts.map((product, index) => {
+        return { orderNumber: `${index + 1}.`, orderName: product.Наименование, orderStatus: product.СтатусТовара };
+      });
       const zakupkaDate = formatDateTime(data.data.Дата);
       const minDate = new Date(data.data.Дата);
       const maxDate = new Date(minDate);
       maxDate.setDate(maxDate.getDate() + 50);
-      $('#planeDate').datepicker('option', 'minDate', minDate);
-      $('#planeDate').datepicker('option', 'maxDate', maxDate);
+      const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
+      const zakupkaAuthorUID = data.data.Сотрудник.uid || '';
+      const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона || '';
+      const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
+      const zakupkaDelivery = data.data.ДнейНаДоставку || '';
+      const zakupkaProduction = data.data.ДнейНаИзготовление || '';
+      const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.uid || '';
+      const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
+      const executorPhoneNumber = data.data.ОтветственыйСнабженец.ОсновнойНомерТелефона || '';
+      const executorLink =
+        executorPhoneNumber !== ''
+          ? `<a href="tel:${executorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`
+          : '';
+      const zakupkaFinish = formatDateTime(data.data.ДатаЗакрытияЗаявки) || '';
 
+      const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
+      const zakupkaPriority = data.data.Приоритет || '  не визначено';
+      const done = data.data.ЗаявкаПодтверждена || false;
+      const userInfo = $('#menu').data('userInfo');
+      const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid || userRights.canChangeOrderDone;
+      showHideDoneDelete(zakupkaStatus, canChangeOrderDone);
+      isUserAuthor = userInfo.uid === zakupkaAuthorUID;
+      $('#done').prop('disabled', !isUserAuthor);
+
+      // timer block
       let dateStart;
       let targetDate;
       let remainTimeText;
+      let hideRemainingTime;
       if (activeOrders) {
         targetDate = new Date(data.data.ПлановаяДатаСлужебная);
         planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
@@ -1694,7 +1938,6 @@
         if (isWeekend) {
           targetDate.setDate(targetDate.getDate() + 2);
         }
-        console.log('targetDate after weekend', targetDate, formatDateInDateTime(targetDate));
         dateStart = new Date();
         remainTimeText = 'Осталось:';
         $('.zakupkaFinish').hide();
@@ -1704,87 +1947,70 @@
         planeDate = new Date(data.data.ПлановаяДата) || '';
         remainTimeText = 'Выполнено за:';
         $('.zakupkaFinish').show();
+        const dateFinishOrder = data.data.ДатаЗакрытияЗаявки;
+        const nullDate = '0001-01-01T00:00:00';
+        hideRemainingTime = dateFinishOrder === nullDate;
       }
       const isZakupkaOverdue = targetDate < dateStart;
+      let remainTime = formatSecondToStringTime((targetDate - dateStart) / 1000);
+      if (hideRemainingTime) {
+        remainTime = '';
+      }
 
-      const remainTime = formatSecondToStringTime((targetDate - dateStart) / 1000);
-      const listImgZakupka = data.data['Файлы'] || [];
-      const imgs = [];
-
-      listImgZakupka.forEach(function (element) {
-        if (element.ИД === uid) {
-          const pathToStorage = 'https://a7b85a942d4082eb.cdn.express/mediaFiles';
-          const source = `${pathToStorage}/${uid}/${element.ИД}/${element.Файл}`;
-          const src = `${pathToStorage}/${uid}/${element.ИД}/p${element.Файл.slice(0, -3)}png`;
-          console.log('src ', src);
-          imgs.push({ source: source, src: src });
-        }
-      });
-
-      generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
-
-      const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
-      const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона || '';
-      const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
-      const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.uid || '';
-      const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
-      const executorPhoneNumber = data.data.ОтветственыйСнабженец.ОсновнойНомерТелефона || '';
-      const executorLink =
-        executorPhoneNumber !== ''
-          ? `<a href="tel:${executorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`
-          : '';
-      const zakupkaFinish = formatDateTime(data.data.ДатаЗакрытияЗаявки) || '';
-      console.log('zakupkaFinish', zakupkaFinish);
-      const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
-      const zakupkaPriority = data.data.Приоритет || '  не визначено';
-      const done = data.data.ЗаявкаПодтверждена || false;
-      const userInfo = $('#menu').data('userInfo');
-      console.log('renderInfo userRights', userRights);
-      const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid || userRights.canChangeOrderDone;
-      showHideDoneDelete(zakupkaStatus, canChangeOrderDone);
-
-      const statusList = $(tableID).data('response').listStatus;
-      const priorityList = $(tableID).data('response').listPriority;
-      console.log('statusList', statusList);
-
-      fillSelectOptions(statusList, '#zakupkaStatus');
-      fillSelectOptions(priorityList, '#zakupkaPriority');
-
-      const linkedText = zakupkaText.replace(
-        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
-        '<a href="$1" target="_blank">$1</a>'
-      );
-
-      $('#zakupkaText').val(linkedText);
-      $('#orderNum').text(zakupkaNumber);
-      $('#zakupkaInfo').attr('uid', uid);
-      $('#zakupkaDate').val(zakupkaDate);
-      $('#remainTimeLabel').text(remainTimeText);
-      $('#remainTime').text(remainTime);
-      $('#remainTime').toggleClass('remainTime', activeOrders);
-      $('#remainTime').toggleClass('dangerColor', isZakupkaOverdue);
-      $('#planeDate').datepicker('setDate', planeDate);
-      $('#zakupkaAuthor').html(authorLink);
-      $('#zakupkaExecutor').attr('uid', zakupkaExecutorUID);
-      $('#zakupkaExecutor').val(zakupkaExecutor);
-      $('#zakupkaAuthorLink').html(executorLink);
-      $('#zakupkaFinish').text(zakupkaFinish);
-      $('#zakupkaStatus').val(zakupkaStatus);
-      $('#zakupkaPriority').val(zakupkaPriority);
-      $('#done').prop('checked', done);
-
-      callbackFuncSecondInterval = function () {
-        timerManager.updateTimers('#zakupkaInfo', '.remainTime');
-        timerManager.updateTimers('.rowData', '.timer');
+      return {
+        uid,
+        zakupkaNumber,
+        linkedText,
+        listOfProducts,
+        orderData,
+        zakupkaDate,
+        authorLink,
+        zakupkaAuthorUID,
+        remainTimeText,
+        remainTime,
+        activeOrders,
+        isZakupkaOverdue,
+        minDate,
+        maxDate,
+        zakupkaDelivery,
+        zakupkaProduction,
+        planeDate,
+        zakupkaExecutorUID,
+        zakupkaExecutor,
+        executorLink,
+        zakupkaFinish,
+        zakupkaStatus,
+        zakupkaPriority,
+        done,
       };
+    }
 
-      const cardsData = data.data.ИсторияКомментариев;
-      const cardsForTemplate = getCardsForTemplate(cardsData);
-      generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
+    function fillZakupkaInfo(data) {
+      console.log('data.zakupkaStatus', data.zakupkaStatus);
+      $('#zakupkaInfo').attr('uid', data.uid);
+      $('#orderNum').text(data.zakupkaNumber);
+      $('#zakupkaText').html(data.linkedText);
+      $('#zakupkaDate').val(data.zakupkaDate);
+      $('#zakupkaAuthor').html(data.authorLink);
+      $('#zakupkaAuthor').data('autorUID', data.zakupkaAuthorUID);
+      $('#remainTimeLabel').text(data.remainTimeText);
+      $('#remainTime').text(data.remainTime);
+      $('#remainTime').toggleClass('remainTime', data.activeOrders);
+      $('#remainTime').toggleClass('dangerColor', data.isZakupkaOverdue);
+      $('#planeDate').datepicker('option', 'minDate', data.minDate);
+      $('#planeDate').datepicker('option', 'maxDate', data.maxDate);
+      $('#planeDate').datepicker('setDate', data.planeDate);
+      $('#zakupkaDelivery').val(data.zakupkaDelivery);
+      $('#zakupkaProduction').val(data.zakupkaProduction);
+      $('#zakupkaExecutor').attr('uid', data.zakupkaExecutorUID);
+      $('#zakupkaExecutor').val(data.zakupkaExecutor);
+      $('#zakupkaExecutorLink').html(data.executorLink);
+      $('#zakupkaFinish').text(data.zakupkaFinish);
+      $('#zakupkaStatus').val(data.zakupkaStatus);
+      $('#zakupkaPriority').val(data.zakupkaPriority);
+      $('#done').prop('checked', data.done);
 
-      const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
-      let uniqueUidsWithoutMe = uniqueUids.filter(item => item !== user.uid);
-      generateFromTemplate('#viewAvatar-template', uniqueUidsWithoutMe, '#avatarViewContainer');
+      generateFromTemplate('#order-template', data.orderData, '#orderText');
     }
 
     function getCardsForTemplate(data) {
@@ -1824,54 +2050,6 @@
       }
     });
 
-    $('#cancelZayavka').on('click', function (event) {
-      clickAnimate(this);
-
-      const data = {};
-      data.change = [{ key: 'СтатусЗаявки', value: 'Отменена' }];
-      data.curentrow = $('#infoRow').attr('curentrow');
-
-      NProgress.start();
-
-      $.ajax({
-        url: '/app/zakupka',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (data, status) {
-          console.log('success POST', status, data);
-        },
-      }).always(function () {
-        NProgress.done();
-        $('#infoRow').toggleClass('hide', true);
-        $('#infoRow').attr('curentRow', '');
-      });
-    });
-
-    $('#doneZayavka').on('click', function (event) {
-      clickAnimate(this);
-
-      const data = {};
-      data.change = [{ key: 'СтатусЗаявки', value: 'Готово' }];
-      data.curentrow = $('#infoRow').attr('curentrow');
-
-      NProgress.start();
-
-      $.ajax({
-        url: '/app/zakupka',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (data, status) {
-          console.log('success POST', status, data);
-        },
-      }).always(function () {
-        NProgress.done();
-        $('#infoRow').toggleClass('hide', true);
-        $('#infoRow').attr('curentRow', '');
-      });
-    });
-
     function makeDateSeparator() {
       console.log('makeDateSeparator');
       let previousDate = '0';
@@ -1882,9 +2060,16 @@
       const sortDirection = param.sortDirection;
       const directOrderSort = sortDirection === '0';
       const isActiveOrder = param.active;
-      // if (!isActiveOrder) {
-      //   nameKeyDate = 'Дата';
-      // }
+      // console.log(
+      //   'makeDateSeparator param, sortValue, nameKeyDate, sortDirection, directOrderSort, isActiveOrder ',
+      //   param,
+      //   sortValue,
+      //   nameKeyDate,
+      //   sortDirection,
+      //   directOrderSort,
+      //   isActiveOrder
+      // );
+
       $('.separateDateLine').remove();
 
       const sortValuesForSeparation = ['Дата'];
@@ -1892,19 +2077,44 @@
       console.log('needSeparation', needSeparation);
       if (!needSeparation) return;
 
-      let dataForSeparate = [];
-      $('#ЗаявкаНаЗакупку tr.rowData').each(function (index, el) {
-        const data = $(el).data('data');
-        data.element = el;
-        dataForSeparate.push(data);
-      });
+      function getDataForSeparate() {
+        let dataCollection = [];
+        console.log(
+          'dataForSeparate dataCollection, $(#ЗаявкаНаЗакупку tr.rowData)',
+          dataCollection,
+          $('#ЗаявкаНаЗакупку tr.rowData')
+        );
+        $('#ЗаявкаНаЗакупку tr.rowData').each(function (index, el) {
+          const dataRow = $(el).data('data');
+          if (dataRow && Object.keys(dataRow.data).length > 0) {
+            // console.log('dataRow, Object.keys(dataRow.data).length', dataRow, Object.keys(dataRow.data).length);
+            const data = { ...dataRow };
+            // console.log('makeDateSeparator data, el', data, el);
+            data.element = el;
+            dataCollection.push(data);
+          } else {
+            console.log('dataForSeparate рядок не має потрібних властивостей');
+          }
+        });
+        // console.log('dataForSeparate dataCollection', dataCollection);
+        return dataCollection;
+      }
+      let dataForSeparate = getDataForSeparate();
+      console.log('dataForSeparate after collection', dataForSeparate);
 
-      console.log('dataForSeparate', dataForSeparate);
       dataForSeparate.forEach(el => {
+        // console.log('makeDateSeparator el', el);
+        if (!el.data || !el.data[nameKeyDate]) {
+          // console.log('!el.data || !el.data[nameKeyDate] не існують');
+          return;
+        }
+        // console.log('makeDateSeparator el, el.data, nameKeyDate, el.data[nameKeyDate]', el, el.data, nameKeyDate);
         let date = new Date(el.data[nameKeyDate]);
+        // console.log('dataForSeparate nameKeyDate, formatter.format(date)', nameKeyDate, formatter.format(date));
         let currentDate = formatter.format(date);
         let currentHour = date.getHours();
         let currentShift = '';
+        // console.log('dataForSeparate currentDate, currentHour, currentShift', currentDate, currentHour, currentShift);
 
         if (currentHour >= 7 && currentHour <= 18) {
           currentShift = 'Денна зміна';
@@ -1922,6 +2132,7 @@
         delete el.element;
 
         function addSeparation(currentDate, currentShift) {
+          console.log('addSeparation');
           let separateData = `${currentDate} - ${currentShift}`;
           const dateLine = $(`<div class="separateDateLine visible">${separateData}</div>`);
           tileContainer.before(dateLine);
