@@ -653,7 +653,7 @@
       <select id="zakupkaStatus" class="form-control" disabled readonly></select>
     </div>
 
-    <div class="form-group" id="doneGroup" style="display: none">
+    <div class="form-group" id="doneGroup">
       <label for="done">Подтвердить закупку:</label>
       <input type="checkbox" class="form-control" id="done" aria-describedby="basic-addon3" readonly />
     </div>
@@ -1351,43 +1351,39 @@
       $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
     }
 
+    function setActiveClass(selector) {
+      $(selector).siblings().removeClass('active');
+      $(selector).addClass('active');
+    }
+
     function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
-      $(selector).on('click', function () {
-        $(selector).siblings().removeClass('active');
-        $(selector).addClass('active');
-        const sort = $(tableID).data('param').sortColumn;
-        // ('sortColumn') || 'ПлановаяДатаСлужебная';
-        let sortDirection = $(tableID).data('param').sortDirection;
-        // ('sortDirection') || defaultSortDirection;
-        console.log('sort', sort);
-        console.log('sortColumn', sortColumn);
-        if (sort === sortColumn) {
-          sortDirection = sortDirection === '0' ? '1' : '0';
-        } else {
-          sortDirection = defaultSortDirection;
-        }
+      setActiveClass(selector);
+      const currentSortColumn = $(tableID).data('param').sortColumn;
+      let sortDirection = $(tableID).data('param').sortDirection;
 
-        console.log('sortDirection', sortDirection, typeof sortDirection);
-        if (sortDirection === '0') {
-          console.log('sortDirection = 0');
-          $('#btnSort').removeClass('down');
-          $('#btnSort').addClass('up');
-        } else {
-          console.log('sortDirection = 1');
-          $('#btnSort').removeClass('up');
-          $('#btnSort').addClass('down');
-        }
+      if (currentSortColumn === sortColumn) {
+        sortDirection = sortDirection === '0' ? '1' : '0';
+      } else {
+        sortDirection = defaultSortDirection;
+      }
 
-        updateParam(tableJQ, 'sortColumn', sortColumn);
-        updateParam(tableJQ, 'sortDirection', sortDirection);
-        updateParam(tableJQ, 'page', 0);
+      updateParam(tableJQ, 'sortColumn', sortColumn);
+      updateParam(tableJQ, 'sortDirection', sortDirection);
+      updateParam(tableJQ, 'page', 0);
 
-        $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
-        // $(`th.${sortClass}`).click();
-        $('#sortList').hide();
-        $('#sortList').toggleClass('active');
-        initTable($('#content table'));
-      });
+      console.log('sortDirection', sortDirection, typeof sortDirection);
+      if (sortDirection === '0') {
+        console.log('sortDirection = 0');
+        $('#btnSort').removeClass('down');
+        $('#btnSort').addClass('up');
+      } else {
+        console.log('sortDirection = 1');
+        $('#btnSort').removeClass('up');
+        $('#btnSort').addClass('down');
+      }
+
+      $('#sortList').hide();
+      $('#sortList').toggleClass('active');
     }
 
     sortHandler('#sortSrok', '0', '0', tableID, 'ПлановаяДатаСлужебная');
@@ -1402,10 +1398,8 @@
       $('#sortSrok').toggle();
       $('#sortDateDone').toggle();
       activeOrders = !$(tableID).data('param').active;
-      // newAttr = activeOrders ? 'Дата' : 'ДатаЗакрытияЗаявки';
 
       const tableJQ = $(tableID);
-      // tableJQ.children('tbody').children('.config').children('#dateSort').attr('name', newAttr);
 
       if (activeOrders) {
         btnDone.classList.remove('done-orders');
@@ -1578,16 +1572,10 @@
             return;
           }
           renderZakupkaInfo(response.order);
-          // const cardsData = response.order.data.ИсторияКомментариев;
-
-          // const cardsForTemplate = getCardsForTemplate(cardsData);
-          // generateFromTemplate('#card-template', cardsForTemplate.reverse(), '#historyContainer');
         },
         function onError(error) {},
         function onComplete() {}
       );
-
-      // renderZakupkaInfo(dataforZakupkaInfo);
     });
 
     $('#zakupkaText').on('click', function () {
@@ -1640,12 +1628,11 @@
         } else if (zakupkaStatus === 'Новая') {
           console.log('showHideDoneDelete zakupkaStatus === Новая');
           $('#zakupkaDeleteContainer').show();
-          $('#doneGroup').hide();
+          // $('#doneGroup').hide();
         } else {
           console.log('showHideDoneDelete zakupkaStatus === Інша');
           $('#zakupkaDeleteContainer').show();
-          $('#doneGroup').hide();
-          // $('#zakupkaDeleteContainer').hide();
+          // $('#doneGroup').hide();
         }
       } else {
         $('#doneGroup').hide();
@@ -1656,7 +1643,6 @@
     $('#zakupkaStatus').on('change', function () {
       const data = currentRowJQ.data('data');
       data.edited['СтатусЗаявки'] = $(this).val();
-      // showHideDoneDelete($(this).val());
       console.log($(this).val());
       sendDataTo1C(data, 'PUT');
     });
@@ -1729,51 +1715,6 @@
       const formattedData = handleData(data);
 
       const uid = data.data.uid || '';
-      // console.log('renderZakupkaInfo uid', data.data.uid);
-      // const zakupkaNumber = data.data.Номер || 'б.н.';
-      // const zakupkaText = data.data.ТекстЗаявки;
-      // const linkedText = zakupkaText.replace(
-      //   /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
-      //   '<a href="$1" target="_blank">$1</a>'
-      // );
-      // const listOfProducts = data.data.СписокТоваровИзСчета || [];
-      // const orderData = listOfProducts.map((product, index) => {
-      //   return { orderNumber: `${index + 1}.`, orderName: product.Наименование, orderStatus: product.СтатусТовара };
-      // });
-      // const zakupkaDate = formatDateTime(data.data.Дата);
-      // const minDate = new Date(data.data.Дата);
-      // const maxDate = new Date(minDate);
-      // maxDate.setDate(maxDate.getDate() + 50);
-      // const zakupkaAuthor = data.data.Сотрудник.Наименование || 'не призначено';
-      // console.log('renderZakupkaInfo uid', data.data.Сотрудник.uid);
-      // const zakupkaAuthorUID = data.data.Сотрудник.uid || '';
-      // const authorPhoneNumber = data.data.Сотрудник.ОсновнойНомерТелефона || '';
-      // const authorLink = `${zakupkaAuthor} <a href="tel:${authorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`;
-      // console.log('renderZakupkaInfo uid', data.data.ОтветственыйСнабженец.uid);
-      // const zakupkaExecutorUID = data.data.ОтветственыйСнабженец.uid || '';
-      // const zakupkaExecutor = data.data.ОтветственыйСнабженец.Наименование || '';
-      // const executorPhoneNumber = data.data.ОтветственыйСнабженец.ОсновнойНомерТелефона || '';
-      // const executorLink =
-      //   executorPhoneNumber !== ''
-      //     ? `<a href="tel:${executorPhoneNumber}"> <i class="bi bi-telephone-fill"></i></a>`
-      //     : '';
-      // const zakupkaFinish = formatDateTime(data.data.ДатаЗакрытияЗаявки) || '';
-      // console.log('zakupkaFinish', zakupkaFinish);
-      // const zakupkaStatus = data.data.СтатусЗаявки || 'не визначено';
-      // console.log('zakupkaStatus', zakupkaStatus);
-      // const zakupkaPriority = data.data.Приоритет || '  не визначено';
-      // const done = data.data.ЗаявкаПодтверждена || false;
-      // const userInfo = $('#menu').data('userInfo');
-      // console.log('renderInfo userRights', userRights);
-      // console.log('renderZakupkaInfo uid', data.data.Сотрудник.uid);
-      // const canChangeOrderDone = data.data.Сотрудник.uid === userInfo.uid || userRights.canChangeOrderDone;
-      // showHideDoneDelete(zakupkaStatus, canChangeOrderDone);
-      // console.log('renderZakupkaInfo uid', userInfo.uid);
-      // isUserAuthor = userInfo.uid === zakupkaAuthorUID;
-      // console.log('renderZakupkaInfo isUserAuthor', isUserAuthor);
-      // $('#done').prop('disabled', !isUserAuthor);
-      // const statusList = $(tableID).data('response').listStatus;
-      // const priorityList = $(tableID).data('response').listPriority;
 
       if (formattedData.listOfProducts.length === 0) {
         console.log('listOfProducts null');
@@ -1797,57 +1738,11 @@
       });
       generateFromTemplate('#img-template', imgs, '#filesAuthorOrder');
 
-      // // timer block
-      // let dateStart;
-      // let targetDate;
-      // let remainTimeText;
-      // if (activeOrders) {
-      //   targetDate = new Date(data.data.ПлановаяДатаСлужебная);
-      //   planeDate = new Date(data.data.ПлановаяДатаСлужебная) || '';
-      //   const dayOfWeek = targetDate.getDay();
-      //   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      //   if (isWeekend) {
-      //     targetDate.setDate(targetDate.getDate() + 2);
-      //   }
-      //   dateStart = new Date();
-      //   remainTimeText = 'Осталось:';
-      //   $('.zakupkaFinish').hide();
-      // } else {
-      //   targetDate = new Date(data.data.ДатаЗакрытияЗаявки);
-      //   dateStart = new Date(data.data.Дата);
-      //   planeDate = new Date(data.data.ПлановаяДата) || '';
-      //   remainTimeText = 'Выполнено за:';
-      //   $('.zakupkaFinish').show();
-      // }
-      // const isZakupkaOverdue = targetDate < dateStart;
-      // const remainTime = formatSecondToStringTime((targetDate - dateStart) / 1000);
-
       const statusList = $(tableID).data('response').listStatus;
       const priorityList = $(tableID).data('response').listPriority;
       fillSelectOptions(statusList, '#zakupkaStatus');
       fillSelectOptions(priorityList, '#zakupkaPriority');
       fillZakupkaInfo(formattedData);
-
-      // $('#zakupkaText').html(linkedText);
-      // $('#orderNum').text(zakupkaNumber);
-      // $('#zakupkaInfo').attr('uid', uid);
-      // $('#zakupkaDate').val(zakupkaDate);
-      // $('#remainTimeLabel').text(remainTimeText);
-      // $('#remainTime').text(remainTime);
-      // $('#remainTime').toggleClass('remainTime', activeOrders);
-      // $('#remainTime').toggleClass('dangerColor', isZakupkaOverdue);
-      // $('#planeDate').datepicker('option', 'minDate', minDate);
-      // $('#planeDate').datepicker('option', 'maxDate', maxDate);
-      // $('#planeDate').datepicker('setDate', planeDate);
-      // $('#zakupkaAuthor').html(authorLink);
-      // $('#zakupkaAuthor').data('autorUID', zakupkaAuthorUID);
-      // $('#zakupkaExecutor').attr('uid', zakupkaExecutorUID);
-      // $('#zakupkaExecutor').val(zakupkaExecutor);
-      // $('#zakupkaAuthorLink').html(executorLink);
-      // $('#zakupkaFinish').text(zakupkaFinish);
-      // $('#zakupkaStatus').val(zakupkaStatus);
-      // $('#zakupkaPriority').val(zakupkaPriority);
-      // $('#done').prop('checked', done);
 
       callbackFuncSecondInterval = function () {
         timerManager.updateTimers('#zakupkaInfo', '.remainTime');
@@ -2060,15 +1955,6 @@
       const sortDirection = param.sortDirection;
       const directOrderSort = sortDirection === '0';
       const isActiveOrder = param.active;
-      // console.log(
-      //   'makeDateSeparator param, sortValue, nameKeyDate, sortDirection, directOrderSort, isActiveOrder ',
-      //   param,
-      //   sortValue,
-      //   nameKeyDate,
-      //   sortDirection,
-      //   directOrderSort,
-      //   isActiveOrder
-      // );
 
       $('.separateDateLine').remove();
 
