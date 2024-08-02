@@ -625,10 +625,8 @@ let debounceTimer;
 const debounceDelay = 200;
 
 $(window).on('scroll', function () {
-    console.log('scroll event');
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async function () {
-        console.log('debounced scroll event');
         const scrollTop = $(this).scrollTop();
         const windowHeight = $(this).height();
         const documentHeight = $(document).height();
