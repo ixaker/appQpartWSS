@@ -3,6 +3,7 @@
 /node_modules/
 /static/foto
 /static/storage
+/__tests__
 .env
 embeddings.json
 userInfoData.json
