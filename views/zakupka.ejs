@@ -1589,7 +1589,7 @@
     $('#zakupkaText').on('click', function () {
       console.log('zakupkaText click');
       clickAnimate(this);
-      copiedText = $(this).val();
+      copiedText = $(this).text();
       navigator.clipboard.writeText(copiedText);
       toastr.success('Текс заявки скопирован.');
     });
