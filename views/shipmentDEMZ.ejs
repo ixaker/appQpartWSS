@@ -1,0 +1,133 @@
+<style>
+  #content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  #listPlate {
+    font-size: small;
+    padding: 0 5px;
+  }
+</style>
+
+<div id="commandPanel" class="commandPanel">
+  <div class="titleContainer">
+    <i class="bi bi-truck" id="pageIcon"></i>
+    <div id="titleText">
+      <h3 class="titlePage">Отгрузки ДЕМЗ</h3>
+    </div>
+  </div>
+  <div
+    id="listPlate"
+    url="/app//shipmentDEMZ"
+    callbackAfterLoadData="callbackAfterLoadData"
+    callbackForRender="callbackForRender"
+    type="plate"
+  >
+    <div id="listElements"></div>
+  </div>
+
+  <style>
+    .tileContainer {
+      border: 1px solid lightgrey;
+      border-radius: 5px;
+      background-color: white;
+      margin-bottom: 15px;
+      padding: 5px;
+      box-shadow: 2px 3px 5px #999;
+    }
+
+    .tileHeader {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 5px;
+      font-size: 1.5em;
+      padding: 0 5px;
+    }
+
+    .tileDate {
+      width: 60%;
+      text-align: end;
+    }
+
+    .tileAmount {
+      width: 40%;
+      text-align: end;
+      color: darkgreen;
+    }
+
+    .detailed .stage {
+      width: 60%;
+    }
+
+    td {
+      padding: 3px;
+    }
+
+    .count {
+      width: 20%;
+      text-align: right;
+    }
+
+    .amount {
+      width: 20%;
+      text-align: right;
+    }
+  </style>
+  <script id="tileTemplate" type="text/x-handlebars-template">
+    <div class='tileContainer'>
+      <div class='tileHeader'>
+        <div class='tileDate'>{{Дата}}</div>
+        <div class='tileAmount'>{{СуммаОтгрузкиЗаденьСтрокой}}</div>
+      </div>
+
+      <table class='detailed'>
+        <tbody>
+          {{#if ОтгрузкиЗаДень}}
+            {{#each ОтгрузкиЗаДень}}
+              <tr>
+                <td class='stage'>{{Этап}}</td>
+                <td class='count'>{{Количество}} шт</td>
+                <td class='amount'>{{Сумма}}</td>
+              </tr>
+            {{/each}}
+          {{else}}
+            <tr>
+              <td style='text-align: center;'>
+                отгрузок нет
+              </td>
+            </tr>
+          {{/if}}
+        </tbody>
+      </table>
+
+    </div>
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      console.log('shipmentDEMZ start');
+      const platesID = '#listPlate';
+      const defaultParam = {
+        date: new Date().toISOString(),
+        limit: 20,
+      };
+
+      $(platesID).data('defaultParam', defaultParam);
+      initListPlate(platesID, true);
+
+      callbackAfterLoadData = function (response) {
+        const param = $(platesID).data('param');
+        param.date = response.nextDate;
+        $(platesID).data('param', param);
+      };
+
+      callbackForRender = function (data) {
+        console.log('callbackForRender data', data);
+        containerForTile = `#${data.uid}`;
+        console.log('containerForTile', containerForTile, $(containerForTile));
+        generateFromTemplate('#tileTemplate', data, containerForTile);
+      };
+    });
+  </script>
+</div>
