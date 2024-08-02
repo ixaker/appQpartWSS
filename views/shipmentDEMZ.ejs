@@ -73,6 +73,19 @@
       width: 20%;
       text-align: right;
     }
+
+    .brak {
+      position: relative;
+    }
+
+    .brak::after {
+      content: 'брак';
+      position: absolute;
+      background-color: white;
+      color: red;
+      right: 5px;
+      padding: 0 0 0 5px;
+    }
   </style>
   <script id="tileTemplate" type="text/x-handlebars-template">
     <div class='tileContainer'>
@@ -86,7 +99,7 @@
           {{#if ОтгрузкиЗаДень}}
             {{#each ОтгрузкиЗаДень}}
               <tr>
-                <td class='stage'>{{Этап}}</td>
+                <td class='stage {{#if Брак}}brak{{/if}}'>{{Этап}}</td>
                 <td class='count'>{{Количество}} шт</td>
                 <td class='amount'>{{Сумма}}</td>
               </tr>
