@@ -525,8 +525,8 @@ app.get('/zakupka', async function (req, res) {
   });
 });
 
-app.get('/shipment', async function (req, res) {
-  res.render('shipment', {
+app.get('/shipmentDEMZ', async function (req, res) {
+  res.render('shipmentDEMZ', {
     version: version,
     token: '',
     test: test,

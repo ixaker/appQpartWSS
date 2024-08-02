@@ -224,8 +224,6 @@ async function loadAdditionalData(tableJQ) {
         let id_response = tableJQ.attr('id') + Date.now();
         console.log('param', param)
 
-
-
         await $.ajax({
             url: `${tableJQ.attr('url')}`, type: 'GET', dataType: 'json', data: param, success: async function (response) {
                 console.log('loadAdditionalData response', tableJQ);
@@ -770,12 +768,12 @@ function test(func, count, name, ...args) {
     console.log(`time work ${name} - `, timeStop - timeStart);
 }
 
-let debounceTimer;
-const debounceDelay = 200;
+let debounceTimerTable;
+const debounceDelayTable = 200;
 
 $(window).on('scroll', function () {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(async function () {
+    clearTimeout(debounceTimerTable);
+    debounceTimerTable = setTimeout(async function () {
         const scrollTop = $(this).scrollTop();
         const windowHeight = $(this).height();
         const documentHeight = $(document).height();
@@ -797,7 +795,7 @@ $(window).on('scroll', function () {
                 }
             }
         });
-    }.bind(this), debounceDelay);
+    }.bind(this), debounceDelayTable);
 });
 
 

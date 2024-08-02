@@ -620,3 +620,43 @@ function getLengthOfDataRow(place) {
 }
 
 window.getDataRow = getDataRow;
+
+let debounceTimer;
+const debounceDelay = 200;
+
+$(window).on('scroll', function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async function () {
+        const scrollTop = $(this).scrollTop();
+        const windowHeight = $(this).height();
+        const documentHeight = $(document).height();
+        const isPositionForLoading = scrollTop + windowHeight >= documentHeight - windowHeight
+        console.log('scroll event', isPositionForLoading);
+        if (isPositionForLoading) {
+            console.log('scroll to loading');
+            try {
+                let func = window['callbackScrollForLoadingData'];
+                return func();
+            } catch (error) { }
+        }
+
+    }.bind(this), debounceDelay);
+});
+
+function callbackFromAttr(element, attr, param = null) {
+    try {
+        const callbackFunc = $(element).attr(attr) || '';
+
+        if (callbackFunc !== '') {
+            let func = window[callbackFunc];
+
+            if (param === null) {
+                return func();
+            } else {
+                return func(param);
+            }
+        }
+    } catch (error) {
+        console.log('callbackFromAttr', error, attr);
+    }
+}

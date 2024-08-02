@@ -1360,45 +1360,6 @@
       $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
     }
 
-    // function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
-    //   $(selector).on('click', function () {
-    //     $(selector).siblings().removeClass('active');
-    //     $(selector).addClass('active');
-    //     const sort = $(tableID).data('param').sortColumn;
-    //     // ('sortColumn') || 'ПлановаяДатаСлужебная';
-    //     let sortDirection = $(tableID).data('param').sortDirection;
-    //     // ('sortDirection') || defaultSortDirection;
-    //     console.log('sort', sort);
-    //     console.log('sortColumn', sortColumn);
-    //     if (sort === sortColumn) {
-    //       sortDirection = sortDirection === '0' ? '1' : '0';
-    //     } else {
-    //       sortDirection = defaultSortDirection;
-    //     }
-
-    //     console.log('sortDirection', sortDirection, typeof sortDirection);
-    //     if (sortDirection === '0') {
-    //       console.log('sortDirection = 0');
-    //       $('#btnSort').removeClass('down');
-    //       $('#btnSort').addClass('up');
-    //     } else {
-    //       console.log('sortDirection = 1');
-    //       $('#btnSort').removeClass('up');
-    //       $('#btnSort').addClass('down');
-    //     }
-
-    //     updateParam(tableJQ, 'sortColumn', sortColumn);
-    //     updateParam(tableJQ, 'sortDirection', sortDirection);
-    //     updateParam(tableJQ, 'page', 0);
-
-    //     $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);
-    //     // $(`th.${sortClass}`).click();
-    //     $('#sortList').hide();
-    //     $('#sortList').toggleClass('active');
-    //     initTable($('#content table'));
-    //   });
-    // }
-
     function sortHandler(selector, sortValue, defaultSortDirection, tableID, sortColumn = '') {
       $(selector).on('click', function () {
         $(selector).siblings().removeClass('active');
