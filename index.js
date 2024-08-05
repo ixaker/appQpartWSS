@@ -61,6 +61,13 @@ if (test === 'true') {
   log.info('production version: ', version);
 }
 
+const renderParams = {
+  version: version,
+  token: '',
+  test: test,
+}
+
+
 const maxAge = 31536000;
 
 const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
@@ -246,19 +253,18 @@ app.post('/dataUpdated', (req, res) => {
 
 app.post('/authorizationByPassword', async (req, res) => {
   try {
-    log.info('authorizationByPassword req.body', req.body);
+    // log.info('authorizationByPassword req.body', req.body);
     const { username, password } = req.body;
     const baseUrl = process.env.BASE_URL.replace(/^http?:\/\//, '');
     const Authorization = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
     authHeaders = {
       'Authorization': Authorization,
     }
-    // const url = 'http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication';
-    // const url = 'http://Holub:1@10.8.0.3:23456/Production/hs/client/authentication';
-    // const url = 'http://Holub:1@10.8.0.3:80/Production/hs/client/authentication';
-    // const url = `http://${username}:${password}@${baseUrl}/${base}/hs/client/authentication`
+
     const url = `http://${baseUrl}/${base}/hs/client/authentication`
     // const url = `http://${username}:${password}@ http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication/${base}/hs/client/authentication`
+
+    log.info('url before axios')
 
     const response = await axios({
       method: 'GET',
@@ -266,11 +272,16 @@ app.post('/authorizationByPassword', async (req, res) => {
       headers: authHeaders,
     });
 
-    log.info('url', url);
+    log.info('url', url, response.status);
 
     if (response.status === 200) {
       let result = { detectUser: true };
       result.user = faceID.getUserInfoID(response.data.uid);
+
+
+      if (result.user === undefined) {
+        res.status(500).send('Користувача не знайдено в локальной базі бекенду.');
+      }
       result.token = jwt.sign(result.user, secret, options);
       result.version = version;
       res.send(result);
@@ -278,12 +289,12 @@ app.post('/authorizationByPassword', async (req, res) => {
       res.status(res.status).send('Помилка сервера. Спробуйте пізніше.', res.status);
     }
   } catch (error) {
-    log.error('Помилка під час обробки запиту:', error);
+    // log.error('Помилка під час обробки запиту:', error);
     if (error.response) {
       log.error('Server response error:', error.response.status, error.response.data);
       res.status(error.response.status).send(error.response.data);
     } else {
-      log.error('Error in request setup:', error.message);
+      log.error('Error in request setup:', error.message, error);
       res.status(500).send({
         message: 'Внутрішня помилка сервера.',
         error
@@ -518,37 +529,24 @@ app.get('/12345', async function (req, res) {
 });
 
 app.get('/zakupka', async function (req, res) {
-  res.render('zakupka', {
-    version: version,
-    token: '',
-    test: test,
-  });
+  res.render('zakupka', renderParams);
 });
 
 app.get('/shipmentDEMZ', async function (req, res) {
-  res.render('shipmentDEMZ', {
-    version: version,
-    token: '',
-    test: test,
-  });
+  res.render('shipmentDEMZ', renderParams);
 });
 
 app.get('/repairList', async function (req, res) {
-  res.render('repairList', {
-    version: version,
-    token: '',
-    test: test,
-  });
+  res.render('repairList', renderParams);
 });
 
 app.get('/tabel', async function (req, res) {
-  res.render('tabel', {
-    version: version,
-    token: '',
-    test: test,
-  });
+  res.render('tabel', renderParams);
 });
 
+app.get('/QPART_DEMZ', async function (req, res) {
+  res.render('QPART_DEMZ', renderParams);
+});
 
 // Error
 app.use((req, res) => {
