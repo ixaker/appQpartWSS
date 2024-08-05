@@ -86,7 +86,7 @@ const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs
 // app.use(express.static('styles'));
 // app.use(express.static('js'));
 // app.use(express.static('img'));
-// app.use(express.static('static'));
+app.use('/foto', express.static('foto'));
 app.use(express.static('static', {
   setHeaders: function (res, path) {
     res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
