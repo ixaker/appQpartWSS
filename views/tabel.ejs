@@ -185,11 +185,7 @@
 <script id="userInfo" type="text/x-handlebars-template">
   <td id='detail' colspan='6'>
     <div style='display:flex;'>
-      <img
-        class='userFoto'
-        src='https://{{baseUrl}}/auth_files/photo/{{emp_code_ZKTeco}}.jpg'
-        alt='Фото користувача {{uid}}'
-      />
+      <img class='userFoto' src='/auth_files/photo/{{emp_code_ZKTeco}}.jpg' alt='Фото користувача {{uid}}' />
       <div id='textInfo' style='width: 200px;'>
         <div class='user-info'>
           <p>{{Должность}}</p>
@@ -316,7 +312,6 @@
         {},
         function onSuccess(response) {
           console.log('Success callback', response.data);
-          response.data.baseUrl = window.location.hostname;
           generateFromTemplate('#userInfo', response.data, '#infoRow');
         },
         function onError(error) {
