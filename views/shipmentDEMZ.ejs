@@ -11,6 +11,8 @@
 </style>
 
 <div id="commandPanel" class="commandPanel">
+  <input type="file" name="" id="fileInput" />
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" />
   <div class="titleContainer">
     <i class="bi bi-truck" id="pageIcon"></i>
     <div id="titleText">
@@ -19,7 +21,7 @@
   </div>
   <div
     id="listPlate"
-    url="/app//shipmentDEMZ"
+    url="/app/shipmentDEMZ"
     callbackAfterLoadData="callbackAfterLoadData"
     callbackForRender="callbackForRender"
     type="plate"
@@ -136,8 +138,8 @@
       };
 
       callbackForRender = function (data) {
-        console.log('callbackForRender data', data);
         containerForTile = `#${data.uid}`;
+        if ($(containerForTile).length === 0) return;
         console.log('containerForTile', containerForTile, $(containerForTile));
         generateFromTemplate('#tileTemplate', data, containerForTile);
       };

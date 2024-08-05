@@ -1,0 +1,304 @@
+<style>
+  #content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .titleContainer {
+    width: 100%;
+    align-items: center;
+  }
+
+  #qpart_demz {
+    width: 100%;
+    font-size: medium;
+    padding: 0 5px;
+  }
+</style>
+
+<div id="main">
+  <div id="commandPanel" class="commandPanel">
+    <div class="titleContainer">
+      <i class="bi bi-arrow-left-right" id="pageIcon"></i>
+
+      <h3 class="titlePage">QPART - ДЕМЗ</h3>
+
+      <img src="img/plus-circle.svg?v=<%= version %>" alt="plus icon" class="commandImg commandBtn" id="addNew" />
+    </div>
+  </div>
+  <div
+    id="qpart_demz"
+    url="/app/qpart_demz"
+    callbackAfterLoadData="callbackAfterLoadData"
+    callbackForRender="callbackForRender"
+    type="plate"
+  ></div>
+</div>
+
+<!-- doc info -->
+<style>
+  #zakupkaText {
+    text-wrap: wrap;
+    border: 1px solid lightgrey;
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0;
+    background-color: white;
+    font-size: large;
+    font-family: inherit;
+    color: #495057;
+    white-space: pre-wrap;
+    resize: none;
+    overflow: hidden;
+  }
+
+  #zakupkaText:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+  }
+
+  #zakupkaText:focus {
+    outline: none;
+  }
+
+  #zakupkaPhoto {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  #zakupkaAuthor {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .zakupkaDelete {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #zakupkaDelete {
+    font-size: xxx-large;
+    color: red;
+  }
+</style>
+
+<div id="docInfo" style="display: none">
+  <div class="commandPanel">
+    <h4 class="titlePage2">Заявка на закупку</h4>
+    <h4 id="orderNum" class="titlePage2">0001</h4>
+    <i id="closeZakupkaInfo" class="bi bi-x-circle commandBtn"></i>
+  </div>
+  <div id="zakupkaContainer">
+    <div class="form-group">
+      <div class="zakupkaText" id="zakupkaText" placeholder="Введіть текст" title="Натисніть, щоб скопіювати"></div>
+    </div>
+
+    <div class="form-group">
+      <div class="orderGroupContainer">
+        <div class="orderTitle">Список по складскому учету</div>
+        <div class="orderText" id="orderText" placeholder="Введіть текст" title="Натисніть, щоб скопіювати"></div>
+      </div>
+    </div>
+
+    <div class="form-group" id="filesAuthorOrder"></div>
+
+    <div class="form-group">
+      <label>Дата:</label>
+      <input type="text" readonly class="form-control" id="zakupkaDate" />
+    </div>
+    <div class="form-group">
+      <label>Автор:</label>
+      <div id="zakupkaAuthor" class="form-control"></div>
+    </div>
+    <div class="form-group">
+      <label id="remainTimeLabel">Осталось:</label>
+      <div class="form-control" id="remainTime"></div>
+    </div>
+    <div class="form-group" style="display: none">
+      <label>Доставка:</label>
+      <input type="text" class="form-control" id="zakupkaDelivery" placeholder="дд/мм/гггг" />
+    </div>
+    <div class="form-group" style="display: none">
+      <label>Изготовление:</label>
+      <input type="text" class="form-control" id="zakupkaProduction" placeholder="дд/мм/гггг" />
+    </div>
+    <div class="form-group">
+      <label>Плановая дата:</label>
+      <input type="text" class="form-control" id="planeDate" placeholder="дд/мм/гггг" />
+    </div>
+    <div class="form-group">
+      <label for="zakupkaExecutor">Исполнитель:</label>
+      <div class="d-flex align-items-center executorContainer">
+        <input
+          type="text"
+          class="form-control"
+          id="zakupkaExecutor"
+          url="/app/autocompleteSotrydnik"
+          aria-describedby="basic-addon3"
+          data-editable="true"
+          readonly
+        />
+        <span id="zakupkaExecutorLink" class="ml-2"></span>
+      </div>
+    </div>
+    <div class="form-group zakupkaFinish">
+      <label>Дата выполнения:</label>
+      <div class="form-control" id="zakupkaFinish"></div>
+    </div>
+    <div class="form-group">
+      <label for="zakupkaPriority">Приоритет:</label>
+      <select id="zakupkaPriority" class="form-control" disabled readonly></select>
+    </div>
+    <div class="form-group">
+      <label for="zakupkaStatus">Статус:</label>
+      <select id="zakupkaStatus" class="form-control" disabled readonly></select>
+    </div>
+
+    <div class="form-group" id="doneGroup">
+      <label for="done">Подтвердить закупку:</label>
+      <input type="checkbox" class="form-control" id="done" aria-describedby="basic-addon3" readonly />
+    </div>
+    <div class="form-group zakupkaDelete" id="zakupkaDeleteContainer" style="display: none">
+      <i class="bi bi-trash" id="zakupkaDelete"></i>
+    </div>
+  </div>
+
+  <style>
+    .docContainer {
+      border: 1px solid lightgrey;
+      border-radius: 5px;
+      background-color: white;
+      margin-bottom: 15px;
+      padding: 5px;
+      box-shadow: 2px 3px 5px #999;
+      width: 100%;
+    }
+    .detailed .stage {
+      width: 60%;
+    }
+
+    td {
+      padding: 3px;
+    }
+
+    .count {
+      width: 20%;
+      text-align: right;
+    }
+
+    .amount {
+      width: 20%;
+      text-align: right;
+    }
+
+    .brak {
+      position: relative;
+    }
+
+    .brak::after {
+      content: 'брак';
+      position: absolute;
+      background-color: white;
+      color: red;
+      right: 5px;
+      padding: 0 0 0 5px;
+    }
+
+    .docTitle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      font-size: large;
+      padding: 0 3px;
+    }
+
+    .qpart-demz {
+      background-color: darkgreen;
+      color: white;
+      padding: 2px 4px 0 4px;
+      border-radius: 4px;
+    }
+
+    .demz-qpart {
+      background-color: rgb(0, 38, 255);
+      color: white;
+      padding: 2px 4px 0 4px;
+      border-radius: 4px;
+    }
+
+    .docNumber {
+      width: 25%;
+    }
+
+    .docDateEvent {
+      width: 25%;
+      text-align: end;
+    }
+  </style>
+  <script id="tileTemplate" type="text/x-handlebars-template">
+    <div class='docContainer'>
+      <div class='docTitle'>
+        <div class='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div>
+        <div class='docName {{className}}'>{{ВидОперации}}</div>
+        <div class='docDateEvent'>{{ДатаСобытияФормат}}</div>
+      </div>
+
+      <table class='detailed'>
+        <tbody>
+            {{#each Детали}}
+              <tr>
+                <td class='stage {{#if Брак}}brak{{/if}}'>{{Этап.Наименование}}</td>
+                <td class='count'>{{Количество}} шт</td>
+              </tr>
+            {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      const platesID = '#qpart_demz';
+
+      const defaultParam = {
+        page: 0,
+        limit: 20,
+      };
+
+      $(platesID).data('defaultParam', defaultParam);
+      initListPlate(platesID, true);
+
+      callbackAfterLoadData = function (response) {
+        const param = $(platesID).data('param');
+        param.date = response.nextDate;
+        $(platesID).data('param', param);
+      };
+
+      callbackForRender = function (data) {
+        containerForTile = `#${data.uid}`;
+        if ($(containerForTile).length === 0) return;
+        console.log('QPART data', data, containerForTile);
+        data.className = data.ВидОперации === 'QPART => ДЕМЗ' ? 'qpart-demz' : 'demz-qpart';
+        console.log('data', data);
+
+        generateFromTemplate('#tileTemplate', data, containerForTile);
+      };
+
+      function docInfoOpen() {
+        $('#main').hide();
+        $('#docInfo').show();
+      }
+
+      $('#addNew').on('click', function (event) {
+        clickAnimate(this);
+        docInfoOpen();
+      });
+    });
+  </script>
+</div>

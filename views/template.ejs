@@ -1,0 +1,47 @@
+<style>
+  #content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+</style>
+
+<div id="commandPanel" class="commandPanel">
+  <div class="titleContainer">
+    <i class="bi bi-truck" id="pageIcon"></i>
+    <div id="titleText">
+      <h3 class="titlePage">Назва сторіки</h3>
+    </div>
+  </div>
+  <div
+    id=""
+    url="/app/"
+    callbackAfterLoadData="callbackAfterLoadData"
+    callbackForRender="callbackForRender"
+    type="plate"
+  ></div>
+
+  <style></style>
+  <script id="tileTemplate" type="text/x-handlebars-template"></script>
+
+  <script>
+    $(document).ready(function () {
+      const platesID = '#';
+
+      $(platesID).data('defaultParam', defaultParam);
+      initListPlate(platesID, true);
+
+      callbackAfterLoadData = function (response) {
+        const param = $(platesID).data('param');
+        param.date = response.nextDate;
+        $(platesID).data('param', param);
+      };
+
+      callbackForRender = function (data) {
+        containerForTile = `#${data.uid}`;
+        if ($(containerForTile).length === 0) return;
+
+        generateFromTemplate('#tileTemplate', data, containerForTile);
+      };
+    });
+  </script>
+</div>
