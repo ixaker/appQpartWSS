@@ -21,7 +21,7 @@ async function GET(path) {
         const response = await request1C('GET', path);
         return response.data;
     } catch (error) {
-        console.error('Ошибка при выполнении GET_1C:', error);
+        console.error('Ошибка при выполнении GET_1C:');
         return {};
     }
 
@@ -75,7 +75,7 @@ async function request1C(method, path, headers = {}, data = {}) {
                 ...headers
             }
             const responseStart = await axios1C(method, path, authHeaders, data);
-            log.info('responseStart', responseStart)
+            log.info('responseStart', responseStart.status)
             if (responseStart.status === 200) {
                 if (responseStart.headers.hasOwnProperty('set-cookie')) {
                     ibSession = responseStart.headers['set-cookie'][0];
@@ -165,7 +165,7 @@ function initMiddleware() {
                         // Обробка випадку, коли contentType відсутній або не має підтримуваних типів
                     }
                 } catch (error) {
-                    log.error('ProxyMiddleware1C proxyReq error', error);
+                    log.error('ProxyMiddleware1C proxyReq error');
                 }
             },
             proxyRes: (proxyRes, req, res) => {
@@ -178,11 +178,11 @@ function initMiddleware() {
                         pingRequest();
                     }
                 } catch (error) {
-                    log.error('ProxyMiddleware1C proxyRes error', error);
+                    log.error('ProxyMiddleware1C proxyRes error');
                 }
             },
             error: (err, req, res) => {
-                log.error('ProxyMiddleware1C error', err);
+                log.error('ProxyMiddleware1C error');
             },
         },
     })
