@@ -187,7 +187,7 @@
     <div style='display:flex;'>
       <img
         class='userFoto'
-        src='https://test.qpart.com.ua/auth_files/photo/{{emp_code_ZKTeco}}.jpg'
+        src='https://{{baseUrl}}/auth_files/photo/{{emp_code_ZKTeco}}.jpg'
         alt='Фото користувача {{uid}}'
       />
       <div id='textInfo' style='width: 200px;'>
@@ -257,6 +257,12 @@
     let date = new Date();
     let oneDay = 1000 * 60 * 60 * 24;
 
+    console.log(
+      `window https://${window.location.hostname}/auth_files/photo/{{emp_code_ZKTeco}}.jpg`,
+      window,
+      window.location.hostname
+    );
+
     $('#date').val(date.toLocaleString('ru', options));
 
     $('#btnDown').on('click', function (event) {
@@ -310,6 +316,7 @@
         {},
         function onSuccess(response) {
           console.log('Success callback', response.data);
+          response.data.baseUrl = window.location.hostname;
           generateFromTemplate('#userInfo', response.data, '#infoRow');
         },
         function onError(error) {
