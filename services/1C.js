@@ -46,7 +46,7 @@ async function init() {
 }
 
 async function request1C(method, path, headers = {}, data = {}) {
-    log.info('-- request1C start --- ')
+    log.info('--- request1C start --- ')
     try {
         let needStartSession = true;
 
@@ -59,7 +59,7 @@ async function request1C(method, path, headers = {}, data = {}) {
                 ...headers
             }
             const response = await axios1C(method, path, authHeaders, data);
-            // log.info('request1C', response)
+            log.info('request1C', response.status)
             if (response.status === 200) {
                 return response;
             }
