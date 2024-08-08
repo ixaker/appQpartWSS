@@ -119,3 +119,24 @@ https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app
 
 інв.номери планшетів:
 1722, 1755 - цех на Яхненківській
+
+// Підключення папки сховища до віддаленого сховища фото
+Connect storage to VPS
+
+create script:
+nano /root/mount_ftp.sh
+
+paste this:
+#!/bin/bash
+curlftpfs -o allow_other cdn2028:Hk75pH9ZtEnx8P87@a7b85a942d4082eb.cdn.express /root/dev/wss/static/storage
+
+save script and make exec:
+chmod +x /root/mount_ftp.sh
+
+open file settings crontab:
+crontab -e
+
+paste this:
+@reboot /root/mount_ftp.sh
+
+save file and reboot os.
