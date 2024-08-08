@@ -83,6 +83,22 @@ app.set('view engine', 'ejs');
 
 const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
 
+app.use((req, res, next) => {
+  log.info(`Запит на бекенд прийшов: ${req.method} ${req.url}`);
+  next();
+});
+
+app.get('/getUserByEmpCode', (req, res) => {
+  log.info('getUserByEmpCode', req.query.empCode)
+  try {
+    const empCode = req.query.empCode;
+    const user = faceID.getUserInfoByEmpCode(empCode);
+    res.send(user)
+  } catch (error) {
+    res.status(500);
+  }
+})
+
 // app.use(express.static('styles'));
 // app.use(express.static('js'));
 // app.use(express.static('img'));
@@ -238,22 +254,6 @@ app.post('/userUpdated', (req, res) => {
   return;
 });
 
-app.use((req, res, next) => {
-  log.info(`Запит на бекенд прийшов: ${req.method} ${req.url}`);
-  next();
-});
-
-app.get('/getUserByEmpCode', (req, res) => {
-  log.info('getUserByEmpCode', req.query.empCode)
-  try {
-    const empCode = req.query.empCode;
-    const user = faceID.getUserInfoByEmpCode(empCode);
-    res.send(user)
-  } catch (error) {
-    res.status(500);
-  }
-
-})
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
