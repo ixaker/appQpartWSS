@@ -380,6 +380,13 @@ input[type='number']::-webkit-outer-spin-button {
   width: 48px;
 }
 
+.commandBtn {
+  margin-left: auto;
+  font-size: xxx-large;
+  color: darkgreen;
+  line-height: 1em;
+}
+
 #pageIcon {
   font-size: 35px;
   color: darkgreen;
@@ -702,4 +709,15 @@ input[type='number']::-webkit-outer-spin-button {
 
 .displayNone {
   display: none;
+}
+
+.plateListItem {
+  margin-bottom: 10px;
+  border: 1px solid #bbbbbb;
+  background-color: #ffffff;
+  border-radius: 7px;
+  box-shadow: 2px 3px 5px #999;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
 }
