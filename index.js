@@ -103,9 +103,20 @@ app.use('/auth_files/photo/*', proxy('http://10.8.0.4', {
   userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
     // Устанавливаем тип контента
     userRes.setHeader('Content-Type', 'image/jpeg'); // Замените на нужный вам тип изображения
+
+    // Устанавливаем заголовки для кэширования
+    const maxAge = 60 * 60 * 24 * 30; // 30 дней в секундах
+    userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+    userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
+    userRes.setHeader('ETag', true);
+
+    userRes.removeHeader('pragma');
+
     return proxyResData;
   }
 }));
+
+
 
 app.use(cookieParser());
 
@@ -207,6 +218,42 @@ app.get('/', (req, res) => {
     test: test,
   });
 });
+
+app.post('/userUpdated', (req, res) => {
+  const data = req.body;
+  faceID.updateUser(data);
+  res.send('all ok');
+
+
+  log.info('userUpdated send to wss')
+  let subscribedClients = clients.filter(function (client) {
+    return client.subscriptions.includes('users_all');
+  });
+  log.info('subscribedClients', subscribedClients);
+  subscribedClients.forEach(function (client) {
+    log.data('client', Object.keys(client));
+    client.socket.send(JSON.stringify(req.body));
+  });
+
+  return;
+});
+
+app.use((req, res, next) => {
+  log.info(`Запит на бекенд прийшов: ${req.method} ${req.url}`);
+  next();
+});
+
+app.get('/getUserByEmpCode', (req, res) => {
+  log.info('getUserByEmpCode', req.query.empCode)
+  try {
+    const empCode = req.query.empCode;
+    const user = faceID.getUserInfoByEmpCode(empCode);
+    res.send(user)
+  } catch (error) {
+    res.status(500);
+  }
+
+})
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
@@ -419,8 +466,24 @@ app.get('/setip', function (req, res) {
 
 // + Страничка - Список пользователей
 app.get('/users', function (req, res) {
+  log.info('users start')
   let usersArray = Object.values(faceID.getUserInfo());
-  res.render('users', { users: usersArray });
+
+  res.render('users', renderParams, function (err, html) {
+    if (err) {
+      log.error('Render error:', err);
+      res.status(500).send('Server Error');
+    } else {
+
+      res.send(html);
+    }
+  });
+});
+
+app.get('/user/api', function (req, res) {
+  log.info('/user/api');
+  let usersArray = Object.values(faceID.getUserInfo());
+  res.json({ list: usersArray });
 });
 
 app.post('/token', function (req, res) {
@@ -437,29 +500,40 @@ app.post('/deleteFaces', async (req, res) => {
     faceID.deleteFotosUserAll(req.body.uid);
 
     result.user = faceID.getUserInfoID(req.body.uid);
+
   } catch (error) {
     log.error(`Failed to process message: ${error}`);
   }
+
 
   res.send(result);
 });
 
 app.get('/loadUserListFrom1C', async (req, res) => {
+  log.info('lr');
   let result = await func1C.GET('/getUserList');
+
+  log.info('result.users', result.users);
+  if (result.error) {
+    log.error('Error Причина', result.Причина)
+  }
 
   await faceID.updateUsersInfo(result.users);
 
   let usersArray = Object.values(faceID.getUserInfo());
-  res.render('users', { users: usersArray });
+  log.info('loadUserListFrom1C');
+  log.info(usersArray);
+  // res.render('users', { users: usersArray });
 });
 
 app.get('/updateFaceID', async (req, res) => {
   let result = await func1C.GET('/getUserList');
+  log.info('updateFaceID', result)
 
   await faceID.updateFaceID(result.users);
 
   let usersArray = Object.values(faceID.getUserInfo());
-  res.render('users', { users: usersArray });
+  // res.render('users', { users: usersArray });
 });
 
 app.get('/userListFoto', async function (req, res) {
