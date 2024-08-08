@@ -26,7 +26,7 @@ function sendErrorToTelegram(jqXHR, textStatus, urlData) {
     errorMessage += jqXHR ? `Ready State: ${jqXHR.readyState}\n` : '';
     errorMessage += jqXHR && jqXHR.responseText ? `Request body: ${jqXHR.responseText.slice(0, 100)}\n` : '';
     errorMessage += textStatus ? `Text Status: ${textStatus}\n` : '';
-    errorMessage += user ? `User: ${JSON.stringify(user, null, " ")}\n` : '';
+    errorMessage += user ? `User: ${JSON.stringify(user.name, null, " ")}\n` : '';
     console.log('errorMessage', errorMessage);
     sendToTelegram(errorMessage);
 }
