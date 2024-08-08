@@ -274,6 +274,19 @@ function getUserInfoID(id) {
   return userInfo[id];
 }
 
+function getUserInfoByEmpCode(empCode) {
+  log.info('getUserInfoEmpCode ()', empCode);
+  const users = Object.values(userInfo);
+  const user = users.find(user => user.emp_code === empCode);
+  // log.info('user', user);
+  return user;
+}
+
+async function updateUser(user) {
+  userInfo[user.uid] = user;
+  saveDB();
+}
+
 async function updateUsersInfo(users) {
   userInfo = users.reduce((acc, cur) => { acc[cur.uid] = { ...cur }; return acc; }, {});
   saveDB();
@@ -281,6 +294,7 @@ async function updateUsersInfo(users) {
 
 async function updateFaceID(users) {
   userInfo = users.reduce((acc, cur) => { acc[cur.uid] = { ...cur }; return acc; }, {});
+  // log.info('updateFaceID userInfo', userInfo);
   db = [];
 
   for (const user of users) {
@@ -381,6 +395,8 @@ module.exports = {
   saveDB,
   getUserInfo,
   getUserInfoID,
+  getUserInfoByEmpCode,
+  updateUser,
   updateUsersInfo,
   deleteFotosUserAll,
   getUserFotoList,
