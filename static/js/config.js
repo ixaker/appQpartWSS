@@ -316,11 +316,15 @@ function requestTo1C(patch, method, payload, callback) {
     });
 }
 
-function generateFromTemplate(idTemplate, data, idParent) {
+function generateFromTemplate(idTemplate, data, idParent, prepend = false) {
     const templateHTML = $(idTemplate).html();
     const template = Handlebars.compile(templateHTML);
     const html = template(data);
-    $(idParent).html(html);
+    if (prepend) {
+        $(idParent).prepend(html);
+    } else {
+        $(idParent).html(html);
+    }
 }
 
 
@@ -658,5 +662,20 @@ function callbackFromAttr(element, attr, param = null) {
         }
     } catch (error) {
         console.log('callbackFromAttr', error, attr);
+    }
+}
+
+async function checkForCamera() {
+    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            return devices.some(device => device.kind === 'videoinput');
+        } catch (error) {
+            console.error('Помилка при отриманні списку пристроїв:', error);
+            return false;
+        }
+    } else {
+        console.error('API `enumerateDevices` не підтримується браузером');
+        return false;
     }
 }
