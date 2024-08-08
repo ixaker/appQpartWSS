@@ -1,0 +1,8 @@
+{
+  "ignore": ["foto", "node_modules", "lib", "log", "userInfoData.json", "embeddings.json"],
+  "legacyWatch": true,
+  "verbose": true,
+  "events": {
+    "restart": "echo 'Server restarted due to changes in: $FILES'"
+  }
+}

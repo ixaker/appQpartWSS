@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch . --ignore *.png --ext js,json,ejs index.js",
+    "dev": "nodemon --watch . --ignore *.png, *.json, *.css, *.log --ext js,ejs index.js",
     "start": "node index.js",
     "test": "jest"
   },
@@ -31,6 +31,7 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "prettier-plugin-hbs": "^1.0.1"
   }
 }
