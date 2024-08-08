@@ -88,7 +88,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/getUserByEmpCode', (req, res) => {
+app.post('/getUserByEmpCode', (req, res) => {
   log.info('getUserByEmpCode', req.query.empCode)
   try {
     const empCode = req.query.empCode;
