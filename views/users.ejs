@@ -214,9 +214,6 @@
     /* margin-left: auto; */
   }
 
-  .userCountFaceID {
-  }
-
   .userActionButton {
     width: 8%;
     font-size: 2em;
@@ -235,17 +232,9 @@
       min-width: 375px;
     }
 
-    #userListContent {
-      /* max-width: 350px; */
-      /* margin-left: 5px; */
-    }
-
     .userNameText {
       width: auto;
       flex-wrap: wrap;
-    }
-
-    .userNameFaceID {
     }
 
     .userMenuFaceID {
@@ -256,9 +245,6 @@
     .userProfaFaceID {
       font-size: 1.5em;
       width: 30%;
-    }
-
-    .userCountFaceID {
     }
 
     .userActionButton {
@@ -369,10 +355,6 @@
   .photoCount {
     display: flex;
     gap: 10px;
-  }
-
-  .addFoto {
-    /* width: 25%; */
   }
 
   .arrival {
@@ -652,7 +634,10 @@
       var scannerActive = false;
       var canvasVideoScaner = document.createElement('canvas');
 
-      let hasCamera = false;
+      pageUID = '944bf4ef-27bf-11ee-8208-000c29006152';
+      userRights = $('#menu').data('userRight')[pageUID];
+
+      hasCamera = false;
       async function initialize() {
         hasCamera = await checkForCamera();
       }
@@ -681,8 +666,12 @@
       });
 
       function addPhoto(btn, uid, name, count) {
-        console.log('addPhoto', btn, uid, name, count);
+        console.log('addPhoto userRights', btn, uid, name, count, userRights.canAddFoto);
 
+        if (!userRights.canAddFoto) {
+          toastr.error('У Вас немає прав додавати фото!');
+          return;
+        }
         selectedUID = uid;
         console.log('hasCamera', hasCamera);
         if (hasCamera) {
@@ -778,6 +767,8 @@
       }
 
       function deletePhotos(e) {
+        console.log('userRights', userRights);
+        if (!userRights.canDeleteFoto) return;
         const target = e.currentTarget;
         const uid = $(target).closest('.plateListItem').attr('id');
 
@@ -813,6 +804,7 @@
       }
 
       function updateFaceID() {
+        return;
         NProgress.start();
         if (!confirm('Ви впевнені, що хочете оновити FaceID?')) {
           return;
@@ -838,7 +830,8 @@
       }
 
       function loginUser(uid) {
-        // console.log('userRights', userRights);
+        console.log('userRights', userRights.canLoginUser);
+        if (!userRights.canLoginUser) return;
         $.post('/token', { user: uid }, function (data, status) {
           console.log('logToServer', 'Data: ', data, '\nStatus: ', status);
           console.log('token', data.token);
@@ -858,9 +851,16 @@
 
         $(platesID).data('defaultParam', defaultParam);
 
-        const pageUID = '944bf4ef-27bf-11ee-8208-000c29006152';
-        const userRights = $('#menu').data('userRight')[pageUID];
         console.log('userRights', userRights);
+
+        if (!userRights.canLoadUsersFrom1C) {
+          $('#btnLoadUserList').remove();
+        }
+
+        if (!userRights.canRunUpdateEmbDB) {
+          console.log('userRights.canRunUpdateEmbDB', userRights.canRunUpdateEmbDB);
+          $('#btnUpdateFaceID').remove();
+        }
 
         Handlebars.registerPartial('ContentTemplate', document.getElementById('ContentTemplate').innerHTML);
         Handlebars.registerPartial('ContainerTemplate', document.getElementById('ContainerTemplate').innerHTML);
@@ -1078,11 +1078,14 @@
 
                       indexFoto += 1;
                     });
-                    hideFoto = $(
-                      `<div id='btnDeleteAllFoto' class='btn btn-secondary' onClick="deletePhotos(event)">Видалити всі фото</div>`
-                    );
 
-                    $('#userFoto').before(hideFoto);
+                    if (userRights.canDeleteFoto) {
+                      hideFoto = $(
+                        `<div id='btnDeleteAllFoto' class='btn btn-secondary' onClick="deletePhotos(event)">Видалити всі фото</div>`
+                      );
+
+                      $('#userFoto').before(hideFoto);
+                    }
                   } else {
                     let newFoto = $(`<h6 class='noFoto'>Немає фотографій</h6>`);
                     $('#userFoto').append(newFoto);
@@ -1104,6 +1107,7 @@
         });
 
         $('#userFoto').on('click', '.userFoto', function (event) {
+          if (!userRights.canDeleteFoto) return;
           let file = $(this).attr('alt');
           let indexFoto = $(this).attr('indexFoto');
           let UserID = $(this).closest('.plateListItem').attr('id');
