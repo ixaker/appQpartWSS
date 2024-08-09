@@ -1326,6 +1326,8 @@
     function openNewOrder(time) {
       $('#newZakupkaText').val(time);
       $('#saveZakupka').prop('disabled', true);
+      $('#srochno').removeClass('active btn-danger').addClass('btn-light');
+      $('#now').removeClass('active btn-danger').addClass('btn-light');
       $('#content').hide(time);
       $('#formZakupka').show(time);
       $('#attachedFilesForNewOrder').empty();
