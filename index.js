@@ -240,12 +240,9 @@ app.post('/userUpdated', (req, res) => {
   faceID.updateUser(data);
   res.send('all ok');
 
-
-  log.info('userUpdated send to wss')
   let subscribedClients = clients.filter(function (client) {
     return client.subscriptions.includes('users_all');
   });
-  log.info('subscribedClients', subscribedClients);
   subscribedClients.forEach(function (client) {
     log.data('client', Object.keys(client));
     client.socket.send(JSON.stringify(req.body));
@@ -266,7 +263,7 @@ app.post('/dataUpdated', (req, res) => {
   const topic = req.body.data['Имя'];
   const uids = req.body.users;
 
-  // log.data('/dataUpdated', req.body, req.body.users);
+  log.data('/dataUpdated', req.body.data['Имя'], req.body.users, topic);
 
   // clients.forEach(client => {
   //   log.data('user', client.user);
