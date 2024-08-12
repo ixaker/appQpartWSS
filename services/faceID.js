@@ -100,7 +100,7 @@ async function findUserOnFoto(body, forUserUID = '') {
         result.score = detection.face[0].score;
         result.detectFace = true;
         result.index = result.finded.index;
-        log.info('file name from faceID', result.index, db[result.index]);
+        log.info('file name from faceID', result.index);
 
 
         if (result.index > -1) {
@@ -111,8 +111,17 @@ async function findUserOnFoto(body, forUserUID = '') {
             if (db[result.index].countFileUse === undefined) {
               db[result.index].countFileUse = 0;
             }
-            db[result.index].countFileUse += 1;
-            db[result.index].dateLastFinded = new Date();
+
+            let folderPath = path.join(usersFolderPath, result.uid);
+            const filePath = path.join(folderPath, db[result.index].file);
+
+            buffer = loadImageSync(filePath);
+            result.originalPhoto = buffer.toString('base64');
+            result.originalPhotoName = db[result.index].file;
+
+
+            // const photoFile = getUserPhotoFilePath(result);
+            // result.originalPhoto = getUserPhotoAsBase64(photoFile);
             saveDB();
           }
         }
@@ -282,7 +291,7 @@ function getUserInfo() {
 }
 
 function getUserInfoID(id) {
-  log.info('getUserInfoID ()', id, userInfo[id]);
+  log.info('getUserInfoID ()');
   return userInfo[id];
 }
 
