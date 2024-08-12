@@ -155,6 +155,7 @@ async function findUserOnFoto(body, forUserUID = '') {
         if (result.addedFoto) {
           const file = `${Date.now()}.png`;
           const newEmbedding = { uid: result.uid, embedding: embedding, file: file, countFileUse: 0 };
+          userInfo[result.uid].isNewFoto = true;
           db.push(newEmbedding)
           embeddings = db.map((rec) => rec.embedding);
           saveDB();
@@ -378,7 +379,9 @@ function deleteFotosUserAll(uid) {
 
 function getUserFotoList(uid) {
   const userEmb = db.filter(user => user.uid === uid);
-
+  userInfo[uid].isNewFoto = false;
+  log.info('isNewFoto delete from user', userInfo[uid], userInfo[uid].isNewFoto)
+  saveDB();
   const fotoUse = userEmb.reduce((acc, user) => {
     if (user.file) {
       const countFileUse = user.countFileUse || 0;
