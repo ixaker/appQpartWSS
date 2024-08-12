@@ -99,6 +99,14 @@ app.post('/getUserByEmpCode', (req, res) => {
   }
 })
 
+
+// app.use((req, res, next) => {
+//   if (req.secure) {
+//     return next();
+//   }
+//   res.redirect('https://' + req.headers.host + req.url);
+// });
+
 // app.use(express.static('styles'));
 // app.use(express.static('js'));
 // app.use(express.static('img'));
@@ -358,8 +366,10 @@ app.post('/detectFace', async (req, res) => {
         if (result.finded.similarity > 0.72) {
           result.token = jwt.sign(result.user, secret, options);
           result.version = version;
-          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
-          telegramBot.sendImageAndMessage(req.body.photo, req.body.originalPhoto, message);
+          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}, Оригінальне фото: ${result.originalPhotoName}`;
+          log.info('req.body.photo', req.body.photo);
+          log.info('req.body.originalPhoto', result.originalPhoto);
+          telegramBot.sendImageAndMessage(req.body.photo, message, result.originalPhoto);
         } else {
         }
       }
@@ -372,7 +382,7 @@ app.post('/detectFace', async (req, res) => {
 // Мідлвар для перевірки авторизації
 app.use((req, res, next) => {
   log.warn('app.use verify', `Request - method: ${req.method}  path: ${req.path}`);
-  log.info('req.cookies.token', req.cookies.token);
+  log.info('req.cookies.token');
 
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
@@ -408,7 +418,7 @@ app.use('/appPOST', async (req, res) => {
 
 // Проверка авторизации
 app.post('/authentication', async (req, res) => {
-  log.info('/authentication', req.user);
+  log.info('/authentication');
   let result = { detectUser: true };
   result.user = faceID.getUserInfoID(req.user.uid);
   result.token = jwt.sign(result.user, secret, options);
