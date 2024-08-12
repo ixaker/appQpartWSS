@@ -359,7 +359,7 @@ app.post('/detectFace', async (req, res) => {
           result.token = jwt.sign(result.user, secret, options);
           result.version = version;
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}`;
-          telegramBot.sendImageAndMessage(req.body.photo, message);
+          telegramBot.sendImageAndMessage(req.body.photo, req.body.originalPhoto, message);
         } else {
         }
       }
@@ -535,7 +535,7 @@ app.get('/updateFaceID', async (req, res) => {
 
 app.get('/userListFoto', async function (req, res) {
   let files = faceID.getUserFotoList(req.query.UserID);
-  res.send(files);
+  res.json(files);
 });
 
 app.delete('/userListFoto', async function (req, res) {

@@ -84,25 +84,37 @@ async function detectFaceFromBuffer(buffer) {
 }
 
 async function findUserOnFoto(body, forUserUID = '') {
+  console.log('------------- findUserOnFoto forUserUID', forUserUID);
   let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID: forUserUID };
+  result.originalPhoto = body.photo;
 
   try {
     if ('photo' in body) {
       const detection = await detectFaceFromBase64(body.photo);
 
       if (detection.face.length == 1) {
+        console.log('detection.face.length', detection.face.length);
         const embedding = detection.face[0].embedding;
         result.finded = await human.match.find(embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
         result.detectFace = true;
         result.index = result.finded.index;
+        log.info('file name from faceID', result.index, db[result.index]);
 
 
         if (result.index > -1) {
           result.uid = db[result.index].uid || '';
+          // successPhotoFileName = db[result.index].file;
 
-          //log.info(db[result.index]);
+          if (forUserUID === '') {
+            if (db[result.index].countFileUse === undefined) {
+              db[result.index].countFileUse = 0;
+            }
+            db[result.index].countFileUse += 1;
+            db[result.index].dateLastFinded = new Date();
+            saveDB();
+          }
         }
 
         if (forUserUID !== '') {
@@ -120,7 +132,6 @@ async function findUserOnFoto(body, forUserUID = '') {
               result.userError = userInfo[result.uid];
               result.uid = forUserUID;
               result.comment = 'result.uid !== forUserUID';
-
               result.addedFoto = true;
             }
           }
@@ -143,7 +154,7 @@ async function findUserOnFoto(body, forUserUID = '') {
 
         if (result.addedFoto) {
           const file = `${Date.now()}.png`;
-          const newEmbedding = { uid: result.uid, embedding: embedding, file: file };
+          const newEmbedding = { uid: result.uid, embedding: embedding, file: file, countFileUse: 0 };
           db.push(newEmbedding)
           embeddings = db.map((rec) => rec.embedding);
           saveDB();
@@ -367,13 +378,30 @@ function deleteFotosUserAll(uid) {
 
 function getUserFotoList(uid) {
   const userEmb = db.filter(user => user.uid === uid);
-  const files = userEmb.map(user => (user.file ? user.file : "notFound.png"));
 
-  return files;
+  const fotoUse = userEmb.reduce((acc, user) => {
+    if (user.file) {
+      const countFileUse = user.countFileUse || 0;
+      acc[user.file] = (acc[user.file] || 0) + countFileUse;
+    }
+    return acc;
+  }, {});
+
+  const fotoUseArray = Object.keys(fotoUse).map(fileName => ({
+    fileName: fileName,
+    countFileUse: fotoUse[fileName],
+    userId: uid,
+    dateLastFinded: userEmb.find(user => user.file === fileName)?.dateLastFinded || null
+  }));
+
+  log.info('fotoUseArray', fotoUseArray);
+
+  return fotoUseArray;
 }
 
 function deleteUserFoto(uid, file) {
   try {
+    log.info('deleteUserFoto', uid, file);
     db = db.filter(item => !(item.uid === uid && item.file === file));
     embeddings = db.map((rec) => rec.embedding);
     saveDB();
