@@ -485,6 +485,21 @@
     text-wrap: nowrap;
     text-overflow: ellipsis;
   }
+
+  .isNewFoto {
+    position: relative;
+  }
+
+  .isNewFoto::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 50%;
+  }
 </style>
 
 <script id="listContainer" type="text/x-handlebars-template">
@@ -536,7 +551,7 @@
               <a href='tel:{{tel2}}'><i class='bi bi-telephone-fill btn btn-light'>2</i></a>
             </div>
           {{/if}}
-          <div class='photoCount userCountFaceID btn btn-light'>
+          <div class='photoCount userCountFaceID btn btn-light {{#if isNewFoto}}isNewFoto{{/if}}'>
             <i class='bi bi-image'></i>
             <div class='counFoto'>{{count}}</div>
           </div>
@@ -1112,6 +1127,7 @@
             $('#userFoto').appendTo(row);
             $('.tabelContainer').hide();
             $('.fotoContainer').hide();
+            row.find('.isNewFoto').removeClass('isNewFoto');
             fotoContainer.show(100);
             fotoContainer.attr('UserID', newUserID);
 
