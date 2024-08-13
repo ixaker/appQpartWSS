@@ -66,6 +66,7 @@ async function detectFaceFromBase64(img) {
     const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
     const buffer = Buffer.from(base64Image, 'base64');
     const result = await detectFaceFromBuffer(buffer);
+    log.info('detectFaceFromBase64 result');
 
     return result;
   } catch (error) {
@@ -79,9 +80,69 @@ async function detectFaceFromBuffer(buffer) {
   const tensor = human.tf.node.decodeImage(buffer);
   const result = await human.detect(tensor, humanConfig);
   human.tf.dispose(tensor);
-
   return result;
 }
+
+async function getEmbeddingFromPhoto(photo) {
+  log.info('start getEmbeddingFromPhoto');
+
+  try {
+    const detection = await detectFaceFromBase64(photo);
+    if (detection && detection.face && detection.face.length === 1) {
+      const embedding = detection.face[0].embedding;
+      return embedding;
+    }
+  } catch (error) {
+    log.error('Failed to get embedding from photo:', error);
+    return null;
+  }
+}
+
+async function savePhotoOnly(body, userUID) {
+  console.log('savePhotoOnly');
+
+  const result = { success: false, error: false, exception: false };
+
+  try {
+    if ('photo' in body) {
+      const photo = body.photo;
+      const file = `${Date.now()}.png`;
+
+      console.log('Received photo for userUID:', userUID);
+
+      const embedding = await getEmbeddingFromPhoto(photo);
+      console.log('Obtained embedding:', embedding);
+
+      if (!embedding) {
+        console.log('Error: No embedding obtained.');
+        result.error = true;
+        return result;
+      }
+
+      await saveUserFoto(userUID, photo, file);
+      console.log('Photo saved successfully. File path:', file);
+
+      const newEmbedding = { uid: userUID, embedding: embedding, file: file, countFileUse: 0 };
+      db.push(newEmbedding);
+      embeddings = db.map((rec) => rec.embedding);
+      saveDB();
+
+      console.log('Database updated. New embedding added:', newEmbedding);
+
+      result.success = true;
+    } else {
+      console.log('Error: No photo found in body.');
+      result.error = true;
+    }
+  } catch (error) {
+    console.error(`Failed to save photo only: ${error}`);
+    result.exception = true;
+  }
+
+  console.log('Function result:', result);
+  return result;
+}
+
 
 async function findUserOnFoto(body, forUserUID = '') {
   console.log('------------- findUserOnFoto forUserUID', forUserUID);
@@ -91,9 +152,10 @@ async function findUserOnFoto(body, forUserUID = '') {
   try {
     if ('photo' in body) {
       const detection = await detectFaceFromBase64(body.photo);
+      // log.info('findUserOnFoto detection', detection);
 
-      if (detection.face.length == 1) {
-        console.log('detection.face.length', detection.face.length);
+      if (detection && detection.face && detection.face.length === 1) {
+        // console.log('detection.face.length', detection.face.length);
         const embedding = detection.face[0].embedding;
         result.finded = await human.match.find(embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
@@ -111,6 +173,8 @@ async function findUserOnFoto(body, forUserUID = '') {
             if (db[result.index].countFileUse === undefined) {
               db[result.index].countFileUse = 0;
             }
+            db[result.index].countFileUse += 1;
+            db[result.index].dateLastFinded = new Date();
 
             let folderPath = path.join(usersFolderPath, result.uid);
             const filePath = path.join(folderPath, db[result.index].file);
@@ -431,6 +495,7 @@ function deleteUserFoto(uid, file) {
 
 module.exports = {
   initHuman,
+  savePhotoOnly,
   findUserOnFoto,
   saveDB,
   getUserInfo,
