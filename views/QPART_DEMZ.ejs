@@ -91,7 +91,7 @@
   <div class="commandPanel">
     <h4 class="titlePage2">Заявка на закупку</h4>
     <h4 id="orderNum" class="titlePage2">0001</h4>
-    <i id="closeZakupkaInfo" class="bi bi-x-circle commandBtn"></i>
+    <i id="closeDocInfo" class="bi bi-x-circle commandBtn"></i>
   </div>
   <div id="zakupkaContainer">
     <div class="form-group">
@@ -295,9 +295,20 @@
         $('#docInfo').show();
       }
 
+      function docInfoClose() {
+        $('#docInfo').hide();
+        $('#main').show();
+      }
+
       $('#addNew').on('click', function (event) {
         clickAnimate(this);
         docInfoOpen();
+      });
+
+      $('#closeDocInfo').on('click', function () {
+        console.log('closeDocInfo');
+        clickAnimate(this);
+        docInfoClose();
       });
     });
   </script>

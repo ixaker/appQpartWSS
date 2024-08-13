@@ -28,6 +28,7 @@ async function sendImageAndMessage(base64Data, messageText, base64Data2 = null) 
     const imageBuffer = Buffer.from(base64Image, 'base64');
     console.log('begin sendImageAndMessage ---------- ')
 
+
     let mediaGroup = [
       { type: 'photo', media: imageBuffer, caption: messageText }
     ];
