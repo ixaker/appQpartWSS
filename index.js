@@ -367,8 +367,6 @@ app.post('/detectFace', async (req, res) => {
           result.token = jwt.sign(result.user, secret, options);
           result.version = version;
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}, Оригінальне фото: ${result.originalPhotoName}`;
-          log.info('req.body.photo', req.body.photo);
-          log.info('req.body.originalPhoto', result.originalPhoto);
           telegramBot.sendImageAndMessage(req.body.photo, message, result.originalPhoto);
         } else {
         }
@@ -454,6 +452,13 @@ app.post('/saveFace', async (req, res) => {
   // log.info('saveFace', req.body);
 
   let result = await faceID.findUserOnFoto(req.body, req.body.uid);
+
+  res.send(result);
+});
+
+app.post('/savePhotoOnly', async (req, res) => {
+  log.info('savePhotoOnly')
+  let result = await faceID.savePhotoOnly(req.body, req.body.uid);
 
   res.send(result);
 });
