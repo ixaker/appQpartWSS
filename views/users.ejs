@@ -18,12 +18,9 @@
   }
 
   .userFotoContent {
-    min-width: 150px;
-    min-height: 150px;
-    object-fit: cover;
+    object-fit: contain;
     background-color: #f0f0f0;
     width: 100%;
-    height: 100%;
   }
 
   .userFotoDelete {
@@ -1236,47 +1233,52 @@
         });
 
         $('#userList').on('click', '.userFotoDelete', function (event) {
-          console.log('userFotoDelete click');
-          if (!userRights.canDeleteFoto) return;
-          let file = $(this).siblings('.userFotoContent').attr('alt');
-          let indexFoto = $(this).attr('indexFoto');
-          let UserID = $(this).closest('.plateListItem').attr('id');
-          let fotoForDelete = $(this).closest('.userFoto');
-          console.log('fotoForDelete, file', fotoForDelete, file);
-          let deleteFoto = confirm('Ви впевнені, що хочете видалити цю фотографію?');
-          console.log('UserID, file, indexFoto', UserID, file, indexFoto);
+          console.log('userFotoDelete click', this);
+          clickAnimate(this);
+          console.log('userFotoDelete after animate');
+          setTimeout(() => {
+            if (!userRights.canDeleteFoto) return;
+            let file = $(this).siblings('.userFotoContent').attr('alt');
+            let indexFoto = $(this).attr('indexFoto');
+            let UserID = $(this).closest('.plateListItem').attr('id');
+            let fotoForDelete = $(this).closest('.userFoto');
+            console.log('fotoForDelete, file', fotoForDelete, file);
+            const deleteFoto = confirm('Ви впевнені, що хочете видалити цю фотографію?');
 
-          if (deleteFoto) {
-            try {
-              $.ajax({
-                url: '/userListFoto',
-                type: 'DELETE',
-                dataType: 'json',
-                data: { UserID: UserID, file: file, indexFoto: indexFoto },
-                complete: function (response) {
-                  console.log('on complete');
-                  console.log(fotoForDelete);
-                  NProgress.done();
-                  let userCard = $(fotoForDelete).closest('.plateListItem');
-                  let userCount = $(userCard).find('.counFoto');
-                  let text = $(userCount).text();
-                  let count = Number(text);
-                  userCount.text(count - 1);
-                  console.log('userCard', userCard);
-                  console.log('userCount', userCount);
-                  console.log('text', text);
-                  if (count <= 1) {
-                    userCard.find('#btnDeleteAllFoto').remove();
-                  }
+            console.log('UserID, file, indexFoto', UserID, file, indexFoto);
 
-                  $(fotoForDelete).remove();
-                },
-              });
-            } catch (error) {
-              console.log('error', error);
-              NProgress.done();
+            if (deleteFoto) {
+              try {
+                $.ajax({
+                  url: '/userListFoto',
+                  type: 'DELETE',
+                  dataType: 'json',
+                  data: { UserID: UserID, file: file, indexFoto: indexFoto },
+                  complete: function (response) {
+                    console.log('on complete');
+                    console.log(fotoForDelete);
+                    NProgress.done();
+                    let userCard = $(fotoForDelete).closest('.plateListItem');
+                    let userCount = $(userCard).find('.counFoto');
+                    let text = $(userCount).text();
+                    let count = Number(text);
+                    userCount.text(count - 1);
+                    console.log('userCard', userCard);
+                    console.log('userCount', userCount);
+                    console.log('text', text);
+                    if (count <= 1) {
+                      userCard.find('#btnDeleteAllFoto').remove();
+                    }
+
+                    $(fotoForDelete).remove();
+                  },
+                });
+              } catch (error) {
+                console.log('error', error);
+                NProgress.done();
+              }
             }
-          }
+          }, 200);
         });
 
         $('.userActions').hide();
