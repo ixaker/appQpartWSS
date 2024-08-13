@@ -70,19 +70,6 @@
     min-width: 400px;
   }
 
-  #groupBtn {
-    display: flex;
-    justify-content: space-between;
-    gap: 2vw;
-  }
-
-  .btnTop {
-    font-size: 1.2em;
-    width: 48%;
-    padding: 10px;
-    margin: 0 !important;
-  }
-
   /* #btnLoadUserList {
     font-size: 1em;
     margin: auto;
@@ -265,6 +252,30 @@
     justify-content: center;
   }
 
+  #groupBtn {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4%;
+  }
+
+  #groupBtn button {
+    flex: 1 1 48%;
+    max-width: 48%;
+  }
+
+  .groupSearch {
+    flex: 1 1 100%;
+    margin-top: 10px; /* Відступ між рядами */
+  }
+
+  .btnTop {
+    font-size: small;
+    width: 48%;
+    padding: 10px;
+    margin: 0 !important;
+  }
+
   @media (max-width: 700px) {
     #content {
       min-width: 375px;
@@ -290,26 +301,6 @@
       font-size: 2em;
     }
 
-    .btn {
-      padding: 5px;
-    }
-
-    #groupBtn {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-
-    .btnTop {
-      font-size: small;
-      padding: 12px;
-      width: 48%;
-    }
-
-    .groupSearch {
-      font-size: 1.5em;
-      width: 100%;
-    }
     .input-group {
       width: 100%;
       padding: 5px;
