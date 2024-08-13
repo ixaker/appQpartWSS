@@ -550,6 +550,11 @@
           <div class='addFoto btn btn-light' onclick="addPhoto(this, '{{uid}}', '{{name}}', '{{user.count}}');">
             <i class='bi bi-person-plus-fill'></i>
           </div>
+          <div class='addFoto btn btn-light' onclick="addPhotoFromFile(this, '{{uid}}', '{{name}}', '{{user.count}}');">
+            <input type="file" class="fileInput" id="fileInput_{{uid}}" style="display: none;" accept="image/*">
+            <i class="bi bi-download"></i>
+          </div>
+
           <div class='arrival btn btn-light'>
             <i class='bi bi-person-down'></i>
             {{lastProhod}}
@@ -757,6 +762,28 @@
         }
       }
 
+      $(document).on('change', '.fileInput', function (event) {
+        uploadFromFile(event.target);
+      });
+
+      function addPhotoFromFile(btn, uid, name, count) {
+        console.log('addPhotoFromFile', btn, uid, name, count);
+
+        if (!userRights.canAddFoto) {
+          toastr.error('У Вас немає прав додавати фото!');
+          return;
+        }
+
+        selectedUID = uid;
+        const fileInputId = `fileInput_${uid}`;
+        const fileInput = document.getElementById(fileInputId);
+
+        if (fileInput) {
+          fileInput.value = '';
+          fileInput.click();
+        }
+      }
+
       function closeVideoScaner() {
         console.log('closeVideoScaner');
         $('#blockFormForVideoScaner').hide();
@@ -839,6 +866,53 @@
           }, 500);
           toastr['error'](error);
         }
+      }
+
+      function fileToBase64(file, callback) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          callback(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function uploadFromFile(fileInput) {
+        const file = fileInput.files[0];
+        console.log('file from uploadFromFile', file);
+        const fileInputId = $(fileInput).attr('id');
+        const selectedUID = fileInputId.split('_')[1];
+
+        if (!file) {
+          toastr.error('Будь ласка, виберіть файл.');
+          return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          toastr.error('Файл завеликий. Максимальний розмір — 5MB.');
+          return;
+        }
+
+        fileToBase64(file, function (base64Image) {
+          $.post(
+            '/savePhotoOnly',
+            { photo: base64Image, uid: selectedUID },
+            function (response) {
+              console.log('response from savePhotoOnly', response);
+              if (response.success) {
+                toastr['info']('Фото успішно збережено!');
+              } else if (response.error) {
+                toastr['error']('Помилка при збереженні фото.');
+              } else if (response.exception) {
+                toastr['error']('Виникла невідома помилка.');
+              }
+            },
+            'json'
+          ).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log('error - /savePhotoOnly');
+            console.error('--------------- error from fail --------------', textStatus, errorThrown);
+            toastr['error']('ERROR');
+          });
+        });
       }
 
       function deletePhotos(e) {
@@ -1101,6 +1175,7 @@
           const newUserID = row.attr('id');
           const oldUserID = $('#userFoto').attr('UserID') || '';
           let fotoContainer = $(this).closest('.plateListItem').find('.fotoContainer');
+          let container = $(this).closest('.plateListItem');
           console.log('fotoContainer', fotoContainer);
 
           if (hideFoto) {
@@ -1149,6 +1224,11 @@
                   } else {
                     generateFromTemplate('#fotoEmptyTemplate', response, fotoContainer);
                   }
+                  console.log('fotoContainer[0]', fotoContainer[0]);
+                  container[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
                   NProgress.done();
                 },
               });
