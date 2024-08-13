@@ -604,7 +604,9 @@
         />
         <span class='userFotoCount'>{{countFileUse}}</span>
         <span class='userFotoDelete'> <i class='bi bi-trash'></i></span>
-        <div class='dateLastFinded'> {{dateLastFinded}}</div>
+        {{#if dateLastFinded}}
+          <div class='dateLastFinded'> {{dateLastFinded}}</div>
+        {{/if}}
       </div>
     {{/each}}
   </div>
