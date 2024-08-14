@@ -371,7 +371,15 @@ function getUserInfoByEmpCode(empCode) {
 }
 
 async function updateUser(user) {
-  userInfo[user.uid] = user;
+  log.info('updateUser user=', user)
+  if (user.fired) {
+    delete userInfo[user.uid];
+    db = db.filter(emb => emb.uid !== user.uid);
+
+  } else {
+    userInfo[user.uid] = user;
+  }
+
   saveDB();
 }
 
@@ -455,6 +463,7 @@ function deleteFotosUserAll(uid) {
 
 function getUserFotoList(uid) {
   const userEmb = db.filter(user => user.uid === uid);
+  if (!userInfo[uid]) return [];
   userInfo[uid].isNewFoto = false;
   log.info('isNewFoto delete from user', userInfo[uid], userInfo[uid].isNewFoto)
   saveDB();

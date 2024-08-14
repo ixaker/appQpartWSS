@@ -100,13 +100,19 @@
     justify-content: center;
   }
 
+  .commandBtn {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
   #btnDeleteAllFoto {
-    margin-top: 10px;
     display: flex;
     align-items: center;
     gap: 5px;
     display: flex;
     justify-content: center;
+    flex-grow: 1;
   }
 
   .userList {
@@ -414,6 +420,7 @@
   .fotoContainer {
     display: none;
     text-align: center;
+    padding-top: 10px;
   }
 
   .hideTabel {
@@ -537,17 +544,11 @@
             <i class='bi bi-image'></i>
             <div class='counFoto'>{{count}}</div>
           </div>
-          <div class='addFoto btn btn-light' onclick="addPhoto(this, '{{uid}}', '{{name}}', '{{user.count}}');">
-            <i class='bi bi-person-plus-fill'></i>
-          </div>
-          <div class='addFoto btn btn-light' onclick="addPhotoFromFile(this, '{{uid}}', '{{name}}', '{{user.count}}');">
-            <input type="file" class="fileInput" id="fileInput_{{uid}}" style="display: none;" accept="image/*">
-            <i class="bi bi-download"></i>
-          </div>
+
 
           <div class='arrival btn btn-light'>
             <i class='bi bi-person-down'></i>
-            {{lastProhod}}
+            {{timeFromLastProhod}}
           </div>
         </div>
         <div class='info displayFlex'></div>
@@ -593,7 +594,16 @@
 </script>
 
 <script id="fotoTemplate" type="text/x-handlebars-template">
-  <div id='btnDeleteAllFoto' class='btn btn-secondary' onClick='deletePhotos(event)'>Видалити всі фото</div>
+  <div class='commandBtn'>
+    <div id='btnDeleteAllFoto' class='btn btn-secondary' onClick='deletePhotos(event)'>Видалити всі фото</div>
+    <div class='addFoto btn btn-light' onclick="addPhoto(this, '{{uid}}', '{{name}}', '{{user.count}}');">
+      <i class='bi bi-person-plus-fill'></i>
+    </div>
+    <div class='addFoto btn btn-light' onclick="addPhotoFromFile(this, '{{uid}}', '{{name}}', '{{user.count}}');">
+      <input type='file' class='fileInput' id='fileInput_{{uid}}' style='display: none;' accept='image/*' />
+      <i class='bi bi-download'></i>
+    </div>
+  </div>
   <div class='userFotoContainer'>
     {{#each this}}
       <div class='userFoto attachedImg'>
@@ -1036,12 +1046,16 @@
           const containerId = `#${data.uid}`;
 
           if ($(containerId).length) {
-            $(containerId).find('.itemContainer').empty();
-          } else {
+            if (data.fired) {
+              $(containerId).remove();
+            } else {
+              // $(containerId).find('.itemContainer').empty();
+              // generateContentForBlock(data.uid, data);
+            }
+          } else if (!data.fired) {
             const newContainerHtml = listContainerTemplate([data]);
             $(platesID).prepend(newContainerHtml);
           }
-
           generateContentForBlock(data.uid, data);
         };
 
@@ -1050,9 +1064,60 @@
           document.getElementById('userList').innerHTML = html;
         }
 
+        function calcLastProhod(lastProhod) {
+          const inputDate = new Date(lastProhod);
+          const currentDate = new Date();
+          const diffInMilliseconds = currentDate - inputDate;
+
+          const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+          const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+          function getDayLabel(days) {
+            if (days % 10 === 1 && days % 100 !== 11) {
+              return 'день';
+            } else if (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20)) {
+              return 'дня';
+            } else {
+              return 'днів';
+            }
+          }
+
+          function getHourLabel(hours) {
+            if (hours % 10 === 1 && hours % 100 !== 11) {
+              return 'година';
+            } else if (hours % 10 >= 2 && hours % 10 <= 4 && (hours % 100 < 10 || hours % 100 >= 20)) {
+              return 'години';
+            } else {
+              return 'годин';
+            }
+          }
+
+          if (diffInDays > 100) {
+            return 'ніколи';
+          } else if (diffInDays >= 1) {
+            return `${diffInDays} ${getDayLabel(diffInDays)}`;
+          } else {
+            return `${diffInHours} ${getHourLabel(diffInHours)}`;
+          }
+        }
+
+        // Приклад використання
+        const timeDifference = calcLastProhod('2024-07-19T06:26:00');
+        console.log(timeDifference); // Виведе відповідний результат
+
         callbackAfterLoadData = function (data) {
           console.log('callbackAfterLoadData data', data);
           data.passRender = true;
+
+          data.list.forEach(item => {
+            if (item.lastProhod) {
+              item.timeFromLastProhod = calcLastProhod(item.lastProhod);
+              console.log('');
+            } else {
+              item.timeFromLastProhod = '';
+            }
+          });
+
           render(data.list);
         };
 
