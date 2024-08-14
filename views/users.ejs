@@ -1106,6 +1106,10 @@
 
         function calcLastProhod(lastProhod) {
           const inputDate = new Date(lastProhod);
+
+          if (isNaN(inputDate.getTime())) {
+            return '';
+          }
           const currentDate = new Date();
           const diffInMilliseconds = currentDate - inputDate;
 
@@ -1140,10 +1144,6 @@
             return `${diffInHours} ${getHourLabel(diffInHours)}`;
           }
         }
-
-        // Приклад використання
-        const timeDifference = calcLastProhod('2024-07-19T06:26:00');
-        console.log(timeDifference); // Виведе відповідний результат
 
         callbackAfterLoadData = function (data) {
           console.log('callbackAfterLoadData data', data);
