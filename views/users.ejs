@@ -398,6 +398,8 @@
     /* width: 50%; */
     text-align: right;
     font-size: medium;
+    display: flex;
+    gap: 5px;
   }
 
   .menuContainer {
@@ -580,7 +582,8 @@
 
           <div class='arrival btn btn-light'>
             <i class='bi bi-person-down'></i>
-            {{timeFromLastProhod}}
+            <div class="timeContainer">{{timeFromLastProhod}}</div>
+
           </div>
         </div>
         <div class='info displayFlex'></div>
@@ -1239,7 +1242,7 @@
           $('.plateListItem').each(function () {
             let found = true;
             let elements = $(this)
-              .find('.userName, .userProfaFaceID, .empCode, .arrival, .profa')
+              .find('.userName, .userProfaFaceID, .empCode, .timeContainer, .profa')
               .map(function () {
                 return { el: $(this) };
               })
