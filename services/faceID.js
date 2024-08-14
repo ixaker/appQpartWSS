@@ -63,10 +63,10 @@ async function detectFaceFromBase64(img) {
   log.info('start detectFaceFromBase64');
 
   try {
-    const base64Image = img.replace(/^data:image\/jpeg;base64,/, '');
+    const base64Image = img.replace(/^data:image\/[^;]+;base64,/, '');
     const buffer = Buffer.from(base64Image, 'base64');
     const result = await detectFaceFromBuffer(buffer);
-    log.info('detectFaceFromBase64 result');
+    log.info('detectFaceFromBase64 result', result);
 
     return result;
   } catch (error) {
@@ -108,7 +108,7 @@ async function savePhotoOnly(body, userUID) {
       const photo = body.photo;
       const file = `${Date.now()}.png`;
 
-      console.log('Received photo for userUID:', userUID);
+      console.log('Received photo for userUID:', userUID, photo.substring(0, 50) + '...');
 
       const embedding = await getEmbeddingFromPhoto(photo);
       console.log('Obtained embedding:', embedding);
@@ -145,7 +145,7 @@ async function savePhotoOnly(body, userUID) {
 
 
 async function findUserOnFoto(body, forUserUID = '') {
-  console.log('------------- findUserOnFoto forUserUID', forUserUID);
+  console.log('findUserOnFoto forUserUID', forUserUID);
   let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID: forUserUID };
   result.originalPhoto = body.photo;
 
@@ -173,8 +173,11 @@ async function findUserOnFoto(body, forUserUID = '') {
             if (db[result.index].countFileUse === undefined) {
               db[result.index].countFileUse = 0;
             }
-            db[result.index].countFileUse += 1;
-            db[result.index].dateLastFinded = new Date();
+
+            if (result.finded.similarity > 0.72) {
+              db[result.index].countFileUse += 1;
+              db[result.index].dateLastFinded = new Date();
+            }
 
             let folderPath = path.join(usersFolderPath, result.uid);
             const filePath = path.join(folderPath, db[result.index].file);
