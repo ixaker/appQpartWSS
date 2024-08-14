@@ -1359,6 +1359,7 @@
         });
         $('#userList').on('click', '.userFotoDelete', function (event) {
           console.log('userFotoDelete click', this);
+          event.stopPropagation();
           clickAnimate(this);
           console.log('userFotoDelete after animate');
           setTimeout(() => {
