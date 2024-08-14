@@ -1,11 +1,12 @@
 function mediaviewer(element) {
-    console.log('mediaviewer start')
+    console.log('mediaviewer start', element)
     const $currentElement = $(element);
     const $img = $currentElement.find('.src-source');
-    console.log('$img', $img);
+
     const srcSource = $img.attr('src-source');
     const $attachedImgs = $('.attachedImg');
     let currentIndex = $attachedImgs.index($currentElement);
+    console.log('$currentElement, $img, srcSource, $attachedImgs, currentIndex', $currentElement, $img, srcSource, $attachedImgs, currentIndex);
 
     const $overlay = $('<div class="media-viewer-overlay"></div>');
 
@@ -15,11 +16,15 @@ function mediaviewer(element) {
 
     $overlay.append($closeBtn, $prevBtn, $nextBtn);
 
+    const $imageContainer = $('<div class="media-viewer-image-container"></div>');
+    $overlay.append($imageContainer);
+
     function updateOverlayContent(src, $element) {
         console.log('updateOverlayContent', src, typeof (src));
         $overlay.find('img, video').remove();
         $overlay.find('.play-icon').remove();
 
+        $imageContainer.css('transform', 'scale(1)');
 
         const startWord = src.slice(0, 4);
         console.log('startWord', startWord);
@@ -75,10 +80,22 @@ function mediaviewer(element) {
                     // Play icon already appended
                 });
             }
-            $overlay.append($mediaElement);
+            $imageContainer.append($mediaElement);
         } else if (startWord === 'blob') {
             const newElem = $element.clone().removeClass('source');
             $overlay.append(newElem);
+
+            console.log('nodeName', newElem.prop('tagName'));
+
+            if (newElem.prop('tagName') === 'VIDEO') {
+                newElem.attr('autoplay', '');
+
+                const $playIcon = $('<i class="bi bi-play media-viewer-play-icon play-icon"></i>');
+                $overlay.append($playIcon);
+            }
+        } else {
+            const newElem = $element.clone().removeClass('source');
+            $imageContainer.append(newElem);
 
             console.log('nodeName', newElem.prop('tagName'));
 
@@ -128,6 +145,12 @@ function mediaviewer(element) {
     const overlayElement = $overlay.get(0);
     const hammer = new Hammer(overlayElement);
 
+    hammer.get('pinch').set({ enable: true });
+    hammer.on('pinch', function (event) {
+        console.log('pinch', event.scale);
+        $imageContainer.css('transform', `scale(${event.scale})`);
+    });
+
     hammer.on('swipeleft', function () {
         clickAnimate(overlayElement);
         console.log('swipe left');
@@ -159,20 +182,9 @@ function mediaviewer(element) {
         }
     });
 
-    // let nextEvent = '';
+
     hammer.on('panmove', function (event) {
         console.log('event.center.x', event.center.x);
-        //     const end = event.center.x;
-        //     const screenWidth = window.innerWidth;
-        //     console.log('panstart screenWidth', screenWidth);
-        //     if (end < 50 || end > (screenWidth - 50)) {
-        //         console.log('overlay close');
-        //         nextEvent = 'close';
-        //     }
+
     })
-
-    // hammer.on('panend', function (event) {
-    //     if (nextEvent === 'close') $overlay.remove();
-    // })
-
 }
