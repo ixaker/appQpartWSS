@@ -94,16 +94,18 @@
     margin: 0 auto;
   }
 
-  .hideFoto {
-    margin: 10px auto 0 auto;
-    display: flex;
-    justify-content: center;
-  }
-
   .commandBtn {
     display: flex;
     justify-content: space-between;
     gap: 10px;
+  }
+
+  .fullCommandLine {
+    display: none;
+  }
+
+  .emptyCommandLine {
+    display: none;
   }
 
   #btnDeleteAllFoto {
@@ -419,8 +421,11 @@
 
   .fotoContainer {
     display: none;
-    text-align: center;
     padding-top: 10px;
+  }
+
+  .galleryContainer {
+    text-align: center;
   }
 
   .hideTabel {
@@ -503,7 +508,32 @@
       {{> ContentTemplate}}
     </div>
     <div class='tabelContainer'></div>
-    <div class='fotoContainer'></div>
+    <div class='fotoContainer'>
+      <div class='commandBtn fullCommandLine'>
+        <div id='btnDeleteAllFoto' class='btn btn-secondary' onClick='deletePhotos(event)'>Видалити всі фото</div>
+        <div class='addFoto addPhoto btn btn-lg btn-light'>
+          <i class='bi bi-person-plus-fill'></i>
+        </div>
+        <div class='addFoto addPhotoFromFile btn-lg btn btn-light'>
+          <input type='file' class='fileInput' id='fileInput_{{uid}}' style='display: none;' accept='image/*' />
+          <i class='bi bi-download'></i>
+        </div>
+      </div>
+
+      <div class='commandBtn emptyCommandLine'>
+        <div id='btnDeleteAllFoto' class='btn btn-secondary'>Немає фото</div>
+        <div class='addFoto addPhoto btn btn-lg btn-light'>
+          <i class='bi bi-person-plus-fill'></i>
+        </div>
+        <div class='addFoto addPhotoFromFile btn btn-lg btn-light'>
+          <input type='file' class='fileInput' id='fileInput_{{uid}}' style='display: none;' accept='image/*' />
+          <i class='bi bi-download'></i>
+        </div>
+      </div>
+
+      <div class="galleryContainer">
+      </div>
+    </div>
   </div>
 </script>
 
@@ -589,21 +619,19 @@
   {{/if}}
 </script>
 
-<script id="fotoEmptyTemplate" type="text/x-handlebars-template">
-  <div id='btnDeleteAllFoto' class='btn btn-secondary'>Немає фото</div>
-</script>
-
-<script id="fotoTemplate" type="text/x-handlebars-template">
+<!-- <script id="fotoEmptyTemplate" type="text/x-handlebars-template">
   <div class='commandBtn'>
-    <div id='btnDeleteAllFoto' class='btn btn-secondary' onClick='deletePhotos(event)'>Видалити всі фото</div>
-    <div class='addFoto btn btn-light' onclick="addPhoto(this, '{{uid}}', '{{name}}', '{{user.count}}');">
+    <div id='btnDeleteAllFoto' class='btn btn-secondary'>Немає фото</div>
+    <div class='addFoto addPhoto btn btn-light'>
       <i class='bi bi-person-plus-fill'></i>
     </div>
-    <div class='addFoto btn btn-light' onclick="addPhotoFromFile(this, '{{uid}}', '{{name}}', '{{user.count}}');">
+    <div class='addFoto addPhotoFromFile btn btn-light'>
       <input type='file' class='fileInput' id='fileInput_{{uid}}' style='display: none;' accept='image/*' />
       <i class='bi bi-download'></i>
     </div>
-  </div>
+</script> -->
+
+<script id="fotoTemplate" type="text/x-handlebars-template">
   <div class='userFotoContainer'>
     {{#each this}}
       <div class='userFoto attachedImg'>
@@ -678,12 +706,6 @@
       paggination="false"
     ></div>
 
-    <div id="userFoto" style="display: none">
-      <button type="button" class="btn btn-secondary btn-sm" id="btnDeleteAllFoto" onClick="deletePhotos(event)">
-        Видалити всі фото
-      </button>
-    </div>
-
     <div id="blockFormForVideoScaner" style="display: none">
       <div id="formVideoCamera">
         <video id="videoScaner" width="250" height="auto" autoplay></video>
@@ -747,6 +769,16 @@
         $('#btnStartScanFace').show();
       });
 
+      $();
+
+      $('#userList').on('click', '.addPhoto', function (e) {
+        const uid = $(this).closest('.plateListItem').attr('id');
+        const name = $(this).attr('name');
+        const count = $(this).attr('count');
+        console.log('this, uid, name, count', this, uid, name, count);
+        addPhoto(this, uid, name, count);
+      });
+
       function addPhoto(btn, uid, name, count) {
         console.log('addPhoto userRights', btn, uid, name, count, userRights.canAddFoto);
 
@@ -755,7 +787,7 @@
           return;
         }
         selectedUID = uid;
-        console.log('hasCamera', hasCamera);
+
         if (hasCamera) {
           $('#selectedUserForVideoScaner').text(name);
           $('#infoForSelectedUserForVideoScaner').text($('#' + selectedUID + ' .userCountFaceID').text());
@@ -767,6 +799,14 @@
 
       $(document).on('change', '.fileInput', function (event) {
         uploadFromFile(event.target);
+      });
+
+      $('#userList').on('click', '.addPhotoFromFile ', function (e) {
+        const uid = $(this).closest('.plateListItem').attr('id');
+        const name = $(this).attr('name');
+        const count = $(this).attr('count');
+        console.log('this, uid, name, count', this, uid, name, count);
+        addPhotoFromFile(this, uid, name, count);
       });
 
       function addPhotoFromFile(btn, uid, name, count) {
@@ -937,7 +977,7 @@
           const fotoContainer = $(target).closest('.plateListItem').find('.userFotoContainer');
           fotoContainer.children().remove();
           fotoContainer.hide();
-          $('#btnDeleteAllFoto').remove();
+          $('.commandBtn').remove();
         });
       }
 
@@ -1227,7 +1267,6 @@
           });
         });
 
-        let hideFoto;
         // клик по количеству фото .userCountFaceID
         $('#userList').on('click', '.userCountFaceID', function (event) {
           console.log('userCountFaceID');
@@ -1238,25 +1277,26 @@
           const newUserID = row.attr('id');
           const oldUserID = $('#userFoto').attr('UserID') || '';
           let fotoContainer = $(this).closest('.plateListItem').find('.fotoContainer');
-          let container = $(this).closest('.plateListItem');
-          console.log('fotoContainer', fotoContainer);
+          let galleryContainer = $(this).closest('.plateListItem').find('.galleryContainer');
+          let fullCommandLine = $(this).closest('.plateListItem').find('.fullCommandLine');
+          let emptyCommandLine = $(this).closest('.plateListItem').find('.emptyCommandLine');
 
-          if (hideFoto) {
-            hideFoto.remove();
-          }
+          let container = $(this).closest('.plateListItem');
+
           if (newUserID !== oldUserID) {
             console.log('newUserID !== oldUserID');
-            $('#userFoto').hide();
             console.log('row.find(.tabelContainer);', row.find('.tabelContainer'));
           }
 
           if (fotoContainer.is(':visible')) {
             fotoContainer.hide(100);
+            fullCommandLine.hide();
+            emptyCommandLine.hide();
           } else {
-            fotoContainer.children().remove();
-            $('#userFoto').appendTo(row);
             $('.tabelContainer').hide();
             $('.fotoContainer').hide();
+            fullCommandLine.hide();
+            emptyCommandLine.hide();
             row.find('.isNewFoto').removeClass('isNewFoto');
             fotoContainer.show(100);
             fotoContainer.attr('UserID', newUserID);
@@ -1283,9 +1323,10 @@
 
                   console.log('dataForTemplate', dataForTemplate);
                   if (response.length > 0) {
-                    generateFromTemplate('#fotoTemplate', dataForTemplate, fotoContainer);
+                    fullCommandLine.css('display', 'flex');
+                    generateFromTemplate('#fotoTemplate', dataForTemplate, galleryContainer);
                   } else {
-                    generateFromTemplate('#fotoEmptyTemplate', response, fotoContainer);
+                    emptyCommandLine.css('display', 'flex');
                   }
                   console.log('fotoContainer[0]', fotoContainer[0]);
                   container[0].scrollIntoView({
@@ -1304,7 +1345,6 @@
         $(document).on('click', '.hideTabel', function () {
           console.log('hideTabel');
           $('.tabelContainer').hide();
-          // $('.hideFoto').hide();
         });
 
         $('#userList').on('click', '.userFoto', function (event) {
