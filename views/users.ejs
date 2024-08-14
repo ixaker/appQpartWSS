@@ -15,6 +15,8 @@
     height: auto;
     max-width: 220px;
     position: relative;
+    display: flex;
+    align-items: center;
   }
 
   .userFotoContent {
@@ -562,8 +564,8 @@
         <thead>
           <tr>
             <th style='width: 50%'>Дата</th>
-            <th style='width: 25%'>Час приходу</th>
-            <th style='width: 25%'>Час уходу</th>
+            <th style='width: 25%'>Прихід</th>
+            <th style='width: 25%'>Ухід</th>
           </tr>
         </thead>
         <tbody>
@@ -594,10 +596,11 @@
   <div id='btnDeleteAllFoto' class='btn btn-secondary' onClick='deletePhotos(event)'>Видалити всі фото</div>
   <div class='userFotoContainer'>
     {{#each this}}
-      <div class='userFoto'>
+      <div class='userFoto attachedImg'>
         <img
-          class='userFotoContent'
+          class='userFotoContent src-source'
           src='/foto/{{userId}}/{{fileName}}'
+          src-source='/foto/{{userId}}/{{fileName}}'
           alt='{{fileName}}'
           title='{{fileName}}'
           onerror="this.src='/img/emptyUserPhoto.png'"
@@ -883,6 +886,7 @@
         }
 
         fileToBase64(file, function (base64Image) {
+          NProgress.start();
           $.post(
             '/savePhotoOnly',
             { photo: base64Image, uid: selectedUID },
@@ -897,11 +901,16 @@
               }
             },
             'json'
-          ).fail(function (jqXHR, textStatus, errorThrown) {
-            console.log('error - /savePhotoOnly');
-            console.error('--------------- error from fail --------------', textStatus, errorThrown);
-            toastr['error']('ERROR');
-          });
+          )
+            .done(function () {
+              NProgress.done();
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+              console.log('error - /savePhotoOnly textStatus, errorThrown', textStatus, errorThrown);
+              console.error('error from fail');
+              toastr['error']('ERROR');
+              NProgress.done();
+            });
         });
       }
 
@@ -945,7 +954,6 @@
       }
 
       function updateFaceID() {
-        return;
         NProgress.start();
         if (!confirm('Ви впевнені, що хочете оновити FaceID?')) {
           return;
@@ -1123,7 +1131,7 @@
           $('.plateListItem').each(function () {
             let found = true;
             let elements = $(this)
-              .find('.userName, .userProfaFaceID, .empCode, .arrival')
+              .find('.userName, .userProfaFaceID, .empCode, .arrival, .profa')
               .map(function () {
                 return { el: $(this) };
               })
@@ -1234,6 +1242,10 @@
           // $('.hideFoto').hide();
         });
 
+        $('#userList').on('click', '.userFoto', function (event) {
+          console.log('click on photo', this);
+          mediaviewer(this);
+        });
         $('#userList').on('click', '.userFotoDelete', function (event) {
           console.log('userFotoDelete click', this);
           clickAnimate(this);
