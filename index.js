@@ -121,14 +121,11 @@ app.use(express.static('static', {
 // Прокси для всех запросов к /auth_files/photo/*
 app.use('/auth_files/photo/*', proxy('http://10.8.0.4', {
   proxyReqPathResolver: (req) => {
-    // Перенаправляем запрос к тому же пути на внутреннем сервере
     return req.originalUrl;
   },
   userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
-    // Устанавливаем тип контента
     userRes.setHeader('Content-Type', 'image/jpeg'); // Замените на нужный вам тип изображения
 
-    // Устанавливаем заголовки для кэширования
     const maxAge = 60 * 60 * 24 * 30; // 30 дней в секундах
     userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
     userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
@@ -366,7 +363,8 @@ app.post('/detectFace', async (req, res) => {
         if (result.finded.similarity > 0.72) {
           result.token = jwt.sign(result.user, secret, options);
           result.version = version;
-          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}, Оригінальне фото: ${result.originalPhotoName}`;
+          const origin = test ? 'Тестова база' : "Робоча база";
+          message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}, Оригінальне фото: ${result.originalPhotoName}. ${origin}`;
           telegramBot.sendImageAndMessage(req.body.photo, message, result.originalPhoto);
         } else {
         }
