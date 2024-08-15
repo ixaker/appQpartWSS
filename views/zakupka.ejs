@@ -979,11 +979,13 @@
 </style>
 
 <script id="img-template" type="text/x-handlebars-template">
-  {{#each this}}
-    <div class='attachedImg'>
-      <img src='{{src}}' src-source='{{source}}' class='imgSmall src-source' />
-    </div>
-  {{/each}}
+  <div class='attachedImgContainer'>
+    {{#each this}}
+      <div class='attachedImg'>
+        <img src='{{src}}' src-source='{{source}}' class='imgSmall src-source' />
+      </div>
+    {{/each}}
+  </div>
 </script>
 
 <script>
