@@ -347,6 +347,9 @@
     top: 44px;
   }
 
+  .login {
+  }
+
   .phone {
     display: flex;
     gap: 5px;
@@ -395,7 +398,6 @@
   }
 
   .arrival {
-    /* width: 50%; */
     text-align: right;
     font-size: medium;
     display: flex;
@@ -501,15 +503,16 @@
 </style>
 
 <script id="listContainer" type="text/x-handlebars-template">
-  {{#each this}}
-    {{> ContainerTemplate}}
+  {{#each items}}
+    {{> ContainerTemplate canLoginUser=../canLoginUser}}
+
   {{/each}}
 </script>
 
 <script id="ContainerTemplate" type="text/x-handlebars-template">
   <div id='{{uid}}' class='plateListItem'>
     <div class='itemContainer'>
-      {{> ContentTemplate}}
+      {{> ContentTemplate canLoginUser=canLoginUser}}
     </div>
     <div class='tabelContainer'></div>
     <div class='fotoContainer'>
@@ -564,6 +567,15 @@
           <div class='profa'>{{profa}}</div>
         </div>
         <div class='actionRow'>
+          {{#if canLoginUser}}
+          <div class='login'>
+
+
+
+              <i class="bi bi-box-arrow-in-right btn btn-light btn-login"></i>
+            </div>
+          {{/if}}
+
           <div class='phone'>
             {{#if tel1}}
               <a href='tel:{{tel1}}'><i class='bi bi-telephone-fill btn btn-light'>{{#if tel2}}1{{/if}}</i></a>
@@ -578,8 +590,6 @@
             <i class='bi bi-image'></i>
             <div class='counFoto'>{{count}}</div>
           </div>
-
-
           <div class='arrival btn btn-light'>
             <i class='bi bi-person-down'></i>
             <div class="timeContainer">{{timeFromLastProhod}}</div>
@@ -637,7 +647,7 @@
 </script> -->
 
 <script id="fotoTemplate" type="text/x-handlebars-template">
-  <div class='userFotoContainer'>
+  <div class='userFotoContainer attachedImgContainer'>
     {{#each this}}
       <div class='userFoto attachedImg'>
         <img
@@ -798,6 +808,7 @@
           $('#selectedUserForVideoScaner').text(name);
           $('#infoForSelectedUserForVideoScaner').text($('#' + selectedUID + ' .userCountFaceID').text());
           $('#blockFormForVideoScaner').show();
+          $('#blockFormForVideoScaner').data('uid', uid);
         } else {
           toastr.error('На цьому пристрої немає камери');
         }
@@ -835,6 +846,9 @@
 
       function closeVideoScaner() {
         console.log('closeVideoScaner');
+        const uid = $('#blockFormForVideoScaner').data('uid');
+        const container = $('.plateListItem[id="' + uid + '"]');
+        generatePhotos(container);
         $('#blockFormForVideoScaner').hide();
         scannerActive = false;
         $('#btnStartScanFace').html('Начать');
@@ -925,11 +939,64 @@
         reader.readAsDataURL(file);
       }
 
+      function updateCountPhoto(uid, number) {
+        const placeholder = $('.plateListItem[id="' + uid + '"]').find('.counFoto');
+        placeholder.text(number);
+      }
+
+      function generatePhotos(container) {
+        let galleryContainer = $(container).find('.galleryContainer');
+        const newUserID = $(container).attr('id');
+        const fullCommandLine = $(container).find('.fullCommandLine');
+        const emptyCommandLine = $(container).find('.emptyCommandLine');
+        console.log('generatePhotos', galleryContainer);
+        NProgress.start();
+
+        try {
+          $.ajax({
+            url: '/userListFoto',
+            type: 'GET',
+            dataType: 'json',
+            data: { UserID: newUserID },
+            success: function (response) {
+              console.log('response', response);
+
+              let dataForTemplate = response.map(element => {
+                return {
+                  fileName: element.fileName,
+                  countFileUse: element.countFileUse,
+                  userId: element.userId,
+                  dateLastFinded: element.dateLastFinded ? formatter.format(new Date(element.dateLastFinded)) : '',
+                };
+              });
+
+              console.log('dataForTemplate', dataForTemplate);
+              if (response.length > 0) {
+                emptyCommandLine.hide();
+                fullCommandLine.css('display', 'flex');
+                generateFromTemplate('#fotoTemplate', dataForTemplate, galleryContainer);
+                updateCountPhoto(newUserID, response.length);
+              } else {
+                emptyCommandLine.css('display', 'flex');
+              }
+              container[0].scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+              NProgress.done();
+            },
+          });
+        } catch (error) {
+          NProgress.done();
+        }
+      }
+
       function uploadFromFile(fileInput) {
         const file = fileInput.files[0];
         console.log('file from uploadFromFile', file);
         const fileInputId = $(fileInput).attr('id');
         const selectedUID = fileInputId.split('_')[1];
+        const container = $(fileInput).closest('.plateListItem');
 
         if (!file) {
           toastr.error('Будь ласка, виберіть файл.');
@@ -960,6 +1027,7 @@
           )
             .done(function () {
               NProgress.done();
+              generatePhotos(container);
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
               console.log('error - /savePhotoOnly textStatus, errorThrown', textStatus, errorThrown);
@@ -980,10 +1048,12 @@
         $.post('/deleteFaces', { uid: uid }, function (response) {
           console.log(response);
           $('#' + response.user.uid + ' .counFoto').text('' + response.user.count);
-          const fotoContainer = $(target).closest('.plateListItem').find('.userFotoContainer');
-          fotoContainer.children().remove();
-          fotoContainer.hide();
-          $('.commandBtn').remove();
+          const galleryContainer = $(target).closest('.plateListItem').find('.galleryContainer');
+          const fullCommandLine = $(target).closest('.plateListItem').find('.fullCommandLine');
+          const emptyCommandLine = $(target).closest('.plateListItem').find('.emptyCommandLine');
+          galleryContainer.children().remove();
+          fullCommandLine.hide();
+          emptyCommandLine.css('display', 'flex');
         });
       }
 
@@ -1034,6 +1104,11 @@
         });
       }
 
+      $('#userList').on('click', '.btn-login ', function (e) {
+        const uid = $(this).closest('.plateListItem').attr('id');
+        loginUser(uid);
+      });
+
       function loginUser(uid) {
         console.log('userRights', userRights.canLoginUser);
         if (!userRights.canLoginUser) return;
@@ -1069,6 +1144,10 @@
 
         Handlebars.registerPartial('ContentTemplate', document.getElementById('ContentTemplate').innerHTML);
         Handlebars.registerPartial('ContainerTemplate', document.getElementById('ContainerTemplate').innerHTML);
+        Handlebars.registerHelper('debug', function (options) {
+          console.log(options.data.root);
+          return '';
+        });
 
         const listContainerSource = document.getElementById('listContainer').innerHTML;
         const listContainerTemplate = Handlebars.compile(listContainerSource);
@@ -1106,7 +1185,10 @@
         };
 
         function render(data) {
-          const html = listContainerTemplate(data);
+          const html = listContainerTemplate({
+            items: data.list,
+            canLoginUser: data.canLoginUser,
+          });
           document.getElementById('userList').innerHTML = html;
         }
 
@@ -1154,49 +1236,52 @@
         callbackAfterLoadData = function (data) {
           console.log('callbackAfterLoadData data', data);
           data.passRender = true;
+          if (userRights && userRights.canLoginUser) {
+            data.canLoginUser = userRights.canLoginUser;
+          }
+          console.log('data.list', data, userRights);
 
           data.list.forEach(item => {
             if (item.lastProhod) {
               item.timeFromLastProhod = calcLastProhod(item.lastProhod);
-              console.log('');
             } else {
               item.timeFromLastProhod = '';
             }
           });
 
-          render(data.list);
+          render(data);
         };
 
-        callbackForRender = function (data) {
-          console.log('callbackForRender data', data);
-          render(data.list);
-          containerForTile = `#${data.uid}`;
-          if ($(containerForTile).length === 0) return;
-          console.log('QPART data', data, containerForTile, $(containerForTile));
-          const workStyle = data.work;
-          data.styleWork = data.work ? 'onWork' : 'offWork';
-          function formatHours(hours) {
-            if (hours > 999) {
-              return 'ніколи';
-            } else if (hours > 48) {
-              let days = Math.floor(hours / 24);
-              return `${days} днів`;
-            } else {
-              return `${hours} годин`;
-            }
-          }
+        // callbackForRender = function (data) {
+        //   console.log('callbackForRender data', data);
+        //   render(data.list);
+        //   containerForTile = `#${data.uid}`;
+        //   if ($(containerForTile).length === 0) return;
+        //   console.log('QPART data', data, containerForTile, $(containerForTile));
+        //   const workStyle = data.work;
+        //   data.styleWork = data.work ? 'onWork' : 'offWork';
+        //   function formatHours(hours) {
+        //     if (hours > 999) {
+        //       return 'ніколи';
+        //     } else if (hours > 48) {
+        //       let days = Math.floor(hours / 24);
+        //       return `${days} днів`;
+        //     } else {
+        //       return `${hours} годин`;
+        //     }
+        //   }
 
-          data.formattedHours = formatHours(data.hoursLastProhod);
+        //   data.formattedHours = formatHours(data.hoursLastProhod);
 
-          data.tabelFormatted = data.tabel.map(day => ({
-            date: day[1],
-            arrival: day[2],
-            departure: day[3],
-          }));
-          console.log('data', data);
+        //   data.tabelFormatted = data.tabel.map(day => ({
+        //     date: day[1],
+        //     arrival: day[2],
+        //     departure: day[3],
+        //   }));
+        //   console.log('data', data);
 
-          // generateFromTemplate('#tileTemplate', data, containerForTile);
-        };
+        //   // generateFromTemplate('#tileTemplate', data, containerForTile);
+        // };
 
         $('#userList').on('click', '.arrival ', function (e) {
           console.log('data from id', $(platesID).data('data'), $(this).closest('.plateListItem').attr('id'));
@@ -1283,11 +1368,11 @@
           const newUserID = row.attr('id');
           const oldUserID = $('#userFoto').attr('UserID') || '';
           let fotoContainer = $(this).closest('.plateListItem').find('.fotoContainer');
-          let galleryContainer = $(this).closest('.plateListItem').find('.galleryContainer');
+          // let galleryContainer = $(this).closest('.plateListItem').find('.galleryContainer');
           let fullCommandLine = $(this).closest('.plateListItem').find('.fullCommandLine');
           let emptyCommandLine = $(this).closest('.plateListItem').find('.emptyCommandLine');
 
-          let container = $(this).closest('.plateListItem');
+          // let container = $(this).closest('.plateListItem');
 
           if (newUserID !== oldUserID) {
             console.log('newUserID !== oldUserID');
@@ -1307,44 +1392,46 @@
             fotoContainer.show(100);
             fotoContainer.attr('UserID', newUserID);
 
-            NProgress.start();
+            generatePhotos(row);
 
-            try {
-              $.ajax({
-                url: '/userListFoto',
-                type: 'GET',
-                dataType: 'json',
-                data: { UserID: newUserID },
-                success: function (response) {
-                  console.log('response', response);
+            // NProgress.start();
 
-                  let dataForTemplate = response.map(element => {
-                    return {
-                      fileName: element.fileName,
-                      countFileUse: element.countFileUse,
-                      userId: element.userId,
-                      dateLastFinded: element.dateLastFinded ? formatter.format(new Date(element.dateLastFinded)) : '',
-                    };
-                  });
+            // try {
+            //   $.ajax({
+            //     url: '/userListFoto',
+            //     type: 'GET',
+            //     dataType: 'json',
+            //     data: { UserID: newUserID },
+            //     success: function (response) {
+            //       console.log('response', response);
 
-                  console.log('dataForTemplate', dataForTemplate);
-                  if (response.length > 0) {
-                    fullCommandLine.css('display', 'flex');
-                    generateFromTemplate('#fotoTemplate', dataForTemplate, galleryContainer);
-                  } else {
-                    emptyCommandLine.css('display', 'flex');
-                  }
-                  console.log('fotoContainer[0]', fotoContainer[0]);
-                  container[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start',
-                  });
-                  NProgress.done();
-                },
-              });
-            } catch (error) {
-              NProgress.done();
-            }
+            //       let dataForTemplate = response.map(element => {
+            //         return {
+            //           fileName: element.fileName,
+            //           countFileUse: element.countFileUse,
+            //           userId: element.userId,
+            //           dateLastFinded: element.dateLastFinded ? formatter.format(new Date(element.dateLastFinded)) : '',
+            //         };
+            //       });
+
+            //       console.log('dataForTemplate', dataForTemplate);
+            //       if (response.length > 0) {
+            //         fullCommandLine.css('display', 'flex');
+            //         generateFromTemplate('#fotoTemplate', dataForTemplate, galleryContainer);
+            //       } else {
+            //         emptyCommandLine.css('display', 'flex');
+            //       }
+            //       console.log('fotoContainer[0]', fotoContainer[0]);
+            //       container[0].scrollIntoView({
+            //         behavior: 'smooth',
+            //         block: 'start',
+            //       });
+            //       NProgress.done();
+            //     },
+            //   });
+            // } catch (error) {
+            //   NProgress.done();
+            // }
           }
         });
 
@@ -1361,17 +1448,13 @@
           console.log('userFotoDelete click', this);
           event.stopPropagation();
           clickAnimate(this);
-          console.log('userFotoDelete after animate');
           setTimeout(() => {
             if (!userRights.canDeleteFoto) return;
             let file = $(this).siblings('.userFotoContent').attr('alt');
             let indexFoto = $(this).attr('indexFoto');
             let UserID = $(this).closest('.plateListItem').attr('id');
             let fotoForDelete = $(this).closest('.userFoto');
-            console.log('fotoForDelete, file', fotoForDelete, file);
             const deleteFoto = confirm('Ви впевнені, що хочете видалити цю фотографію?');
-
-            console.log('UserID, file, indexFoto', UserID, file, indexFoto);
 
             if (deleteFoto) {
               try {
@@ -1385,15 +1468,15 @@
                     console.log(fotoForDelete);
                     NProgress.done();
                     let userCard = $(fotoForDelete).closest('.plateListItem');
+                    const fullCommandLine = $(fotoForDelete).closest('.plateListItem').find('.fullCommandLine');
+                    const emptyCommandLine = $(fotoForDelete).closest('.plateListItem').find('.emptyCommandLine');
                     let userCount = $(userCard).find('.counFoto');
-                    let text = $(userCount).text();
-                    let count = Number(text);
+                    let count = Number($(userCount).text());
                     userCount.text(count - 1);
-                    console.log('userCard', userCard);
-                    console.log('userCount', userCount);
-                    console.log('text', text);
+
                     if (count <= 1) {
-                      userCard.find('#btnDeleteAllFoto').remove();
+                      fullCommandLine.hide();
+                      emptyCommandLine.css('display', 'flex');
                     }
 
                     $(fotoForDelete).remove();
