@@ -4,7 +4,8 @@ function mediaviewer(element) {
     const $img = $currentElement.find('.src-source');
 
     const srcSource = $img.attr('src-source');
-    const $attachedImgs = $('.attachedImg');
+
+    const $attachedImgs = $currentElement.closest('.attachedImgContainer').find('.attachedImg');
     let currentIndex = $attachedImgs.index($currentElement);
     console.log('$currentElement, $img, srcSource, $attachedImgs, currentIndex', $currentElement, $img, srcSource, $attachedImgs, currentIndex);
 
@@ -113,6 +114,8 @@ function mediaviewer(element) {
     $('body').append($overlay);
 
     function closeViewer() {
+        $overlay.find('img, video').remove();
+        $overlay.find('.play-icon').remove();
         $overlay.remove();
         history.replaceState(null, '', window.location.pathname);
     }
@@ -134,7 +137,6 @@ function mediaviewer(element) {
 
     $nextBtn.on('click', function () {
         clickAnimate(this);
-        console.log('nextButton');
         currentIndex = (currentIndex < $attachedImgs.length - 1) ? currentIndex + 1 : 0;
         const nextImg = $attachedImgs.eq(currentIndex).find('.src-source');
         const blob = nextImg.attr('src-source');
