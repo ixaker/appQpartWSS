@@ -3,6 +3,46 @@
     max-width: 600px;
   }
 
+  .qr-code {
+    font-size: xx-large;
+    font-size: xx-large;
+    margin-right: 10px;
+    margin-left: auto;
+  }
+
+  #qrContainer {
+    background-color: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+  }
+
+  .qrImage {
+    width: 90vw;
+  }
+
+  #closeQR {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    font-size: xxx-large;
+    background: lightgrey;
+    border-radius: 50%;
+    padding: 10px;
+    color: black;
+  }
+
+  .titleContainer {
+    width: 100%;
+    justify-content: start;
+    align-items: center;
+  }
   .userFotoContainer {
     margin-top: 10px;
     display: grid;
@@ -72,21 +112,21 @@
   }
 
   /* #btnLoadUserList {
-    font-size: 1em;
-    margin: auto;
-    white-space: nowrap;
-    padding: 1%;
-    margin: 0;
-    flex-grow: 1;
-  }
+      font-size: 1em;
+      margin: auto;
+      white-space: nowrap;
+      padding: 1%;
+      margin: 0;
+      flex-grow: 1;
+    }
 
-  #btnUpdateFaceID {
-    font-size: 1em;
-    margin: 0;
-    white-space: nowrap;
-    padding: 1%;
-    flex-grow: 1;
-  } */
+    #btnUpdateFaceID {
+      font-size: 1em;
+      margin: 0;
+      white-space: nowrap;
+      padding: 1%;
+      flex-grow: 1;
+    } */
 
   #usersContainer {
     margin-top: 10px;
@@ -142,8 +182,8 @@
 
   .btnUserEdit {
     /* margin-left: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px; */
+      margin-top: 5px;
+      margin-bottom: 5px; */
     background-color: aliceblue;
   }
 
@@ -168,6 +208,12 @@
     height: 100%;
     top: 0;
     left: 0;
+  }
+
+  .avatarImg {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
   }
 
   #videoScaner {
@@ -353,12 +399,47 @@
   .phone {
     display: flex;
     gap: 5px;
+    position: relative;
   }
 
   .phone i {
     display: flex;
     align-items: center;
     min-height: 36px;
+  }
+
+  .phoneMenu {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    width: auto;
+    min-width: fit-content;
+    background-color: rgb(255 255 255 / 90%);
+    border: 1px solid lightgrey;
+    border-radius: 10px;
+    top: 110%;
+    left: -120px;
+    display: none;
+    z-index: 1;
+  }
+
+  .phoneItem {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+  }
+
+  .phoneText {
+    text-wrap: nowrap;
+    text-decoration: none;
+    color: black;
+  }
+
+  .phoneText a {
+    color: black;
+  }
+
+  .phoneCopy {
   }
 
   .phone a:visited {
@@ -368,6 +449,15 @@
 
   .phone a:hover {
     text-decoration: none;
+  }
+
+  .viberSvg {
+    width: 51px;
+    height: 51px;
+  }
+
+  .phoneIcon a {
+    color: black;
   }
 
   .profa {
@@ -510,7 +600,7 @@
 </script>
 
 <script id="ContainerTemplate" type="text/x-handlebars-template">
-  <div id='{{uid}}' class='plateListItem'>
+  <div id='{{uid}}' empCode='{{emp_code}}' class='plateListItem'>
     <div class='itemContainer'>
       {{> ContentTemplate canLoginUser=canLoginUser}}
     </div>
@@ -550,9 +640,8 @@
       <div class='avatarContainer' data-work='{{work}}'>
         <img
           class='avatar'
-          src='/auth_files/photo/{{emp_code}}.jpg'
+          src='/auth_files/biophoto/{{emp_code}}.jpg'
           alt='Фото користувача {{uid}}'
-          onclick="loginUser('{{uid}}');"
           onerror="this.onerror=null; this.src='/img/avatar.png';"
         />
       </div>
@@ -569,23 +658,39 @@
         <div class='actionRow'>
           {{#if canLoginUser}}
           <div class='login'>
-
-
-
               <i class="bi bi-box-arrow-in-right btn btn-light btn-login"></i>
             </div>
           {{/if}}
 
           <div class='phone'>
             {{#if tel1}}
-              <a href='tel:{{tel1}}'><i class='bi bi-telephone-fill btn btn-light'>{{#if tel2}}1{{/if}}</i></a>
+              <!-- <a href='tel:{{tel1Solid}}'><i class='bi bi-telephone-fill btn btn-light'>{{#if tel2}}1{{/if}}</i></a> -->
+              <i class='bi bi-telephone-fill btn btn-light btnTel'></i>
+              <div class="phoneMenu">
+                <div class="phoneItem btn">
+                  <span class="phoneText"><a href='tel:{{tel1Solid}}'>{{tel1}}</a></span>
+                  <span class="phoneIcon"><a href='tel:{{tel1Solid}}'><i class='bi bi-telephone-fill btn btn-lg'></i></a></span>
+                  <span class="phoneCopy"><i class="bi bi-clipboard btnCopy btn btn-lg"></i></span>
+                  <span class="messageViber"><a href="viber://chat?number={{tel1Solid}}"><img src="/img/viber.svg" alt="viber" class="btn-lg viberSvg"/></a></span>
+                  <span class="hidePhone" style="display: none">{{tel1Solid}}</span>
+                </div>
+                {{#if tel2}}
+                <div class="phoneItem btn">
+                  <span class="phoneText"><a href='tel:{{tel2Solid}}'>{{tel2}}</span></a>
+                  <span class="phoneIcon"><a href='tel:{{tel2Solid}}'><i class='bi bi-telephone-fill btn btn-lg'></i></a></span>
+                  <span class="phoneCopy"><i class="bi bi-clipboard btnCopy btn btn-lg"></i></span>
+                  <span class="messageViber"><a href="viber://chat?number={{tel2Solid}}"><img src="/img/viber.svg" alt="viber" class="btn-lg viberSvg"/></a></span>
+                  <span class="hidePhone" style="display: none">{{tel2Solid}}</span>
+                </div>
+                {{/if}}
+              </div>
             {{/if}}
           </div>
-          {{#if tel2}}
+          <!-- {{#if tel2}}
             <div class='phone'>
               <a href='tel:{{tel2}}'><i class='bi bi-telephone-fill btn btn-light'>2</i></a>
             </div>
-          {{/if}}
+          {{/if}} -->
           <div class='photoCount userCountFaceID btn btn-light {{#if isNewFoto}}isNewFoto{{/if}}'>
             <i class='bi bi-image'></i>
             <div class='counFoto'>{{count}}</div>
@@ -676,6 +781,7 @@
       <div id="titleText">
         <h3 class="titlePage2">Перелік користувачів</h3>
       </div>
+      <i class="bi bi-qr-code-scan qr-code" id="qr-code"></i>
     </div>
   </div>
 
@@ -721,6 +827,91 @@
       type="plate"
       paggination="false"
     ></div>
+
+    <style>
+      #formUpdateAvatar {
+        background-color: rgba(105, 105, 105, 0.9);
+        position: fixed;
+        top: 0;
+        left: 0;
+        position: absolute;
+        padding: 10px;
+        border-radius: 3px;
+      }
+
+      #btnCloseAvatarForm {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        top: 20px;
+        right: 20px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+      }
+
+      .closeBtn {
+        font-size: x-large;
+        color: white;
+        cursor: pointer;
+        z-index: 10000;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #groupBtnUpdateAvatar {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      #btnMakePhoto {
+        flex: 1;
+      }
+
+      .forBtnMakePhoto {
+        margin: 0;
+        flex: 1;
+        font-size: xxx-large;
+      }
+
+      .forBtnLoadPhoto {
+        margin: 0;
+        flex: 1;
+        font-size: xxx-large;
+      }
+
+      #btnMakePhoto {
+        display: none;
+      }
+
+      #btnLoadPhoto {
+        display: none;
+      }
+    </style>
+
+    <div id="formUpdateAvatar" style="display: none">
+      <!-- <button id="btnCloseAvatarForm">
+          <i class="bi bi-x-lg closeBtn"></i>
+        </button> -->
+      <div id="groupBtnUpdateAvatar">
+        <label for="btnMakePhoto" class="btn btn-outline-dark btn-light forBtnMakePhoto">
+          <i class="bi bi-camera"></i>
+        </label>
+        <input type="file" id="btnMakePhoto" accept="image/*" capture="camera" />
+        <label for="btnLoadPhoto" class="btn btn-outline-dark btn-light forBtnLoadPhoto">
+          <i class="bi bi-download"></i>
+        </label>
+        <input type="file" id="btnLoadPhoto" accept="image/*" />
+      </div>
+    </div>
+
+    <div id="qrContainer">
+      <img class="qrImage" src="img/qrcode.png" alt="qr" />
+      <i class="bi bi-x-lg closeBtn" id="closeQR"></i>
+    </div>
 
     <div id="blockFormForVideoScaner" style="display: none">
       <div id="formVideoCamera">
@@ -785,7 +976,78 @@
         $('#btnStartScanFace').show();
       });
 
-      $();
+      $(document).on('click', function (e) {
+        const phoneMenu = $('.phoneMenu');
+        if (!$(e.target).closest('.phoneMenu').length && !$(e.target).closest('.btnTel').length) {
+          console.log('умова виконана');
+          $('.phoneMenu').each(function () {
+            $(this).hide();
+          });
+        }
+
+        if (!$(e.target).closest('#formUpdateAvatar').length && !$(e.target).closest('.avatar').length) {
+          console.log('умова виконана');
+          $('#formUpdateAvatar').hide();
+        }
+      });
+
+      $('#userList').on('click', '.btnTel', function (e) {
+        console.log('this', this);
+        const container = $(this).closest('.plateListItem');
+        const uid = container.attr('id');
+        const phoneMenu = container.find('.phoneMenu');
+        console.log('phoneMenu', container, phoneMenu);
+
+        if (phoneMenu.is(':visible')) {
+          phoneMenu.hide();
+          return;
+        }
+        $('.phoneMenu').hide();
+        phoneMenu.css('display', 'flex');
+      });
+
+      function getTelText(element) {
+        const container = $(element).closest('.phoneItem');
+        const telText = container.find('.phoneText').text();
+        return telText;
+      }
+
+      $('#userList').on('click', '.phoneIcon', function (e) {
+        clickAnimate(this);
+      });
+
+      $('#userList').on('click', '.messageViber', function (e) {
+        clickAnimate(this);
+      });
+
+      $('#userList').on('click', '.btnCopy', function (e) {
+        clickAnimate(this);
+        const container = $(this).closest('.phoneItem');
+        const telText = container.find('.phoneText').text();
+        console.log('telText', telText);
+        navigator.clipboard
+          .writeText(telText)
+          .then(() => {
+            console.log('Text copied to clipboard');
+            toastr.success('Текст скопійовано');
+          })
+          .catch(err => {
+            console.error('Failed to copy text: ', err);
+          });
+      });
+
+      $('#qr-code').on('click', function (e) {
+        console.log('qr click');
+        $('#qrContainer').css('display', 'flex');
+      });
+
+      $('#closeQR').on('click', function () {
+        $('#qrContainer').hide();
+      });
+
+      $('#qrContainer').on('click', function () {
+        $('#qrContainer').hide();
+      });
 
       $('#userList').on('click', '.addPhoto', function (e) {
         const uid = $(this).closest('.plateListItem').attr('id');
@@ -866,6 +1128,18 @@
         }
       }
 
+      async function checkVideoCapabilities() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const track = stream.getVideoTracks()[0];
+          const capabilities = track.getCapabilities();
+
+          console.log('Video Capabilities:', capabilities);
+        } catch (error) {
+          console.error('Error checking video capabilities:', error);
+        }
+      }
+
       function savePhoto() {
         console.log('start uploadPhoto selectedUID', selectedUID);
 
@@ -873,11 +1147,17 @@
           if (scannerActive) {
             if ($('#videoScaner').is(':visible')) {
               NProgress.start();
-
+              checkVideoCapabilities();
               const context = canvasVideoScaner.getContext('2d');
 
-              canvasVideoScaner.width = videoScaner.videoWidth;
-              canvasVideoScaner.height = videoScaner.videoHeight;
+              canvasVideoScaner.width = videoScaner.videoWidth * 4;
+              canvasVideoScaner.height = videoScaner.videoHeight * 4;
+              console.log(
+                'videoScaner.width, videoScaner.videoWidth',
+                videoScaner.width,
+                videoScaner.videoWidth,
+                $(videoScaner)
+              );
 
               context.drawImage(videoScaner, 0, 0, canvasVideoScaner.width, canvasVideoScaner.height);
 
@@ -945,6 +1225,7 @@
       }
 
       function generatePhotos(container) {
+        console.log('generatePhotos start');
         let galleryContainer = $(container).find('.galleryContainer');
         const newUserID = $(container).attr('id');
         const fullCommandLine = $(container).find('.fullCommandLine');
@@ -989,6 +1270,84 @@
         } catch (error) {
           NProgress.done();
         }
+      }
+
+      $('#btnMakePhoto, #btnLoadPhoto').on('change', function (e) {
+        const file = this.files[0];
+        if (!file) {
+          toastr.error('Будь ласка, виберіть файл.');
+          return;
+        }
+
+        if (file && !file.type.startsWith('image/')) {
+          toastr.error('Невірний тип файлу. Виберіть зображення.');
+          event.target.value = '';
+        }
+
+        const container = $(this).closest('.plateListItem');
+        const uid = $('#formUpdateAvatar').data('uid');
+        const empCode = $('#formUpdateAvatar').data('empCode');
+        console.log('file, container, uid', this, file, container, uid);
+        $('#formUpdateAvatar').hide();
+        uploadAvatarFromFile(file, uid, empCode);
+      });
+
+      function uploadAvatarFromFile(file, uid, empCode) {
+        console.log('file from uploadAvatarFromFile', file, uid);
+
+        if (!file) {
+          toastr.error('Будь ласка, виберіть файл.');
+          return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          toastr.error('Файл завеликий. Максимальний розмір — 5MB.');
+          return;
+        }
+
+        fileToBase64(file, function (base64Image) {
+          NProgress.start();
+          $.ajax({
+            url: '/updateAvatar',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ photo: base64Image, uid: uid, empCode: empCode }),
+            dataType: 'json',
+            success: function (response) {
+              console.log('response from uploadAvatarFromFile', response);
+              updateResponse = response.data.updateResult;
+              findUserResponse = response.data.findUserResult;
+
+              if (updateResponse.data.ret === 0) {
+                toastr.success('Фото профіля успішно збережено.');
+              } else {
+                toastr.error('Помилка зберігання фото профіля.');
+              }
+
+              if (findUserResponse.addedFoto) {
+                toastr.success('Фото додано в галерею користувача.');
+              } else {
+                toastr.error('Фото не збережено до галереї користувача');
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error('error from fail', textStatus, errorThrown);
+
+              // Отримати повідомлення про помилку з відповіді сервера
+              let errorMessage = 'ERROR'; // значення за замовчуванням
+              if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                errorMessage = jqXHR.responseJSON.error;
+              } else if (jqXHR.responseText) {
+                errorMessage = jqXHR.responseText;
+              }
+
+              toastr['error'](errorMessage);
+            },
+            complete: function () {
+              NProgress.done();
+            },
+          });
+        });
       }
 
       function uploadFromFile(fileInput) {
@@ -1109,6 +1468,64 @@
         loginUser(uid);
       });
 
+      $('#userList').on('click', '.avatar', function (e) {
+        console.log('avatar this', this);
+        const $avatar = $(this);
+        const offset = $avatar.offset();
+        const width = $avatar.outerWidth();
+        const height = $avatar.outerHeight();
+        const formUpdateAvatar = $('#formUpdateAvatar');
+
+        const top = offset.top;
+        const left = offset.left + width + 10;
+
+        formUpdateAvatar.css({
+          top: top + 'px',
+          left: left + 'px',
+          position: 'absolute',
+        });
+
+        const container = $(this).closest('.plateListItem');
+        const oldUid = formUpdateAvatar.data('uid');
+        const uid = container.attr('id');
+        const empCode = container.attr('empCode');
+        formUpdateAvatar.data('uid', uid);
+        formUpdateAvatar.data('empCode', empCode);
+
+        if (oldUid === uid) {
+          formUpdateAvatar.toggle();
+        } else {
+          formUpdateAvatar.show();
+        }
+      });
+
+      $('#btnCloseAvatarForm').on('click', function (e) {
+        event.stopPropagation();
+        clickAnimate(this);
+        $('#formUpdateAvatar').hide();
+      });
+
+      function updateAvatar(uid) {
+        NProgress.start();
+
+        $.ajax({
+          url: '/updateAvatar',
+          type: 'post',
+          dataType: 'json',
+          data: { uid: uid },
+          headers: {},
+          success: function (response) {
+            console.log('updateAvatar success', response);
+          },
+          error: function (xhr, status, error) {
+            console.log('updateAvatar error', error);
+          },
+          complete: function () {
+            NProgress.done();
+          },
+        });
+      }
+
       function loginUser(uid) {
         console.log('userRights', userRights.canLoginUser);
         if (!userRights.canLoginUser) return;
@@ -1153,6 +1570,7 @@
         const listContainerTemplate = Handlebars.compile(listContainerSource);
 
         function generateContentForBlock(uid, data) {
+          console.log('generatecontentForBlock uid, data', uid, data);
           const containerId = `#${uid}`;
           const container = $(containerId);
 
@@ -1169,19 +1587,26 @@
         callbackWSS = async function (data) {
           console.log('callbackWSS data', data);
           const containerId = `#${data.uid}`;
+          console.log('callbackWSS container');
+          const container = $(containerId);
 
           if ($(containerId).length) {
             if (data.fired) {
               $(containerId).remove();
-            } else {
-              // $(containerId).find('.itemContainer').empty();
-              // generateContentForBlock(data.uid, data);
             }
           } else if (!data.fired) {
             const newContainerHtml = listContainerTemplate([data]);
             $(platesID).prepend(newContainerHtml);
           }
+          data.canLoginUser = userRights.canLoginUser;
+          data.timeFromLastProhod = calcLastProhod(data.lastProhod);
           generateContentForBlock(data.uid, data);
+
+          let fotoContainer = container.find('.fotoContainer');
+          console.log('fotoContainer', fotoContainer, container);
+          if (fotoContainer.is(':visible')) {
+            generatePhotos(container);
+          }
         };
 
         function render(data) {
@@ -1244,6 +1669,14 @@
           data.list.forEach(item => {
             if (item.lastProhod) {
               item.timeFromLastProhod = calcLastProhod(item.lastProhod);
+              item.tel1Solid = item.tel1
+                .replaceAll(' ', '')
+                .replaceAll('(', '')
+                .replaceAll(')', '')
+                .replaceAll('+', '');
+              if (item.tel2) {
+                item.tel2Solid = item.tel2.replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '');
+              }
             } else {
               item.timeFromLastProhod = '';
             }
@@ -1327,14 +1760,13 @@
           $('.plateListItem').each(function () {
             let found = true;
             let elements = $(this)
-              .find('.userName, .userProfaFaceID, .empCode, .timeContainer, .profa')
+              .find('.userName, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone')
               .map(function () {
                 return { el: $(this) };
               })
               .get();
             elements.forEach(element => {
               element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
-              console.log('element.text', element.text);
             });
 
             if (searchTerms.length > 0) {
@@ -1376,7 +1808,7 @@
 
           if (newUserID !== oldUserID) {
             console.log('newUserID !== oldUserID');
-            console.log('row.find(.tabelContainer);', row.find('.tabelContainer'));
+            console.log('row.find(.tabelContainer');
           }
 
           if (fotoContainer.is(':visible')) {
