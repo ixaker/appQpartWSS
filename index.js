@@ -18,6 +18,7 @@ const log = require('./services/loggerConfig.js');
 const telegramBot = require('./services/telegramBot.js');
 const faceID = require('./services/faceID.js');
 const func1C = require('./services/1C.js');
+const { updateAvatar } = require('./services/updateAvatar.js')
 
 const base = process.env.base;
 
@@ -124,9 +125,27 @@ app.use('/auth_files/photo/*', proxy('http://10.8.0.4', {
     return req.originalUrl;
   },
   userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
-    userRes.setHeader('Content-Type', 'image/jpeg'); // Замените на нужный вам тип изображения
+    userRes.setHeader('Content-Type', 'image/jpeg');
 
-    const maxAge = 60 * 60 * 24 * 30; // 30 дней в секундах
+    const maxAge = 60 * 60 * 24 * 30;
+    userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+    userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
+    userRes.setHeader('ETag', true);
+
+    userRes.removeHeader('pragma');
+
+    return proxyResData;
+  }
+}));
+
+app.use('/auth_files/*', proxy('http://10.8.0.4', {
+  proxyReqPathResolver: (req) => {
+    return req.originalUrl;
+  },
+  userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+    userRes.setHeader('Content-Type', 'image/jpeg');
+
+    const maxAge = 60 * 60 * 24 * 30;
     userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
     userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
     userRes.setHeader('ETag', true);
@@ -241,20 +260,27 @@ app.get('/', (req, res) => {
 });
 
 app.post('/userUpdated', (req, res) => {
+  log.info('userUpdate', req.body)
   const data = req.body;
   faceID.updateUser(data);
   res.send('all ok');
 
+  notifyClient(data)
+
+
+  return;
+});
+
+function notifyClient(user) {
+  log.info('notifyClient user', user)
   let subscribedClients = clients.filter(function (client) {
     return client.subscriptions.includes('users_all');
   });
   subscribedClients.forEach(function (client) {
     log.data('client', Object.keys(client));
-    client.socket.send(JSON.stringify(req.body));
+    client.socket.send(JSON.stringify(user));
   });
-
-  return;
-});
+}
 
 
 // Обработчик запросов из 1С об изменениях данных
@@ -332,6 +358,10 @@ app.post('/authorizationByPassword', async (req, res) => {
         res.status(500).send('Користувача не знайдено в локальной базі бекенду.');
       }
       result.token = jwt.sign(result.user, secret, options);
+
+      const decodedToken = jwt.decode(result.token);
+      log.info(`authorizationByPassword Token will expire at: ${new Date(decodedToken.exp * 1000).toISOString()}`);
+
       result.version = version;
       res.send(result);
     } else {
@@ -380,13 +410,23 @@ app.use((req, res, next) => {
   log.warn('app.use verify', `Request - method: ${req.method}  path: ${req.path}`);
   log.info('req.cookies.token');
 
+  if (!req.cookies.token) {
+    log.warn('Token is missing');
+    return res.status(403).send({ textError: 'Token is missing' });
+  }
+
+  const decodedToken = jwt.decode(req.cookies.token);
+  if (decodedToken && decodedToken.exp) {
+    const expirationTime = new Date(decodedToken.exp * 1000).toISOString();
+    log.info(`verify token Token expiration time: ${expirationTime}`);
+  } else {
+    log.warn('verify token Unable to decode token or missing expiration time');
+  }
+
   jwt.verify(req.cookies.token, secret, (err, user) => {
     if (err) {
       log.info('jwt.verify error');
-      // res.redirect('/');
       res.status(403).send({ textError: 'jwt.verify error' });
-      // res.status(404).sendFile(createPath('error.html'));
-
       return
     } else {
       let { iat, exp, ...userClear } = user;
@@ -517,6 +557,48 @@ app.post('/deleteFaces', async (req, res) => {
 
 
   res.send(result);
+});
+
+app.post('/updateAvatar', async (req, res) => {
+  log.info('updataAvatar index.js uid')
+  try {
+    if (!req.body.photo) {
+      log.error('there is no file')
+      return res.status(400).send({ "error": "No file uploaded" });
+    }
+
+    const file = req.body.photo;
+    const uid = req.body.uid;
+    const empCode = req.body.empCode;
+    log.info('updateAvatar from index.js file, uid', file.toString('base64').slice(0, 50), uid, empCode)
+
+    const updateAvatarPromise = updateAvatar(file, empCode);
+    const findUserOnFotoPromise = faceID.findUserOnFoto(req.body, uid);
+
+    const [updateResult, findUserResult] = await Promise.all([updateAvatarPromise, findUserOnFotoPromise]);
+    log.info('updateAvatar result', updateResult, findUserResult)
+
+    if (findUserResult && findUserResult.user) {
+      try {
+        notifyClient(findUserResult.user);
+      } catch (userUpdateError) {
+        log.error('Error in notifyClient:', userUpdateError.message);
+      }
+    } else {
+      log.warn('No user found in findUserResult');
+    }
+
+    res.status(200).json({
+      message: 'Avatar updated successfully',
+      data: {
+        updateResult,
+        findUserResult
+      }
+    });
+  } catch (error) {
+    log.error(`Error: ${error.message}`);
+    res.status(500).json({ error: error.message || "Помилка при завантаженні аватара" });
+  }
 });
 
 app.get('/loadUserListFrom1C', async (req, res) => {
