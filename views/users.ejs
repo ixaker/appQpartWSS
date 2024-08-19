@@ -979,7 +979,6 @@
       $(document).on('click', function (e) {
         const phoneMenu = $('.phoneMenu');
         if (!$(e.target).closest('.phoneMenu').length && !$(e.target).closest('.btnTel').length) {
-          console.log('умова виконана');
           $('.phoneMenu').each(function () {
             $(this).hide();
           });
@@ -1273,6 +1272,7 @@
       }
 
       $('#btnMakePhoto, #btnLoadPhoto').on('change', function (e) {
+        console.log('changeAvatarForm click');
         const file = this.files[0];
         if (!file) {
           toastr.error('Будь ласка, виберіть файл.');
@@ -1289,63 +1289,70 @@
         const empCode = $('#formUpdateAvatar').data('empCode');
         console.log('file, container, uid', this, file, container, uid);
         $('#formUpdateAvatar').hide();
-        uploadAvatarFromFile(file, uid, empCode);
+        uploadAvatarFromFile(file, uid, empCode).then(() => {
+          console.log('after uploadAvatarFromFile');
+          this.value = '';
+        });
       });
 
       function uploadAvatarFromFile(file, uid, empCode) {
         console.log('file from uploadAvatarFromFile', file, uid);
 
-        if (!file) {
-          toastr.error('Будь ласка, виберіть файл.');
-          return;
-        }
+        return new Promise((resolve, reject) => {
+          if (!file) {
+            toastr.error('Будь ласка, виберіть файл.');
+            return reject(new Error('No file selected'));
+          }
 
-        if (file.size > 5 * 1024 * 1024) {
-          toastr.error('Файл завеликий. Максимальний розмір — 5MB.');
-          return;
-        }
+          if (file.size > 5 * 1024 * 1024) {
+            toastr.error('Файл завеликий. Максимальний розмір — 5MB.');
+            return reject(new Error('File size exceeds limit'));
+          }
 
-        fileToBase64(file, function (base64Image) {
-          NProgress.start();
-          $.ajax({
-            url: '/updateAvatar',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ photo: base64Image, uid: uid, empCode: empCode }),
-            dataType: 'json',
-            success: function (response) {
-              console.log('response from uploadAvatarFromFile', response);
-              updateResponse = response.data.updateResult;
-              findUserResponse = response.data.findUserResult;
+          fileToBase64(file, function (base64Image) {
+            NProgress.start();
+            $.ajax({
+              url: '/updateAvatar',
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({ photo: base64Image, uid: uid, empCode: empCode }),
+              dataType: 'json',
+              success: function (response) {
+                console.log('response from uploadAvatarFromFile', response);
+                const updateResponse = response.data.updateResult;
+                const findUserResponse = response.data.findUserResult;
 
-              if (updateResponse.data.ret === 0) {
-                toastr.success('Фото профіля успішно збережено.');
-              } else {
-                toastr.error('Помилка зберігання фото профіля.');
-              }
+                if (updateResponse.data.ret === 0) {
+                  toastr.success('Фото профіля успішно збережено.');
+                } else {
+                  toastr.error('Помилка зберігання фото профіля.');
+                }
 
-              if (findUserResponse.addedFoto) {
-                toastr.success('Фото додано в галерею користувача.');
-              } else {
-                toastr.error('Фото не збережено до галереї користувача');
-              }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-              console.error('error from fail', textStatus, errorThrown);
+                if (findUserResponse.addedFoto) {
+                  toastr.success('Фото додано в галерею користувача.');
+                } else {
+                  toastr.error('Фото не збережено до галереї користувача');
+                }
+                resolve(response); // Розв'язуємо проміс з відповіддю
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error('error from fail', textStatus, errorThrown);
 
-              // Отримати повідомлення про помилку з відповіді сервера
-              let errorMessage = 'ERROR'; // значення за замовчуванням
-              if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
-                errorMessage = jqXHR.responseJSON.error;
-              } else if (jqXHR.responseText) {
-                errorMessage = jqXHR.responseText;
-              }
+                // Отримати повідомлення про помилку з відповіді сервера
+                let errorMessage = 'ERROR'; // значення за замовчуванням
+                if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                  errorMessage = jqXHR.responseJSON.error;
+                } else if (jqXHR.responseText) {
+                  errorMessage = jqXHR.responseText;
+                }
 
-              toastr['error'](errorMessage);
-            },
-            complete: function () {
-              NProgress.done();
-            },
+                toastr['error'](errorMessage);
+                reject(new Error(errorMessage)); // Відхиляємо проміс з помилкою
+              },
+              complete: function () {
+                NProgress.done();
+              },
+            });
           });
         });
       }
