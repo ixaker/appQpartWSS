@@ -66,7 +66,7 @@ async function detectFaceFromBase64(img) {
     const base64Image = img.replace(/^data:image\/[^;]+;base64,/, '');
     const buffer = Buffer.from(base64Image, 'base64');
     const result = await detectFaceFromBuffer(buffer);
-    log.info('detectFaceFromBase64 result', result);
+    log.info('detectFaceFromBase64 Object.keys(result), result.face', Object.keys(result), result.face,);
 
     return result;
   } catch (error) {
@@ -80,6 +80,7 @@ async function detectFaceFromBuffer(buffer) {
   const tensor = human.tf.node.decodeImage(buffer);
   const result = await human.detect(tensor, humanConfig);
   human.tf.dispose(tensor);
+  log.info('detectFaceFromBuffer result', result)
   return result;
 }
 
@@ -120,14 +121,14 @@ async function savePhotoOnly(body, userUID) {
       }
 
       await saveUserFoto(userUID, photo, file);
-      console.log('Photo saved successfully. File path:', file);
+      console.log('Photo saved successfully. File path:');
 
       const newEmbedding = { uid: userUID, embedding: embedding, file: file, countFileUse: 0 };
       db.push(newEmbedding);
       embeddings = db.map((rec) => rec.embedding);
       saveDB();
 
-      console.log('Database updated. New embedding added:', newEmbedding);
+      console.log('Database updated. New embedding added:');
 
       result.success = true;
     } else {
@@ -140,6 +141,39 @@ async function savePhotoOnly(body, userUID) {
   }
 
   console.log('Function result:', result);
+  return result;
+}
+
+async function addPhotoWhithoutVerify(photo, uid) {
+  console.log('addPhotoWhithoutVerify uid', uid);
+  let result = {};
+  try {
+
+    const detection = await detectFaceFromBase64(photo);
+
+    if (detection && detection.face && detection.face.length === 1) {
+      log.info('addPhotoWhithoutVerify detection', detection)
+      const embedding = detection.face[0].embedding;
+      const file = `${Date.now()}.png`;
+      const newEmbedding = { uid: uid, embedding: embedding, file: file, countFileUse: 0 };
+
+      userInfo[uid].isNewFoto = true;
+      db.push(newEmbedding)
+      embeddings = db.map((rec) => rec.embedding);
+      saveDB();
+      saveUserFoto(uid, photo, file);
+      result.message = 'фото успішно збережено'
+      result.success = true;
+      result.user = userInfo[uid];
+      log.info('result from addPhotoWhithoutVerify', result)
+    }
+
+  } catch (error) {
+    result.exception = true;
+    result.success = false
+    log.error(`Failed to process addPhotoWhithoutVerify: ${error}`, result);
+  }
+
   return result;
 }
 
@@ -248,7 +282,7 @@ async function findUserOnFoto(body, forUserUID = '') {
     result.exception = true;
   }
 
-  log.data(result);
+  // log.data(result);
   return result;
 }
 
@@ -508,6 +542,7 @@ function deleteUserFoto(uid, file) {
 module.exports = {
   initHuman,
   savePhotoOnly,
+  addPhotoWhithoutVerify,
   findUserOnFoto,
   saveDB,
   getUserInfo,
