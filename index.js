@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const WebSocket = require('ws');
@@ -82,6 +83,7 @@ let clients = [];
 const app = express();
 app.set('view engine', 'ejs');
 
+const httpServer = http.createServer(app);
 const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
 
 app.use((req, res, next) => {
@@ -177,15 +179,21 @@ app.get('/uploadPhoto', (req, res, next) => {
 //   res.send(result);
 // });
 
+function ensureDirectoryExistence(dirPath) {
+  if (fs.existsSync(dirPath)) {
+    return true;
+  }
+  ensureDirectoryExistence(path.dirname(dirPath));
+  fs.mkdirSync(dirPath);
+};
+
 app.post('/saveFile', (req, res) => {
   let body = '';
 
-  // Чтение данных из запроса
   req.on('data', chunk => {
-    body += chunk.toString(); // Преобразование бинарных данных в строку
+    body += chunk.toString();
   });
 
-  // Обработка завершения чтения данных
   req.on('end', () => {
     console.log('Received data:');
 
@@ -197,10 +205,8 @@ app.post('/saveFile', (req, res) => {
 
       log.info('filePath', filePath);
 
-      // Получаем путь к директории файла
       const dir = path.dirname(filePath);
 
-      // Создаем директории, если их нет
       ensureDirectoryExistence(dir);
 
       fs.writeFile(filePath, binaryData, 'binary', (err) => {
@@ -573,26 +579,25 @@ app.post('/updateAvatar', async (req, res) => {
     log.info('updateAvatar from index.js file, uid', file.toString('base64').slice(0, 50), uid, empCode)
 
     const updateAvatarPromise = updateAvatar(file, empCode);
-    const findUserOnFotoPromise = faceID.findUserOnFoto(req.body, uid);
+    const addUserPhotoPromise = faceID.addPhotoWhithoutVerify(file, uid);
 
-    const [updateResult, findUserResult] = await Promise.all([updateAvatarPromise, findUserOnFotoPromise]);
-    log.info('updateAvatar result', updateResult, findUserResult)
+    const [updateResult, addUserPhotoResult] = await Promise.all([updateAvatarPromise, addUserPhotoPromise]);
 
-    if (findUserResult && findUserResult.user) {
+    if (addUserPhotoResult && addUserPhotoResult.user) {
       try {
-        notifyClient(findUserResult.user);
+        notifyClient(addUserPhotoResult.user);
       } catch (userUpdateError) {
         log.error('Error in notifyClient:', userUpdateError.message);
       }
     } else {
-      log.warn('No user found in findUserResult');
+      log.warn('No user found in findUserResult', addUserPhotoResult);
     }
 
     res.status(200).json({
       message: 'Avatar updated successfully',
       data: {
         updateResult,
-        findUserResult
+        addUserPhotoResult
       }
     });
   } catch (error) {
@@ -886,6 +891,9 @@ async function main() {
   httpsServer.listen(443, () => {
     log.info('Secure server is running on port 443');
   });
+  httpServer.listen(80, () => {
+    log.info(`HTTP сервер запущений на порту 80`);
+  });
 }
 
 // Проверка соединений на "живость"
@@ -901,11 +909,3 @@ setInterval(() => {
 }, 10000);
 
 main();
-
-function ensureDirectoryExistence(dirPath) {
-  if (fs.existsSync(dirPath)) {
-    return true;
-  }
-  ensureDirectoryExistence(path.dirname(dirPath));
-  fs.mkdirSync(dirPath);
-};
