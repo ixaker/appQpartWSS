@@ -4,7 +4,7 @@ const { Buffer } = require('buffer');
 
 async function updateAvatar(photo, empCode) {
     console.log("Starting updateAvatar function for empCode:", empCode);
-    const result = { response: "ok" };
+    const result = {};
     try {
         const csrfToken = await getCsrfToken();
         console.log("CSRF token received");
@@ -55,12 +55,10 @@ async function sendAvatar(imageBuffer, csrfToken, empCode) {
         form.append('csrfmiddlewaretoken', csrfToken);
         form.append('orient', '1');
         form.append('user_capture', imageBuffer, { filename: 'user_capture.jpg' });
-        form.append('employee_code', '518');
+        form.append('employee_code', empCode);
         form.append('remark', '');
 
         const truncatedBuffer = imageBuffer.toString('base64').slice(0, 50) + '...';
-        console.log("Form data prepared");
-        console.log("File type:", form.getHeaders()['content-type']);
 
         const response = await axios.post('http://10.8.0.4/vlRegister/', form, {
             headers: {
@@ -72,14 +70,14 @@ async function sendAvatar(imageBuffer, csrfToken, empCode) {
             }
         });
 
-        console.log("Response from POST request:", response.data);
+        console.log("Response from sendAvatar request:", response.data);
         if (response.data.ret === -1) {
             throw new Error("Не вдалось ідентифікувати фото.");
         }
 
         return response;
     } catch (error) {
-        console.error('Error sending POST request:', error);
+        console.error('Error sending sendAvatar request:', error);
         throw error;
     } finally {
         console.log("sendAvatar function completed");
