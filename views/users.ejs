@@ -840,6 +840,58 @@
         border-radius: 3px;
       }
 
+      #formAddPhoto {
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.7);
+        width: 100vw;
+        height: 100vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      #addPhotoClose {
+        position: relative;
+        align-self: flex-end;
+        font-size: x-large;
+      }
+
+      .addPhotoContent {
+        background-color: white;
+        padding: 20px;
+        font-size: large;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgb(255 255 255 / 92%);
+      }
+
+      .addPhotoTitle {
+        font-size: xx-large;
+      }
+
+      .addPhotoText {
+        font-size: large;
+      }
+
+      .btnContainer {
+        font-size: xxx-large;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+      }
+
+      #addPhotoPhoto,
+      #addPhotoDownload {
+        font-size: xxx-large;
+      }
+
       #btnCloseAvatarForm {
         position: absolute;
         background-color: rgba(0, 0, 0, 0.5);
@@ -902,10 +954,29 @@
           <i class="bi bi-camera"></i>
         </label>
         <input type="file" id="btnMakePhoto" accept="image/*" capture="camera" />
-        <label for="btnLoadPhoto" class="btn btn-outline-dark btn-light forBtnLoadPhoto">
+        <label for="btnLoadPhoto" id="forBtnLoadPhoto" class="btn btn-outline-dark btn-light forBtnLoadPhoto">
           <i class="bi bi-download"></i>
         </label>
         <input type="file" id="btnLoadPhoto" accept="image/*" />
+      </div>
+    </div>
+
+    <div id="formAddPhoto" style="display: none">
+      <div class="addPhotoContent">
+        <div id="addPhotoClose"><i class="bi bi-x-lg"></i></div>
+        <div class="addPhotoTitle"></div>
+        <div class="addPhotoText">
+          <p>Додайте ще хоча б одне фото.</p>
+        </div>
+
+        <div class="btnContainer">
+          <div class="addFoto addPhoto btn btn-lg btn-light" id="addPhotoPhoto">
+            <i class="bi bi-person-plus-fill"></i>
+          </div>
+          <div class="addFoto addPhotoFromFile btn-lg btn btn-light" id="addPhotoDownload">
+            <i class="bi bi-download"></i>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -950,10 +1021,10 @@
       userRights = $('#menu').data('userRight')[pageUID];
 
       hasCamera = false;
-      async function initialize() {
+      async function initializeCamera() {
         hasCamera = await checkForCamera();
       }
-      initialize();
+      initializeCamera();
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         console.log('navigator.mediaDevices', navigator.mediaDevices);
@@ -979,14 +1050,18 @@
 
       $(document).on('click', function (e) {
         const phoneMenu = $('.phoneMenu');
+        const formAddPhoto = $('#formAddPhoto');
         if (!$(e.target).closest('.phoneMenu').length && !$(e.target).closest('.btnTel').length) {
           $('.phoneMenu').each(function () {
             $(this).hide();
           });
         }
 
+        if (!$(e.target).closest('.addPhotoContent').length) {
+          addPhotoClose();
+        }
+
         if (!$(e.target).closest('#formUpdateAvatar').length && !$(e.target).closest('.avatar').length) {
-          console.log('умова виконана');
           $('#formUpdateAvatar').hide();
         }
       });
@@ -1273,7 +1348,7 @@
       }
 
       $('#btnMakePhoto, #btnLoadPhoto').on('change', function (e) {
-        console.log('changeAvatarForm click');
+        console.log('changeAvatarForm click', $(this).closest('.plateListItem'));
         const file = this.files[0];
         if (!file) {
           toastr.error('Будь ласка, виберіть файл.');
@@ -1285,15 +1360,34 @@
           event.target.value = '';
         }
 
-        const container = $(this).closest('.plateListItem');
+        const formUpdateAvatar = $('#formUpdateAvatar');
+
         const uid = $('#formUpdateAvatar').data('uid');
-        const empCode = $('#formUpdateAvatar').data('empCode');
-        console.log('file, container, uid', this, file, container, uid);
-        $('#formUpdateAvatar').hide();
-        uploadAvatarFromFile(file, uid, empCode).then(() => {
-          console.log('after uploadAvatarFromFile');
-          this.value = '';
+        const plateListItem = $('.plateListItem').filter(function () {
+          return $(this).attr('id') === uid;
         });
+        const userData = plateListItem.data('data');
+        const empCode = $('#formUpdateAvatar').data('empCode');
+        console.log('file, formUpdateAvatar, uid, userData', this, file, formUpdateAvatar, uid, userData);
+        $('#formUpdateAvatar').hide();
+        uploadAvatarFromFile(file, uid, empCode)
+          .then(response => {
+            console.log('after uploadAvatarFromFile response', response);
+            const addUserPhotoResult = response.data.addUserPhotoResult;
+            if (addUserPhotoResult.success) {
+              console.log('Фото успішно додано до галереї користувача.');
+            } else {
+              console.warn('Фото не додано до галереї користувача. ');
+
+              $('#formAddPhoto').data('uid', uid);
+              $('#formAddPhoto').show();
+            }
+            this.value = '';
+          })
+          .catch(error => {
+            console.error('Upload error:', error);
+            this.value = '';
+          });
       });
 
       function uploadAvatarFromFile(file, uid, empCode) {
@@ -1321,7 +1415,7 @@
               success: function (response) {
                 console.log('response from uploadAvatarFromFile', response);
                 const updateResponse = response.data.updateResult;
-                const findUserResponse = response.data.findUserResult;
+                const addUserPhotoResult = response.data.addUserPhotoResult;
 
                 if (updateResponse.data.ret === 0) {
                   toastr.success('Фото профіля успішно збережено.');
@@ -1329,26 +1423,26 @@
                   toastr.error('Помилка зберігання фото профіля.');
                 }
 
-                if (findUserResponse.addedFoto) {
+                if (addUserPhotoResult.success) {
                   toastr.success('Фото додано в галерею користувача.');
                 } else {
                   toastr.error('Фото не збережено до галереї користувача');
+                  console.log('');
                 }
-                resolve(response); // Розв'язуємо проміс з відповіддю
+                resolve(response);
               },
               error: function (jqXHR, textStatus, errorThrown) {
                 console.error('error from fail', textStatus, errorThrown);
 
-                // Отримати повідомлення про помилку з відповіді сервера
-                let errorMessage = 'ERROR'; // значення за замовчуванням
+                let errorMessage = 'ERROR';
                 if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
-                  errorMessage = jqXHR.responseJSON.error;
+                  errorMessage = 'помилка ' + jqXHR.responseJSON.error;
                 } else if (jqXHR.responseText) {
-                  errorMessage = jqXHR.responseText;
+                  errorMessage = 'помилка ' + jqXHR.responseText;
                 }
 
                 toastr['error'](errorMessage);
-                reject(new Error(errorMessage)); // Відхиляємо проміс з помилкою
+                reject(new Error(errorMessage));
               },
               complete: function () {
                 NProgress.done();
@@ -1360,7 +1454,7 @@
 
       function uploadFromFile(fileInput) {
         const file = fileInput.files[0];
-        console.log('file from uploadFromFile', file);
+        console.log('file from uploadFromFile', file, fileInput.files);
         const fileInputId = $(fileInput).attr('id');
         const selectedUID = fileInputId.split('_')[1];
         const container = $(fileInput).closest('.plateListItem');
@@ -1499,6 +1593,15 @@
         const empCode = container.attr('empCode');
         formUpdateAvatar.data('uid', uid);
         formUpdateAvatar.data('empCode', empCode);
+        const userData = container.data('data');
+        console.log('container, containerData, userData', container, container.data('data'), userData);
+        formUpdateAvatar.data('data', userData);
+
+        console.log('hasCamera', hasCamera);
+        if (!hasCamera) {
+          $('#forBtnLoadPhoto').click();
+          return;
+        }
 
         if (oldUid === uid) {
           formUpdateAvatar.toggle();
@@ -1513,26 +1616,26 @@
         $('#formUpdateAvatar').hide();
       });
 
-      function updateAvatar(uid) {
-        NProgress.start();
+      // function updateAvatar(uid) {
+      //   NProgress.start();
 
-        $.ajax({
-          url: '/updateAvatar',
-          type: 'post',
-          dataType: 'json',
-          data: { uid: uid },
-          headers: {},
-          success: function (response) {
-            console.log('updateAvatar success', response);
-          },
-          error: function (xhr, status, error) {
-            console.log('updateAvatar error', error);
-          },
-          complete: function () {
-            NProgress.done();
-          },
-        });
-      }
+      //   $.ajax({
+      //     url: '/updateAvatar',
+      //     type: 'post',
+      //     dataType: 'json',
+      //     data: { uid: uid },
+      //     headers: {},
+      //     success: function (response) {
+      //       console.log('updateAvatar success', response);
+      //     },
+      //     error: function (xhr, status, error) {
+      //       console.log('updateAvatar error', error);
+      //     },
+      //     complete: function () {
+      //       NProgress.done();
+      //     },
+      //   });
+      // }
 
       function loginUser(uid) {
         console.log('userRights', userRights.canLoginUser);
@@ -1932,15 +2035,37 @@
 
         $('.userActions').hide();
 
-        // Керування показом та приховуванням блоку userActions та зміна значення кнопки
         $('.userActionButton').on('click', function () {
           var $userActions = $(this).closest('.plateListItem').find('.userActions');
           $userActions.toggle(300);
 
-          // Зміна значення кнопки на відповідну іконку в залежності від стану блоку userActions
           var $icon = $(this).find('i');
           $icon.toggleClass('bi-chevron-down bi-chevron-up');
         });
+      });
+
+      function addPhotoClose() {
+        $('#formAddPhoto').hide();
+      }
+
+      $('#addPhotoPhoto').on('click', function () {
+        const uid = $('#formAddPhoto').data('uid');
+        $('.plateListItem[id="' + uid + '"]')
+          .find('.addPhoto')
+          .click();
+        addPhotoClose();
+      });
+
+      $('#addPhotoDownload').on('click', function () {
+        const uid = $('#formAddPhoto').data('uid');
+        $('.plateListItem[id="' + uid + '"]')
+          .find('.addPhotoFromFile')
+          .click();
+        addPhotoClose();
+      });
+
+      $('#addPhotoClose').on('click', function () {
+        addPhotoClose();
       });
     </script>
   </div>
