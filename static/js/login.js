@@ -163,7 +163,7 @@ $(function () {
 function loadMenu(userInfo, token, version) {
     console.log('start loadMenu userInfo', userInfo);
     console.log('auth = ', auth);
-    if (auth === true) { userInfo.isAdmin = true }
+    // if (auth === true) { userInfo.isAdmin = true }
     user = userInfo;
     auth = true;
 
@@ -200,7 +200,40 @@ function loadMenu(userInfo, token, version) {
             $('#menu').html(response.menu);
             $('#menu').data('userInfo', userInfo);
             $('#menu').data('response', response);
-            $('#menu').data('userRight', response.userRights);
+            $('#menu').data('userRight', response.userRights || {});
+            // $('#menu').data('notifications', response.notifications || []);
+
+            // const testNotifications = [
+            //     {
+            //         id: 1,
+            //         active: true,
+            //         text: "Вітаємо! Ваш акаунт успішно створено."
+            //     },
+            //     {
+            //         id: 2,
+            //         active: false,
+            //         text: "Увага: Ваше підключення до сервера нестабільне."
+            //     },
+            //     {
+            //         id: 3,
+            //         active: true,
+            //         text: "Нове повідомлення від адміністратора: Будь ласка, оновіть ваш профіль."
+            //     },
+            //     {
+            //         id: 4,
+            //         active: true,
+            //         text: "Важливо: Зміни у політиці конфіденційності."
+            //     },
+            //     {
+            //         id: 5,
+            //         active: false,
+            //         text: "Нагадування: Перевірте вашу електронну пошту для підтвердження."
+            //     }
+            // ];
+
+            // $('#menu').data('notifications', testNotifications || []);
+
+            handleNotification();
 
             $('.nav-item a').each((index, element) => {
                 // console.log('element old url', element);
@@ -332,3 +365,50 @@ function makeNavbarTextMove() {
         navbarBrandText.classList.remove("text-animation");
     }
 }
+
+function handleNotification() {
+    const notifications = $('#menu').data('notifications');
+
+    if (notifications && notifications.length > 0) {
+        let currentNotificationIndex = 0;
+
+        function showNextNotification() {
+            if (currentNotificationIndex < notifications.length) {
+                const notification = notifications[currentNotificationIndex];
+
+                if (notification.active) {
+                    showNotification(notification.text, function () {
+                        currentNotificationIndex++;
+                        showNextNotification();
+                    });
+                } else {
+                    currentNotificationIndex++;
+                    showNextNotification();
+                }
+            }
+        }
+
+        showNextNotification();
+    }
+}
+
+function showNotification(text, callback) {
+    console.log('notification text', text);
+    const notificationModal = $('#notificationModal');
+    const notificationText = $('#notificationText');
+    const okButton = $('#okButton');
+
+    notificationText.text(text);
+    notificationModal.show();
+
+    okButton.off('click');
+
+    okButton.on('click', function () {
+        notificationModal.hide();
+        if (callback) {
+            callback();
+        }
+    });
+}
+
+

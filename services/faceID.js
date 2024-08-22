@@ -36,7 +36,7 @@ const humanConfig = { // user configuration for human, used to fine-tune behavio
     // mobilefacenet: { enabled: true, modelPath: 'https://vladmandic.github.io/human-models/models/mobilefacenet.json' }, // alternative model
     // insightface: { enabled: true, modelPath: 'https://vladmandic.github.io/insightface/models/insightface-mobilenet-swish.json' }, // alternative model
     iris: { enabled: false }, // needed to determine gaze direction
-    emotion: { enabled: false }, // not needed
+    emotion: { enabled: true }, // not needed
     mesh: { enabled: false },   // not needed
     antispoof: { enabled: false }, // enable optional antispoof module
     liveness: { enabled: false }, // enable optional liveness module
@@ -66,7 +66,7 @@ async function detectFaceFromBase64(img) {
     const base64Image = img.replace(/^data:image\/[^;]+;base64,/, '');
     const buffer = Buffer.from(base64Image, 'base64');
     const result = await detectFaceFromBuffer(buffer);
-    log.info('detectFaceFromBase64 Object.keys(result), result.face', Object.keys(result), result.face,);
+    // log.info('detectFaceFromBase64 Object.keys(result), result.face', Object.keys(result));
 
     return result;
   } catch (error) {
@@ -80,7 +80,7 @@ async function detectFaceFromBuffer(buffer) {
   const tensor = human.tf.node.decodeImage(buffer);
   const result = await human.detect(tensor, humanConfig);
   human.tf.dispose(tensor);
-  log.info('detectFaceFromBuffer result', result)
+  // log.info('detectFaceFromBuffer result', result)
   return result;
 }
 
@@ -177,27 +177,98 @@ async function addPhotoWhithoutVerify(photo, uid) {
   return result;
 }
 
+async function findSeveralMatches(embedding, embeddings) {
+  const countSimilarity = 5;
 
-async function findUserOnFoto(body, forUserUID = '') {
-  console.log('findUserOnFoto forUserUID', forUserUID);
-  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID: forUserUID };
-  result.originalPhoto = body.photo;
+  try {
+    const results = embeddings.map((descriptor, index) => {
 
+      return {
+        index: index,
+        similarity: human.match.similarity(embedding, descriptor, {
+          order: 2,
+          multiplier: 20,
+          min: 0.5,
+          max: 1
+        })
+      };
+    });
+
+    results.sort((a, b) => b.similarity - a.similarity);
+
+    const topResults = results.slice(0, countSimilarity);
+    log.info('findSeveralMatches', topResults);
+
+    return topResults.map(result => {
+      log.info('result', result)
+      const file = db[result.index]?.file || 'Unknown file';
+      const uid = db[result.index]?.uid || 'Unknown UID';
+      const userName = userInfo[uid]?.name || 'Unknown name';
+
+      return {
+        similarity: result.similarity,
+        file: file,
+        uid: uid,
+        userName: userName
+      };
+    });
+
+  } catch (error) {
+    log.error('Error in findSeveralMatches:', error.message);
+    throw error;
+  }
+}
+
+async function checkPhoto(body) {
+  let result = { detectFace: false, error: false, detectUser: false, uid: '' };
   try {
     if ('photo' in body) {
       const detection = await detectFaceFromBase64(body.photo);
-      // log.info('findUserOnFoto detection', detection);
 
-      if (detection && detection.face && detection.face.length === 1) {
-        // console.log('detection.face.length', detection.face.length);
+      if (detection && detection.face) {
         const embedding = detection.face[0].embedding;
         result.finded = await human.match.find(embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
         result.detectFace = true;
         result.index = result.finded.index;
-        log.info('file name from faceID', result.index);
 
+        if (result.index > -1) {
+          result.uid = db[result.index].uid || '';
+          result.user = userInfo[result.uid];
+          result.originalPhotoName = db[result.index].file;
+          result.detectUser = true;
+        }
+
+
+      }
+    }
+  } catch (error) {
+
+  }
+  return result;
+}
+
+async function findUserOnFoto(body, forUserUID = '') {
+  console.log('findUserOnFoto forUserUID', forUserUID);
+  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID: forUserUID, photoPath: '' };
+  result.originalPhoto = body.photo;
+
+  try {
+    if ('photo' in body) {
+      const detection = await detectFaceFromBase64(body.photo);
+      log.info('findUserOnFoto detection', detection);
+
+      if (detection && detection.face && detection.face.length === 1) {
+        // console.log('detection.face.length', detection.face.length);
+        const embedding = detection.face[0].embedding;
+        result.finded = await human.match.find(embedding, embeddings);
+        // result.finded2 = await findSeveralMatches(embedding, embeddings);
+        result.similarity = result.finded.similarity.toFixed(2);
+        result.score = detection.face[0].score;
+        result.detectFace = true;
+        result.index = result.finded.index;
+        log.info('findUserOnFoto result.index, result.finded', result.index, result.finded);
 
         if (result.index > -1) {
           result.uid = db[result.index].uid || '';
@@ -217,12 +288,9 @@ async function findUserOnFoto(body, forUserUID = '') {
             const filePath = path.join(folderPath, db[result.index].file);
 
             buffer = loadImageSync(filePath);
-            result.originalPhoto = buffer.toString('base64');
-            result.originalPhotoName = db[result.index].file;
+            // result.originalPhoto = buffer.toString('base64');
+            // result.originalPhotoName = db[result.index].file;
 
-
-            // const photoFile = getUserPhotoFilePath(result);
-            // result.originalPhoto = getUserPhotoAsBase64(photoFile);
             saveDB();
           }
         }
@@ -259,6 +327,8 @@ async function findUserOnFoto(body, forUserUID = '') {
                 result.addedFoto = true;
               }
             }
+          } else {
+            result.user = userInfo[result.uid];
           }
         }
 
@@ -270,6 +340,8 @@ async function findUserOnFoto(body, forUserUID = '') {
           embeddings = db.map((rec) => rec.embedding);
           saveDB();
           saveUserFoto(result.uid, body.photo, file);
+
+          result.photoPath = path.join('foto', result.uid, file);
         }
       } else {
         result.error = true;
@@ -543,6 +615,7 @@ module.exports = {
   initHuman,
   savePhotoOnly,
   addPhotoWhithoutVerify,
+  checkPhoto,
   findUserOnFoto,
   saveDB,
   getUserInfo,

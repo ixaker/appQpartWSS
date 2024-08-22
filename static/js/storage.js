@@ -28,7 +28,6 @@ async function saveFilesToStorage(media, uid, uidChild) {
             reader.readAsDataURL(element.data);
         });
     }
-
     console.log('All files processed successfully');
 }
 

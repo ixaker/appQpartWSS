@@ -578,10 +578,39 @@ app.post('/updateAvatar', async (req, res) => {
     const empCode = req.body.empCode;
     log.info('updateAvatar from index.js file, uid', file.toString('base64').slice(0, 50), uid, empCode)
 
-    const updateAvatarPromise = updateAvatar(file, empCode);
-    const addUserPhotoPromise = faceID.addPhotoWhithoutVerify(file, uid);
+    const updateAvatarResult = await updateAvatar(file, empCode);
 
-    const [updateResult, addUserPhotoResult] = await Promise.all([updateAvatarPromise, addUserPhotoPromise]);
+    if (!updateAvatarResult || updateAvatarResult.error) {
+      log.error('Error updating avatar:', updateAvatarResult.error || 'Unknown error');
+      return res.status(500).json({ error: 'Error updating avatar' });
+    }
+
+    const photoUrl = `auth_files/biophoto/${empCode}.jpg`;
+    const photoBioTimeResponse = await axios.get(photoUrl, { responseType: 'arraybuffer' });
+    const photoBioTime = Buffer.from(photoBioTimeResponse.data, 'binary');
+    const base64Image = photoBioTime.toString('base64')
+
+    const body = {
+      photo: base64Image
+    };
+    const addUserPhotoResult = await faceID.findUserOnFoto(body, uid);
+    log.info('addUserPhotoResult', addUserPhotoResult)
+
+
+    const addedPhotoUrl = addUserPhotoResult.photoPath;
+    const addedPhotoUrlResponse = await axios.get(addedPhotoUrl, { responseType: 'arraybuffer' });
+    const addedPhotoBinary = Buffer.from(addedPhotoUrlResponse.data, 'binary');
+    const addedPhoto = addedPhotoBinary.toString('base64');
+    const origin = test ? 'Тестова база' : "Робоча база";
+    const userName = addUserPhotoResult.forUser.name || '';
+    const similarity = addUserPhotoResult.similarity || '';
+    const pathToPhoto = addUserPhotoResult.photoPath;
+    let message = `${origin}. Додано фото користувача ${userName}, similarity: ${similarity}.`
+    log.info('message for telegram', message);
+    // telegramBot.sendImageAndMessage(base64Image, message, addedPhoto);
+    const imgUrl = `https://test.qpart.com.ua/${addedPhotoUrl}`
+    log.info('imgUrl for telegram', imgUrl);
+    telegramBot.sendImageAndMessageUrl(file, message, imgUrl);
 
     if (addUserPhotoResult && addUserPhotoResult.user) {
       try {
@@ -596,7 +625,7 @@ app.post('/updateAvatar', async (req, res) => {
     res.status(200).json({
       message: 'Avatar updated successfully',
       data: {
-        updateResult,
+        updateResult: updateAvatarResult,
         addUserPhotoResult
       }
     });
@@ -605,6 +634,16 @@ app.post('/updateAvatar', async (req, res) => {
     res.status(500).json({ error: error.message || "Помилка при завантаженні аватара" });
   }
 });
+
+app.post('/checkPhoto', async (req, res) => {
+  try {
+    let result = await faceID.checkPhoto(req.body);
+    res.status(200).json({ result });
+  } catch (err) {
+    console.error('Error processing photo:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
 
 app.get('/loadUserListFrom1C', async (req, res) => {
   log.info('lr');

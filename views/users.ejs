@@ -7,6 +7,13 @@
     font-size: xx-large;
     font-size: xx-large;
     margin-right: 10px;
+    margin-left: 10px;
+  }
+
+  #userScan {
+    font-size: xx-large;
+    font-size: xx-large;
+    margin-right: 10px;
     margin-left: auto;
   }
 
@@ -782,6 +789,7 @@
       <div id="titleText">
         <h3 class="titlePage2">Перелік користувачів</h3>
       </div>
+      <i class="bi bi-person-exclamation" id="userScan"></i>
       <i class="bi bi-qr-code-scan qr-code" id="qr-code"></i>
     </div>
   </div>
@@ -854,7 +862,27 @@
         z-index: 1000;
       }
 
+      #formScanPhoto {
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.7);
+        width: 100vw;
+        height: 100vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
       #addPhotoClose {
+        /* position: relative; */
+        align-self: flex-end;
+        font-size: x-large;
+      }
+
+      #scanPhotoClose {
         position: relative;
         align-self: flex-end;
         font-size: x-large;
@@ -869,14 +897,108 @@
         gap: 10px;
         border-radius: 5px;
         box-shadow: 0 0 10px rgb(255 255 255 / 92%);
+        max-width: 600px;
+        overflow-y: auto;
+        height: fit-content;
+        max-height: 95dvh;
+        margin: 0 10px;
+      }
+
+      .addPhotoHeader {
+        display: flex;
       }
 
       .addPhotoTitle {
-        font-size: xx-large;
+        font-size: x-large;
+        margin: 0 auto;
       }
 
       .addPhotoText {
         font-size: large;
+      }
+
+      .checkPhoto {
+        width: 100%;
+      }
+
+      #scanResult {
+      }
+
+      .resultTitle {
+        display: flex;
+        justify-content: center;
+        font-size: x-large;
+        margin-bottom: 10px;
+      }
+
+      #resultText {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+      }
+
+      #resultPhoto {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      #sourcePhoto,
+      #originalPhoto {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        flex: 1;
+        position: relative;
+      }
+
+      #sourcePhoto::after,
+      #originalPhoto::after {
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        text-shadow: 1px 1px 1px white;
+      }
+
+      #sourcePhoto::after {
+        content: 'Завантажене фото';
+      }
+      #originalPhoto::after {
+        content: 'Знайдене фото';
+      }
+
+      #photoArray {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .photoItem {
+        max-width: 300px;
+        width: 100%;
+        position: relative;
+      }
+
+      .photoItem img {
+        width: 100%;
+        height: auto;
+      }
+
+      .photoSim {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        text-shadow: 1px 1px 1px white;
+      }
+
+      .photoUserName {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        text-shadow: 1px 1px 1px white;
+        font-size: small;
       }
 
       .btnContainer {
@@ -887,8 +1009,8 @@
         width: 100%;
       }
 
-      #addPhotoPhoto,
-      #addPhotoDownload {
+      #btnScanMakePhoto,
+      #btnScanLoadPhoto {
         font-size: xxx-large;
       }
 
@@ -936,19 +1058,15 @@
         font-size: xxx-large;
       }
 
-      #btnMakePhoto {
-        display: none;
-      }
-
-      #btnLoadPhoto {
+      #btnMakePhoto,
+      #btnLoadPhoto,
+      #scanMakePhoto,
+      #scanLoadPhoto {
         display: none;
       }
     </style>
 
     <div id="formUpdateAvatar" style="display: none">
-      <!-- <button id="btnCloseAvatarForm">
-          <i class="bi bi-x-lg closeBtn"></i>
-        </button> -->
       <div id="groupBtnUpdateAvatar">
         <label for="btnMakePhoto" class="btn btn-outline-dark btn-light forBtnMakePhoto">
           <i class="bi bi-camera"></i>
@@ -976,6 +1094,44 @@
           <div class="addFoto addPhotoFromFile btn-lg btn btn-light" id="addPhotoDownload">
             <i class="bi bi-download"></i>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="formScanPhoto" style="display: none">
+      <div class="addPhotoContent">
+        <div class="addPhotoHeader">
+          <div class="addPhotoTitle">Перевірка фото</div>
+          <div id="scanPhotoClose"><i class="bi bi-x-lg"></i></div>
+        </div>
+
+        <div class="addPhotoText">
+          <p>Додайте фото для сканування</p>
+        </div>
+
+        <div class="btnContainer">
+          <label for="scanMakePhoto" class="addFoto addPhoto btn btn-lg btn-light" id="btnScanMakePhoto">
+            <i class="bi bi-camera"></i>
+          </label>
+          <input type="file" id="scanMakePhoto" accept="image/*" capture="camera" />
+          <label for="scanLoadPhoto" class="addFoto addPhotoFromFile btn-lg btn btn-light" id="btnScanLoadPhoto">
+            <i class="bi bi-download"></i>
+          </label>
+          <input type="file" id="scanLoadPhoto" accept="image/*" />
+        </div>
+        <div id="scanResult" style="display: none">
+          <div class="resultTitle">Результат перевірки</div>
+          <div id="resultText">
+            <span id="userName"></span>
+            <span id="similarity"></span>
+            <span id="score"></span>
+            <span id="emotion"></span>
+          </div>
+          <div id="resultPhoto" class="attachedImgContainer">
+            <div id="sourcePhoto"></div>
+            <div id="originalPhoto"></div>
+          </div>
+          <div id="photoArray" class="attachedImgContainer"></div>
         </div>
       </div>
     </div>
@@ -1051,6 +1207,7 @@
       $(document).on('click', function (e) {
         const phoneMenu = $('.phoneMenu');
         const formAddPhoto = $('#formAddPhoto');
+        const formScanPhoto = $('#formScanPhoto');
         if (!$(e.target).closest('.phoneMenu').length && !$(e.target).closest('.btnTel').length) {
           $('.phoneMenu').each(function () {
             $(this).hide();
@@ -1287,6 +1444,7 @@
       }
 
       function fileToBase64(file, callback) {
+        console.log('fileToBase64 start');
         const reader = new FileReader();
         reader.onloadend = function () {
           callback(reader.result);
@@ -1374,7 +1532,7 @@
           .then(response => {
             console.log('after uploadAvatarFromFile response', response);
             const addUserPhotoResult = response.data.addUserPhotoResult;
-            if (addUserPhotoResult.success) {
+            if (addUserPhotoResult.addedFoto) {
               console.log('Фото успішно додано до галереї користувача.');
             } else {
               console.warn('Фото не додано до галереї користувача. ');
@@ -1423,7 +1581,7 @@
                   toastr.error('Помилка зберігання фото профіля.');
                 }
 
-                if (addUserPhotoResult.success) {
+                if (addUserPhotoResult.addedFoto) {
                   toastr.success('Фото додано в галерею користувача.');
                 } else {
                   toastr.error('Фото не збережено до галереї користувача');
@@ -1497,6 +1655,160 @@
               NProgress.done();
             });
         });
+      }
+
+      $('#scanMakePhoto, #scanLoadPhoto').on('change', function (e) {
+        console.log('scanMakePhoto, #scanLoadPhoto change');
+        const file = this.files[0];
+        if (!file) {
+          toastr.error('Будь ласка, виберіть файл.');
+          return;
+        }
+
+        if (file && !file.type.startsWith('image/')) {
+          toastr.error('Невірний тип файлу. Виберіть зображення.');
+          event.target.value = '';
+          this.value = '';
+          return;
+        }
+
+        checkPhoto(file);
+        this.value = '';
+      });
+
+      async function sendPhotoForCheck(base64Image) {
+        console.log('sendPhotoForCheck');
+        NProgress.start();
+
+        $.ajax({
+          url: '/checkPhoto',
+          method: 'POST',
+          data: { photo: base64Image },
+          success: function (response) {
+            if (response.error) {
+              toastr.error(response.error);
+            } else {
+              toastr.success('Фото успішно оброблено.');
+              console.log(response.result);
+              renderCheckInfo(response.result, base64Image);
+            }
+          },
+          error: function (xhr, status, error) {
+            const errorMessage = `Помилка при обробці фото: ${xhr.responseText || error}`;
+            console.log(errorMessage);
+            toastr.error(errorMessage);
+          },
+          complete: function () {
+            NProgress.done();
+          },
+        });
+      }
+
+      async function checkPhoto(file) {
+        console.log('checkPhoto');
+        try {
+          fileToBase64(file, base64Image => {
+            sendPhotoForCheck(base64Image);
+          });
+        } catch (error) {
+          toastr.error(`Помилка при перетворенні файла: ${error.message}`);
+        }
+      }
+
+      function renderCheckInfo(info, sourcePhotoBase64) {
+        console.log('info', info);
+        const scanResult = $('#scanResult');
+        scanResult.show();
+        const resultText = $('#resultText');
+        const userName = $('#userName');
+        const resultPhoto = $('#resultPhoto');
+        const sourcePhotoContainer = $('#sourcePhoto');
+        const originalPhotoContainer = $('#originalPhoto');
+        const similarity = $('#similarity');
+        const score = $('#score');
+        const emotionDisplay = $('#emotion');
+        const photoArrayContainer = $('#photoArray');
+
+        sourcePhotoContainer.empty();
+        originalPhotoContainer.empty();
+        originalPhotoContainer.hide();
+        resultText.text();
+        userName.text('');
+        similarity.text('');
+        score.text('');
+        emotionDisplay.text('');
+        photoArrayContainer.empty();
+
+        const sourcePhoto = `
+        <div 
+            class="attachedImg" 
+            src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
+          >  
+          <img class="checkPhoto src-source" src="${sourcePhotoBase64}" />
+        </div>
+        `;
+        sourcePhotoContainer.append(sourcePhoto);
+
+        if (info.detectFace) {
+          resultText.text('Обличчя розпізнано');
+        } else {
+          resultText.text('Обличчя не розпізнано');
+        }
+        resultText.append(`<br />`);
+
+        if (!info.detectUser) {
+          resultText.append('Користувача не знайдено');
+          resultText.append(`<br />`);
+        }
+        if (info.user) {
+          originalPhotoContainer.show();
+          const originalPhoto = `
+          <div 
+            class="attachedImg" 
+            src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
+          >
+            <img 
+              class="checkPhoto photoForSim src-source"  
+              src="/foto/${info.user.uid}/${info.originalPhotoName}" 
+              src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
+            />
+          </div>
+          `;
+          originalPhotoContainer.append(originalPhoto);
+          resultText.append(`Співробітник: ${info.user.name}`);
+          resultText.append(`<br />`);
+        }
+
+        if (info.finded) {
+          resultText.append(`Схожість: ${info.finded.similarity.toFixed(2)}`);
+          resultText.append(`<br />`);
+          resultText.append(`Бал: ${info.score}`);
+          resultText.append(`<br />`);
+        }
+
+        if (info.finded2 && Array.isArray(info.finded2)) {
+          info.finded2.forEach(item => {
+            console.log('from info.finded2 item', item);
+            const photoItem = `
+                <div class="photoItem attachedImg" src-source="/foto/${item.uid}/${item.file}">
+                    <img 
+                      class='photoForSim src-source' 
+                      src="/foto/${item.uid}/${item.file}" 
+                      src-source="/foto/${item.uid}/${item.file}"
+                    />
+                    <span class="photoSim">${item.similarity.toFixed(2)}</span>
+                    <span class="photoUserName">${item.userName}</span>
+                </div>
+            `;
+            photoArrayContainer.append(photoItem);
+          });
+        }
+
+        // if (info.emotion) {
+        //   const emotions = info.emotion.map(emotionObj => emotionObj.emotion);
+        //   resultText.append(`Емоції: ${emotions.join(', ')}`);
+        //   resultText.append(`<br />`);
+        // }
       }
 
       function deletePhotos(e) {
@@ -1978,15 +2290,24 @@
           }
         });
 
-        $(document).on('click', '.hideTabel', function () {
-          console.log('hideTabel');
-          $('.tabelContainer').hide();
+        $(document).on('click', '.hideTabel', function () {});
+
+        $('#userScan').on('click', function () {
+          console.log('userScan');
+          $('#scanResult').hide();
+          $('#formScanPhoto').show();
         });
 
         $('#userList').on('click', '.userFoto', function (event) {
           console.log('click on photo', this);
           mediaviewer(this);
         });
+
+        $('#formScanPhoto').on('click', '.checkPhoto, .photoItem', function (event) {
+          console.log('click on photo', this);
+          mediaviewer(this);
+        });
+
         $('#userList').on('click', '.userFotoDelete', function (event) {
           console.log('userFotoDelete click', this);
           event.stopPropagation();
@@ -2048,6 +2369,10 @@
         $('#formAddPhoto').hide();
       }
 
+      function scanPhotoClose() {
+        $('#formScanPhoto').hide();
+      }
+
       $('#addPhotoPhoto').on('click', function () {
         const uid = $('#formAddPhoto').data('uid');
         $('.plateListItem[id="' + uid + '"]')
@@ -2066,6 +2391,10 @@
 
       $('#addPhotoClose').on('click', function () {
         addPhotoClose();
+      });
+
+      $('#scanPhotoClose').on('click', function () {
+        scanPhotoClose();
       });
     </script>
   </div>

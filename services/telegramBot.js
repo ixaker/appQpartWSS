@@ -51,7 +51,56 @@ async function sendImageAndMessage(base64Data, messageText, base64Data2 = null) 
   }
 }
 
+function isBase64(str) {
+  return str.startsWith('data:image/') && str.includes(';base64,');
+}
+
+function base64ToBuffer(base64Data) {
+  const base64Image = base64Data.split(';base64,').pop();
+  return Buffer.from(base64Image, 'base64');
+}
+
+async function sendImageAndMessageUrl(data1, messageText, data2 = null) {
+  console.log('sendImageAndMessage');
+
+  try {
+    let media1;
+    if (isBase64(data1)) {
+      media1 = base64ToBuffer(data1);
+    } else {
+      media1 = data1;
+    }
+
+    let mediaGroup = [
+      { type: 'photo', media: media1, caption: messageText }
+    ];
+
+    if (data2) {
+      let media2;
+      if (isBase64(data2)) {
+        media2 = base64ToBuffer(data2);
+      } else {
+        media2 = data2;
+      }
+
+      mediaGroup.push({
+        type: 'photo',
+        media: media2
+      });
+    }
+
+    console.log('before sendMediaGroup');
+    const response = await bot.sendMediaGroup(chatId, mediaGroup);
+    console.log('sendImageAndMessageUrl Message sent successfully:', response);
+  } catch (error) {
+    console.log('sendImageAndMessageUrl error', error);
+  }
+}
+
+
+
 module.exports = {
+  sendImageAndMessageUrl,
   sendImageAndMessage,
   sendTextMessage,
   sendImage
