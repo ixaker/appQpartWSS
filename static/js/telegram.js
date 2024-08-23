@@ -1,7 +1,7 @@
 // telegram.js
 
 // Объявляем переменные chatId и botToken
-const chatId = "672754822";
+const chatId = "-4561323962";
 const botToken = "5506317678:AAEst0pLX1pEIEDqTCqGZ8ZVk-DMj6nx278";
 const botTokenForPhoto = "5963182008:AAEAaqku-cJbC6Er7GHgYtVOZuR-8QO1fps";
 
