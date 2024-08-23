@@ -646,7 +646,7 @@
   <div class='itemContent'>
     <div class='userCardHead'>
       <div class='avatarContainer' data-work='{{work}}'>
-        <div style="display:none">{{#if work}}онлайн{{/if}}</div>
+        <div class="online" style="display:none">{{#if work}}онлайн{{/if}}</div>
         <img
           class='avatar'
           src='/auth_files/biophoto/{{emp_code}}.jpg'
@@ -2184,7 +2184,7 @@
           $('.plateListItem').each(function () {
             let found = true;
             let elements = $(this)
-              .find('.userName, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone')
+              .find('.userName, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone, .online')
               .map(function () {
                 return { el: $(this) };
               })
