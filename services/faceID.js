@@ -288,8 +288,8 @@ async function findUserOnFoto(body, forUserUID = '') {
             const filePath = path.join(folderPath, db[result.index].file);
 
             buffer = loadImageSync(filePath);
-            // result.originalPhoto = buffer.toString('base64');
-            // result.originalPhotoName = db[result.index].file;
+            result.originalPhoto = buffer.toString('base64');
+            result.originalPhotoName = db[result.index].file;
 
             saveDB();
           }
