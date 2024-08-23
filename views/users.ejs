@@ -703,6 +703,13 @@
           <div class='photoCount userCountFaceID btn btn-light {{#if isNewFoto}}isNewFoto{{/if}}'>
             <i class='bi bi-image'></i>
             <div class='counFoto'>{{count}}</div>
+
+            <div class="zero" style="display: none;">
+              {{#if (eq count 0)}}
+              zero
+              {{/if}}
+            </div>
+
           </div>
           <div class='arrival btn btn-light'>
             <i class='bi bi-person-down'></i>
@@ -1989,6 +1996,9 @@
           console.log(options.data.root);
           return '';
         });
+        Handlebars.registerHelper('eq', function (a, b) {
+          return a === b;
+        });
 
         const listContainerSource = document.getElementById('listContainer').innerHTML;
         const listContainerTemplate = Handlebars.compile(listContainerSource);
@@ -2184,7 +2194,9 @@
           $('.plateListItem').each(function () {
             let found = true;
             let elements = $(this)
-              .find('.userName, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone, .online')
+              .find(
+                '.userName, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone, .online, .zero'
+              )
               .map(function () {
                 return { el: $(this) };
               })
