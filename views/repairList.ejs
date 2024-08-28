@@ -191,6 +191,17 @@
     placeholder="Текст заявки (необязательно)..."
   ></textarea>
 
+  <form id="canWork">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="canWorkInput" id="canWorkInput1" value="true" />
+      <label class="form-check-label" for="canWorkInput1"> на станке можно работать </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="canWorkInput" id="canWorkInput2" value="false" />
+      <label class="form-check-label" for="canWorkInput2"> на станке нельзя работать </label>
+    </div>
+  </form>
+
   <div id="attachedFilesForNewOrder"></div>
 
   <div class="input-group" id="newOrderButtonGroup">
@@ -337,6 +348,14 @@
       font-weight: bold;
     }
 
+    .invalid-textarea {
+      border: 1px solid red;
+    }
+
+    .invalid-textarea:focus {
+      border: 1px solid red;
+    }
+
     .listRepair {
     }
 
@@ -344,6 +363,20 @@
     }
 
     .repairText {
+    }
+
+    #canWork {
+      font-size: 1.25rem;
+    }
+
+    .invalid-radio {
+      border: 2px solid red; /* Червоний контур */
+      box-shadow: 0 0 5px red; /* М'яке червоне світло навколо */
+    }
+
+    .form-check {
+      display: flex;
+      align-items: center;
     }
 
     #newOrderStanok {
@@ -1713,10 +1746,19 @@
       const stanokUID = $('#newOrderStanok').data('uid') || '';
       const newOrderTopic = $('#newOrderTopic').val();
       const newOrderText = $('#newOrderText').val();
+      const canWork = $('input[name="canWorkInput"]:checked').val();
+      console.log('canWork', canWork);
 
       if (newOrderTopic === '') {
         toastr.error('Укажите тему заявки');
+        $('#newOrderTopic').addClass('invalid-textarea');
         $('#newOrderTopic').focus();
+        return;
+      }
+
+      if (canWork === undefined) {
+        toastr.error('Укажите можно ли работать на станке');
+        $('input[name="canWorkInput"]').addClass('invalid-radio');
         return;
       }
 
@@ -1756,6 +1798,7 @@
         stanokUID: stanokUID,
         newOrderTopic: newOrderTopic,
         newOrderText: newOrderText,
+        НаСтанкеМожноРаботать: canWork,
         files: names,
       };
 
@@ -1780,6 +1823,7 @@
       $('#listRepairForStanok').hide();
       $('#formZakupka').hide();
       $('#main').show();
+      $('input[name="canWorkInput"]').prop('checked', false);
       closeFormOrder();
     });
 
