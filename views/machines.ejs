@@ -1,0 +1,332 @@
+<style>
+  mark {
+    background: yellow;
+    padding: 0;
+  }
+
+  #content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .machineIcon {
+    width: 35px;
+    height: auto;
+  }
+
+  #titleText {
+    display: flex;
+    align-items: center;
+    font-size: x-large;
+  }
+
+  #filter {
+    font-size: xx-large;
+    font-size: xx-large;
+    margin-right: 10px;
+    margin-left: auto;
+    color: darkgreen;
+  }
+
+  #commandPanel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .titleContainer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .commandButtons {
+    margin-left: auto;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+<div id="main">
+  <header id="commandPanel" class="commandPanel">
+    <div class="titleContainer">
+      <img src="/img/machine.png" class="machineIcon" />
+      <div id="titleText">
+        <h3 class="titlePage">Станки</h3>
+      </div>
+    </div>
+    <div class="commandRow">
+      <div class="input-group-search rounded groupSearch" id="groupSearch">
+        <input
+          type="search"
+          id="search"
+          class="form-control rounded"
+          placeholder="Поиск"
+          aria-label="Search"
+          aria-describedby="search-addon"
+        />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <div class="commandButtons">
+        <i class="bi bi-funnel-fill" id="filter"></i>
+        <img src="img/sort.svg?v=<%= version %>" alt="sort icon" class="commandImg" id="btnSort" />
+      </div>
+    </div>
+  </header>
+  <div
+    id="machines"
+    url="app/stanki"
+    callbackAfterLoadData="callbackAfterLoadData"
+    callbackForRender="callbackForRender"
+    callbackClick="callbackClick"
+    type="plate"
+    paggination="false"
+  ></div>
+</div>
+
+<div id="stanokInfo"></div>
+
+<script id="stanokInfoTemplate" type="text/x-handlebars-template">
+  <div class='stanokName'>{{#if ИнвентарныйНомер}}{{ИнвентарныйНомер}}{{else}} **** {{/if}} - {{Модель}}</div>
+</script>
+
+<style>
+  .containerStanok {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .firstRow {
+    display: flex;
+    justify-content: flex-start;
+    font-size: x-large;
+  }
+
+  .reportTime {
+    margin-left: auto;
+    display: flex;
+    gap: 5px;
+    font-size: large;
+  }
+
+  .number {
+    font-weight: 600;
+  }
+
+  .name {
+  }
+
+  .timeLastReport {
+  }
+
+  .secondRow {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: large;
+  }
+
+  .detail,
+  .stage {
+    display: flex;
+  }
+
+  .stage {
+  }
+
+  .labelNaladka {
+    min-width: 70px;
+    color: grey;
+    font-style: italic;
+    margin-left: 10px;
+  }
+  .valueNaladka {
+  }
+
+  .setter {
+  }
+
+  .timeSetting {
+  }
+
+  .thirdRow {
+    display: flex;
+  }
+
+  .hasRepair {
+    font-size: large;
+    color: red;
+  }
+</style>
+
+<script id="tileTemplate" type="text/x-handlebars-template">
+  <div class='.containerStanok'>
+    <div class='firstRow'>
+      <div class='number'>{{#if ИнвентарныйНомер}}{{ИнвентарныйНомер}}{{else}} **** {{/if}} - {{Модель}}</div>
+
+    </div>
+
+    <div class='secondRow'>
+
+      <div class='detail'>
+        <div class='labelNaladka'>Деталь: </div>
+        <div class='valueNaladka'>{{ПоследняяНаладка.Деталь.АртикулНаименование}}</div>
+      </div>
+      <div class='stage'>
+        <div class='labelNaladka'>Етап:</div>
+        <div class='valueNaladka'>{{ПоследняяНаладка.ЭтапПроизводства.Наименование}}</div>
+      </div>
+    </div>
+    <div class='thirdRow'>
+      <div class='hasRepair'>{{#if ЕстьАктивнаяЗаявкаНаРемонт}}<i class='bi bi-tools'></i>{{/if}}</div>
+      <div class='reportTime'>
+        <i class='bi bi-card-checklist'></i>
+        <div class='timeLastReport {{classTimeFromLastReport}}'>{{timeFromLastReport}}</div>
+        <div class='cpu' style='display:none'>{{#if ЧПУ}}чпу{{/if}}</div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script>
+  $(document).ready(function () {
+    const platesID = '#machines';
+    const defaultParam = {};
+
+    const source = document.getElementById('tileTemplate').innerHTML;
+    const template = Handlebars.compile(source);
+
+    function generateMachineInfo(data, container) {
+      data.timeFromLastReport = timeSinceLastReport(data.ДатаПоследнегоОтчета);
+      if (data.timeFromLastReport === 'ніколи') {
+        data.classTimeFromLastReport = 'never';
+      }
+
+      const html = template(data);
+      $(container).html(html);
+    }
+
+    const sourceStanokInfo = document.getElementById('stanokInfoTemplate').innerHTML;
+    const templateStanokInfo = Handlebars.compile(sourceStanokInfo);
+
+    function generateStanoikInfo(data, container) {
+      data.timeFromLastReport = timeSinceLastReport(data.ДатаПоследнегоОтчета);
+
+      const html = templateStanokInfo(data);
+      $(container).html(html);
+    }
+
+    $(platesID).data('defaultParam', defaultParam);
+    initListPlate(platesID, true);
+
+    addSubscribeWSS('аОборудование_all');
+
+    callbackAfterLoadData = function (response) {
+      console.log('callbackAfterLoadData response', response);
+      const param = $(platesID).data('param');
+      param.date = response.nextDate;
+      $(platesID).data('param', param);
+    };
+
+    callbackForRender = function (data) {
+      console.log('callbackForRender data', data.ЧПУ);
+
+      containerForTile = `#${data.uid}`;
+      if ($(containerForTile).length === 0) return;
+
+      if (!data.ЧПУ) {
+        $(containerForTile).remove();
+        return;
+      }
+
+      generateMachineInfo(data, containerForTile);
+    };
+
+    callbackWSS = async function (data) {
+      console.log('callbackWSS data', data.data, data.data.uid);
+      const containerId = `#${data.data.uid}`;
+      const container = $(containerId);
+      console.log('container', container);
+
+      generateMachineInfo(data, container);
+    };
+
+    // callbackClick = function (element) {
+    //   const data = $(element).data('data');
+    //   console.log('callbackClick data', data);
+    //   openStanokInfo();
+    //   generateStanoikInfo(data, container);
+    // };
+
+    function openStanokInfo() {
+      $('#main').hide();
+      $('#stanokInfo').show();
+    }
+
+    function timeSinceLastReport(dateString) {
+      const pastDate = new Date(dateString);
+      const currentDate = new Date();
+
+      const difference = currentDate - pastDate;
+
+      const millisecondsInAnHour = 1000 * 60 * 60;
+      const millisecondsInADay = 1000 * 60 * 60 * 24;
+
+      const hoursDifference = Math.floor(difference / millisecondsInAnHour);
+      const daysDifference = Math.floor(difference / millisecondsInADay);
+
+      if (hoursDifference < 24) {
+        return `${hoursDifference} г`;
+      } else if (hoursDifference / 24 > 1000) {
+        return 'ніколи';
+      } else {
+        return `${daysDifference} д`;
+      }
+    }
+
+    $('#search').on('input', function () {
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
+
+      $('.plateListItem').each(function () {
+        let found = true;
+        let elements = $(this)
+          .find('.cpu, .number, .valueNaladka, .never')
+          .map(function () {
+            return { el: $(this) };
+          })
+          .get();
+        elements.forEach(element => {
+          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+        });
+
+        if (searchTerms.length > 0) {
+          found = searchTerms.every(term => {
+            const regex = new RegExp(`(${term})`, 'gi');
+            return elements.some(element => {
+              if (element.text.match(regex)) {
+                element.text = element.text.replace(regex, '<mark>$1</mark>');
+                console.log('element.text', element.text);
+                return true;
+              }
+              return false;
+            });
+          });
+        }
+
+        $(this).toggleClass('hide', !found);
+        elements.forEach(element => {
+          element.el.html(element.text);
+        });
+      });
+    });
+  });
+</script>
