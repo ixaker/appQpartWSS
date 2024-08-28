@@ -114,6 +114,7 @@ app.post('/getUserByEmpCode', (req, res) => {
 // app.use(express.static('js'));
 // app.use(express.static('img'));
 app.use('/foto', express.static('foto'));
+app.use('/storage', express.static(path.join(__dirname, 'static/storage/mediaFiles')));
 app.use(express.static('static', {
   setHeaders: function (res, path) {
     res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
@@ -518,6 +519,20 @@ app.get('/setip', function (req, res) {
   // https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app
   // https://test.qpart.com.ua/setip?ip=http://10.8.0.33:23456/UTCRM_test/ru_RU/hs/app
   res.send('ok')
+});
+
+app.get('/machines', function (req, res) {
+  log.info('machines start')
+
+  res.render('machines', renderParams, function (err, html) {
+    if (err) {
+      log.error('Render error:', err);
+      res.status(500).send('Server Error');
+    } else {
+
+      res.send(html);
+    }
+  });
 });
 
 // + Страничка - Список пользователей
