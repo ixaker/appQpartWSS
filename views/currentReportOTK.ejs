@@ -17,6 +17,13 @@
     display: flex;
     justify-content: center;
   }
+
+  thead th {
+    position: sticky;
+    top: 0;
+
+    z-index: 1;
+  }
 </style>
 
 <h3 class="titlePage">Список отчетов на проверку ОТК</h3>
@@ -26,6 +33,7 @@
   name="ОтчетПоРаботе2022"
   url="/app/getCurrentReportForOTK"
   filter="filterForOTK"
+  callbackAfterWrite="callbackAfterWrite"
   append="end"
   sort="0"
   init
@@ -37,6 +45,9 @@
     </td>
     <td title="Дата" name="ДатаОтчета" style="width: 6%">
       <div class="dataCell textAlignCenter" mask="DD.MM" typeData="date"></div>
+    </td>
+    <td title="Дни" name="ДатаОтчета" style="width: 5%">
+      <div class="dataCell textAlignEnd"></div>
     </td>
     <td title="Номер детали" name="Заказ" key="АртикулНаименование" style="width: 22%">
       <div class="dataCell"></div>
@@ -94,6 +105,32 @@
       }
       //console.log('filter result ', result,data);
       return result;
+    };
+
+    function getDifferenceToCurrentDate(dateString) {
+      const targetDate = new Date(dateString);
+      const currentDate = new Date();
+      const differenceInMs = currentDate - targetDate;
+      const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+
+      return differenceInDays;
+    }
+
+    callbackAfterWrite = function (data) {
+      console.log('callbackAfterWrite data', data, data.data.ДатаОтчета);
+      // const currentRow = $('tr[id="' + data.data.uid + '"]');
+      let currentRow = $('#' + data.data.uid);
+      const difference = getDifferenceToCurrentDate(data.data.ДатаОтчета);
+      if (difference >= 5) {
+        currentRow.addClass('dangerColor');
+      }
+
+      let daysCell = currentRow.find('td[title="Дни"]').find('div.dataCell');
+      if (daysCell.length) {
+        daysCell.text(5 - difference);
+      }
+
+      console.log('currentRow', currentRow);
     };
 
     // клик по кнопке Редактировать
