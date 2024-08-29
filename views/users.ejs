@@ -3,14 +3,15 @@
     max-width: 600px;
   }
 
-  .qr-code {
+  .qr-code,
+  #userScan {
     font-size: xx-large;
     font-size: xx-large;
     margin-right: 10px;
     margin-left: 10px;
   }
 
-  #userScan {
+  #filter {
     font-size: xx-large;
     font-size: xx-large;
     margin-right: 10px;
@@ -797,6 +798,7 @@
       <div id="titleText">
         <h3 class="titlePage2">Перелік користувачів</h3>
       </div>
+      <i class="bi bi-funnel-fill" id="filter"></i>
       <i class="bi bi-person-exclamation" id="userScan"></i>
       <i class="bi bi-qr-code-scan qr-code" id="qr-code"></i>
     </div>
@@ -1144,6 +1146,8 @@
       </div>
     </div>
 
+    <div id="filterMenu" style="display: none">asdfasdf</div>
+
     <div id="qrContainer">
       <img class="qrImage" src="img/qrcode.png" alt="qr" />
       <i class="bi bi-x-lg closeBtn" id="closeQR"></i>
@@ -1220,6 +1224,10 @@
           $('.phoneMenu').each(function () {
             $(this).hide();
           });
+        }
+
+        if (!$(e.target).closest('#filterMenu').length) {
+          $('#filterMenu').hide();
         }
 
         if (!$(e.target).closest('.addPhotoContent').length) {
@@ -1748,10 +1756,10 @@
         photoArrayContainer.empty();
 
         const sourcePhoto = `
-        <div 
-            class="attachedImg" 
+        <div
+            class="attachedImg"
             src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
-          >  
+          >
           <img class="checkPhoto src-source" src="${sourcePhotoBase64}" />
         </div>
         `;
@@ -1771,13 +1779,13 @@
         if (info.user) {
           originalPhotoContainer.show();
           const originalPhoto = `
-          <div 
-            class="attachedImg" 
+          <div
+            class="attachedImg"
             src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
           >
-            <img 
-              class="checkPhoto photoForSim src-source"  
-              src="/foto/${info.user.uid}/${info.originalPhotoName}" 
+            <img
+              class="checkPhoto photoForSim src-source"
+              src="/foto/${info.user.uid}/${info.originalPhotoName}"
               src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
             />
           </div>
@@ -1799,9 +1807,9 @@
             console.log('from info.finded2 item', item);
             const photoItem = `
                 <div class="photoItem attachedImg" src-source="/foto/${item.uid}/${item.file}">
-                    <img 
-                      class='photoForSim src-source' 
-                      src="/foto/${item.uid}/${item.file}" 
+                    <img
+                      class='photoForSim src-source'
+                      src="/foto/${item.uid}/${item.file}"
                       src-source="/foto/${item.uid}/${item.file}"
                     />
                     <span class="photoSim">${item.similarity.toFixed(2)}</span>
@@ -2103,11 +2111,8 @@
           data.list.forEach(item => {
             if (item.lastProhod) {
               item.timeFromLastProhod = calcLastProhod(item.lastProhod);
-              item.tel1Solid = item.tel1
-                .replaceAll(' ', '')
-                .replaceAll('(', '')
-                .replaceAll(')', '')
-                .replaceAll('+', '');
+              item.tel1Solid = item.tel1.replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '');
+              // .replaceAll('+', '');
               if (item.tel2) {
                 item.tel2Solid = item.tel2.replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '');
               }
@@ -2303,12 +2308,15 @@
           }
         });
 
-        $(document).on('click', '.hideTabel', function () {});
-
         $('#userScan').on('click', function () {
           console.log('userScan');
-          $('#scanResult').hide();
           $('#formScanPhoto').show();
+        });
+
+        $('#filter').on('click', function () {
+          console.log('');
+
+          $('#filterMenu').show();
         });
 
         $('#userList').on('click', '.userFoto', function (event) {
