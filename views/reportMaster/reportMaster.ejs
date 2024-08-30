@@ -246,15 +246,15 @@ include('reportMaster_users') %>
       $(children).show();
     }
 
-    $(document).on('click', '#details', function () {
-      showPage(this);
-    });
+    // $(document).on('click', '#details', function () {
+    //   showPage(this);
+    // });
     // $(document).on('click', '#users', function () {
     //   showPage(this);
     // });
-    // $(document).on('click', '#stanki', function () {
-    //   showPage(this);
-    // });
+    $(document).on('click', '#stanki', function () {
+      showPage(this);
+    });
 
     $(document).on('click', '.backToMain', function () {
       console.log('backtomain click', this);
