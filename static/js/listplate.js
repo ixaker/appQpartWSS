@@ -3,6 +3,7 @@ function initListPlate(platesID, needClearData = false) {
 
     try {
         const plateJQ = $(platesID);
+        plateJQ.empty();
 
         let id_response = plateJQ.attr('id') + Date.now();
 
@@ -27,18 +28,20 @@ function initListPlate(platesID, needClearData = false) {
 
                 if (!response.passRender) {
                     response.list.forEach(element => {
-                        const elementForAdding = $(`<div id=${element.uid} class="plateListItem" ></div>`);
+                        const elementForAdding = $(`<div id=${element.uid} class="plateListItem"></div>`);
                         elementForAdding.data('data', element);
                         $(platesID).append(elementForAdding);
                         callbackFromAttr(plateJQ, 'callbackForRender', element);
                     });
-                }
 
+                    plateJQ.on('click', '.plateListItem', function (event) {
+                        callbackFromAttr(plateJQ, 'callbackClick', this);
+                    })
+                }
 
             }, complete: function (response) {
                 NProgress.done();
             }, beforeSend: function (response) {
-
                 activeRequests[id_response] = response;
             }
         });
@@ -52,6 +55,7 @@ callbackScrollForLoadingData = function () {
     $('[type="plate"]').each((index, plate) => {
         console.log('callbackScrollForLoadingData plate', plate);
         const needPaggination = $(plate).attr('paggination') !== 'false';
+        console.log('needPaggination, plate ', $(plate), needPaggination);
         console.log('needPaggination', needPaggination);
         if (needPaggination) {
             initListPlate(plate)
