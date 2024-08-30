@@ -1,0 +1,262 @@
+<%- include('reportMaster_testData') %> <%- include('reportMaster_details') %> <%- include('reportMaster_stanki') %> <%-
+include('reportMaster_users') %>
+
+<style>
+  .main {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .titlePage {
+    font-size: xx-large;
+    line-height: normal;
+  }
+
+  .backToMain {
+    font-size: xx-large;
+    color: darkgreen;
+    margin-left: 20px;
+  }
+
+  #shiftHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shiftButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    font-size: xx-large;
+    color: darkgreen;
+  }
+
+  #shiftDate {
+    font-size: large;
+    text-align: center;
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 4px;
+    margin-bottom: 4px;
+    width: 150px;
+    margin: 0 30px;
+  }
+
+  .plate {
+    margin-bottom: 10px;
+    border: 1px solid #bbbbbb;
+    background-color: #ffffff;
+    border-radius: 7px;
+    box-shadow: 2px 3px 5px #999;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    font-size: xx-large;
+    font-weight: bold;
+  }
+
+  .group {
+    display: flex;
+    font-size: x-large;
+    line-height: 1.5em;
+    justify-content: space-between;
+    padding: 0 30px;
+  }
+
+  .name {
+  }
+
+  .value {
+  }
+</style>
+
+<div>
+  <div id="main" class="screen">
+    <header id="commandPanel" class="commandPanel">
+      <h3 class="titlePage">Отчет мастера</h3>
+    </header>
+
+    <div id="shiftHeader">
+      <button id="prevShift" class="shiftButton">
+        <i class="bi bi-arrow-left-circle"></i>
+      </button>
+      <input id="shiftDate" name="shiftDate" type="text" readonly="" />
+      <button id="nextShift" class="shiftButton">
+        <i class="bi bi-arrow-right-circle"></i>
+      </button>
+    </div>
+
+    <div id="containerSumInfo"></div>
+  </div>
+</div>
+
+<script id="mainTemplate" type="text/x-handlebars-template">
+  <div id='stanki' class='plate' children='#stanokContainer'>
+    <div class='header'>Станки</div>
+    <div class='group'>
+      <div class='name'>Всього:</div>
+      <div class='value'>{{stanki.sumInfo.total}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>Задіяні:</div>
+      <div class='value'>{{stanki.sumInfo.used}}</div>
+
+    </div>
+    <div class='group'>
+      <div class='name'>ККД:</div>
+      <div class='value'>{{stanki.sumInfo.usedKPD}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>Зламані:</div>
+      <div class='value'>{{stanki.sumInfo.broken}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>Без роботи:</div>
+      <div class='value'>{{stanki.sumInfo.notWork}}</div>
+    </div>
+  </div>
+
+  <div id='users' class='plate' children='#usersContainer'>
+    <div class='header'>Працівники зміни</div>
+    <div class='group'>
+      <div class='name'>Оператори:</div>
+      <div class='value'>{{users.sumInfo.operators}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>ККД:</div>
+      <div class='value'>{{users.sumInfo.opearatorsKPD}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>Наладчики:</div>
+      <div class='value'>{{users.sumInfo.naladchiki}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>Слюсарі:</div>
+      <div class='value'>{{users.sumInfo.slesari}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>ОТК:</div>
+      <div class='value'>{{users.sumInfo.OTK}}</div>
+    </div>
+  </div>
+
+  <div id='details' class='plate' children='#detailContainer'>
+    <div class='header'>Деталі</div>
+    <div class='group'>
+      <div class='name'>Потрібна наладка:</div>
+      <div class='value'>{{details.sumInfo.needNaladka}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>На токарну обробку:</div>
+      <div class='value'>{{details.sumInfo.tokarka}}</div>
+    </div>
+    <div class='group'>
+      <div class='name'>На фрезерну обробку:</div>
+      <div class='value'>{{details.sumInfo.frezerka}}</div>
+    </div>
+  </div>
+</script>
+
+<script>
+  $(document).ready(function () {
+    let currentDate;
+    let currentShift;
+
+    let selectedStanok = null;
+    let selectedUser = null;
+
+    addSubscribeWSS('аОборудование_all');
+
+    init();
+
+    function init() {
+      getCurrentShift();
+      getReportFrom1C();
+    }
+
+    function getCurrentShift() {
+      currentShift = 'day';
+      currentDate = new Date();
+      const currentHour = currentDate.getHours();
+
+      if (currentHour > 19 && currentHour < 7) {
+        currentShift = 'night';
+
+        if (currentHour < 7) {
+          currentDate.setDate(currentDate.getDate() - 1);
+        }
+      }
+    }
+
+    $('#prevShift').click(function () {
+      changeShift(-1);
+      getReportFrom1C();
+    });
+
+    $('#nextShift').click(function () {
+      changeShift(+1);
+      getReportFrom1C();
+    });
+
+    function changeShift(direction) {
+      if (direction === 1 && currentShift === 'day') {
+        direction = 0;
+      }
+
+      if (direction === -1 && currentShift === 'night') {
+        direction = 0;
+      }
+
+      currentDate.setDate(currentDate.getDate() + direction);
+      currentShift = currentShift === 'day' ? 'night' : 'day';
+    }
+
+    async function getReportFrom1C() {
+      console.log('getReportFrom1C, currentDate, currentShift', currentDate, currentShift);
+      renderTitle();
+
+      const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift };
+      // universalRequest('app/reportMaster', 'GET', {}, shift, renderReport);
+      renderReport(testData);
+    }
+
+    function renderTitle() {
+      const formattedDate = formatDate(currentDate.toISOString());
+      const formattedShift = currentShift === 'day' ? 'день' : 'нічь';
+      const titleText = `${formattedDate} - ${formattedShift}`;
+      $('#shiftDate').val(titleText);
+    }
+
+    function renderReport(data) {
+      generateFromTemplate('#mainTemplate', data, '#containerSumInfo');
+    }
+
+    function showPage(element) {
+      const children = $(element).attr('children');
+      $('#main').hide();
+      $(children).show();
+    }
+
+    $(document).on('click', '#details', function () {
+      showPage(this);
+    });
+    // $(document).on('click', '#users', function () {
+    //   showPage(this);
+    // });
+    // $(document).on('click', '#stanki', function () {
+    //   showPage(this);
+    // });
+
+    $(document).on('click', '.backToMain', function () {
+      console.log('backtomain click', this);
+      $('#main').show();
+      const parent = $(this).attr('parent');
+      $(parent).hide();
+    });
+  });
+</script>

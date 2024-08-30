@@ -1,0 +1,168 @@
+<style>
+  .containerStanok {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .titleChildren {
+    align-self: center;
+    flex-grow: 1;
+    text-align: center;
+  }
+  .firstRow {
+    display: flex;
+    justify-content: flex-start;
+    font-size: x-large;
+  }
+
+  .reportTime {
+    margin-left: auto;
+    display: flex;
+    gap: 5px;
+    font-size: large;
+  }
+
+  .number {
+    font-weight: 600;
+  }
+
+  .secondRow {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: large;
+  }
+
+  .detail,
+  .stage {
+    display: flex;
+  }
+
+  .labelNaladka {
+    min-width: 70px;
+    color: grey;
+    font-style: italic;
+    margin-left: 10px;
+  }
+
+  .thirdRow {
+    display: flex;
+  }
+
+  .hasRepair {
+    font-size: large;
+    color: red;
+  }
+</style>
+
+<div id="stanokContainer" style="display: none">
+  <header id="commandPanel" class="commandPanel">
+    <i class="bi bi-arrow-left-circle backToMain" parent="#stanokContainer"></i>
+    <h1 class="titleChildren">Станки</h1>
+  </header>
+
+  <div
+    id="machines"
+    url="app/stanki"
+    callbackForRender="callbackForRender"
+    callbackClick="callbackClick"
+    type="plate"
+    paggination="false"
+  ></div>
+</div>
+
+<script id="tileTemplate" type="text/x-handlebars-template">
+  <div class='.containerStanok'>
+    <div class='firstRow'>
+      <div class='number'>{{#if ИнвентарныйНомер}}{{ИнвентарныйНомер}}{{else}} **** {{/if}} - {{Модель}}</div>
+
+    </div>
+
+    <div class='secondRow'>
+
+      <div class='detail'>
+        <div class='labelNaladka'>Деталь: </div>
+        <div class='valueNaladka'>{{ПоследняяНаладка.Деталь.АртикулНаименование}}</div>
+      </div>
+      <div class='stage'>
+        <div class='labelNaladka'>Етап:</div>
+        <div class='valueNaladka'>{{ПоследняяНаладка.ЭтапПроизводства.Наименование}}</div>
+      </div>
+    </div>
+    <div class='thirdRow'>
+      <div class='hasRepair'>{{#if ЕстьАктивнаяЗаявкаНаРемонт}}<i class='bi bi-tools'></i>{{/if}}</div>
+      <div class='reportTime'>
+        <i class='bi bi-card-checklist'></i>
+        <div class='timeLastReport {{classTimeFromLastReport}}'>{{timeFromLastReport}}</div>
+        <div class='cpu' style='display:none'>{{#if ЧПУ}}чпу{{/if}}</div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="stanokTemplate" type="text/x-handlebars-template">
+  {{#each blocks}}
+    <div id='{{uid}}' class='stanokInv'>
+      {{ИнвентарныйНомер}}
+    </div>
+  {{/each}}
+</script>
+
+<script>
+  $(document).ready(function () {
+    const platesID = '#machines';
+    $(platesID).data('defaultParam', {});
+
+    const source = document.getElementById('tileTemplate').innerHTML;
+    const template = Handlebars.compile(source);
+
+    initListPlate(platesID, true);
+
+    callbackForRender = function (data) {
+      console.log('callbackForRender data', data.ЧПУ);
+
+      containerForTile = `#${data.uid}`;
+      if ($(containerForTile).length === 0) return;
+
+      if (!data.ЧПУ) {
+        $(containerForTile).remove();
+        return;
+      }
+
+      generateMachineInfo(data, containerForTile);
+    };
+
+    function timeSinceLastReport(dateString) {
+      const pastDate = new Date(dateString);
+      const currentDate = new Date();
+
+      const difference = currentDate - pastDate;
+
+      const millisecondsInAnHour = 1000 * 60 * 60;
+      const millisecondsInADay = 1000 * 60 * 60 * 24;
+
+      const hoursDifference = Math.floor(difference / millisecondsInAnHour);
+      const daysDifference = Math.floor(difference / millisecondsInADay);
+
+      if (hoursDifference < 24) {
+        return `${hoursDifference} г`;
+      } else if (hoursDifference / 24 > 1000) {
+        return 'ніколи';
+      } else {
+        return `${daysDifference} д`;
+      }
+    }
+
+    function generateMachineInfo(data, container) {
+      data.timeFromLastReport = timeSinceLastReport(data.ДатаПоследнегоОтчета);
+      if (data.timeFromLastReport === 'ніколи') {
+        data.classTimeFromLastReport = 'never';
+      }
+
+      const html = template(data);
+      $(container).html(html);
+    }
+  });
+</script>

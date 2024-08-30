@@ -327,7 +327,6 @@ function generateFromTemplate(idTemplate, data, idParent, prepend = false) {
     }
 }
 
-
 // example of usage function
 // universalRequest(
 //     '/app/someEndpoint', // URL
@@ -678,4 +677,104 @@ async function checkForCamera() {
         console.error('API `enumerateDevices` не підтримується браузером');
         return false;
     }
+}
+
+function dataURLtoBlob(dataURL) {
+    const [header, data] = dataURL.split(',');
+    const mime = header.match(/:(.*?);/)[1];
+    const binary = atob(data);
+    const array = [];
+    for (let i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], { type: mime });
+}
+
+function resizeImage(file, targetWidth = 150) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            const img = new Image();
+            img.src = event.target.result;
+
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                const scale = targetWidth / img.width;
+                const targetHeight = img.height * scale;
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                // Отримуємо Data URL з canvas
+                const resizedImageDataURL = canvas.toDataURL('image/jpeg');
+
+                // Перетворюємо Data URL в Blob
+                const resizedImageBlob = dataURLtoBlob(resizedImageDataURL);
+
+                resolve(resizedImageBlob);
+            };
+
+            img.onerror = function () {
+                reject(new Error('Failed to load image'));
+            };
+        };
+
+        reader.onerror = function () {
+            reject(new Error('Failed to read file'));
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+// menu functionality
+
+function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
+    const menuButton = $(`#${menuButtonId}`);
+    const menuContainer = $(`#${menuContainerId}`);
+
+    menuButton.off('click').on('click', function (event) {
+        event.stopPropagation();
+
+
+        const buttonOffset = menuButton.offset();
+        const buttonHeight = menuButton.outerHeight();
+        const buttonWidth = menuButton.outerWidth();
+        const menuWidth = menuContainer.outerWidth();
+        console.log('buttonOffset, buttonHeight, buttonWidth, menuWidth', buttonOffset, buttonHeight, buttonWidth, menuWidth);
+
+        menuContainer.css({
+            top: buttonOffset.top + buttonHeight,
+            left: buttonOffset.left - (menuWidth / 2) + (buttonWidth / 2),
+            position: 'fixed'
+        });
+
+        menuContainer.toggle();
+
+    });
+
+    $(document).on('click', function (event) {
+        if (!menuContainer.is(event.target) && !menuContainer.has(event.target).length && !menuButton.is(event.target)) {
+            menuContainer.hide();
+        }
+    });
+
+    menuContainer.find('.menuItem').each(function (index) {
+        const action = menuItemActions[index];
+        if (action) {
+            $(this).on('click', action);
+        }
+    });
+}
+
+function formatDateToYYYYMMDD(date) {
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+    return `${year}${month}${day}`;
 }

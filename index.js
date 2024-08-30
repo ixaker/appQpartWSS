@@ -82,6 +82,8 @@ let clients = [];
 // ******************************************* Web сервер *******************************************
 const app = express();
 app.set('view engine', 'ejs');
+// app.set('views', path.join(__dirname, 'views'));
+
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
@@ -519,6 +521,19 @@ app.get('/setip', function (req, res) {
   // https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app
   // https://test.qpart.com.ua/setip?ip=http://10.8.0.33:23456/UTCRM_test/ru_RU/hs/app
   res.send('ok')
+});
+
+app.get('/reportMaster', function (req, res) {
+
+  res.render('reportMaster/reportMaster', renderParams, function (err, html) {
+    if (err) {
+      log.error('Render error:', err);
+      res.status(500).send('Server Error');
+    } else {
+
+      res.send(html);
+    }
+  });
 });
 
 app.get('/machines', function (req, res) {
