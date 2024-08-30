@@ -232,7 +232,7 @@ include('reportMaster_users') %>
 
     function renderTitle() {
       const formattedDate = formatDate(currentDate.toISOString());
-      const formattedShift = currentShift === 'day' ? 'день' : 'нічь';
+      const formattedShift = currentShift === 'day' ? 'день' : 'ніч';
       const titleText = `${formattedDate} - ${formattedShift}`;
       $('#shiftDate').val(titleText);
     }
