@@ -36,7 +36,10 @@ function initListPlate(platesID, needClearData = false) {
 
                     plateJQ.on('click', '.plateListItem', function (event) {
                         callbackFromAttr(plateJQ, 'callbackClick', this);
-                    })
+                    });
+
+                    callbackFromAttr(plateJQ, 'callbackAfterRender', response);
+
                 }
 
             }, complete: function (response) {

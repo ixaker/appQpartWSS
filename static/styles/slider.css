@@ -1,0 +1,72 @@
+:root {
+  --animation-duration: 0.1s;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.container-slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.container-slide .content {
+  transition: transform var(--animation-duration) ease, opacity var(--animation-duration) ease;
+}
+
+.container-slide.outRight {
+  animation: slideOutRight var(--animation-duration) forwards;
+}
+
+.container-slide.outLeft {
+  animation: slideOutLeft var(--animation-duration) forwards;
+}
+
+.container-slide.inLeft {
+  animation: slideInLeft var(--animation-duration) forwards;
+}
+
+.container-slide.inRight {
+  animation: slideInRight var(--animation-duration) forwards;
+}

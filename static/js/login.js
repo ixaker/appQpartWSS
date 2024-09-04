@@ -61,6 +61,7 @@ function exit() {
     $('#login').show();
     $('#btnStartVideo').show();
     $('#video').hide();
+    $('#formZakupka').hide();
     //$('#exit').hide();
     //$('#navbar_text').hide();
     //$('#btnBurger').hide();

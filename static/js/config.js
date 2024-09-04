@@ -206,13 +206,13 @@ async function logToServer(msg, data = {}) {
     // });
 }
 
-function initInputAutocomplete(element) {
+function initInputAutocomplete(element, minLength = 1, filter = {}) {
     try {
         const url = $(element).attr('url');
 
         $(element).autocomplete({
             source: function (req, res) {
-                const data = { term: req.term };
+                const data = { term: req.term, filter: filter };
 
                 $.ajax({
                     method: 'POST', url: url,
@@ -225,21 +225,29 @@ function initInputAutocomplete(element) {
                 });
             },
             select: function (event, ui) {
+                console.log('this, ui', this, ui);
                 $(this).attr('uid', ui.item.uid);
                 setValid(this, true);
                 $(this).blur();
                 callbackFromAttr(this, 'callbackSelect', ui.item)
+                callbackFromAttr(this, 'callbackAfterSelect', { element: this, item: ui.item })
+
             },
             position: { my: "left bottom", at: "left top", collision: "flip" },
-
-            minLength: 1
+            minLength: minLength
         }).on("input", function () {
-            $(element).attr('uid', '');
-            setValid(element, false);
+            $(this).attr('uid', '');
+            setValid(this, false);
         }).on("blur", function () {
-            if (($(element).attr('uid') || '') === '') {
-                $(element).val('');
-                callbackFromAttr(this, 'callbackBlurIfNone', element)
+            if (($(this).attr('uid') || '') === '') {
+                $(this).val('');
+                callbackFromAttr(this, 'callbackBlurIfNone', this)
+            }
+        }).on("focus", function () {
+            if (minLength === 0) {
+                if (($(this).attr('uid') || '') === '') {
+                    $(this).autocomplete("search", "");
+                }
             }
         });
     } catch (error) {
@@ -344,8 +352,9 @@ function generateFromTemplate(idTemplate, data, idParent, prepend = false) {
 //     }
 // );
 
-function universalRequest(url, method = 'GET', payload = {}, params = {}, onSuccess, onError, onComplete) {
+function universalRequest(url, method = 'GET', payload = '', params = {}, onSuccess, onError, onComplete) {
     console.log('universalRequest', url, method, payload, params);
+    let id_response = 'id_' + Date.now();
 
     let queryString = '';
     if (params && typeof params === 'object') {
@@ -373,9 +382,12 @@ function universalRequest(url, method = 'GET', payload = {}, params = {}, onSucc
                     console.error('Callback Error:', callbackError);
                     if (typeof onError === 'function') { onError(callbackError); }
                 }
-            },
+            }, beforeSend: function (response) {
+                activeRequests[id_response] = response;
+            }
         }).always(function () {
             try {
+                delete activeRequests[id_response];
                 if (typeof onComplete === 'function') { onComplete(); }
             } catch (callbackError) {
                 console.error('Callback Error:', callbackError);
@@ -735,12 +747,12 @@ function resizeImage(file, targetWidth = 150) {
 // menu functionality
 
 function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
+    console.log('click openMenu',);
     const menuButton = $(`#${menuButtonId}`);
     const menuContainer = $(`#${menuContainerId}`);
 
     menuButton.off('click').on('click', function (event) {
         event.stopPropagation();
-
 
         const buttonOffset = menuButton.offset();
         const buttonHeight = menuButton.outerHeight();
@@ -755,7 +767,6 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
         });
 
         menuContainer.toggle();
-
     });
 
     $(document).on('click', function (event) {
@@ -767,7 +778,11 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
     menuContainer.find('.menuItem').each(function (index) {
         const action = menuItemActions[index];
         if (action) {
-            $(this).on('click', action);
+            $(this).off('click').on('click', function () {
+                console.log('clickonMenuItem',);
+                const isActive = $(this).toggleClass('active').hasClass('active');
+                action(isActive);
+            });
         }
     });
 }
@@ -778,3 +793,54 @@ function formatDateToYYYYMMDD(date) {
     let day = date.getDate().toString().padStart(2, '0');
     return `${year}${month}${day}`;
 }
+
+function formatSecondsToHHMMSS(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours
+        .toString()
+        .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function setupSearch(inputSelector, itemSelector, filterSelectors) {
+    $(inputSelector).on('input', function () {
+        let searchTerms = $(this).val().split(' ').filter(Boolean);
+
+        $(itemSelector).each(function () {
+            let found = true;
+            let elements = $(this)
+                .find(filterSelectors.join(', '))
+                .map(function () {
+                    return { el: $(this) };
+                })
+                .get();
+
+            elements.forEach(element => {
+                element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+            });
+
+            if (searchTerms.length > 0) {
+                found = searchTerms.every(term => {
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    return elements.some(element => {
+                        if (element.text.match(regex)) {
+                            element.text = element.text.replace(regex, '<mark>$1</mark>');
+                            return true;
+                        }
+                        return false;
+                    });
+                });
+            }
+
+            $(this).toggleClass('hide', !found);
+            elements.forEach(element => {
+                element.el.html(element.text);
+            });
+        });
+    });
+}
+
+const spiner = `<div class="spinner-border qpartSpinerForWaiting" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>`;

@@ -1,15 +1,287 @@
-<style></style>
+<style>
+  .userFirstRow {
+    font-size: x-large;
+    margin-bottom: 10px;
+  }
 
-<div id="usersContainer" style="display: none">Оператори</div>
+  .userSecondRow {
+    display: flex;
+    font-size: large;
+  }
 
-<script id="usersTemplate" type="text/x-handlebars-template">
-  {{#each blocks}}
-    <div id='{{uid}}' class='userName'>
-      {{name}}
+  .stanokList {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .stanok {
+    width: 100px;
+    text-align: center;
+    padding: 8px;
+    height: 2em;
+    font-size: large;
+    box-shadow: 2px 3px 5px #999;
+    position: relative;
+  }
+
+  .input-container {
+    width: 100px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .input-container .stanok {
+    width: 100%;
+    padding-right: 1.5em; /* Місце для знака плюс */
+  }
+
+  .input-container .plus-sign {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: green;
+    font-size: 1.5em;
+    pointer-events: none;
+  }
+
+  .stanokItem {
+    display: flex;
+    font-size: large;
+    border: 1px solid gray;
+    border-radius: 5px;
+    width: fit-content;
+    box-shadow: 2px 3px 5px #ced4da;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
+    height: 2em;
+    gap: 4px;
+  }
+
+  .stanokDel {
+    color: red;
+  }
+
+  .ui-dialog {
+    background: white; /* Переконатися, що фон білий */
+    width: auto !important;
+  }
+
+  .ui-dialog-titlebar {
+    background: #f1f1f1; /* Задати фон для заголовка */
+  }
+
+  .ui-dialog {
+    background-color: white !important;
+  }
+
+  .ui-widget-overlay {
+    background: rgba(0, 0, 0, 0.5); /* Темний фон для overlay */
+  }
+</style>
+
+<div id="usersContainer" class="container-slide" style="display: none">
+  <header id="commandPanel" class="commandPanel">
+    <div class="titleContainer">
+      <i class="bi bi-arrow-left-circle backToMain" parent="#usersContainer"></i>
+      <h1 class="titleChildren">Працівники</h1>
     </div>
-  {{/each}}
-</script>
+    <!-- <div class="commandRow">
+      <div class="input-group-search rounded groupSearch" id="groupSearch">
+        <input
+          type="search"
+          id="searchUsers"
+          class="form-control rounded search"
+          placeholder="Поиск"
+          aria-label="Search"
+          aria-describedby="search-addon"
+        />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <div class="commandButtons">
+        <i class="bi bi-funnel-fill menuButton filter" id="filterUsers"></i>
+        <div id="filterMenuUsers" class="menuContainer"></div>
+      </div>
+    </div> -->
+  </header>
+
+  <!-- <div id="userList" url="user/api" callbackForRender="callbackForRenderUser" type="plate" paggination="false"></div> -->
+
+  <div id="usersList" class="containerForRender"></div>
+
+  <script id="menuTemplate" type="text/x-handlebars-template">
+    {{#each profas}}
+      <div class='menuItem'>
+        <div class='form-check'>
+          <input class='form-check-input' type='checkbox' value='' id='flexCheckDefault{{@index}}' />
+          <label class='form-check-label' for='flexCheckDefault{{@index}}'> {{this}} </label>
+        </div>
+      </div>
+    {{/each}}
+  </script>
+
+  <script id="usersTemplate" type="text/x-handlebars-template">
+    {{#each this}}
+      <div class='plateListItem' id='{{uid}}'>
+        <div class='userFirstRow'>
+          {{name}}
+          -
+          {{profa}}
+        </div>
+        <div class='userSecondRow'>
+
+          <div class='stanokList'>
+            {{#each stanki}}
+
+              <div class='stanokItem' uid='{{stanokUID}}'>
+                <div class='stanokInv'>
+                  {{stanokInv}}
+                </div>
+                <div class='stanokDel'>
+                  <i class='bi bi-x'></i>
+                </div>
+              </div>
+            {{/each}}
+            <div class='input-container'>
+              <input
+                class='form-control stanok'
+                url='/app/autocompleteStanok'
+                aria-describedby='basic-addon3'
+                data-editable='true'
+                type='text'
+                placeholder='станок'
+                callbackAfterSelect='callbackAfterSelect'
+              />
+              <span class='plus-sign'>+</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {{/each}}
+  </script>
+
+  <div id="dialog-confirm" title="Видалити станок?">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin: 12px 12px 20px 0"></span>Цей станок буде
+      видаленозі списку працівника.
+    </p>
+  </div>
+</div>
 
 <script>
-  $(document).ready(function () {});
+  $(document).ready(function () {
+    const platesID = '#userList';
+    $(platesID).data('defaultParam', {});
+
+    // initListPlate(platesID, true);
+
+    callbackForRenderUser = function (data) {
+      containerForTile = `#${data.uid}`;
+      generateFromTemplate('#userTemplate', data, containerForTile);
+      // initInputAutocomplete('.stanok', 1);
+      // initStankiAutocomplete();
+    };
+
+    initStankiAutocomplete();
+
+    callbackAfterSelect = function (data) {
+      console.log('data', data);
+      const thisInput = $(data.element);
+      const inputContainer = thisInput.closest('.input-container');
+      const stanokList = thisInput.closest('.userSecondRow').find('.stanokList');
+      inputContainer.before(`
+        <div class='stanokItem'>
+          <div class='stanokInv'>
+            ${data.item.value}
+          </div>
+          <div class='stanokDel'>
+            <i class="bi bi-x"></i>
+          </div>
+        </div>
+        `);
+
+      const userUID = $(data.element).closest('.plateListItem').attr('id');
+      const stanokUID = data.item.uid;
+      console.log('data.item.value', data.item.value, data.item, data);
+      const edited = [
+        {
+          key: 'Оператор',
+          value: userUID,
+        },
+      ];
+
+      saveReportMaster(stanokUID, edited);
+
+      setTimeout(() => {
+        thisInput.val('');
+        console.log('thisInput', thisInput, thisInput.val());
+      }, 100);
+    };
+
+    $(document).on('click', '.stanokItem', function () {
+      console.log('stanokItem', this);
+      const stanok = $(this).closest('.stanokItem');
+      const stanokUID = $(this).attr('uid');
+
+      const edited = [
+        {
+          key: 'Оператор',
+          value: '',
+        },
+      ];
+
+      selectorsForSearch = ['.userFirstRow'];
+      setupSearch('#searchUsers', '#usersContainer', selectorsForSearch);
+      function searchFilter(searchTerm, add) {
+        const search = $('#searchUsers');
+        let currentSearchValue = search.val().split(' ').filter(Boolean);
+
+        if (add) {
+          if (!currentSearchValue.includes(searchTerm)) {
+            currentSearchValue.push(searchTerm);
+          }
+        } else {
+          currentSearchValue = currentSearchValue.filter(term => term !== searchTerm);
+        }
+
+        search.val(currentSearchValue.join(' ').trim());
+        search.trigger('input');
+      }
+
+      function callbackAfterDelete() {
+        $('#dialog-confirm').dialog('close');
+        stanok.remove();
+      }
+      console.log('befre dialog confirm');
+      $('#dialog-confirm').dialog({
+        resizable: false,
+        height: 'auto',
+        width: 400,
+        modal: true,
+        buttons: {
+          Видалити: function () {
+            saveReportMaster(stanokUID, edited, callbackAfterDelete);
+          },
+          Відміна: function () {
+            $(this).dialog('close');
+          },
+        },
+      });
+    });
+  });
+
+  function initStankiAutocomplete(stankiList) {
+    $('.stanok').autocomplete({
+      source: listStanki,
+      select: function (event, ui) {
+        console.log('Selected value:', ui.item.value);
+      },
+    });
+  }
 </script>

@@ -396,6 +396,22 @@ input[type='number']::-webkit-outer-spin-button {
   align-items: flex-start;
 }
 
+.filter {
+  font-size: xx-large;
+  font-size: xx-large;
+  margin-right: 10px;
+  margin-left: auto;
+  color: darkgreen;
+}
+
+#filter {
+  font-size: xx-large;
+  font-size: xx-large;
+  margin-right: 10px;
+  margin-left: auto;
+  color: darkgreen;
+}
+
 .status {
   position: relative;
   font-size: x-small;
@@ -448,22 +464,38 @@ input[type='number']::-webkit-outer-spin-button {
   margin-left: auto;
 }
 
+.search {
+  border: none;
+  line-height: 100%;
+  height: 100%;
+  padding-right: 0;
+}
+
+.search:focus {
+  box-shadow: none;
+}
 #search {
   border: none;
   line-height: 100%;
   height: 100%;
   padding-right: 0;
 }
-#searchInput {
-  box-shadow: none;
-}
 
 #search:focus {
   box-shadow: none;
 }
 
+#searchInput {
+  box-shadow: none;
+}
+
 #search-addon {
   background-color: #fff;
+}
+
+mark {
+  background: yellow;
+  padding: 0;
 }
 
 .groupSearch {
@@ -724,4 +756,35 @@ input[type='number']::-webkit-outer-spin-button {
   padding: 5px;
   display: flex;
   flex-direction: column;
+}
+
+/* menu styles */
+
+.menuButton {
+  position: relative;
+}
+
+.menuContainer {
+  position: fixed;
+  z-index: 1000;
+  padding: 10px;
+  display: none;
+  font-size: x-large;
+  width: max-content;
+  padding: 10px;
+  top: 100%;
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.menuItem {
+  padding: 10px;
+  cursor: pointer;
+  font-size: large;
+}
+
+.menuItem:hover {
+  background-color: #f0f0f0;
 }

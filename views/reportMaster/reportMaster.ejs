@@ -2,6 +2,11 @@
 include('reportMaster_users') %>
 
 <style>
+  #main {
+    min-height: 80vh;
+    overflow: auto;
+  }
+
   .main {
     width: 100%;
     max-width: 600px;
@@ -78,10 +83,80 @@ include('reportMaster_users') %>
 
   .value {
   }
+
+  .detailGroup {
+    font-size: large;
+    padding: 0 10px;
+    margin-bottom: 8px;
+    margin-right: 15px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    background-color: #f3f3f3;
+  }
+
+  .nameDet {
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .nameStage {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .valueDet {
+    margin-left: auto;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  #noShiftContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    margin: 0 auto;
+  }
+
+  .noShiftText {
+    text-align: center;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .noShiftTimer {
+    border: 1px solid #cccccc;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #555;
+    font-size: x-large;
+    text-align: center;
+  }
+
+  .disabled {
+    color: grey;
+  }
+
+  .qpartSpinerForWaiting {
+    margin: 50px auto;
+  }
 </style>
 
 <div>
-  <div id="main" class="screen">
+  <div id="main" class="screen container-slide">
     <header id="commandPanel" class="commandPanel">
       <h3 class="titlePage">Отчет мастера</h3>
     </header>
@@ -90,13 +165,20 @@ include('reportMaster_users') %>
       <button id="prevShift" class="shiftButton">
         <i class="bi bi-arrow-left-circle"></i>
       </button>
-      <input id="shiftDate" name="shiftDate" type="text" readonly="" />
+      <input id="shiftDate" name="shiftDate" type="text" readonly="" class="container-slide" />
       <button id="nextShift" class="shiftButton">
         <i class="bi bi-arrow-right-circle"></i>
       </button>
     </div>
 
-    <div id="containerSumInfo"></div>
+    <div id="containerSumInfo" class="container-slide"></div>
+    <div id="noShiftContainer" style="display: none">
+      <div class="noShiftText">
+        <p>Зміна ще не почалась.</p>
+        <p>До початку зміни:</p>
+      </div>
+      <div class="noShiftTimer">00:00:00</div>
+    </div>
   </div>
 </div>
 
@@ -105,69 +187,54 @@ include('reportMaster_users') %>
     <div class='header'>Станки</div>
     <div class='group'>
       <div class='name'>Всього:</div>
-      <div class='value'>{{stanki.sumInfo.total}}</div>
+      <div class='value'>{{ВсегоСтанков}}</div>
     </div>
     <div class='group'>
       <div class='name'>Задіяні:</div>
-      <div class='value'>{{stanki.sumInfo.used}}</div>
+      <div class='value'>{{КоличествоЗадействованныхСтанков}}</div>
 
     </div>
     <div class='group'>
-      <div class='name'>ККД:</div>
-      <div class='value'>{{stanki.sumInfo.usedKPD}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>Зламані:</div>
-      <div class='value'>{{stanki.sumInfo.broken}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>Без роботи:</div>
-      <div class='value'>{{stanki.sumInfo.notWork}}</div>
+      <div class='name'>ККД, %:</div>
+      <div class='value'>{{ОбщееКПД}}</div>
     </div>
   </div>
 
   <div id='users' class='plate' children='#usersContainer'>
     <div class='header'>Працівники зміни</div>
-    <div class='group'>
-      <div class='name'>Оператори:</div>
-      <div class='value'>{{users.sumInfo.operators}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>ККД:</div>
-      <div class='value'>{{users.sumInfo.opearatorsKPD}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>Наладчики:</div>
-      <div class='value'>{{users.sumInfo.naladchiki}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>Слюсарі:</div>
-      <div class='value'>{{users.sumInfo.slesari}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>ОТК:</div>
-      <div class='value'>{{users.sumInfo.OTK}}</div>
-    </div>
+
+    {{#each profaCount}}
+      <div class='group'>
+        <div class='name'>{{name}}:</div>
+        <div class='value'>{{value}}</div>
+      </div>
+    {{/each}}
   </div>
 
   <div id='details' class='plate' children='#detailContainer'>
-    <div class='header'>Деталі</div>
-    <div class='group'>
-      <div class='name'>Потрібна наладка:</div>
-      <div class='value'>{{details.sumInfo.needNaladka}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>На токарну обробку:</div>
-      <div class='value'>{{details.sumInfo.tokarka}}</div>
-    </div>
-    <div class='group'>
-      <div class='name'>На фрезерну обробку:</div>
-      <div class='value'>{{details.sumInfo.frezerka}}</div>
-    </div>
+    <div class='header'>Зроблені деталі</div>
+    {{#each СписокСделанногоЗаСмену}}
+      <div class='detailGroup'>
+        <div class='nameDet'>{{Деталь}}</div>
+        <div class='etapCount displayFlex'>
+          <div class='nameStage'>{{Этап}}</div>
+          <div class='valueDet'>{{Количество}} шт.</div>
+        </div>
+
+      </div>
+    {{/each}}
   </div>
 </script>
 
+<script id="optionsTemplate" type="text/x-handlebars-template">
+  <option value=''></option>
+  {{#each this}}
+    <option value='{{uid}}'>{{Наименование}}</option>
+  {{/each}}
+</script>
+
 <script>
+  let listStanki;
   $(document).ready(function () {
     let currentDate;
     let currentShift;
@@ -175,18 +242,21 @@ include('reportMaster_users') %>
     let selectedStanok = null;
     let selectedUser = null;
 
-    addSubscribeWSS('аОборудование_all');
+    // let render = true;
+
+    addSubscribeWSS('ОтчетЗаСмену_all');
 
     init();
 
     function init() {
       getCurrentShift();
-      getReportFrom1C();
+      getReportFrom1C(0);
     }
 
     function getCurrentShift() {
       currentShift = 'day';
-      currentDate = new Date();
+      // currentDate = new Date();
+      currentDate = new Date('2024-07-20T16:00:00');
       const currentHour = currentDate.getHours();
 
       if (currentHour > 19 && currentHour < 7) {
@@ -196,72 +266,301 @@ include('reportMaster_users') %>
           currentDate.setDate(currentDate.getDate() - 1);
         }
       }
+
+      console.log('currentDat, currentShift', currentDate, currentShift);
     }
 
     $('#prevShift').click(function () {
-      changeShift(-1);
-      getReportFrom1C();
+      getReportFrom1C(-1);
     });
 
     $('#nextShift').click(function () {
-      changeShift(+1);
-      getReportFrom1C();
+      if ($(this).hasClass('disabled')) {
+        event.preventDefault();
+        return false;
+      }
+      getReportFrom1C(1);
     });
 
     function changeShift(direction) {
-      if (direction === 1 && currentShift === 'day') {
-        direction = 0;
-      }
+      if (direction !== 0) {
+        if (direction === 1 && currentShift === 'day') {
+          direction = 0;
+        }
 
-      if (direction === -1 && currentShift === 'night') {
-        direction = 0;
-      }
+        if (direction === -1 && currentShift === 'night') {
+          direction = 0;
+        }
 
-      currentDate.setDate(currentDate.getDate() + direction);
-      currentShift = currentShift === 'day' ? 'night' : 'day';
+        currentDate.setDate(currentDate.getDate() + direction);
+        currentShift = currentShift === 'day' ? 'night' : 'day';
+      }
     }
 
-    async function getReportFrom1C() {
-      console.log('getReportFrom1C, currentDate, currentShift', currentDate, currentShift);
+    async function getReportFrom1C(direction) {
+      console.log('getReportFrom1C, currentDate, currentShift', currentDate, currentShift, direction);
+      changeShift(direction);
       renderTitle();
 
       const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift };
-      // universalRequest('app/reportMaster', 'GET', {}, shift, renderReport);
-      renderReport(testData);
+
+      const classForOut = direction === 1 ? 'outLeft' : direction === -1 ? 'outRight' : '';
+      const classForIn = direction === 1 ? 'inRight' : direction === -1 ? 'inLeft' : '';
+
+      $('#containerSumInfo').addClass(classForOut);
+      console.log('$(#containerSumInfo).children(.plates)', $('#containerSumInfo').children('.plate'));
+      $('#containerSumInfo').children('.plate').html(spiner);
+      $('#shiftDate').addClass(classForOut);
+
+      setTimeout(() => {
+        universalRequest('app/reportMaster', 'GET', '', shift, renderReport);
+
+        $('#containerSumInfo').removeClass(classForOut).addClass(classForIn);
+        $('#shiftDate').removeClass(classForOut).addClass(classForIn);
+
+        setTimeout(() => {
+          $('#containerSumInfo').removeClass(classForIn);
+          $('#shiftDate').removeClass(classForIn);
+        }, 100);
+      }, 100);
+      // renderReport(testData);
     }
 
     function renderTitle() {
+      console.log('currentDate', currentDate);
       const formattedDate = formatDate(currentDate.toISOString());
       const formattedShift = currentShift === 'day' ? 'день' : 'ніч';
       const titleText = `${formattedDate} - ${formattedShift}`;
       $('#shiftDate').val(titleText);
     }
 
+    function buttonDisable(idButton) {
+      $(idButton).addClass('disabled');
+      $(idButton).off('click');
+    }
+
+    callbackWSS = async function (data) {
+      console.log('callbackWSS data', data);
+      data.item = data.data;
+      renderReport(data);
+    };
+
+    function getTimeToShiftStart() {
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      let shiftTime;
+      if (currentShift === 'night') {
+        shiftTime = new Date(now.toDateString() + ' 19:00:00');
+      } else {
+        shiftTime = new Date(now.toDateString() + ' 07:00:00');
+      }
+
+      const timeToShiftStart = Math.ceil((shiftTime - now) / 1000);
+
+      return timeToShiftStart;
+    }
+
+    function startTimer(time, element) {
+      let remainingTime = time;
+      const timerInterval = setInterval(() => {
+        $(element).text(formatSecondsToHHMMSS(remainingTime));
+        remainingTime--;
+        if (remainingTime < 0) {
+          clearInterval(timerInterval);
+          $(element).text('00:00:00');
+        }
+      }, 1000);
+    }
+
+    function generateOptions(listItem) {
+      const templateHTML = $('#optionsTemplate').html();
+      const template = Handlebars.compile(templateHTML);
+      const options = template(listItem);
+
+      return options;
+    }
     function renderReport(data) {
-      generateFromTemplate('#mainTemplate', data, '#containerSumInfo');
+      console.log('renderReport data', data.item.АктивныеЗаявкиНаРемонт);
+
+      const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
+      console.log('repairOrders', repairOrders);
+      notWorkingStanki = repairOrders.filter(order => {
+        return !order.ЗаявкаНаРемонт.НаСтанкеМожноРаботать;
+      });
+
+      const profaCount = {};
+      const sotrudnikiList = data.item.СписокСотрудников;
+      sotrudnikiList.forEach(sotrudnik => {
+        const profa = sotrudnik.Должность?.Наименование;
+
+        if (profa) {
+          if (profaCount[profa]) {
+            profaCount[profa]++;
+          } else {
+            profaCount[profa] = 1;
+          }
+        }
+      });
+
+      data.item.profaCount = Object.keys(profaCount).map(key => ({
+        name: key,
+        value: profaCount[key],
+      }));
+
+      const finishedDetails = data.item.СписокСделанногоЗаСмену;
+      console.log('finishedDetails', finishedDetails);
+
+      if (data.item) {
+        console.log('data.item.СписокСтатусов', data.item.СписокСтатусов);
+        data.item.options = generateOptions(data.item.СписокСтатусов);
+        data.item.optionsList = data.item.СписокСтатусов;
+        $('#nextShift').removeClass('disabled');
+        $('#main').data('data', data.item);
+        $('#main').attr('uid', data.item.uid);
+        $('#stanokContainer').data('data', data.item.Станки);
+        $('#usersContainer').data('data', data.item.СписокСотрудников);
+        $('#containerSumInfo').show();
+        $('#noShiftContainer').hide();
+        generateFromTemplate('#mainTemplate', data.item, '#containerSumInfo');
+      } else {
+        $('#nextShift').addClass('disabled');
+        $('#containerSumInfo').hide();
+        $('#noShiftContainer').show();
+        const secondsToShiftStart = getTimeToShiftStart();
+        startTimer(secondsToShiftStart, '.noShiftTimer');
+      }
     }
 
     function showPage(element) {
       const children = $(element).attr('children');
-      $('#main').hide();
-      $(children).show();
+      containerAnimation('left', '#main', children);
+      // $('#main').hide();
+      // $(children).show();
     }
 
     // $(document).on('click', '#details', function () {
     //   showPage(this);
     // });
-    // $(document).on('click', '#users', function () {
-    //   showPage(this);
-    // });
+    Handlebars.registerHelper('log', function (something) {
+      console.log(something);
+    });
+
+    function renderStanki() {
+      const data = $('#main').data('data');
+      console.log('data', data);
+      generateFromTemplate('#stanokTemplate', data, '#stanokList');
+      initSelect();
+      initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
+      initOtherState();
+      openMenu('filter', 'filterMenu', []);
+      console.log('renderStanki', data);
+    }
+
     $(document).on('click', '#stanki', function () {
       showPage(this);
+      renderStanki();
+    });
+
+    function renderUsers() {
+      const data = $('#usersContainer').data('data');
+      const stankiData = $('#stanokContainer').data('data');
+      const users = data.map(user => ({
+        uid: user.uid,
+        name: user.Наименование,
+        profa: user.Должность.Наименование,
+        stanki: [],
+      }));
+
+      const profas = [...new Set(users.map(user => user.profa))];
+      const dataForMenu = { profas: profas };
+      console.log('profas', profas);
+
+      stankiData.forEach(stanok => {
+        const stanokUID = stanok.Станок.uid;
+        const stanokInv = stanok.Станок.ИнвентарныйНомер;
+
+        users.forEach(user => {
+          if (stanok.Оператор && stanok.Оператор.uid === user.uid) {
+            user.stanki.push({
+              stanokUID: stanokUID,
+              stanokInv: stanokInv,
+            });
+          }
+        });
+      });
+      generateFromTemplate('#usersTemplate', users, '#usersList');
+      generateFromTemplate('#menuTemplate', dataForMenu, '#filterMenuUsers');
+
+      openMenu('filterUsers', 'filterMenuUsers', [
+        isActive => searchFilter('ЧПУ', isActive),
+        isActive => searchFilter('001', isActive),
+      ]);
+      console.log('renderUsers', users);
+    }
+
+    $(document).on('click', '#users', function () {
+      console.log('click users');
+      showPage(this);
+      renderUsers();
+      listStanki = $('#stanokContainer').data('data');
+      stankiForAutocomplete = listStanki.map(stanok => stanok.Станок.ИнвентарныйНомер);
+      console.log('listStanki', listStanki, stankiForAutocomplete, $('.stanok'));
+      // initStankiAutocomplete(stankiForAutocomplete);
+      initInputAutocomplete('.stanok', 1);
     });
 
     $(document).on('click', '.backToMain', function () {
       console.log('backtomain click', this);
-      $('#main').show();
+
+      // $('#main').show();
       const parent = $(this).attr('parent');
-      $(parent).hide();
+      // $(parent).hide();
+      containerAnimation('right', parent, '#main');
+      $(parent).find('.containerForRender').empty();
+    });
+
+    $('#usersContainer, #stanokContainer, #detailContainer').swipe({
+      swipeRight: function (event, direction) {
+        $('.backToMain').click();
+      },
+    });
+
+    $('#main').swipe({
+      swipeRight: function (event, direction) {
+        console.log('swipeRight main');
+        getReportFrom1C(-1);
+      },
+      swipeLeft: function (event, direction) {
+        console.log('swipeLeft main');
+        getReportFrom1C(1);
+      },
     });
   });
+
+  function saveReportMaster(stanokUID, edited, callbackAfterSave = () => {}) {
+    const docUID = $('#main').attr('uid');
+
+    const data = {
+      doc: docUID,
+      stanok: stanokUID,
+      edited: edited,
+    };
+
+    universalRequest(
+      'app/reportMaster',
+      'POST',
+      data,
+      {},
+      function onSuccess(response) {
+        toastr.success('Збережено');
+        console.log('Success callback:', response);
+        callbackAfterSave();
+      },
+      function onError(error) {
+        toastr.error('Помилка');
+        console.log('Error callback:', error);
+      }
+    );
+  }
 </script>

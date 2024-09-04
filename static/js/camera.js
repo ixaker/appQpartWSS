@@ -22,6 +22,7 @@ function startAttachPhotoVideo(btnAttach) {
 
         clickAnimate(this);
         $('#formMainCamera').hide();
+        $('#formZakupka').show();
         stopMainCamera();
     });
 

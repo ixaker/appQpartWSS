@@ -20,14 +20,6 @@
     font-size: x-large;
   }
 
-  #filter {
-    font-size: xx-large;
-    font-size: xx-large;
-    margin-right: 10px;
-    margin-left: auto;
-    color: darkgreen;
-  }
-
   #commandPanel {
     display: flex;
     justify-content: space-between;
@@ -49,6 +41,15 @@
     margin-right: 10px;
     display: flex;
     align-items: center;
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+  }
+
+  .form-check input {
+    margin-top: 0;
   }
 </style>
 
@@ -76,7 +77,21 @@
       </div>
 
       <div class="commandButtons">
-        <i class="bi bi-funnel-fill" id="filter"></i>
+        <i class="bi bi-funnel-fill menuButton" id="filter"></i>
+        <div id="filterMenu" class="menuContainer">
+          <div class="menuItem" data-search-term="ЧПУ">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1" />
+              <label class="form-check-label" for="flexCheckDefault1"> ЧПУ </label>
+            </div>
+          </div>
+          <div class="menuItem" data-search-term="ручні">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2" />
+              <label class="form-check-label" for="flexCheckDefault2"> ручні </label>
+            </div>
+          </div>
+        </div>
         <img src="img/sort.svg?v=<%= version %>" alt="sort icon" class="commandImg" id="btnSort" />
       </div>
     </div>
@@ -328,5 +343,27 @@
         });
       });
     });
+
+    function searchFilter(searchTerm, add) {
+      console.log('searchFilter', searchTerm, add);
+      const search = $('#search');
+      let currentSearchValue = search.val().split(' ').filter(Boolean);
+
+      if (add) {
+        if (!currentSearchValue.includes(searchTerm)) {
+          currentSearchValue.push(searchTerm);
+        }
+      } else {
+        currentSearchValue = currentSearchValue.filter(term => term !== searchTerm);
+      }
+
+      search.val(currentSearchValue.join(' ').trim());
+      search.trigger('input');
+    }
+
+    openMenu('filter', 'filterMenu', [
+      isActive => searchFilter('ЧПУ', isActive),
+      isActive => searchFilter('001', isActive),
+    ]);
   });
 </script>

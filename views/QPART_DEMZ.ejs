@@ -4,10 +4,30 @@
     margin: 0 auto;
   }
 
+  header h1 {
+    font-size: xx-large;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0;
+  }
+
+  input[type='date'] {
+    /* -moz-appearance: textfield; */
+  }
+
+  input[type='date']::-ms-clear {
+    display: none;
+  }
+
   .titleContainer {
     width: 100%;
     align-items: center;
     margin-bottom: 10px;
+  }
+
+  .commandPanel {
+    display: flex;
   }
 
   #qpart_demz {
@@ -19,6 +39,10 @@
   .ui-autocomplete {
     z-index: 1000;
   }
+
+  .form-control {
+    font-size: x-large;
+  }
 </style>
 
 <div id="main">
@@ -27,8 +51,26 @@
       <i class="bi bi-arrow-left-right" id="pageIcon"></i>
 
       <h3 class="titlePage">QPART - ДЕМЗ</h3>
-
-      <img src="img/plus-circle.svg?v=<%= version %>" alt="plus icon" class="commandImg commandBtn" id="addNew" />
+      <div id="btnGroup">
+        <div id="btnQpart">
+          <img
+            src="img/plus-circle.svg?v=<%= version %>"
+            alt="plus icon"
+            class="commandImg commandBtn"
+            id="addNewQpart"
+          />
+          <div class="btnDesctiption">QPART</div>
+        </div>
+        <div id="btnDemz">
+          <img
+            src="img/plus-circle.svg?v=<%= version %>"
+            alt="plus icon"
+            class="commandImg commandBtn"
+            id="addNewDemz"
+          />
+          <div class="btnDesctiption">ДЕМЗ</div>
+        </div>
+      </div>
     </div>
   </div>
   <div
@@ -36,7 +78,9 @@
     url="/app/qpart_demz"
     callbackAfterLoadData="callbackAfterLoadData"
     callbackForRender="callbackForRender"
+    callbackClick="callbackClick"
     type="plate"
+    paggination="false"
   ></div>
 </div>
 
@@ -50,7 +94,6 @@
   .form-group label {
     margin-bottom: 0;
     transition: 2s;
-    width: 50%;
   }
 
   #docType {
@@ -68,6 +111,10 @@
     flex-direction: column;
   }
 
+  #forTable {
+    margin-bottom: 10px;
+  }
+
   .firstRow {
     display: flex;
     gap: 10px;
@@ -79,40 +126,50 @@
 
   .inputTable {
     border-collapse: collapse;
-    border: none;
   }
 
-  .inputTable tr,
-  .inputTable td {
-    border: none;
+  .inputTable td:focus-within {
+    background-color: aliceblue;
   }
 
-  .inputTable tbody tr:last-child {
+  /* .inputTable tbody tr:last-child {
     background-color: #f0f0f0;
     color: #a0a0a0;
     opacity: 0.6;
   }
 
+
   .inputTable tbody tr:last-child input {
     background-color: #f0f0f0;
     color: #a0a0a0;
-    cursor: not-allowed;
-  }
+  } */
 
   thead {
     font-size: medium;
   }
 
+  .controledInput {
+    border: none;
+  }
+
+  .controledInput:focus {
+    border: none;
+    box-shadow: none;
+    background-color: aliceblue;
+  }
+
   .stage {
-    width: 50%;
+    width: auto;
   }
 
   .number {
-    width: 30%;
+    width: 70px;
+    max-width: 70px;
   }
 
   .defect {
-    width: 20%;
+    width: 50px;
+    max-width: 50px;
   }
 
   #defectCheck {
@@ -130,88 +187,298 @@
   }
   #downloadPhotoButton {
     font-size: xxx-large;
-
     line-height: normal;
+  }
+
+  .imgContainer {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: 10px;
+    justify-content: start;
+    margin-bottom: 10px;
+  }
+
+  .attachedImg {
+    width: 100%;
+  }
+
+  .attachedImg img {
+    width: 100%;
+  }
+
+  #btnGroup {
+    margin-left: auto;
+    display: flex;
+  }
+
+  #btnQpart,
+  #btnDemz {
+    margin-right: 5px;
+    margin-left: 15px;
+    height: fit-content;
+  }
+
+  #addNewDemz,
+  #addNewQpart {
+    margin: 0;
+  }
+  .btnDesctiption {
+    margin-top: 5px;
+    font-size: x-small;
+    width: 100%;
+    text-align: center;
+    display: none;
+    color: green;
+    font-weight: bold;
+  }
+
+  #docTypeQpart,
+  #docTypeDemz {
+    display: none;
+    font-size: x-large;
+    text-align: center;
+    margin-bottom: 10px;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  #groupButton {
+    justify-content: flex-start;
+  }
+
+  #details {
+    margin-bottom: 10px;
+    border: 1px solid #bbbbbb;
+    background-color: #ffffff;
+    border-radius: 7px;
+    box-shadow: 2px 3px 5px #999;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detailHead {
+    display: flex;
+  }
+
+  .stageInput {
+    flex: 1;
+  }
+
+  .numberInput {
+    width: 80px;
+  }
+
+  .detailCheckbox {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .detailConfirm {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .checkboxGroup {
+    display: flex;
+    align-items: center;
+  }
+
+  .hidden-checkbox {
+    display: none;
+  }
+
+  .checkbox-label {
+    display: inline-block;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: small;
+    line-height: 1.5;
+    background-color: #6c757d;
+    color: #fff;
+    border: 1px solid #6c757d;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .hidden-checkbox:checked + .checkbox-label {
+    background-color: darkgreen;
+    border-color: darkgreen;
+  }
+
+  .checkbox-label:active {
+    background-color: #004085;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .checkbox-label i {
+    margin-left: 0.5rem;
   }
 </style>
 
-<div id="docInfo" style="display: none">
-  <!-- <div class="commandPanel">
-    <i id="closeDocInfo" class="bi bi-x-circle commandBtn"></i>
-  </div> -->
-  <div id="forTitle"></div>
-
-  <div id="newDocForm" style="display: none">
-    <div class="form-group">
-      <!-- <label for="docType">Вид операції</label> -->
-      <select class="form-select form-control" id="docType" aria-label="Вид операції">
-        <option value="qpart">QPART => ДЕМЗ</option>
-        <option value="demz">ДЕМЗ => QPART</option>
-      </select>
-    </div>
-
-    <div class="firstRow">
-      <div class="form-group input-group mb-3 flex1">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1"><i class="bi bi-truck"></i></span>
-        </div>
-        <input
-          type="number"
-          class="form-control"
-          aria-describedby="basic-addon1"
-          id="tripNumber"
-          placeholder="номер авто"
-        />
-      </div>
-
-      <div class="form-group input-group mb-3 flex1">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar"></i></span>
-        </div>
-        <input type="text" class="form-control" id="docDate" placeholder="дата" />
-      </div>
-    </div>
-
-    <div id="tableForm">
-      <table class="inputTable" id="inputTable">
-        <thead>
-          <tr>
-            <th class="stage">Етап</th>
-            <th class="number">К-ть</th>
-            <th class="defect">Брак</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="text" class="form-control controledInput stageInput" placeholder="етап..." /></td>
-            <td><input type="number" class="form-control controledInput numberInput" placeholder="кількість..." /></td>
-            <td><input type="checkbox" class="controledInput" id="defectCheck" /></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="imgContainer"></div>
-
-    <div class="form-group" id="orderButtonGroup">
-      <div id="groupButton">
-        <input type="file" id="makePhoto" accept="image/*" capture="environment" multiple style="display: none" />
-        <label for="makePhoto"
-          ><i class="bi bi-camera" id="makePhotoButton" elementForAttach="attachedFilesForNewOrder"></i
-        ></label>
-        <input type="file" id="downloadPhoto" accept="image/*" style="display: none" />
-        <label for="downloadPhoto"
-          ><i class="bi bi-download" id="downloadPhotoButton" elementForAttach="attachedFilesForNewOrder"></i
-        ></label>
-
-        <button type="button" class="btn btn-secondary btn-lg" id="cancelDoc">Отмена</button>
-        <button type="button" class="btn btn-success btn-lg" id="saveDoc">Сохранить</button>
-      </div>
-    </div>
+<script id="docTemplate" type="text/x-handlebars-template">
+  <header class='commandPanel'>
+    <h1>Відвантаження</h1>
+    <i id='closeDocInfo' class='bi bi-x-circle commandBtn'></i>
+  </header>
+  <div class='docTitle'>
+    <div class='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div>
+    <div class='docName {{className}}'>{{ВидОперации}}</div>
+    <div class='docDateEvent'>{{ДатаСобытияФормат}}</div>
   </div>
 
-  <div id="forTable"></div>
-</div>
+  {{#each Детали}}
+    <div id='details'>
+      <div class='detailHead'>
+        <input
+          type='text'
+          class='form-control controledInput stageInput'
+          placeholder=''
+          value='{{Этап.Наименование}}'
+        />
+        <input type='number' class='form-control controledInput numberInput' placeholder='' value='{{Количество}}' />
+      </div>
+
+      <div class='detailConfirm'>
+        <div class='checkboxGroup'>
+          <input
+            type='checkbox'
+            class='controledInput hidden-checkbox form-check-input'
+            id='confirmDemz{{НомерСтроки}}'
+            checked='{{ПідтвердженняДЕМЗ}}'
+          />
+          <label for='confirmDemz{{НомерСтроки}}' class='btn btn-primary checkbox-label'>ДЕМЗ
+            <i class='bi bi-check'></i></label>
+        </div>
+        <div class='checkboxGroup'>
+          <input
+            type='checkbox'
+            class='controledInput hidden-checkbox form-check-input'
+            id='confirmQpartDemz{{НомерСтроки}}'
+            checked='{{ПідтвердженняQpart}}'
+          />
+          <label for='confirmQpartDemz{{НомерСтроки}}' class='btn btn-primary checkbox-label'>QPart
+            <i class='bi bi-check'></i></label>
+        </div>
+      </div>
+
+      <div class='detailCheckbox'>
+        <div class='checkboxGroup'>
+          <label for='defectCheck{{НомерСтроки}}'>Брак</label>
+          <input type='checkbox' class='controledInput' id='defectCheck{{НомерСтроки}}' checked='{{Брак}}' />
+        </div>
+        <div class='checkboxGroup'>
+          <label for='reworking{{НомерСтроки}}'>Дороботка</label>
+          <input type='checkbox' class='controledInput' id='reworking{{НомерСтроки}}' checked='{{Дороботка}}' />
+        </div>
+
+      </div>
+    </div>
+  {{/each}}
+  <!-- <div id='tableForm'>
+    <table class='inputTable' id='inputTable'>
+      <thead>
+        <tr>
+          <th class='stage'>Етап</th>
+          <th class='number'>К-ть</th>
+          <th class='defect'>Брак</th>
+          <th class='confirm'></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each Детали}}
+          <tr>
+            <td class='stageTd'>
+              <input
+                type='text'
+                class='form-control controledInput stageInput'
+                placeholder=''
+                value='{{Этап.Наименование}}'
+              />
+              <span class='removeRowBtn'><i class='bi bi-x'></i></span>
+            </td>
+            <td><input
+                type='number'
+                class='form-control controledInput numberInput'
+                placeholder=''
+                value='{{Количество}}'
+              /></td>
+            <td><input type='checkbox' class='controledInput' id='defectCheck' checked='{{Брак}}' /></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div> -->
+
+  {{#if ФайлыДемз}}
+    <div class='demzGallery'>
+      <div class='galleryTitle'>Фото ДЕМЗ</div>
+      <div class='imgContainer attachedImgContainer'>
+        {{#each ФайлыДемз}}
+          <div class='attachedImg'>
+            <img
+              class='src-source source'
+              src-source='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+              src='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+              alt='Image'
+            />
+            <img class='preview' src='storage/{{ИД}}/{{ИД}}/p{{Файл}}' />
+          </div>
+        {{/each}}
+      </div>
+      <div class='btnAddPhoto'>
+        <input
+          type='file'
+          id='makePhoto{{ВидОперации}}'
+          accept='image/*'
+          capture='environment'
+          multiple
+          style='display: none'
+        />
+        <label for='makePhoto{{ВидОперации}}'><i class='bi bi-camera' id='makePhotoButton'></i></label>
+        <input type='file' id='downloadPhoto{{ВидОперации}}' accept='image/*' style='display: none' />
+        <label for='downloadPhoto{{ВидОперации}}'><i class='bi bi-download' id='downloadPhotoButton'></i></label>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if ФайлыQpart}}
+    <div class='qpartGallery'>
+      <div class='galleryTitle'>Фото QPart</div>
+      <div class='imgContainer attachedImgContainer'>
+        {{#each ФайлыQpart}}
+          <div class='attachedImg'>
+            <img
+              class='src-source source'
+              src-source='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+              src='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+              alt='Image'
+            />
+            <img class='preview' src='storage/{{ИД}}/{{ИД}}/p{{Файл}}' />
+          </div>
+        {{/each}}
+      </div>
+      <div class='btnAddPhoto'>
+        <input
+          type='file'
+          id='makePhoto{{ВидОперации}}'
+          accept='image/*'
+          capture='environment'
+          multiple
+          style='display: none'
+        />
+        <label for='makePhoto{{ВидОперации}}'><i class='bi bi-camera' id='makePhotoButton'></i></label>
+        <input type='file' id='downloadPhoto{{ВидОперации}}' accept='image/*' style='display: none' />
+        <label for='downloadPhoto{{ВидОперации}}'><i class='bi bi-download' id='downloadPhotoButton'></i></label>
+      </div>
+    </div>
+  {{/if}}
+</script>
+
+<div id="docInfo" style="display: none"></div>
 
 <style>
   .docContainer {
@@ -225,11 +492,11 @@
   }
 
   .detailed {
-    font-size: 16px;
+    font-size: x-large;
   }
 
   .detailed .stage {
-    width: 60%;
+    width: 65%;
   }
 
   td {
@@ -237,12 +504,25 @@
   }
 
   .count {
-    width: 20%;
+    width: 15%;
     text-align: right;
+  }
+
+  .confirm {
+    width: 10%;
+    display: none;
+  }
+
+  #confirmRow {
+    transform: scale(2);
   }
 
   .brak {
     position: relative;
+  }
+
+  .numberInput {
+    text-align: right;
   }
 
   .brak::after {
@@ -277,6 +557,25 @@
     border-radius: 4px;
   }
 
+  .truck {
+    width: 30%;
+  }
+
+  .calendar {
+    width: 70%;
+  }
+
+  #docDate {
+    text-align: center;
+  }
+
+  .bi-truck {
+    font-size: x-large;
+  }
+
+  .bi-calendar {
+    font-size: large;
+  }
   .docNumber {
     width: 25%;
   }
@@ -284,6 +583,33 @@
   .docDateEvent {
     width: 25%;
     text-align: end;
+  }
+
+  .stageTd {
+    position: relative;
+    padding-left: 10px;
+  }
+
+  .removeRowBtn {
+    color: red;
+    font-weight: bold;
+    font-size: x-large;
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+
+  #saveDoc {
+    margin-left: auto;
+  }
+
+  .galleryTitle {
+    font-size: x-large;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
   }
 </style>
 
@@ -307,10 +633,43 @@
           <tr>
             <td class='stage {{#if Брак}}brak{{/if}}'>{{Этап.Наименование}}</td>
             <td class='count'>{{Количество}} шт</td>
+            <td class='confirm'>
+              <input type="checkbox" class="controledInput" id="confirmRow" value="">
+            </td>
           </tr>
         {{/each}}
     </tbody>
   </table>
+</script>
+
+<script id="photoGallery" type="text/x-handlebars-template">
+  <div class='galleryTitle'>{{title}}</div>
+  <div class='imgContainer attachedImgContainer'>
+    {{#each Файлы}}
+      <div class='attachedImg'>
+        <img
+          class='src-source source'
+          src-source='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+          src='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+          alt='Image'
+        />
+        <img class='preview' src='storage/{{ИД}}/{{ИД}}/p{{Файл}}' />
+      </div>
+    {{/each}}
+  </div>
+  <div class='btnAddPhoto'>
+    <input
+      type='file'
+      id='makePhoto{{ВидОперации}}'
+      accept='image/*'
+      capture='environment'
+      multiple
+      style='display: none'
+    />
+    <label for='makePhoto{{ВидОперации}}'><i class='bi bi-camera' id='makePhotoButton'></i></label>
+    <input type='file' id='downloadPhoto{{ВидОперации}}' accept='image/*' style='display: none' />
+    <label for='downloadPhoto{{ВидОперации}}'><i class='bi bi-download' id='downloadPhotoButton'></i></label>
+  </div>
 </script>
 
 <script>
@@ -319,6 +678,24 @@
     pageUID = 'ce4e3ff4-50d6-11ef-825f-000c29006152';
     userRights = $('#menu').data('userRight')[pageUID];
     const uid = user.uid;
+    let autocompleteStage;
+
+    console.log(
+      'userRights, !userRights.canCreateDEMZQPART',
+      userRights,
+      userRights.canCreateQPART,
+      userRights.canCreateDEMZ
+    );
+    !userRights.canCreateDEMZ ? $('#btnDemz').hide() : '';
+    !userRights.canCreateQPART ? $('#btnQpart').hide() : '';
+
+    if (userRights.canCreateDEMZ && userRights.canCreateQPART) {
+      console.log('userRights have all rights');
+      $('.btnDesctiption').show();
+    }
+
+    const docTemplateSource = document.getElementById('docTemplate').innerHTML;
+    const docTemplate = Handlebars.compile(docTemplateSource);
 
     Handlebars.registerPartial('docTitleTemplate', $('#docTitleTemplate').html());
     Handlebars.registerPartial('tableDetailsTemplate', $('#tableDetailsTemplate').html());
@@ -334,105 +711,230 @@
     $(platesID).data('defaultParam', defaultParam);
     initListPlate(platesID, true);
 
-    $.datepicker.setDefaults($.datepicker.regional['ua']);
-
-    $('#docDate').datepicker({
-      changeMonth: true,
-      showOtherMonths: true,
-      selectOtherMonths: true,
-      dateFormat: 'dd.mm.yy',
-    });
-
     callbackAfterLoadData = function (response) {
       const param = $(platesID).data('param');
+      // response.passRender = true;
       param.date = response.nextDate;
       $(platesID).data('param', param);
+      autocompleteStage = response.СписокЭтапов;
     };
 
     callbackForRender = function (data) {
       containerForTile = `#${data.uid}`;
       if ($(containerForTile).length === 0) return;
-      console.log('QPART data', data, containerForTile);
       data.className = data.ВидОперации === 'QPART => ДЕМЗ' ? 'qpart-demz' : 'demz-qpart';
-      console.log('data', data);
-
       const html = template(data);
       $(containerForTile).html(html);
     };
 
-    function docInfoOpen(data = {}, mode = 'view') {
-      console.log('data, mode', data, mode);
+    callbackClick = function (element) {
+      const data = $(element).data('data');
+      console.log('data', data);
+      docInfoOpen(data);
+    };
+
+    function docInfoOpen(data = {}) {
       $('#main').hide();
       $('#docInfo').show();
-      if (mode === 'view') {
-        console.log('mode = view');
-        renderExistDoc(data);
-      } else {
-        renderNewDoc();
-      }
+      renderDoc(data);
     }
 
     function docInfoClose() {
+      console.log('docInfoClose');
       $('#docInfo').hide();
       $('#main').show();
       $('#forTitle').empty();
       $('#forTable').empty();
+      $('#forGalleryDemz').empty();
+      $('#forGalleryQpart').empty();
       $('#inputTable tbody tr').not(':first').remove();
       $('#inputTable tbody tr:first').find('input').val('');
       $('#inputTable tbody tr:first').find('input[type="checkbox"]').prop('checked', false);
       $('#newDocForm').hide();
+      $('.confirm').hide();
     }
 
     function renderExistDoc(data) {
+      const dataForDemz = {
+        ВидОперации: 'Demz-Qpart',
+        Файлы: [
+          {
+            НомерСтроки: '1',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '0.png',
+          },
+          {
+            НомерСтроки: '2',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '1.png',
+          },
+          {
+            НомерСтроки: '3',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '2.png',
+          },
+        ],
+      };
+
+      const dataForQpart = {
+        ВидОперации: 'Qpart-Demz',
+        Файлы: [
+          {
+            НомерСтроки: '1',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '0.png',
+          },
+          {
+            НомерСтроки: '2',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '1.png',
+          },
+          {
+            НомерСтроки: '3',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '2.png',
+          },
+        ],
+      };
+
       const titleTemplate = Handlebars.compile($('#docTitleTemplate').html());
       const tableDetailsTemplate = Handlebars.compile($('#tableDetailsTemplate').html());
+      // const photoGallery = Handlebars.compile($('#photoGallery').html());
       const titleHtml = titleTemplate(data);
       const html = tableDetailsTemplate(data);
+      // const galleryDemz = photoGallery(dataForDemz);
+      // const galleryQpart = photoGallery(dataForQpart);
       $('#forTitle').html(titleHtml);
       $('#forTable').html(html);
+      // $('#forGalleryDemz').html(galleryDemz);
+      // $('#forGalleryQpart').html(galleryQpart);
+      generatePhotoContainer(dataForDemz, 'demz');
+      generatePhotoContainer(dataForQpart, 'qpart');
+      $('.confirm').show();
     }
 
-    function renderNewDoc() {
+    function generatePhotoContainer(data, direction) {
+      console.log('generatePhotoContainer');
+      const titles = {
+        demz: 'Фото з ДЕМЗ',
+        qpart: 'Фото з QPart',
+      };
+      data.title = titles[direction];
+      const photoGallery = Handlebars.compile($('#photoGallery').html());
+      const gallery = photoGallery(data);
+      if (direction === 'demz') {
+        container = '#forGalleryDemz';
+      }
+      if (direction === 'qpart') {
+        container = '#forGalleryQpart';
+      }
+      $(container).html(gallery);
+    }
+
+    function renderDoc(data = {}) {
+      const dataForDemz = {
+        ВидОперации: 'Demz-Qpart',
+        Файлы: [
+          {
+            НомерСтроки: '1',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '0.png',
+          },
+          {
+            НомерСтроки: '2',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '1.png',
+          },
+          {
+            НомерСтроки: '3',
+            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
+            Файл: '2.png',
+          },
+        ],
+      };
+
+      data.ФайлыДемз = dataForDemz.Файлы;
+      data.ФайлыQpart1 = dataForDemz.Файлы;
+
+      const docContainer = $('#docInfo');
+      console.log('docContainer, data', docContainer, data);
+      const docHtml = docTemplate(data);
+      console.log('docHtmls', docHtml);
+      docContainer.html(docHtml);
+
+      $('#closeDocInfo').on('click', function () {
+        console.log('closeDocInfo');
+        clickAnimate(this);
+        docInfoClose();
+      });
+    }
+
+    function renderNewDoc(direction) {
       console.log('userRights', userRights);
-      if (userRights.canCreateDEMZQPART) {
-        $('#docType').val('demz');
+      // generatePhotoContainer({}, direction);
+      if (direction === 'demz') {
+        $('#docTypeQpart').hide();
+        $('#docTypeDemz').show();
       }
 
-      if (userRights.canCreateQPARTDEMZ) {
-        $('#docType').val('qpart');
+      if (direction === 'qpart') {
+        $('#docTypeQpart').show();
+        $('#docTypeDemz').hide();
       }
-
-      if (!userRights.canCreateDEMZQPART || !userRights.canCreateDEMZQPART) {
-        $('#docType').prop('disabled', true);
-      }
-
+      $('#docTitle').text(direction);
       $('#newDocForm').show();
     }
 
-    $('#addNew').on('click', function (event) {
+    $('#addNewQpart').on('click', function (event) {
       clickAnimate(this);
       console.log('addNew');
-      docInfoOpen({}, 'create');
+      const data = {
+        ВидОперации: 'Qpart => Demz',
+        Детали: [
+          {
+            Этап: {
+              Наименование: '',
+            },
+          },
+          {},
+        ],
+      };
+      docInfoOpen(data);
     });
 
-    $('#closeDocInfo').on('click', function () {
-      console.log('closeDocInfo');
+    $('#addNewDemz').on('click', function (event) {
       clickAnimate(this);
-      docInfoClose();
+      console.log('addNew');
+      const data = {
+        ВидОперации: 'Demz => Qpart',
+        Детали: [
+          {
+            Этап: {
+              Наименование: '',
+            },
+          },
+          {},
+        ],
+      };
+      docInfoOpen(data);
     });
 
-    $(document).on('click', '.plateListItem', function () {
-      const data = $(this).data('data');
-      console.log('data', data);
-      docInfoOpen(data, 'view');
-    });
-
-    const autocompleteStage = ['Опція 1', 'Опція 2', 'Опція 3', 'Опція 4'];
+    // const autocompleteStage = ['Опція 1', 'Опція 2', 'Опція 3', 'Опція 4'];
 
     function initializeAutocomplete() {
       $('input.stageInput').autocomplete({
         source: autocompleteStage,
         minLength: 0,
+        position: {
+          my: 'left top',
+          at: 'left bottom',
+          collision: 'fit flip',
+        },
+        select: function (event, ui) {
+          $(this).val(ui.item.label);
+          $(this).data('value', ui.item.value);
+          return false;
+        },
       });
     }
 
@@ -440,9 +942,12 @@
 
     function addRow() {
       const newRow = `
-             <tr>
-              <td><input type="text" class="form-control controledInput stageInput" placeholder="етап" /></td>
-              <td><input type="number" class="form-control controledInput numberInput" placeholder="кількість" /></td>
+             <tr >
+              <td class='stageTd'>
+                <input type="text" class="form-control controledInput stageInput" placeholder="" />
+                <span class="removeRowBtn"><i class="bi bi-x"></i></span>
+              </td>
+              <td><input type="number" class="form-control controledInput numberInput" placeholder="" /></td>
               <td><input type="checkbox" class="controledInput" id="defectCheck" /></td>
             </tr>
         `;
@@ -450,11 +955,20 @@
       initializeAutocomplete();
     }
 
-    $('#inputTable').on('focus', 'input.controledInput', function () {
+    $(document).on('focus', 'input.controledInput', function () {
       console.log('focus on table');
       const $lastRow = $('#inputTable tbody tr:last-child');
       if ($(this).closest('tr').is($lastRow)) {
         addRow();
+      }
+    });
+
+    $(document).on('click', '.removeRowBtn', function () {
+      if ($('#inputTable tbody tr').length > 1) {
+        $(this).closest('tr').remove();
+      } else {
+        $(this).closest('tr').find('input').val('');
+        $(this).closest('tr').find('input[type="checkbox"]').prop('checked', false);
       }
     });
 
@@ -465,7 +979,7 @@
         .not(':last')
         .each(function () {
           console.log('collectTableData this', this);
-          const detail = $(this).find('input.stageInput').val();
+          const detail = $(this).find('input.stageInput').data('value');
           const count = $(this).find('input.numberInput').val();
           const defect = $(this).find('input[type="checkbox"]').is(':checked');
 
@@ -512,20 +1026,45 @@
       return new Blob([new Uint8Array(array)], { type: mime });
     }
 
+    function sendDataTo1C(data, method = 'GET', callback) {
+      universalRequest(
+        '/app/qpart_demz',
+        method,
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback:', response);
+          if (response.error) {
+            toastr.error('Помилка звязку', response['Причина']);
+          } else {
+            toastr.success('Дані збережено');
+            if (typeof callback === 'function') {
+              callback(response);
+            }
+          }
+        },
+        function onError(error) {
+          toastr.error('Error', error);
+        },
+        function onComplete() {}
+      );
+    }
+
     $('#saveDoc').on('click', async function () {
       console.log('saveDoc on click');
       clickAnimate(this);
       const mediaFiles = getMediaFiles();
 
-      try {
-        await saveFilesToStorage(mediaFiles, uid, uid);
-        console.log('Files saved successfully!');
-      } catch (error) {
-        console.error('Error saving files:', error);
-      }
+      // try {
+      //   await saveFilesToStorage(mediaFiles, uid, uid);
+      //   console.log('Files saved successfully!');
+      // } catch (error) {
+      //   console.error('Error saving files:', error);
+      // }
 
-      const tripNumber = $('#tripNumber').val();
-      if (tripNumber === '') {
+      const tripNumber = $('#tripNumber').val().trim();
+      console.log('tripNumber', tripNumber, '#tripNumber');
+      if (!tripNumber) {
         toastr.error('Заповніть номер відправлення');
         $('#tripNumber').focus();
         return;
@@ -533,7 +1072,7 @@
 
       const docDate = $('#docDate').val();
       if (docDate === '') {
-        toastr.error('Заповніть номер відправлення');
+        toastr.error('Заповніть дату відправлення');
         $('#docDate').focus();
         return;
       }
@@ -541,14 +1080,13 @@
       const details = $('#inputTable').data('data');
 
       console.log('tripNumber, docDate, details', tripNumber, docDate, details);
-      return;
 
       NProgress.start();
       console.log('statusZakupka', statusZakupka);
 
       let media = [];
       let names = [];
-      $('#attachedFilesForNewOrder')
+      $('#imgContainer')
         .children()
         .each((index, child) => {
           const blob = $(child).children('.source').data('blob');
@@ -573,27 +1111,29 @@
         });
 
       const data = {
-        textNew: zakupkaText,
-        priority: priority,
+        details: details,
+        tripNumber: tripNumber,
+        docData: docDate,
         files: names,
       };
 
-      console.log('data from zakupkaForm', data);
+      console.log('data from qpart_demz', data);
 
       sendDataTo1C(data, 'POST', async function (response) {
+        console.log('sendDataTo1C');
         await saveFilesToStorage(media, response.uid, response.uid);
-        $('#formZakupka').hide();
-        $('#content').show();
+        docInfoClose();
       });
       NProgress.done();
     });
 
-    $('#cancelDoc').on('click', function () {
-      docInfoClose();
-    });
+    // $('#cancelDoc').on('click', function () {
+    //   docInfoClose();
+    // });
 
-    function handleFileSelection(files, inputElement) {
-      const imgContainer = $('#imgContainer');
+    function handleFileSelection(files, container) {
+      console.log('handleFileSelection container', container);
+      const imgContainer = $(container);
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -604,16 +1144,29 @@
 
           const img = $('<img>')
             .addClass('src-source')
-            .attr('src-source', event.target.result)
-            .attr('src', event.target.result)
+            .addClass('source')
+            .attr('src-source', URL.createObjectURL(file))
+            .attr('src', URL.createObjectURL(file))
             .attr('alt', 'Image')
+            .data('blob', file)
             .css({
               'object-fit': 'cover',
-              margin: '5px',
-              height: '150px',
             });
 
           imgWrapper.append(img);
+
+          resizeImage(file)
+            .then(resizedImageBlob => {
+              const previewImg = $('<img>')
+                .addClass('preview')
+                .attr('src', URL.createObjectURL(resizedImageBlob))
+                .data('blob', resizedImageBlob);
+
+              imgWrapper.append(previewImg);
+            })
+            .catch(error => {
+              console.error(error);
+            });
 
           imgContainer.append(imgWrapper);
         };
@@ -626,18 +1179,31 @@
       mediaviewer(this);
     });
 
-    $('#makePhoto').on('change', function (event) {
-      const files = event.target.files;
-      if (files.length > 0) {
-        handleFileSelection(files, this);
-        $(this).val('');
-      }
-    });
+    //   $('#makePhoto').on('change', function (event) {
+    //     const files = event.target.files;
+    //     if (files.length > 0) {
+    //       handleFileSelection(files, this);
+    //       $(this).val('');
+    //     }
+    //   });
 
-    $('#downloadPhoto').on('change', function (event) {
+    //  $('#downloadPhoto').on('change', function (event) {
+    //     const files = event.target.files;
+
+    //     if (this)
+    //       if (files.length > 0) {
+    //         handleFileSelection(files, container);
+    //       }
+    //   });
+
+    $(document).on('change', 'input[type="file"]', function (event) {
+      const $photoContainer = $(this).closest('.photoContainer');
+      const $imgContainer = $photoContainer.find('.imgContainer');
+
       const files = event.target.files;
       if (files.length > 0) {
-        handleFileSelection(files, this);
+        handleFileSelection(files, $imgContainer);
+        $(this).val('');
       }
     });
   });
