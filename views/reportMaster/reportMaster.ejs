@@ -309,7 +309,10 @@ include('reportMaster_users') %>
 
       $('#containerSumInfo').addClass(classForOut);
       console.log('$(#containerSumInfo).children(.plates)', $('#containerSumInfo').children('.plate'));
+      $('#containerSumInfo').show();
+      $('#noShiftContainer').hide();
       $('#containerSumInfo').children('.plate').html(spiner);
+
       $('#shiftDate').addClass(classForOut);
 
       setTimeout(() => {
