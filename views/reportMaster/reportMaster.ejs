@@ -381,37 +381,35 @@ include('reportMaster_users') %>
       return options;
     }
     function renderReport(data) {
-      console.log('renderReport data', data.item.АктивныеЗаявкиНаРемонт);
-
-      const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
-      console.log('repairOrders', repairOrders);
-      notWorkingStanki = repairOrders.filter(order => {
-        return !order.ЗаявкаНаРемонт.НаСтанкеМожноРаботать;
-      });
-
-      const profaCount = {};
-      const sotrudnikiList = data.item.СписокСотрудников;
-      sotrudnikiList.forEach(sotrudnik => {
-        const profa = sotrudnik.Должность?.Наименование;
-
-        if (profa) {
-          if (profaCount[profa]) {
-            profaCount[profa]++;
-          } else {
-            profaCount[profa] = 1;
-          }
-        }
-      });
-
-      data.item.profaCount = Object.keys(profaCount).map(key => ({
-        name: key,
-        value: profaCount[key],
-      }));
-
-      const finishedDetails = data.item.СписокСделанногоЗаСмену;
-      console.log('finishedDetails', finishedDetails);
-
       if (data.item) {
+        const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
+        console.log('repairOrders', repairOrders);
+        notWorkingStanki = repairOrders.filter(order => {
+          return !order.ЗаявкаНаРемонт.НаСтанкеМожноРаботать;
+        });
+
+        const profaCount = {};
+        const sotrudnikiList = data.item.СписокСотрудников;
+        sotrudnikiList.forEach(sotrudnik => {
+          const profa = sotrudnik.Должность?.Наименование;
+
+          if (profa) {
+            if (profaCount[profa]) {
+              profaCount[profa]++;
+            } else {
+              profaCount[profa] = 1;
+            }
+          }
+        });
+
+        data.item.profaCount = Object.keys(profaCount).map(key => ({
+          name: key,
+          value: profaCount[key],
+        }));
+
+        const finishedDetails = data.item.СписокСделанногоЗаСмену;
+        console.log('finishedDetails', finishedDetails);
+
         console.log('data.item.СписокСтатусов', data.item.СписокСтатусов);
         data.item.options = generateOptions(data.item.СписокСтатусов);
         data.item.optionsList = data.item.СписокСтатусов;
@@ -424,6 +422,7 @@ include('reportMaster_users') %>
         $('#noShiftContainer').hide();
         generateFromTemplate('#mainTemplate', data.item, '#containerSumInfo');
       } else {
+        console.log('not item');
         $('#nextShift').addClass('disabled');
         $('#containerSumInfo').hide();
         $('#noShiftContainer').show();
