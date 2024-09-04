@@ -314,10 +314,9 @@ include('reportMaster_users') %>
       $('#containerSumInfo').children('.plate').html(spiner);
 
       $('#shiftDate').addClass(classForOut);
-
+      abortAllRequests();
+      universalRequest('app/reportMaster', 'GET', '', shift, renderReport);
       setTimeout(() => {
-        universalRequest('app/reportMaster', 'GET', '', shift, renderReport);
-
         $('#containerSumInfo').removeClass(classForOut).addClass(classForIn);
         $('#shiftDate').removeClass(classForOut).addClass(classForIn);
 
