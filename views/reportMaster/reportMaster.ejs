@@ -215,7 +215,7 @@ include('reportMaster_users') %>
     <div class='header'>Зроблені деталі</div>
     {{#each СписокСделанногоЗаСмену}}
       <div class='detailGroup'>
-        <div class='nameDet'>{{Деталь}}</div>
+        <div class='nameDet'>{{Артикул}} {{Деталь}}</div>
         <div class='etapCount displayFlex'>
           <div class='nameStage'>{{Этап}}</div>
           <div class='valueDet'>{{Количество}} шт.</div>
@@ -255,8 +255,8 @@ include('reportMaster_users') %>
 
     function getCurrentShift() {
       currentShift = 'day';
-      currentDate = new Date();
-      // currentDate = new Date('2024-07-20T16:00:00');
+      // currentDate = new Date();
+      currentDate = new Date('2024-07-20T16:00:00');
       const currentHour = currentDate.getHours();
 
       if (currentHour > 19 && currentHour < 7) {
@@ -429,6 +429,9 @@ include('reportMaster_users') %>
         $('#nextShift').addClass('disabled');
         $('#containerSumInfo').hide();
         $('#noShiftContainer').show();
+        if (data.error) {
+          $('#noShiftContainer').text('Помилка!');
+        }
         const secondsToShiftStart = getTimeToShiftStart();
         startTimer(secondsToShiftStart, '.noShiftTimer');
       }
