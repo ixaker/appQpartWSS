@@ -255,8 +255,8 @@ include('reportMaster_users') %>
 
     function getCurrentShift() {
       currentShift = 'day';
-      // currentDate = new Date();
-      currentDate = new Date('2024-07-20T16:00:00');
+      currentDate = new Date();
+      // currentDate = new Date('2024-07-20T16:00:00');
       const currentHour = currentDate.getHours();
 
       if (currentHour > 19 && currentHour < 7) {
