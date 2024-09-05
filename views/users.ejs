@@ -1706,8 +1706,9 @@
             } else {
               toastr.success('Фото успішно оброблено.');
               console.log(response.result);
-              renderCheckInfo(response.result, base64Image);
+              renderCheckInfo(response.result, (base64Image = ''));
             }
+            NProgress.done();
           },
           error: function (xhr, status, error) {
             const errorMessage = `Помилка при обробці фото: ${xhr.responseText || error}`;
@@ -1755,7 +1756,8 @@
         emotionDisplay.text('');
         photoArrayContainer.empty();
 
-        const sourcePhoto = `
+        if (info.user) {
+          const sourcePhoto = `
         <div
             class="attachedImg"
             src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
@@ -1763,7 +1765,8 @@
           <img class="checkPhoto src-source" src="${sourcePhotoBase64}" />
         </div>
         `;
-        sourcePhotoContainer.append(sourcePhoto);
+          sourcePhotoContainer.append(sourcePhoto);
+        }
 
         if (info.detectFace) {
           resultText.text('Обличчя розпізнано');
