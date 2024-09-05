@@ -59,8 +59,8 @@ include('reportMaster_users') %>
     background-color: #ffffff;
     border-radius: 7px;
     box-shadow: 2px 3px 5px #999;
-    padding: 5px;
-    padding-left: 20px;
+    padding: 10px;
+
     display: flex;
     flex-direction: column;
   }
@@ -88,7 +88,6 @@ include('reportMaster_users') %>
     font-size: large;
     padding: 0 10px;
     margin-bottom: 8px;
-    margin-right: 15px;
     border: 1px solid lightgrey;
     border-radius: 5px;
     background-color: #f3f3f3;
@@ -153,6 +152,11 @@ include('reportMaster_users') %>
   .qpartSpinerForWaiting {
     margin: 50px auto;
   }
+
+  #ui-datepicker-div {
+    left: 50% !important;
+    transform: translateX(-50%);
+  }
 </style>
 
 <div>
@@ -184,36 +188,46 @@ include('reportMaster_users') %>
 
 <script id="mainTemplate" type="text/x-handlebars-template">
   <div id='stanki' class='plate' children='#stanokContainer'>
+
     <div class='header'>Станки</div>
     <div class='group'>
       <div class='name'>Всього:</div>
-      <div class='value'>{{ВсегоСтанков}}</div>
+      <div class='value'>{{stankiSumInfo.totalCount}}</div>
     </div>
     <div class='group'>
       <div class='name'>Задіяні:</div>
-      <div class='value'>{{КоличествоЗадействованныхСтанков}}</div>
-
+      <div class='value'>{{stankiSumInfo.used}}</div>
     </div>
     <div class='group'>
-      <div class='name'>ККД, %:</div>
-      <div class='value'>{{ОбщееКПД}}</div>
+      <div class='name'>Незадіяні:</div>
+      <div class='value'>{{stankiSumInfo.unused}}</div>
     </div>
+    <div class='group'>
+      <div class='name'>Зламані:</div>
+      <div class='value'>{{stankiSumInfo.broken}}</div>
+    </div>
+    {{#unless active}}
+      <div class='group'>
+        <div class='name'>ККД, %:</div>
+        <div class='value'>{{stankiSumInfo.kkd}}</div>
+      </div>
+    {{/unless}}
   </div>
 
   <div id='users' class='plate' children='#usersContainer'>
     <div class='header'>Працівники зміни</div>
 
-    {{#each profaCount}}
+    {{#each usersSumInfo.profa}}
       <div class='group'>
-        <div class='name'>{{name}}:</div>
-        <div class='value'>{{value}}</div>
+        <div class='name'>{{Должность}}:</div>
+        <div class='value'>{{Количество}}</div>
       </div>
     {{/each}}
   </div>
 
   <div id='details' class='plate' children='#detailContainer'>
     <div class='header'>Зроблені деталі</div>
-    {{#each СписокСделанногоЗаСмену}}
+    {{#each detaliSumInfo.list}}
       <div class='detailGroup'>
         <div class='nameDet'>{{Артикул}} {{Деталь}}</div>
         <div class='etapCount displayFlex'>
@@ -235,6 +249,7 @@ include('reportMaster_users') %>
 
 <script>
   let listStanki;
+  let activeShift;
   $(document).ready(function () {
     let currentDate;
     let currentShift;
@@ -249,29 +264,52 @@ include('reportMaster_users') %>
     init();
 
     function init() {
-      getCurrentShift();
-      getReportFrom1C(0);
+      const currentDay = getCurrentShift();
+      currentDate = currentDay.currentDate;
+      currentShift = currentDay.currentShift;
+      getShift(0);
     }
 
     function getCurrentShift() {
-      currentShift = 'day';
-      // currentDate = new Date();
-      currentDate = new Date('2024-07-20T16:00:00');
-      const currentHour = currentDate.getHours();
+      let shift = 'day';
+      // const date = new Date();
+      const date = new Date('2024-07-20T16:00:00');
+      const currentHour = date.getHours();
 
-      if (currentHour > 19 && currentHour < 7) {
-        currentShift = 'night';
+      if (currentHour >= 19 || currentHour < 7) {
+        shift = 'night';
 
         if (currentHour < 7) {
-          currentDate.setDate(currentDate.getDate() - 1);
+          date.setDate(date.getDate() - 1);
         }
       }
 
-      console.log('currentDat, currentShift', currentDate, currentShift);
+      return {
+        currentDate: date,
+        currentShift: shift,
+      };
     }
 
+    // function getCurrentShift() {
+    //   currentShift = 'day';
+    //   // currentDate = new Date();
+    //   currentDate = new Date('2024-07-20T16:00:00');
+    //   const currentHour = currentDate.getHours();
+
+    //   if (currentHour > 19 && currentHour < 7) {
+    //     currentShift = 'night';
+
+    //     if (currentHour < 7) {
+    //       currentDate.setDate(currentDate.getDate() - 1);
+    //     }
+    //   }
+
+    //   console.log('currentDat, currentShift', currentDate, currentShift);
+    // }
+
     $('#prevShift').click(function () {
-      getReportFrom1C(-1);
+      getShift(-1);
+      clickAnimate(this);
     });
 
     $('#nextShift').click(function () {
@@ -279,10 +317,21 @@ include('reportMaster_users') %>
         event.preventDefault();
         return false;
       }
-      getReportFrom1C(1);
+      clickAnimate(this);
+      getShift(1);
     });
 
+    function getShiftByDate(date) {
+      console.log('getShiftByDate', date);
+      currentDate = new Date(date);
+      currentShift = 'day';
+      console.log('getShiftByDate currentDate, currentShift', currentDate, currentShift);
+    }
+
     function changeShift(direction) {
+      const today = getCurrentShift();
+      const todayDate = today.currentDate;
+      const todayShift = today.currentShift;
       if (direction !== 0) {
         if (direction === 1 && currentShift === 'day') {
           direction = 0;
@@ -292,17 +341,42 @@ include('reportMaster_users') %>
           direction = 0;
         }
 
-        currentDate.setDate(currentDate.getDate() + direction);
-        currentShift = currentShift === 'day' ? 'night' : 'day';
+        const newDate = new Date(currentDate);
+        const newShift = currentShift === 'day' ? 'night' : 'day';
+        newDate.setDate(currentDate.getDate() + direction);
+
+        const todayShiftBegin = new Date(todayDate);
+        todayShiftBegin.setHours(todayShift === 'day' ? 7 : 19, 0, 0, 0);
+
+        const newShiftBegin = new Date(newDate);
+        newShiftBegin.setHours(currentShift === 'day' ? 7 : 19, 0, 0, 0);
+
+        if (todayShiftBegin < newShiftBegin) {
+          $('#nextShift').addClass('disabled');
+          $('#containerSumInfo').hide();
+          $('#noShiftContainer').show();
+        }
+        currentDate = newDate;
+        currentShift = newShift;
       }
     }
 
+    function getInfoByParam(preset, callback) {
+      console.log('getInfoByParam, currentShift', currentShift);
+      const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift, preset: preset };
+      universalRequest('app/reportMaster', 'GET', '', shift, callback);
+    }
+
+    function getShift(direction) {
+      changeShift(direction);
+      getReportFrom1C(direction);
+    }
     async function getReportFrom1C(direction) {
       console.log('getReportFrom1C, currentDate, currentShift', currentDate, currentShift, direction);
-      changeShift(direction);
+      // changeShift(direction);
       renderTitle();
 
-      const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift };
+      const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift, preset: 'main' };
 
       const classForOut = direction === 1 ? 'outLeft' : direction === -1 ? 'outRight' : '';
       const classForIn = direction === 1 ? 'inRight' : direction === -1 ? 'inLeft' : '';
@@ -311,7 +385,7 @@ include('reportMaster_users') %>
       console.log('$(#containerSumInfo).children(.plates)', $('#containerSumInfo').children('.plate'));
       $('#containerSumInfo').show();
       $('#noShiftContainer').hide();
-      $('#containerSumInfo').children('.plate').html(spiner);
+      $('#containerSumInfo').children('.plate').html(skeleton);
 
       $('#shiftDate').addClass(classForOut);
       abortAllRequests();
@@ -327,12 +401,43 @@ include('reportMaster_users') %>
       }, 100);
       // renderReport(testData);
     }
+    // function formatDate(date) {
+    //   const options = { day: '2-digit', month: '2-digit' };
+    //   return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
+    // }
+
+    $('#shiftDate').datepicker({
+      dateFormat: 'dd.mm',
+      maxDate: new Date(),
+      position: {
+        my: 'center top',
+        at: 'center bottom',
+        of: '#shiftDate',
+      },
+      onSelect: function (dateText) {
+        console.log('dateText', dateText);
+        const [day, month] = dateText.split('.');
+        const year = new Date().getFullYear();
+
+        const selectedDate = new Date(year, month - 1, day, 8, 0, 0);
+
+        if (isNaN(selectedDate.getTime())) {
+          console.error('Invalid date provided');
+          return;
+        }
+        console.log('selectedDate', selectedDate);
+        getShiftByDate(selectedDate);
+        getReportFrom1C(1);
+      },
+    });
 
     function renderTitle() {
-      console.log('currentDate', currentDate);
+      console.log('currentDate', currentDate, currentDate.toISOString());
+
       const formattedDate = formatDate(currentDate.toISOString());
       const formattedShift = currentShift === 'day' ? 'день' : 'ніч';
       const titleText = `${formattedDate} - ${formattedShift}`;
+      console.log('titleText', titleText);
       $('#shiftDate').val(titleText);
     }
 
@@ -344,7 +449,10 @@ include('reportMaster_users') %>
     callbackWSS = async function (data) {
       console.log('callbackWSS data', data);
       data.item = data.data;
-      renderReport(data);
+      currentUID = $('#main').attr('uid');
+      if (currentUID === data.data.uid) {
+        renderReport(data);
+      }
     };
 
     function getTimeToShiftStart() {
@@ -382,32 +490,35 @@ include('reportMaster_users') %>
 
       return options;
     }
+
     function renderReport(data) {
       if (data.item) {
-        const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
-        console.log('repairOrders', repairOrders);
-        notWorkingStanki = repairOrders.filter(order => {
-          return !order.ЗаявкаНаРемонт.НаСтанкеМожноРаботать;
-        });
+        activeShift = data.item.active;
+        console.log('data,item.active, activeShift', data.item.active, activeShift);
+        // const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
+        // console.log('repairOrders', repairOrders);
+        // notWorkingStanki = repairOrders.filter(order => {
+        //   return !order.ЗаявкаНаРемонт.НаСтанкеМожноРаботать;
+        // });
 
-        const profaCount = {};
-        const sotrudnikiList = data.item.СписокСотрудников;
-        sotrudnikiList.forEach(sotrudnik => {
-          const profa = sotrudnik.Должность?.Наименование;
+        // const profaCount = {};
+        // const sotrudnikiList = data.item.СписокСотрудников;
+        // sotrudnikiList.forEach(sotrudnik => {
+        //   const profa = sotrudnik.Должность?.Наименование;
 
-          if (profa) {
-            if (profaCount[profa]) {
-              profaCount[profa]++;
-            } else {
-              profaCount[profa] = 1;
-            }
-          }
-        });
+        //   if (profa) {
+        //     if (profaCount[profa]) {
+        //       profaCount[profa]++;
+        //     } else {
+        //       profaCount[profa] = 1;
+        //     }
+        //   }
+        // });
 
-        data.item.profaCount = Object.keys(profaCount).map(key => ({
-          name: key,
-          value: profaCount[key],
-        }));
+        // data.item.profaCount = Object.keys(profaCount).map(key => ({
+        //   name: key,
+        //   value: profaCount[key],
+        // }));
 
         const finishedDetails = data.item.СписокСделанногоЗаСмену;
         console.log('finishedDetails', finishedDetails);
@@ -450,10 +561,17 @@ include('reportMaster_users') %>
       console.log(something);
     });
 
-    function renderStanki() {
-      const data = $('#main').data('data');
-      console.log('data', data);
-      generateFromTemplate('#stanokTemplate', data, '#stanokList');
+    function renderStanki(data) {
+      // const data = $('#main').data('data');
+      console.log('data', data.item.listStanki);
+      if (activeShift) {
+        console.log('activeShift');
+        generateFromTemplate('#stanokTemplate', data.item.listStanki, '#stanokList');
+      } else {
+        console.log('not active shift');
+        generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+      }
+
       initSelect();
       initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
       initOtherState();
@@ -462,37 +580,46 @@ include('reportMaster_users') %>
     }
 
     $(document).on('click', '#stanki', function () {
+      console.log('this', $(this).attr('id'));
+      const param = $(this).attr('id');
       showPage(this);
-      renderStanki();
+      getInfoByParam(param, renderStanki);
+      // renderStanki();
     });
 
     function renderUsers() {
       const data = $('#usersContainer').data('data');
-      const stankiData = $('#stanokContainer').data('data');
-      const users = data.map(user => ({
-        uid: user.uid,
-        name: user.Наименование,
-        profa: user.Должность.Наименование,
-        stanki: [],
-      }));
+      // const stankiData = $('#stanokContainer').data('data');
+      // const users = data.map(user => ({
+      //   uid: user.uid,
+      //   name: user.Наименование,
+      //   profa: user.Должность.Наименование,
+      //   stanki: [],
+      // }));
 
-      const profas = [...new Set(users.map(user => user.profa))];
-      const dataForMenu = { profas: profas };
-      console.log('profas', profas);
+      // const profas = [...new Set(users.map(user => user.profa))];
+      // const dataForMenu = { profas: profas };
+      // console.log('profas', profas);
 
-      stankiData.forEach(stanok => {
-        const stanokUID = stanok.Станок.uid;
-        const stanokInv = stanok.Станок.ИнвентарныйНомер;
+      // stankiData.forEach(stanok => {
+      //   const stanokUID = stanok.Станок.uid;
+      //   const stanokInv = stanok.Станок.ИнвентарныйНомер;
 
-        users.forEach(user => {
-          if (stanok.Оператор && stanok.Оператор.uid === user.uid) {
-            user.stanki.push({
-              stanokUID: stanokUID,
-              stanokInv: stanokInv,
-            });
-          }
-        });
-      });
+      //   users.forEach(user => {
+      //     if (stanok.Оператор && stanok.Оператор.uid === user.uid) {
+      //       user.stanki.push({
+      //         stanokUID: stanokUID,
+      //         stanokInv: stanokInv,
+      //       });
+      //     }
+      //   });
+      // });
+
+      if (activeShift) {
+        console.log('activeShift');
+      } else {
+        console.log('not active shift');
+      }
       generateFromTemplate('#usersTemplate', users, '#usersList');
       generateFromTemplate('#menuTemplate', dataForMenu, '#filterMenuUsers');
 
@@ -506,12 +633,15 @@ include('reportMaster_users') %>
     $(document).on('click', '#users', function () {
       console.log('click users');
       showPage(this);
-      renderUsers();
-      listStanki = $('#stanokContainer').data('data');
-      stankiForAutocomplete = listStanki.map(stanok => stanok.Станок.ИнвентарныйНомер);
-      console.log('listStanki', listStanki, stankiForAutocomplete, $('.stanok'));
+      const param = $(this).attr('id');
+      showPage(this);
+      getInfoByParam(param, renderUsers);
+      // renderUsers();
+      // listStanki = $('#stanokContainer').data('data');
+      // stankiForAutocomplete = listStanki.map(stanok => stanok.Станок.ИнвентарныйНомер);
+      // console.log('listStanki', listStanki, stankiForAutocomplete, $('.stanok'));
       // initStankiAutocomplete(stankiForAutocomplete);
-      initInputAutocomplete('.stanok', 1);
+      // initInputAutocomplete('.stanok', 1);
     });
 
     $(document).on('click', '.backToMain', function () {
@@ -533,11 +663,11 @@ include('reportMaster_users') %>
     $('#main').swipe({
       swipeRight: function (event, direction) {
         console.log('swipeRight main');
-        getReportFrom1C(-1);
+        getShift(-1);
       },
       swipeLeft: function (event, direction) {
         console.log('swipeLeft main');
-        getReportFrom1C(1);
+        getShift(1);
       },
     });
   });

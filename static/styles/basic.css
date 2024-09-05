@@ -788,3 +788,39 @@ mark {
 .menuItem:hover {
   background-color: #f0f0f0;
 }
+
+.skeleton-wrapper {
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.skeleton-header,
+.skeleton-body,
+.skeleton-footer {
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.skeleton-header {
+  height: 30px;
+  width: 100%;
+}
+
+.skeleton-body {
+  height: 80px;
+  background: none;
+}
+
+.skeleton-line {
+  background: #d0d0d0;
+  height: 20px;
+  margin-bottom: 10px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.skeleton-footer {
+  height: 20px;
+  width: 50%;
+}

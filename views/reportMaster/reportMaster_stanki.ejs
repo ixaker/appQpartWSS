@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    font-size: medium;
   }
 
   .titleChildren {
@@ -15,7 +16,6 @@
     display: flex;
     justify-content: flex-start;
     font-size: x-large;
-    margin-bottom: 10px;
   }
 
   .number {
@@ -24,10 +24,9 @@
 
   .stanokSecondRow {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     font-size: large;
     flex-wrap: wrap;
-    margin-bottom: 10px;
   }
 
   .statusSelect,
@@ -97,6 +96,59 @@
   .groupSearch {
     margin-left: 3px;
   }
+
+  .proveden {
+    border: 2px solid darkgreen;
+    border-radius: 11px;
+    width: 23px;
+    line-height: 15px;
+    color: darkgreen;
+  }
+
+  .otk {
+    font-size: small;
+    border: 2px solid green;
+    border-radius: 5px;
+    color: darkgreen;
+    padding: 2px 4px 0px 3px;
+    margin-left: 5px;
+    line-height: 15px;
+    font-weight: 600;
+  }
+
+  .reportContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .stanokDetailGroup {
+    font-size: large;
+    padding: 3px 3px 0px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    background-color: #f3f3f3;
+  }
+
+  .stanokDetailHeader {
+    justify-content: space-between;
+  }
+
+  .stanokNameDet {
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .stanoVvalueDet {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .stanokEtapCount {
+    display: flex;
+    justify-content: space-between;
+  }
 </style>
 
 <div id="stanokContainer" class="container-slide" style="display: none">
@@ -153,14 +205,66 @@
   ></div> -->
 </div>
 
+<script id="stanokCloseTemplate" type="text/x-handlebars-template">
+  {{#each this}}
+    <div class='plateListItem' id='{{Станок.uid}}'>
+      <div class='containerStanok'>
+        <div class='stanokFirstRow'>
+          <div class='number text-truncate'>
+            {{Станок}}
+          </div>
+        </div>
+
+        <div class='stanokSecondRow d-flex'>
+          {{#unless КоличествоОтчетов}} <div class='statusMaster'>{{Статус}}</div> {{/unless}}
+          <div class='statusFact d-none'>Статус по звітах: {{СтатусФакт}}</div>
+          {{#if КоличествоОтчетов}}<div class='countReports'><i class="bi bi-card-checklist"></i> {{КоличествоОтчетов}}</div>{{/if}}
+          <div class='kkd'>ККД: {{ККД}}%</div>
+        </div>
+
+        {{#each СписокРаботПоСтанку}}
+        <div class="reportContainer">
+          <div class='reportAutor text-center'>{{Оператор}}</div>
+
+              {{#each СписокОтчетовПоСотруднику}}
+              <div class='stanokDetailGroup'>
+                <div class="stanokDetailHeader d-flex">
+                  <div class='stanokNameDet'>{{Артикул}} {{Деталь}}</div>
+                    <div class="notes d-flex">
+                      {{#if Проведен}}<i class="bi bi-check proveden"></i>{{/if}}
+                      {{#if СтатусОТК}}<div class="otk">ОТК</div>{{/if}}
+                    </div>
+
+                </div>
+
+                <div class='stanokEtapCount displayFlex'>
+                  <div class='nameStage'>{{Этап}}</div>
+
+                  <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
+
+                </div>
+
+              </div>
+              {{/each}}
+
+        </div>
+        {{/each}}
+      </div>
+
+    </div>
+  </div>
+  {{/each}}
+</script>
+
 <script id="stanokTemplate" type="text/x-handlebars-template">
-  {{#each Станки}}
+  {{#each this}}
     <div class='plateListItem' id='{{Станок.uid}}'>
       <div class='.containerStanok'>
         <div class='stanokFirstRow'>
-          <div class='number'>{{#if Станок.ИнвентарныйНомер}}{{Станок.ИнвентарныйНомер}} {{else}} **** {{/if}}
+          <div class='number'>
+            {{#if Станок.ИнвентарныйНомер}}{{Станок.ИнвентарныйНомер}} {{else}} **** {{/if}}
             -
-            {{Станок.Наименование}}
+            {{Станок}}
           </div>
         </div>
 
@@ -216,14 +320,6 @@
   {{/each}}
 </script>
 
-<script id="stanokTemplate" type="text/x-handlebars-template">
-  {{#each blocks}}
-    <div id='{{uid}}' class='stanokInv'>
-      {{ИнвентарныйНомер}}
-    </div>
-  {{/each}}
-</script>
-
 <script>
   $(document).ready(function () {
     // const platesID = '#machines';
@@ -272,7 +368,9 @@
       $('.plateListItem').each(function () {
         let found = true;
         let elements = $(this)
-          .find('.number, .hideOperator, .stanokDetail ')
+          .find(
+            '.number, .hideOperator, .stanokDetail, .statusFact, .statusMaster, .reportAutor, .stanokNameDet, .otk, .nameStage   '
+          )
           .map(function () {
             return { el: $(this) };
           })

@@ -844,3 +844,16 @@ function setupSearch(inputSelector, itemSelector, filterSelectors) {
 const spiner = `<div class="spinner-border qpartSpinerForWaiting" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>`;
+
+const skeleton = `
+  <div class='skeleton-wrapper'>
+      <div class='skeleton-header'></div>
+      <div class='skeleton-body'>
+        <div class='skeleton-line'></div>
+        <div class='skeleton-line'></div>
+        <div class='skeleton-line'></div>
+      </div>
+      <div class='skeleton-footer'></div>
+    </div>
+
+`;
