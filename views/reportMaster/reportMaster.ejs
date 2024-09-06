@@ -249,15 +249,11 @@ include('reportMaster_users') %>
 
 <script>
   let listStanki;
-  let activeShift;
+
   $(document).ready(function () {
     let currentDate;
     let currentShift;
-
-    let selectedStanok = null;
-    let selectedUser = null;
-
-    // let render = true;
+    let isShiftActive;
 
     addSubscribeWSS('ОтчетЗаСмену_all');
 
@@ -487,14 +483,28 @@ include('reportMaster_users') %>
       const templateHTML = $('#optionsTemplate').html();
       const template = Handlebars.compile(templateHTML);
       const options = template(listItem);
+      Handlebars.registerHelper('arrayLength', function (array) {
+        return array.length;
+      });
+
+      Handlebars.registerHelper('getColorByKkd', function (kkdValue) {
+        if (kkdValue >= 0 && kkdValue < 80) {
+          return 'red';
+        } else if (kkdValue >= 80 && kkdValue < 100) {
+          return '';
+        } else if (kkdValue >= 100 && kkdValue <= 200) {
+          return 'green';
+        } else {
+          return '';
+        }
+      });
 
       return options;
     }
 
     function renderReport(data) {
       if (data.item) {
-        activeShift = data.item.active;
-        console.log('data,item.active, activeShift', data.item.active, activeShift);
+        isShiftActive = data.item.active;
         // const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
         // console.log('repairOrders', repairOrders);
         // notWorkingStanki = repairOrders.filter(order => {
@@ -564,9 +574,9 @@ include('reportMaster_users') %>
     function renderStanki(data) {
       // const data = $('#main').data('data');
       console.log('data', data.item.listStanki);
-      if (activeShift) {
-        console.log('activeShift');
-        generateFromTemplate('#stanokTemplate', data.item.listStanki, '#stanokList');
+      if (isShiftActive) {
+        console.log('isShiftActive', isShiftActive, data.item.listStanki);
+        generateFromTemplate('#stanokTemplate', data.item.listStatus, '#stanokList');
       } else {
         console.log('not active shift');
         generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
@@ -575,7 +585,9 @@ include('reportMaster_users') %>
       initSelect();
       initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
       initOtherState();
-      openMenu('filter', 'filterMenu', []);
+      initFilter('filterMenu', 'filter');
+      // openMenu('filter', 'filterMenu', []);
+
       console.log('renderStanki', data);
     }
 
@@ -587,8 +599,9 @@ include('reportMaster_users') %>
       // renderStanki();
     });
 
-    function renderUsers() {
-      const data = $('#usersContainer').data('data');
+    function renderUsers(data) {
+      console.log('renderUsers data', data);
+
       // const stankiData = $('#stanokContainer').data('data');
       // const users = data.map(user => ({
       //   uid: user.uid,
@@ -615,18 +628,18 @@ include('reportMaster_users') %>
       //   });
       // });
 
-      if (activeShift) {
-        console.log('activeShift');
+      if (isShiftActive) {
+        console.log('isShiftActive');
+        generateFromTemplate('#usersTemplate', users, '#usersList');
       } else {
-        console.log('not active shift');
+        console.log('close shift');
+        generateFromTemplate('#usersCloseShiftTemplate', data.item.listUsers, '#usersList');
+        initFilter('filterMenuUsers', 'filterUsers');
+        // openMenu('filterUsers', 'filterMenuUsers', []);
       }
-      generateFromTemplate('#usersTemplate', users, '#usersList');
-      generateFromTemplate('#menuTemplate', dataForMenu, '#filterMenuUsers');
+      // generateFromTemplate('#usersTemplate', users, '#usersList');
+      // generateFromTemplate('#menuTemplate', dataForMenu, '#filterMenuUsers');
 
-      openMenu('filterUsers', 'filterMenuUsers', [
-        isActive => searchFilter('ЧПУ', isActive),
-        isActive => searchFilter('001', isActive),
-      ]);
       console.log('renderUsers', users);
     }
 
@@ -658,6 +671,7 @@ include('reportMaster_users') %>
       swipeRight: function (event, direction) {
         $('.backToMain').click();
       },
+      threshold: 200,
     });
 
     $('#main').swipe({

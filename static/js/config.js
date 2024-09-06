@@ -745,24 +745,47 @@ function resizeImage(file, targetWidth = 150) {
 }
 
 // menu functionality
-
 function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
-    console.log('click openMenu',);
+    console.log('start openMenu',);
     const menuButton = $(`#${menuButtonId}`);
     const menuContainer = $(`#${menuContainerId}`);
 
     menuButton.off('click').on('click', function (event) {
+        console.log('click open menu');
         event.stopPropagation();
 
         const buttonOffset = menuButton.offset();
         const buttonHeight = menuButton.outerHeight();
         const buttonWidth = menuButton.outerWidth();
         const menuWidth = menuContainer.outerWidth();
+        const menuHeight = menuContainer.outerHeight();
         console.log('buttonOffset, buttonHeight, buttonWidth, menuWidth', buttonOffset, buttonHeight, buttonWidth, menuWidth);
 
+        // Calculate initial position
+        let top = buttonOffset.top + buttonHeight;
+        let left = buttonOffset.left - (menuWidth / 2) + (buttonWidth / 2);
+
+        // Adjust position if the menu is going out of screen
+        const windowWidth = $(window).width();
+        const windowHeight = $(window).height();
+
+        // Adjust left position
+        if (left < 0) {
+            left = 0;
+        } else if (left + menuWidth > windowWidth) {
+            console.log('left + menuWidth > windowWidth',);
+            left = windowWidth - menuWidth - 5;
+        }
+
+        // Adjust top position if menu goes below viewport
+        if (top + menuHeight > windowHeight) {
+            top = buttonOffset.top - menuHeight; // Position above the button
+        }
+
+
         menuContainer.css({
-            top: buttonOffset.top + buttonHeight,
-            left: buttonOffset.left - (menuWidth / 2) + (buttonWidth / 2),
+            top: top,
+            left: left,
             position: 'fixed'
         });
 
@@ -775,15 +798,95 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
         }
     });
 
-    menuContainer.find('.menuItem').each(function (index) {
-        const action = menuItemActions[index];
-        if (action) {
-            $(this).off('click').on('click', function () {
-                console.log('clickonMenuItem',);
-                const isActive = $(this).toggleClass('active').hasClass('active');
-                action(isActive);
-            });
+    // menuContainer.find('.menuItem').each(function (index) {
+    //     const action = menuItemActions[index];
+    //     if (action) {
+    //         $(this).off('click').on('click', function () {
+    //             console.log('clickonMenuItem',);
+    //             const isActive = $(this).toggleClass('active').hasClass('active');
+    //             action(isActive);
+    //         });
+    //     }
+    // });
+}
+
+function initFilter(idFilterMenu, idFilterButton) {
+    console.log('initFilter');
+    const button = $('#' + idFilterButton);
+    const menu = $('#' + idFilterMenu);
+    console.log('initFilter', button, menu);
+
+    function updateFilterCount() {
+        console.log('updateFilterCount');
+        const count = menu.find('.form-check-input:checked').length;
+        if (count === 0) {
+            button.find('.filterCount').text('');
         }
+        button.find('.filterCount').text(count);
+
+    }
+
+    updateFilterCount();
+
+    menu.on('change', '.form-check-input', function () {
+        updateFilterCount();
+    });
+
+    openMenu(idFilterButton, idFilterMenu)
+}
+
+function filterItemsByText(classes, searchText, triggerId) {
+    $(triggerId).on('change', function () {
+        const isChecked = $(this).is(':checked');
+
+        if (isChecked) {
+            $('.plateListItem').each(function () {
+                let found = classes.some(className => {
+                    return $(this).find(`.${className}`).text().includes(searchText);
+                });
+
+                $(this).toggle(found);
+            });
+        } else {
+            $('.plateListItem').show();
+        }
+    });
+}
+
+function initFilters(filterSettings) {
+    Object.keys(filterSettings).forEach(filterId => {
+        $(filterId).on('change', function () {
+            const isChecked = $(this).is(':checked');
+            const searchText = isChecked ? filterSettings[filterId].searchTerm : '';
+            filterSettings[filterId].searchText = searchText;
+            applyFilters(filterSettings);
+        });
+    });
+}
+
+function applyFilters(filterStates) {
+    $('.plateListItem').each(function () {
+        let show = true;
+
+        for (const filterKey in filterStates) {
+            const filter = filterStates[filterKey];
+            const searchText = filter.searchText;
+            const classList = filter.classList;
+
+            let found = false;
+            classList.forEach(className => {
+                if ($(this).find(`.${className}`).text().includes(searchText)) {
+                    found = true;
+                }
+            });
+
+            if (!found) {
+                show = false;
+                break;
+            }
+        }
+
+        $(this).toggle(show);
     });
 }
 
@@ -804,7 +907,9 @@ function formatSecondsToHHMMSS(seconds) {
 }
 
 function setupSearch(inputSelector, itemSelector, filterSelectors) {
+    console.log('$(inputSelector)', $(inputSelector));
     $(inputSelector).on('input', function () {
+        console.log('start input',);
         let searchTerms = $(this).val().split(' ').filter(Boolean);
 
         $(itemSelector).each(function () {
@@ -857,3 +962,35 @@ const skeleton = `
     </div>
 
 `;
+
+function initScrollToTopButton() {
+    const $scrollToTopBtn = $('#scrollToTopBtn');
+    let lastScrollTop = 0;
+    let hideTimeout;
+
+    $(window).on('scroll', function () {
+        const currentScrollTop = $(this).scrollTop();
+
+        if (currentScrollTop === 0) {
+            $scrollToTopBtn.removeClass('show').addClass('hide');
+        } else if (currentScrollTop > lastScrollTop && currentScrollTop > 300) {
+            $scrollToTopBtn.removeClass('show').addClass('hide');
+            clearTimeout(hideTimeout);
+        } else if (currentScrollTop < lastScrollTop) {
+            $scrollToTopBtn.removeClass('hide').addClass('show');
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(function () {
+                $scrollToTopBtn.removeClass('show').addClass('hide');
+            }, 3000);
+        }
+
+        lastScrollTop = currentScrollTop;
+    });
+
+    $scrollToTopBtn.on('click', function () {
+        $('html, body').animate({ scrollTop: 0 }, 'smooth');
+    });
+}
+
+
+initScrollToTopButton();

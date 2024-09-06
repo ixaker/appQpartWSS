@@ -406,9 +406,24 @@ input[type='number']::-webkit-outer-spin-button {
 
 #filter {
   font-size: xx-large;
-  font-size: xx-large;
   margin-right: 10px;
   margin-left: auto;
+  color: darkgreen;
+  position: relative;
+}
+
+.filterCount {
+  color: black;
+  position: absolute;
+  top: -5px;
+  right: -1px;
+  font-size: medium;
+  text-shadow: -1px 1px 1px white;
+  font-style: normal;
+}
+
+.cmdButton {
+  font-size: xx-large;
   color: darkgreen;
 }
 
@@ -823,4 +838,115 @@ mark {
 .skeleton-footer {
   height: 20px;
   width: 50%;
+}
+
+.avatarContainer {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 84px;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 90px;
+  height: auto;
+}
+
+.phone {
+  display: flex;
+  gap: 5px;
+  position: relative;
+}
+
+.phone i {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+}
+
+.phoneMenu {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  width: auto;
+  min-width: fit-content;
+  background-color: rgb(255 255 255 / 90%);
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+  top: 110%;
+  left: -120px;
+  display: none;
+  z-index: 1;
+}
+
+.phoneItem {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+}
+
+.phoneText {
+  text-wrap: nowrap;
+  text-decoration: none;
+  color: black;
+}
+
+.phoneText a {
+  color: black;
+}
+
+.phone a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.phone a:hover {
+  text-decoration: none;
+}
+
+.viberSvg {
+  width: 51px;
+  height: 51px;
+}
+
+.phoneIcon a {
+  color: black;
+}
+
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: darkgreen;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 40px;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-to-top-btn.show {
+  opacity: 0.8;
+}
+
+.scroll-to-top-btn:hover {
+  background-color: green;
+}
+
+.scroll-to-top-btn.hide {
+  opacity: 0;
+  transition: opacity 10s ease;
 }

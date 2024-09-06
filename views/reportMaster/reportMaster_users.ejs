@@ -1,7 +1,58 @@
 <style>
   .userFirstRow {
     font-size: x-large;
-    margin-bottom: 10px;
+  }
+
+  .avatarContainer {
+    margin-top: 3px;
+    width: 70px;
+    height: 70px;
+    min-width: 0;
+  }
+
+  .avatar {
+    width: 70px;
+    height: auto;
+  }
+
+  .sotrudnikInfo {
+    margin-left: 10px;
+  }
+
+  .sotrudnikName {
+    line-height: 22px;
+  }
+
+  .profa {
+    font-size: large;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .machineCount {
+    font-size: large;
+  }
+
+  .machine {
+    height: 25px;
+    width: auto;
+    padding: 0 3px 0 0;
+  }
+
+  .sotrudnikKkd {
+    font-size: large;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .blue {
+    color: blue;
+  }
+  .green {
+    color: green;
+  }
+  .red {
+    color: red;
   }
 
   .userSecondRow {
@@ -13,6 +64,8 @@
     display: flex;
     gap: 5px;
     flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
   }
 
   .stanok {
@@ -88,7 +141,7 @@
       <i class="bi bi-arrow-left-circle backToMain" parent="#usersContainer"></i>
       <h1 class="titleChildren">Працівники</h1>
     </div>
-    <!-- <div class="commandRow">
+    <div class="commandRow">
       <div class="input-group-search rounded groupSearch" id="groupSearch">
         <input
           type="search"
@@ -104,10 +157,29 @@
       </div>
 
       <div class="commandButtons">
-        <i class="bi bi-funnel-fill menuButton filter" id="filterUsers"></i>
-        <div id="filterMenuUsers" class="menuContainer"></div>
+        <i class="bi bi-funnel-fill menuButton filter" id="filterUsers"><div class="filterCount"></div> </i>
+        <div id="filterMenuUsers" class="menuContainer">
+          <div class="menuItem">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="operatorFilter" />
+              <label class="form-check-label" for="operatorFilter"> оператор </label>
+            </div>
+          </div>
+          <div class="menuItem">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="naladchikFilter" />
+              <label class="form-check-label" for="naladchikFilter"> Наладчик ЧПУ </label>
+            </div>
+          </div>
+          <div class="menuItem">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="programmerFilter" />
+              <label class="form-check-label" for="programmerFilter"> Программист ЧПУ </label>
+            </div>
+          </div>
+        </div>
       </div>
-    </div> -->
+    </div>
   </header>
 
   <!-- <div id="userList" url="user/api" callbackForRender="callbackForRenderUser" type="plate" paggination="false"></div> -->
@@ -166,12 +238,97 @@
     {{/each}}
   </script>
 
-  <div id="dialog-confirm" title="Видалити станок?">
+  <script id="usersCloseShiftTemplate" type="text/x-handlebars-template">
+    {{#each this}}
+      <div class='plateListItem' id='{{uid}}'>
+        <div class='userFirstRow d-flex'>
+          <div class='avatarContainer'>
+            <img
+              class='avatar'
+              src='/auth_files/biophoto/{{emp_code}}.jpg'
+              alt='Фото користувача {{uid}}'
+              onerror="this.onerror=null; this.src='/img/avatar.png';"
+            />
+          </div>
+          <div class='sotrudnikInfo'>
+            <div class='sotrudnikName'>
+              {{Сотрудник}}
+            </div>
+            <div class='profa mr-2'>
+              {{Должность}}
+            </div>
+            <div class='d-flex align-items-center'>
+              <div class='machineCount d-flex align-items-center'>
+                <img src='/img/machine.png' alt='stanok' class='btn-lg machine' />{{arrayLength listStanok}}
+              </div>
+
+              <div class='phone'>
+                <i class='bi bi-telephone-fill btn btnTel'></i>
+                <div class='phoneMenu'>
+                  <div class='phoneItem btn'>
+                    <span class='phoneText'><a href='tel:{{tel_1}}'>{{tel_1}}</a></span>
+                    <span class='phoneIcon'><a href='tel:{{tel_1}}'><i
+                          class='bi bi-telephone-fill btn btn-lg'
+                        ></i></a></span>
+                    <span class='phoneCopy'><i class='bi bi-clipboard btnCopy btn btn-lg'></i></span>
+                    <span class='messageViber'><a href='viber://chat?number={{tel_1}}'><img
+                          src='/img/viber.svg'
+                          alt='viber'
+                          class='btn-lg viberSvg'
+                        /></a></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class='sotrudnikKkd {{getColorByKkd ККД}}'>ККД {{ККД}}%</div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class='userSecondRow d-none'>
+          <div class='stanokList'>
+            {{#each listStanok}}
+              {{#if Станок}}
+                <div class='reportContainer'>
+                  <div class='reportAutor text-center'>{{Станок}}</div>
+                  {{#each listReport}}
+                    <div class='stanokDetailGroup'>
+                      <div class='stanokDetailHeader d-flex'>
+                        <div class='stanokNameDet text-truncate'>{{Деталь}}</div>
+                        <div class='notes d-flex'>
+                          {{#if Проведен}}<i class='bi bi-check proveden'></i>{{/if}}
+                          {{#if СтатусОТК}}<div class='otk'>ОТК</div>{{/if}}
+                        </div>
+                      </div>
+                      <div class='stanokEtapCount displayFlex'>
+                        <div class='nameStage'>{{Этап}}</div>
+                        <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
+                      </div>
+                      <div class='reportTime d-flex gap-2'>
+                        <i class='bi bi-clock color'> М <span class='time'>{{МашинноеВремя}}</span></i>
+                        <i class='bi bi-clock color'> П <span class='time'>{{ПолноеВремя}}</span></i>
+                        <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}:00</span></i>
+                      </div>
+                    </div>
+                  {{/each}}
+                </div>
+              {{/if}}
+            {{/each}}
+
+          </div>
+
+        </div>
+      </div>
+    {{/each}}
+  </script>
+
+  <!-- <div id="dialog-confirm" title="Видалити станок?">
     <p>
       <span class="ui-icon ui-icon-alert" style="float: left; margin: 12px 12px 20px 0"></span>Цей станок буде
       видаленозі списку працівника.
     </p>
-  </div>
+  </div> -->
 </div>
 
 <script>
@@ -224,6 +381,9 @@
       }, 100);
     };
 
+    selectorsForSearch = ['.sotrudnikName'];
+    setupSearch('#searchUsers', '.plateListItem', selectorsForSearch);
+
     $(document).on('click', '.stanokItem', function () {
       console.log('stanokItem', this);
       const stanok = $(this).closest('.stanokItem');
@@ -235,24 +395,6 @@
           value: '',
         },
       ];
-
-      selectorsForSearch = ['.userFirstRow'];
-      setupSearch('#searchUsers', '#usersContainer', selectorsForSearch);
-      function searchFilter(searchTerm, add) {
-        const search = $('#searchUsers');
-        let currentSearchValue = search.val().split(' ').filter(Boolean);
-
-        if (add) {
-          if (!currentSearchValue.includes(searchTerm)) {
-            currentSearchValue.push(searchTerm);
-          }
-        } else {
-          currentSearchValue = currentSearchValue.filter(term => term !== searchTerm);
-        }
-
-        search.val(currentSearchValue.join(' ').trim());
-        search.trigger('input');
-      }
 
       function callbackAfterDelete() {
         $('#dialog-confirm').dialog('close');
@@ -273,6 +415,93 @@
           },
         },
       });
+    });
+
+    function showCountOfFilters(idFilterButton, idFilterMenu) {
+      const button = $(idFilterButton);
+      const menu = $(idFilterMenu);
+
+      const count = menu.find('.form-check-input:checked').length;
+      button.find('.filterCount').text(count);
+    }
+
+    $('#filterMenuUsers input[type="checkbox"]').on('change', function () {
+      const currentCheckbox = $(this);
+
+      setTimeout(function () {
+        if (currentCheckbox.prop('checked')) {
+          $('#filterMenuUsers input[type="checkbox"]').not(currentCheckbox).prop('checked', false).trigger('change');
+        }
+      }, 0);
+    });
+
+    // filterItemsByText(['profa'], 'Оператор', '#operatorFilter');
+    // filterItemsByText(['profa'], 'Наладчик ЧПУ', '#naladchikFilter');
+    // filterItemsByText(['profa'], 'Программист ЧПУ', '#programmerFilter');
+
+    initFilters({
+      '#operatorFilter': {
+        searchText: '',
+        searchTerm: 'Оператор',
+        classList: ['profa'],
+      },
+      '#naladchikFilter': {
+        searchText: '',
+        searchTerm: 'Наладчик ЧПУ',
+        classList: ['profa'],
+      },
+      '#programmerFilter': {
+        searchText: '',
+        searchTerm: 'Программист ЧПУ',
+        classList: ['profa'],
+      },
+    });
+
+    $(document).on('click', '.btnTel', function (e) {
+      e.stopPropagation();
+      console.log('this', this);
+      const container = $(this).closest('.plateListItem');
+      const phoneMenu = container.find('.phoneMenu');
+      console.log('phoneMenu', container, phoneMenu);
+
+      if (phoneMenu.is(':visible')) {
+        phoneMenu.hide();
+        return;
+      }
+      $('.phoneMenu').hide();
+      phoneMenu.css('display', 'flex');
+    });
+
+    $(document).on('click', '.btnCopy', function (e) {
+      clickAnimate(this);
+      console.log('btn copy this', this);
+      const container = $(this).closest('.phoneItem');
+      const telText = container.find('.phoneText').text();
+      console.log('telText', telText);
+      navigator.clipboard
+        .writeText(telText)
+        .then(() => {
+          console.log('Text copied to clipboard');
+          toastr.success('Текст скопійовано');
+        })
+        .catch(err => {
+          console.error('Failed to copy text: ', err);
+        });
+    });
+
+    $(document).on('click', function (e) {
+      const phoneMenu = $('.phoneMenu');
+      if (!$(e.target).closest('.phoneMenu').length && !$(e.target).closest('.btnTel').length) {
+        $('.phoneMenu').each(function () {
+          $(this).hide();
+        });
+      }
+    });
+
+    $(document).on('click', '.plateListItem', function () {
+      const reports = $(this).find('.userSecondRow');
+      console.log('plateListItem click', reports);
+      reports.toggleClass('d-none');
     });
   });
 

@@ -24,7 +24,7 @@
 
   .stanokSecondRow {
     display: flex;
-    gap: 10px;
+    gap: 0px;
     font-size: large;
     flex-wrap: wrap;
   }
@@ -93,8 +93,8 @@
     font-size: large;
   }
 
-  .groupSearch {
-    margin-left: 3px;
+  #groupSearch {
+    margin-left: 3px !important;
   }
 
   .proveden {
@@ -120,6 +120,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    width: 100%;
   }
   .stanokDetailGroup {
     font-size: large;
@@ -149,6 +150,34 @@
     display: flex;
     justify-content: space-between;
   }
+
+  .reportTime {
+    gap: 5px;
+    justify-content: space-between;
+  }
+
+  .time {
+    color: black;
+    font-weight: bold;
+  }
+
+  .patron {
+    width: 10%;
+  }
+
+  .countReports {
+    width: 10%;
+    gap: 4px;
+  }
+
+  .kkd {
+    width: 20%;
+  }
+
+  .patronImg {
+    height: 18px;
+    margin: 0 3px 3px;
+  }
 </style>
 
 <div id="stanokContainer" class="container-slide" style="display: none">
@@ -173,18 +202,14 @@
       </div>
 
       <div class="commandButtons">
-        <!-- <i class="bi bi-funnel-fill menuButton" id="filter"></i> -->
+        <!-- <i class="bi bi-card-checklist" id="reportsFilter"></i> -->
+        <!-- <i class="bi bi-check-circle cmdButton" id="activeFilter"></i> -->
+        <i class="bi bi-funnel-fill menuButton" id="filter"><div class="filterCount"></div></i>
         <div id="filterMenu" class="menuContainer">
           <div class="menuItem">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1" />
-              <label class="form-check-label" for="flexCheckDefault1"> ЧПУ </label>
-            </div>
-          </div>
-          <div class="menuItem">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2" />
-              <label class="form-check-label" for="flexCheckDefault2"> ручні </label>
+              <input class="form-check-input" type="checkbox" value="" id="activeStankiFilter" checked />
+              <label class="form-check-label" for="activeStankiFilter"> задіяні </label>
             </div>
           </div>
         </div>
@@ -193,16 +218,6 @@
   </header>
 
   <div id="stanokList" class="containerForRender"></div>
-
-  <!-- <div
-    id="machines"
-    url="app/stanki"
-    callbackForRender="callbackForRender"
-    callbackAfterLoadData="callbackAfterLoadData"
-    callbackAfterRender="callbackAfterRender"
-    type="plate"
-    paggination="false"
-  ></div> -->
 </div>
 
 <script id="stanokCloseTemplate" type="text/x-handlebars-template">
@@ -215,11 +230,16 @@
           </div>
         </div>
 
-        <div class='stanokSecondRow d-flex'>
+        <div class='stanokSecondRow d-flex align-items-center'>
           {{#unless КоличествоОтчетов}} <div class='statusMaster'>{{Статус}}</div> {{/unless}}
           <div class='statusFact d-none'>Статус по звітах: {{СтатусФакт}}</div>
-          {{#if КоличествоОтчетов}}<div class='countReports'><i class="bi bi-card-checklist"></i> {{КоличествоОтчетов}}</div>{{/if}}
-          <div class='kkd'>ККД: {{ККД}}%</div>
+          {{#if КоличествоОтчетов}}<div class='countReports d-flex'><i class="bi bi-card-checklist"></i> {{КоличествоОтчетов}}</div>{{/if}}
+          <div class="patron align-items-center d-flex">
+            <img src="img/patron.png" class="patronImg" alt="patron icon" />
+            {{#if РучнойПатрон}}Р{{/if}}{{#unless РучнойПатрон}}А{{/unless}}
+          </div>
+          <div class='kkd d-flex'>ККД: {{ККД}}%</div>
+
         </div>
 
         {{#each СписокРаботПоСтанку}}
@@ -234,23 +254,22 @@
                       {{#if Проведен}}<i class="bi bi-check proveden"></i>{{/if}}
                       {{#if СтатусОТК}}<div class="otk">ОТК</div>{{/if}}
                     </div>
-
                 </div>
-
                 <div class='stanokEtapCount displayFlex'>
                   <div class='nameStage'>{{Этап}}</div>
-
                   <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
+                </div>
+                <div class="reportTime d-flex gap-2">
+                  <i class="bi bi-clock color"> М <span class="time">{{МашинноеВремя}}</span></i>
+                  <i class="bi bi-clock color"> П <span class="time">{{ПолноеВремя}}</span></i>
+                  <i class="bi bi-clock color"> Д <span class="time">{{ДлительностьВремя}}:00</span></i>
 
                 </div>
-
               </div>
               {{/each}}
-
         </div>
         {{/each}}
       </div>
-
     </div>
   </div>
   {{/each}}
@@ -258,10 +277,11 @@
 
 <script id="stanokTemplate" type="text/x-handlebars-template">
   {{#each this}}
-    <div class='plateListItem' id='{{Станок.uid}}'>
+    <div class='plateListItem' id='{{uid}}'>
       <div class='.containerStanok'>
         <div class='stanokFirstRow'>
           <div class='number'>
+            {{Наименование}}
             {{#if Станок.ИнвентарныйНомер}}{{Станок.ИнвентарныйНомер}} {{else}} **** {{/if}}
             -
             {{Станок}}
@@ -284,7 +304,6 @@
             value='{{#if Оператор}} {{Оператор.Наименование}} {{/if}}'
             callbackAfterSelect='callbackAfterSelectOperator'
             callbackBlurIfNone='callbackBlurIfNone'
-            style="{{#unless Оператор.Наименование}}display: none{{/unless}}"
           />
           <div class="hideOperator" style="display: none;">{{Оператор.Наименование}}</div>
           <div class='input-group mb-3 otherStateContainer' style="display: none;" >
@@ -306,16 +325,11 @@
           {{#if НалаженнаяДеталь}} {{НалаженнаяДеталь.Артикул}} {{/if}}
 
           {{#if НалаженныйЭтап.Наименование}}- {{НалаженныйЭтап.Наименование}} {{/if}}
-
-
         </div>
-
         <div class='stanokThirdRow'>
           <div class='hasRepair'>{{#if Станок.НеРаботает}}<i class='bi bi-tools'></i>{{/if}}</div>
-
         </div>
       </div>
-
     </div>
   {{/each}}
 </script>
@@ -357,7 +371,6 @@
       if (data.timeFromLastReport === 'ніколи') {
         data.classTimeFromLastReport = 'never';
       }
-
       const html = template(data);
       $(container).html(html);
     }
@@ -399,6 +412,8 @@
         });
       });
     });
+
+    filterItemsByText(['statusMaster', 'statusFact'], 'Задіяні', '#activeStankiFilter');
   });
 
   function initSelect() {
