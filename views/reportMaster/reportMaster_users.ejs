@@ -36,7 +36,6 @@
     padding: 0 3px 0 0;
     margin-bottom: 5px;
     position: relative;
-    top: -1px;
   }
 
   .userIconsContainer {
@@ -102,6 +101,7 @@
     flex-wrap: wrap;
     width: 100%;
     max-width: 100%;
+    margin-top: 15px;
   }
 
   .stanok {
@@ -331,7 +331,7 @@
             {{#each listStanok}}
               {{#if Станок}}
                 <div class='reportContainer'>
-                  <div class='reportAutor text-center'>{{Станок}}</div>
+                  <div class='reportAutor text-center text-truncate'>{{Станок}}</div>
                   {{#each listReport}}
                     <div class='stanokDetailGroup'>
                       <div class='stanokDetailHeader d-flex'>
