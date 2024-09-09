@@ -1,5 +1,4 @@
-<%- include('reportMaster_testData') %> <%- include('reportMaster_details') %> <%- include('reportMaster_stanki') %> <%-
-include('reportMaster_users') %>
+<%- include('reportMaster_details') %> <%- include('reportMaster_stanki') %> <%- include('reportMaster_users') %>
 
 <style>
   #main {
@@ -263,12 +262,11 @@ include('reportMaster_users') %>
 </script>
 
 <script>
-  let listStanki;
-
   $(document).ready(function () {
     let currentDate;
     let currentShift;
     let isShiftActive;
+    let datepickerOpen = false;
 
     addSubscribeWSS('ОтчетЗаСмену_all');
 
@@ -283,8 +281,8 @@ include('reportMaster_users') %>
 
     function getCurrentShift() {
       let shift = 'day';
-      const date = new Date();
-      // const date = new Date('2024-07-20T16:00:00');
+      // const date = new Date();
+      const date = new Date('2024-07-20T16:00:00');
       const currentHour = date.getHours();
 
       if (currentHour >= 19 || currentHour < 7) {
@@ -425,6 +423,12 @@ include('reportMaster_users') %>
         at: 'center bottom',
         of: '#shiftDate',
       },
+
+      beforeShow: function (input, inst) {
+        console.log('datepicker is about to open');
+        $('#ui-datepicker-div').addClass('datepicker-open');
+      },
+
       onSelect: function (dateText) {
         console.log('dateText', dateText);
         const [day, month] = dateText.split('.');
@@ -439,6 +443,11 @@ include('reportMaster_users') %>
         console.log('selectedDate', selectedDate);
         getShiftByDate(selectedDate);
         getReportFrom1C(1);
+      },
+
+      onClose: function () {
+        console.log('datepicker is closed');
+        $('#ui-datepicker-div').removeClass('datepicker-open');
       },
     });
 
@@ -591,7 +600,7 @@ include('reportMaster_users') %>
 
     function renderStanki(data) {
       // const data = $('#main').data('data');
-      console.log('data', data.item.listStanki);
+
       $('.stankiShiftTitle').text();
       if (isShiftActive) {
         console.log('isShiftActive', isShiftActive, data.item.listStanki);
@@ -615,8 +624,29 @@ include('reportMaster_users') %>
       // openMenu('filter', 'filterMenu', []);
     }
 
+    // $(document).on('click', event => {
+    //   const $datepicker = $('#ui-datepicker-div');
+    //   const $target = $(event.target);
+
+    //   if ($datepicker.hasClass('datepicker-open')) {
+    //     console.log('datepicker is visible');
+    //     if (!$datepicker.is($target) && $datepicker.has($target).length === 0) {
+    //       $datepicker.removeClass('datepicker-open').hide();
+    //       event.stopImmediatePropagation();
+    //     }
+    //   } else {
+    //     console.log('datepicker not visible');
+    //   }
+    // });
+
     $(document).on('click', '#stanki', function () {
-      console.log('this', $(this).attr('id'));
+      console.log('this', $(this).attr('id'), $('#ui-datepicker-div').hasClass('datepicker-open'));
+
+      // if ($('#ui-datepicker-div').hasClass('datepicker-open')) {
+      //   console.log('datapicker-open');
+      //   stopImmediatePropagation();
+      //   return;
+      // }
       const param = $(this).attr('id');
       showPage(this);
       getInfoByParam(param, renderStanki);

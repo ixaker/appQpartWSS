@@ -17,6 +17,7 @@
   .sotrudnikInfo {
     margin-left: 10px;
     flex-grow: 1;
+    overflow: hidden;
   }
 
   .sotrudnikName {
@@ -199,7 +200,7 @@
           <div class="menuItem">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="operatorFilter" />
-              <label class="form-check-label" for="operatorFilter"> оператор </label>
+              <label class="form-check-label" for="operatorFilter"> Оператор </label>
             </div>
           </div>
           <div class="menuItem">
@@ -212,6 +213,12 @@
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="programmerFilter" />
               <label class="form-check-label" for="programmerFilter"> Программист ЧПУ </label>
+            </div>
+          </div>
+          <div class="menuItem">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="masterFilter" />
+              <label class="form-check-label" for="masterFilter"> Майстер </label>
             </div>
           </div>
         </div>
@@ -287,7 +294,7 @@
               onerror="this.onerror=null; this.src='/img/avatar.png';"
             />
           </div>
-          <div class='sotrudnikInfo text-truncate'>
+          <div class='sotrudnikInfo'>
             <div class='sotrudnikName text-truncate'>
               {{Сотрудник}}
             </div>
@@ -301,8 +308,8 @@
               <div class='isReports'><i class='bi bi-file-earmark-text'></i>{{КоличествоОтчетов}}</div>
 
               <div class='phone'>
-                <i class='bi bi-telephone-fill btn btnTel'></i>
-                <div class='phoneMenu'>
+                <a href='tel:{{tel_1}}'> <i class='bi bi-telephone-fill btn btnTel'></i></a>
+                <!-- <div class='phoneMenu'>
                   <div class='phoneItem btn'>
                     <span class='phoneText'><a href='tel:{{tel_1}}'>{{tel_1}}</a></span>
                     <span class='phoneIcon'><a href='tel:{{tel_1}}'>
@@ -314,7 +321,7 @@
                           class='btn-lg viberSvg'
                         /></a></span>
                   </div>
-                </div>
+                </div> -->
               </div>
 
               <div class='sotrudnikKkd d-flex'>ККД:
@@ -329,31 +336,31 @@
         <div class='userSecondRow d-none'>
           <div class='stanokList'>
             {{#each listStanok}}
-              {{#if Станок}}
-                <div class='reportContainer'>
-                  <div class='reportAutor text-center text-truncate'>{{Станок}}</div>
-                  {{#each listReport}}
-                    <div class='stanokDetailGroup'>
-                      <div class='stanokDetailHeader d-flex'>
-                        <div class='stanokNameDet text-truncate'>{{Деталь}}</div>
-                        <div class='notes d-flex'>
-                          {{#if Проведен}}<i class='bi bi-check proveden'></i>{{/if}}
-                          {{#if СтатусОТК}}<div class='otk'>ОТК</div>{{/if}}
-                        </div>
-                      </div>
-                      <div class='stanokEtapCount displayFlex'>
-                        <div class='nameStage'>{{Этап}}</div>
-                        <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
-                      </div>
-                      <div class='reportTime d-flex gap-2'>
-                        <i class='bi bi-clock color'> М <span class='time'>{{МашинноеВремя}}</span></i>
-                        <i class='bi bi-clock color'> П <span class='time'>{{ПолноеВремя}}</span></i>
-                        <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}:00</span></i>
+
+              <div class='reportContainer'>
+                <div class='reportAutor text-center text-truncate'>{{Станок}}</div>
+                {{#each listReport}}
+                  <div class='stanokDetailGroup'>
+                    <div class='stanokDetailHeader d-flex'>
+                      <div class='stanokNameDet text-truncate'>{{Деталь}}</div>
+                      <div class='notes d-flex'>
+                        {{#if Проведен}}<i class='bi bi-check proveden'></i>{{/if}}
+                        {{#if СтатусОТК}}<div class='otk'>ОТК</div>{{/if}}
                       </div>
                     </div>
-                  {{/each}}
-                </div>
-              {{/if}}
+                    <div class='stanokEtapCount displayFlex'>
+                      <div class='nameStage'>{{Этап}}</div>
+                      <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
+                    </div>
+                    <div class='reportTime d-flex gap-2'>
+                      <i class='bi bi-clock color'> М <span class='time'>{{МашинноеВремя}}</span></i>
+                      <i class='bi bi-clock color'> П <span class='time'>{{ПолноеВремя}}</span></i>
+                      <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}:00</span></i>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+
             {{/each}}
 
           </div>
@@ -385,7 +392,7 @@
       // initStankiAutocomplete();
     };
 
-    initStankiAutocomplete();
+    // initStankiAutocomplete();
 
     callbackAfterSelect = function (data) {
       console.log('data', data);
@@ -495,9 +502,15 @@
         searchTerm: 'Программист ЧПУ',
         classList: ['profa'],
       },
+      '#masterFilter': {
+        searchText: '',
+        searchTerm: 'Мастер',
+        classList: ['profa'],
+      },
     });
 
     $(document).on('click', '.btnTel', function (e) {
+      console.log('btnTel');
       e.stopPropagation();
       console.log('this', this);
       const container = $(this).closest('.plateListItem');
