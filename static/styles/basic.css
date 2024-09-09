@@ -415,8 +415,8 @@ input[type='number']::-webkit-outer-spin-button {
 .filterCount {
   color: black;
   position: absolute;
-  top: -5px;
-  right: -1px;
+  top: 18px;
+  right: 0px;
   font-size: medium;
   text-shadow: -1px 1px 1px white;
   font-style: normal;

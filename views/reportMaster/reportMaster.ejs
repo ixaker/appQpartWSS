@@ -24,7 +24,7 @@ include('reportMaster_users') %>
   .backToMain {
     font-size: xx-large;
     color: darkgreen;
-    margin-left: 20px;
+    margin-left: 15px;
   }
 
   #shiftHeader {
@@ -53,6 +53,21 @@ include('reportMaster_users') %>
     margin: 0 30px;
   }
 
+  .titleContainer {
+    font-size: x-large;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .titleChildren {
+    font-size: x-large;
+    font-weight: bold;
+  }
+
+  .titleShifth {
+  }
   .plate {
     margin-bottom: 10px;
     border: 1px solid #bbbbbb;
@@ -268,8 +283,8 @@ include('reportMaster_users') %>
 
     function getCurrentShift() {
       let shift = 'day';
-      const date = new Date();
-      // const date = new Date('2024-07-20T16:00:00');
+      // const date = new Date();
+      const date = new Date('2024-07-20T16:00:00');
       const currentHour = date.getHours();
 
       if (currentHour >= 19 || currentHour < 7) {
@@ -435,6 +450,9 @@ include('reportMaster_users') %>
       const titleText = `${formattedDate} - ${formattedShift}`;
       console.log('titleText', titleText);
       $('#shiftDate').val(titleText);
+      $('#shiftDateStanki').text(titleText);
+      $('#shiftDateUsers').text(titleText);
+      console.log('renderTitle', $('#shiftDateStanki'), $('#shiftDateUsers'));
     }
 
     function buttonDisable(idButton) {
@@ -574,6 +592,7 @@ include('reportMaster_users') %>
     function renderStanki(data) {
       // const data = $('#main').data('data');
       console.log('data', data.item.listStanki);
+      $('.stankiShiftTitle').text();
       if (isShiftActive) {
         console.log('isShiftActive', isShiftActive, data.item.listStanki);
         generateFromTemplate('#stanokTemplate', data.item.listStatus, '#stanokList');
@@ -586,9 +605,14 @@ include('reportMaster_users') %>
       initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
       initOtherState();
       initFilter('filterMenu', 'filter');
+      initFilters({
+        '#activeStankiFilter': {
+          searchText: 'Задіяні',
+          searchTerm: 'Задіяні',
+          classList: ['statusMaster', 'statusFact'],
+        },
+      });
       // openMenu('filter', 'filterMenu', []);
-
-      console.log('renderStanki', data);
     }
 
     $(document).on('click', '#stanki', function () {

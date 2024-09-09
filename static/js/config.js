@@ -823,12 +823,12 @@ function initFilter(idFilterMenu, idFilterButton) {
             button.find('.filterCount').text('');
         }
         button.find('.filterCount').text(count);
-
     }
 
     updateFilterCount();
 
     menu.on('change', '.form-check-input', function () {
+        console.log('change filter count');
         updateFilterCount();
     });
 
@@ -854,17 +854,28 @@ function filterItemsByText(classes, searchText, triggerId) {
 }
 
 function initFilters(filterSettings) {
+    console.log('initFilters',);
     Object.keys(filterSettings).forEach(filterId => {
+        console.log('filterId', filterId);
         $(filterId).on('change', function () {
             const isChecked = $(this).is(':checked');
             const searchText = isChecked ? filterSettings[filterId].searchTerm : '';
             filterSettings[filterId].searchText = searchText;
             applyFilters(filterSettings);
         });
+
+        Object.keys(filterSettings).forEach(filterId => {
+            const filter = filterSettings[filterId];
+            const isChecked = filter.searchText === filter.searchTerm;
+            $(filterId).prop('checked', isChecked).trigger('change');
+        });
+
+        applyFilters(filterSettings);
     });
 }
 
 function applyFilters(filterStates) {
+    console.log('applyFilters', filterStates);
     $('.plateListItem').each(function () {
         let show = true;
 

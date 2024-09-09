@@ -4,7 +4,6 @@
   }
 
   .avatarContainer {
-    margin-top: 3px;
     width: 70px;
     height: 70px;
     min-width: 0;
@@ -17,6 +16,7 @@
 
   .sotrudnikInfo {
     margin-left: 10px;
+    flex-grow: 1;
   }
 
   .sotrudnikName {
@@ -27,22 +27,58 @@
     font-size: large;
     flex-shrink: 0;
     white-space: nowrap;
-  }
-
-  .machineCount {
-    font-size: large;
+    margin-top: 5px;
   }
 
   .machine {
     height: 25px;
     width: auto;
     padding: 0 3px 0 0;
+    margin-bottom: 5px;
+    position: relative;
+    top: -1px;
+  }
+
+  .userIconsContainer {
+    gap: 5px;
+    font-size: large;
+    height: 17px;
+    margin-top: 4px;
+  }
+
+  .machineCount {
+    font-size: large;
+    width: 45px;
+  }
+
+  .btnTel {
+    padding: 0;
+    width: 5%;
+  }
+
+  .phone {
+    width: 30px;
+  }
+
+  .phone i {
+    min-height: auto;
   }
 
   .sotrudnikKkd {
     font-size: large;
     flex-shrink: 0;
     white-space: nowrap;
+  }
+
+  .sotrudnikKkdValue {
+    width: 45px;
+    text-align: end;
+  }
+
+  .isReports {
+    width: 45px;
+    display: flex;
+    gap: 3px;
   }
 
   .blue {
@@ -139,7 +175,8 @@
   <header id="commandPanel" class="commandPanel">
     <div class="titleContainer">
       <i class="bi bi-arrow-left-circle backToMain" parent="#usersContainer"></i>
-      <h1 class="titleChildren">Працівники</h1>
+      <div class="titleChildren">Працівники</div>
+      <span id="shiftDateUsers" class="titleShift"></span>
     </div>
     <div class="commandRow">
       <div class="input-group-search rounded groupSearch" id="groupSearch">
@@ -250,26 +287,26 @@
               onerror="this.onerror=null; this.src='/img/avatar.png';"
             />
           </div>
-          <div class='sotrudnikInfo'>
-            <div class='sotrudnikName'>
+          <div class='sotrudnikInfo text-truncate'>
+            <div class='sotrudnikName text-truncate'>
               {{Сотрудник}}
             </div>
-            <div class='profa mr-2'>
+            <div class='profa mr-2 text-truncate'>
               {{Должность}}
             </div>
-            <div class='d-flex align-items-center'>
+            <div class='d-flex align-items-center userIconsContainer'>
               <div class='machineCount d-flex align-items-center'>
-                <img src='/img/machine.png' alt='stanok' class='btn-lg machine' />{{arrayLength listStanok}}
+                <img src='/img/machine.png' alt='stanok' class='machine' />{{КоличествоСтанков}}
               </div>
+              <div class='isReports'><i class='bi bi-file-earmark-text'></i>{{КоличествоОтчетов}}</div>
 
               <div class='phone'>
                 <i class='bi bi-telephone-fill btn btnTel'></i>
                 <div class='phoneMenu'>
                   <div class='phoneItem btn'>
                     <span class='phoneText'><a href='tel:{{tel_1}}'>{{tel_1}}</a></span>
-                    <span class='phoneIcon'><a href='tel:{{tel_1}}'><i
-                          class='bi bi-telephone-fill btn btn-lg'
-                        ></i></a></span>
+                    <span class='phoneIcon'><a href='tel:{{tel_1}}'>
+                        <i class='bi bi-telephone-fill btn btn-lg'></i></a></span>
                     <span class='phoneCopy'><i class='bi bi-clipboard btnCopy btn btn-lg'></i></span>
                     <span class='messageViber'><a href='viber://chat?number={{tel_1}}'><img
                           src='/img/viber.svg'
@@ -280,7 +317,10 @@
                 </div>
               </div>
 
-              <div class='sotrudnikKkd {{getColorByKkd ККД}}'>ККД {{ККД}}%</div>
+              <div class='sotrudnikKkd d-flex'>ККД:
+                <div class='sotrudnikKkdValue {{getColorByKkd ККД}} text-end'>{{ККД}}%</div>
+              </div>
+
             </div>
 
           </div>
