@@ -2216,7 +2216,6 @@
                 return elements.some(element => {
                   if (element.text.match(regex)) {
                     element.text = element.text.replace(regex, '<mark>$1</mark>');
-                    console.log('element.text', element.text);
                     return true;
                   }
                   return false;

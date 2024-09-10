@@ -817,7 +817,6 @@ function initFilter(idFilterMenu, idFilterButton) {
     console.log('initFilter', button, menu);
 
     function updateFilterCount() {
-        console.log('updateFilterCount');
         const count = menu.find('.form-check-input:checked').length;
         if (count === 0) {
             button.find('.filterCount').text('');
@@ -828,7 +827,6 @@ function initFilter(idFilterMenu, idFilterButton) {
     updateFilterCount();
 
     menu.on('change', '.form-check-input', function () {
-        console.log('change filter count');
         updateFilterCount();
     });
 
@@ -856,7 +854,6 @@ function filterItemsByText(classes, searchText, triggerId) {
 function initFilters(filterSettings) {
     console.log('initFilters',);
     Object.keys(filterSettings).forEach(filterId => {
-        console.log('filterId', filterId);
         $(filterId).on('change', function () {
             const isChecked = $(this).is(':checked');
             const searchText = isChecked ? filterSettings[filterId].searchTerm : '';
@@ -875,7 +872,6 @@ function initFilters(filterSettings) {
 }
 
 function applyFilters(filterStates) {
-    console.log('applyFilters', filterStates);
     $('.plateListItem').each(function () {
         let show = true;
 

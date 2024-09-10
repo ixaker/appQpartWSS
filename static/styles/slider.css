@@ -48,7 +48,6 @@
 
 .container-slide {
   position: relative;
-  overflow: hidden;
 }
 
 .container-slide .content {

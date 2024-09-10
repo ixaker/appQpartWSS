@@ -170,6 +170,16 @@
   #ui-datepicker-div {
     left: 50% !important;
     transform: translateX(-50%);
+    font-size: large;
+  }
+
+  .ui-autocomplete {
+    font-size: large;
+  }
+
+  #btnMakeMaster {
+    font-size: xx-large;
+    color: darkgreen;
   }
 </style>
 
@@ -177,6 +187,7 @@
   <div id="main" class="screen container-slide">
     <header id="commandPanel" class="commandPanel">
       <h3 class="titlePage">Отчет мастера</h3>
+      <i class="bi bi-pencil" id="btnMakeMaster"></i>
     </header>
 
     <div id="shiftHeader">
@@ -262,6 +273,16 @@
 </script>
 
 <script>
+  function isUserMaster() {
+    const mainData = $('#main').data('data');
+
+    if (mainData && mainData.usersSumInfo && Array.isArray(mainData.usersSumInfo.masters)) {
+      return mainData.usersSumInfo.masters.some(master => master.uid === user.uid);
+    } else {
+      return false;
+    }
+  }
+
   $(document).ready(function () {
     let currentDate;
     let currentShift;
@@ -328,6 +349,15 @@
       }
       clickAnimate(this);
       getShift(1);
+    });
+
+    $('#btnMakeMaster').on('click', function () {
+      const mainData = $('#main').data('data');
+      if (mainData.active) {
+        mainData.usersSumInfo.masters.push({ uid: user.uid });
+        $(this).hide();
+        console.log('mainData', mainData);
+      }
     });
 
     function getShiftByDate(date) {
@@ -408,12 +438,7 @@
           $('#shiftDate').removeClass(classForIn);
         }, 100);
       }, 100);
-      // renderReport(testData);
     }
-    // function formatDate(date) {
-    //   const options = { day: '2-digit', month: '2-digit' };
-    //   return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
-    // }
 
     $('#shiftDate').datepicker({
       dateFormat: 'dd.mm',
@@ -488,7 +513,6 @@
       } else {
         shiftTime = new Date(now.toDateString() + ' 07:00:00');
       }
-
       const timeToShiftStart = Math.ceil((shiftTime - now) / 1000);
 
       return timeToShiftStart;
@@ -532,35 +556,8 @@
     function renderReport(data) {
       if (data.item) {
         isShiftActive = data.item.active;
-        // const repairOrders = data.item.АктивныеЗаявкиНаРемонт;
-        // console.log('repairOrders', repairOrders);
-        // notWorkingStanki = repairOrders.filter(order => {
-        //   return !order.ЗаявкаНаРемонт.НаСтанкеМожноРаботать;
-        // });
+        $('#btnMakeMaster').toggleClass('d-none', !isShiftActive);
 
-        // const profaCount = {};
-        // const sotrudnikiList = data.item.СписокСотрудников;
-        // sotrudnikiList.forEach(sotrudnik => {
-        //   const profa = sotrudnik.Должность?.Наименование;
-
-        //   if (profa) {
-        //     if (profaCount[profa]) {
-        //       profaCount[profa]++;
-        //     } else {
-        //       profaCount[profa] = 1;
-        //     }
-        //   }
-        // });
-
-        // data.item.profaCount = Object.keys(profaCount).map(key => ({
-        //   name: key,
-        //   value: profaCount[key],
-        // }));
-
-        const finishedDetails = data.item.СписокСделанногоЗаСмену;
-        console.log('finishedDetails', finishedDetails);
-
-        console.log('data.item.СписокСтатусов', data.item.СписокСтатусов);
         data.item.options = generateOptions(data.item.СписокСтатусов);
         data.item.optionsList = data.item.СписокСтатусов;
         $('#nextShift').removeClass('disabled');
@@ -599,54 +596,127 @@
     });
 
     function renderStanki(data) {
-      // const data = $('#main').data('data');
-
-      $('.stankiShiftTitle').text();
       if (isShiftActive) {
-        console.log('isShiftActive', isShiftActive, data.item.listStanki);
-        generateFromTemplate('#stanokTemplate', data.item.listStatus, '#stanokList');
+        filterOptions = {
+          '#activeStankiFilter': {
+            searchText: '',
+            searchTerm: 'Задіяні',
+            classList: ['statusMaster', 'statusFact'],
+          },
+        };
+
+        const mainData = $('#main').data('data');
+        let master = false;
+        if (mainData.usersSumInfo.masters && Array.isArray(mainData.usersSumInfo.masters)) {
+          master = mainData.usersSumInfo.masters.some(master => master.uid === user.uid);
+        }
+
+        if (isUserMaster()) {
+          console.log('render stanki for master');
+          data.item.listStanki.options = generateOptions(data.item.listStatus);
+          generateFromTemplate('#stanokTemplate', data.item.listStanki, '#stanokList');
+          initSelect(data.item.listStatus);
+          let users = data.item.СписокСотрудников;
+
+          $('.operator')
+            .autocomplete({
+              minLength: 0,
+              source: users,
+              select: function (event, ui) {
+                console.log('Selected User Value: ' + ui.item.value, ui.item.label);
+                $(this).val(ui.item.label);
+                const userUID = ui.item.value;
+                const stanokUID = $(this).closest('.plateListItem').attr('id');
+                const edited = [
+                  {
+                    key: 'Оператор',
+                    value: ui.item.value,
+                  },
+                ];
+                console.log('edited', edited);
+                saveReportMaster(stanokUID, edited);
+                return false;
+              },
+            })
+            .focus(function () {
+              $(this).autocomplete('search', '');
+            })
+            .blur(function () {
+              console.log('Input lost focus');
+              if ($(this).val() === '') {
+                console.log('Input cleared');
+                const container = $(this).closest('.plateListItem');
+                const stanokUID = container.attr('id');
+                const edited = [
+                  {
+                    key: 'Оператор',
+                    value: '',
+                  },
+                ];
+
+                console.log('edited', edited);
+                saveReportMaster(stanokUID, edited);
+              } else {
+                console.log('Input not cleared, no request sent');
+              }
+            });
+        } else {
+          generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+        }
       } else {
         console.log('not active shift');
         generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+        filterOptions = {
+          '#activeStankiFilter': {
+            searchText: 'Задіяні',
+            searchTerm: 'Задіяні',
+            classList: ['statusMaster', 'statusFact'],
+          },
+        };
       }
 
-      initSelect();
-      initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
+      // initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
       initOtherState();
       initFilter('filterMenu', 'filter');
-      initFilters({
-        '#activeStankiFilter': {
-          searchText: 'Задіяні',
-          searchTerm: 'Задіяні',
-          classList: ['statusMaster', 'statusFact'],
-        },
-      });
+      initFilters(filterOptions);
       // openMenu('filter', 'filterMenu', []);
     }
 
     // $(document).on('click', event => {
     //   const $datepicker = $('#ui-datepicker-div');
     //   const $target = $(event.target);
+    //   var $shiftDate = $('#shiftDate');
 
-    //   if ($datepicker.hasClass('datepicker-open')) {
-    //     console.log('datepicker is visible');
-    //     if (!$datepicker.is($target) && $datepicker.has($target).length === 0) {
-    //       $datepicker.removeClass('datepicker-open').hide();
-    //       event.stopImmediatePropagation();
-    //     }
+    //   console.log('isDatepicker visible, target', $datepicker.is(':visible'), $target);
+    //   console.log(
+    //     'isDatepicker  target, istarget ',
+    //     $target,
+    //     $datepicker.is($target) ||
+    //       $datepicker.has($target).length > 0 ||
+    //       $shiftDate.is($target) ||
+    //       $shiftDate.has(event.target).length > 0
+    //   );
+
+    //   if (
+    //     $datepicker.is($target) ||
+    //     $datepicker.has($target).length > 0 ||
+    //     $shiftDate.is($target) ||
+    //     $shiftDate.has(event.target).length > 0
+    //   ) {
+    //     console.log('click on datepicker');
     //   } else {
-    //     console.log('datepicker not visible');
+    //     console.log('click out of datepicker');
+    //     event.stopImmediatePropagation();
     //   }
     // });
 
     $(document).on('click', '#stanki', function () {
       console.log('this', $(this).attr('id'), $('#ui-datepicker-div').hasClass('datepicker-open'));
 
-      // if ($('#ui-datepicker-div').hasClass('datepicker-open')) {
-      //   console.log('datapicker-open');
-      //   stopImmediatePropagation();
-      //   return;
-      // }
+      if ($('#ui-datepicker-div').is(':visible')) {
+        event.stopImmediatePropagation();
+        return;
+      }
       const param = $(this).attr('id');
       showPage(this);
       getInfoByParam(param, renderStanki);
@@ -656,41 +726,13 @@
     function renderUsers(data) {
       console.log('renderUsers data', data);
 
-      // const stankiData = $('#stanokContainer').data('data');
-      // const users = data.map(user => ({
-      //   uid: user.uid,
-      //   name: user.Наименование,
-      //   profa: user.Должность.Наименование,
-      //   stanki: [],
-      // }));
+      data.item.canEdit = isShiftActive && isUserMaster();
+      console.log('isUserMaster()', isUserMaster());
+      generateFromTemplate('#usersTemplate', data.item, '#usersList');
+      initInputAutocomplete('.stanok', 1);
+      initFilter('filterMenuUsers', 'filterUsers');
+      // openMenu('filterUsers', 'filterMenuUsers', []);
 
-      // const profas = [...new Set(users.map(user => user.profa))];
-      // const dataForMenu = { profas: profas };
-      // console.log('profas', profas);
-
-      // stankiData.forEach(stanok => {
-      //   const stanokUID = stanok.Станок.uid;
-      //   const stanokInv = stanok.Станок.ИнвентарныйНомер;
-
-      //   users.forEach(user => {
-      //     if (stanok.Оператор && stanok.Оператор.uid === user.uid) {
-      //       user.stanki.push({
-      //         stanokUID: stanokUID,
-      //         stanokInv: stanokInv,
-      //       });
-      //     }
-      //   });
-      // });
-
-      if (isShiftActive) {
-        console.log('isShiftActive');
-        generateFromTemplate('#usersTemplate', users, '#usersList');
-      } else {
-        console.log('close shift');
-        generateFromTemplate('#usersCloseShiftTemplate', data.item.listUsers, '#usersList');
-        initFilter('filterMenuUsers', 'filterUsers');
-        // openMenu('filterUsers', 'filterMenuUsers', []);
-      }
       // generateFromTemplate('#usersTemplate', users, '#usersList');
       // generateFromTemplate('#menuTemplate', dataForMenu, '#filterMenuUsers');
 
@@ -699,16 +741,14 @@
 
     $(document).on('click', '#users', function () {
       console.log('click users');
+      if ($('#ui-datepicker-div').is(':visible')) {
+        event.stopImmediatePropagation();
+        return;
+      }
       showPage(this);
       const param = $(this).attr('id');
       showPage(this);
       getInfoByParam(param, renderUsers);
-      // renderUsers();
-      // listStanki = $('#stanokContainer').data('data');
-      // stankiForAutocomplete = listStanki.map(stanok => stanok.Станок.ИнвентарныйНомер);
-      // console.log('listStanki', listStanki, stankiForAutocomplete, $('.stanok'));
-      // initStankiAutocomplete(stankiForAutocomplete);
-      // initInputAutocomplete('.stanok', 1);
     });
 
     $(document).on('click', '.backToMain', function () {

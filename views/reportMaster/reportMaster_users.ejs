@@ -96,6 +96,15 @@
     font-size: large;
   }
 
+  .stanokListDynamic {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 15px;
+  }
+
   .stanokList {
     display: flex;
     gap: 5px;
@@ -132,7 +141,7 @@
     top: 50%;
     transform: translateY(-50%);
     color: green;
-    font-size: 1.5em;
+    font-size: 4em;
     pointer-events: none;
   }
 
@@ -147,7 +156,7 @@
     align-items: center;
     padding: 0 5px;
     height: 2em;
-    gap: 4px;
+    max-width: 100%;
   }
 
   .stanokDel {
@@ -242,27 +251,73 @@
   </script>
 
   <script id="usersTemplate" type="text/x-handlebars-template">
-    {{#each this}}
+    {{#unless listUsers}} <h4 class="noUsers mt-4 text-center">Немає працівників на цій зміні </h4> {{/unless}}
+    {{#each listUsers}}
       <div class='plateListItem' id='{{uid}}'>
-        <div class='userFirstRow'>
-          {{name}}
-          -
-          {{profa}}
+        <div class='userFirstRow d-flex'>
+          <div class='avatarContainer'>
+            <img
+              class='avatar'
+              src='/auth_files/biophoto/{{emp_code}}.jpg'
+              alt='Фото користувача {{uid}}'
+              onerror="this.onerror=null; this.src='/img/avatar.png';"
+            />
+          </div>
+          <div class='sotrudnikInfo'>
+            <div class='sotrudnikName text-truncate'>
+              {{Сотрудник}}
+            </div>
+            <div class='profa mr-2 text-truncate'>
+              {{Должность}}
+            </div>
+            <div class='d-flex align-items-center userIconsContainer'>
+              <div class='machineCount d-flex align-items-center'>
+                <img src='/img/machine.png' alt='stanok' class='machine' />{{КоличествоСтанков}}
+              </div>
+              <div class='isReports'><i class='bi bi-file-earmark-text'></i>{{КоличествоОтчетов}}</div>
+
+              <div class='phone'>
+                <a href='tel:{{tel_1}}'> <i class='bi bi-telephone-fill btn btnTel'></i></a>
+                <!-- <div class='phoneMenu'>
+                <div class='phoneItem btn'>
+                  <span class='phoneText'><a href='tel:{{tel_1}}'>{{tel_1}}</a></span>
+                  <span class='phoneIcon'><a href='tel:{{tel_1}}'>
+                      <i class='bi bi-telephone-fill btn btn-lg'></i></a></span>
+                  <span class='phoneCopy'><i class='bi bi-clipboard btnCopy btn btn-lg'></i></span>
+                  <span class='messageViber'><a href='viber://chat?number={{tel_1}}'><img
+                        src='/img/viber.svg'
+                        alt='viber'
+                        class='btn-lg viberSvg'
+                      /></a></span>
+                </div>
+              </div> -->
+              </div>
+
+              <div class='sotrudnikKkd d-flex'>ККД:
+                <div class='sotrudnikKkdValue {{getColorByKkd ККД}} text-end'>{{ККД}}%</div>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
-        <div class='userSecondRow'>
 
-          <div class='stanokList'>
-            {{#each stanki}}
-
-              <div class='stanokItem' uid='{{stanokUID}}'>
-                <div class='stanokInv'>
-                  {{stanokInv}}
+        {{#if СписокСтанковНазначеныхМастером}}
+          <div class='stanokListDynamic d-flex'>
+            {{#each СписокСтанковНазначеныхМастером}}
+              <div class='stanokItem' uid='{{uid}}'>
+                <div class='stanokInv text-truncate'>
+                  {{ИнвентарныйНомер}}
                 </div>
                 <div class='stanokDel'>
+                  {{#if ../../canEdit}}
                   <i class='bi bi-x'></i>
+                  {{/if}}
                 </div>
               </div>
             {{/each}}
+            {{#if ../canEdit}}
             <div class='input-container'>
               <input
                 class='form-control stanok'
@@ -275,8 +330,41 @@
               />
               <span class='plus-sign'>+</span>
             </div>
+            {{/if}}
           </div>
+        {{/if}}
 
+
+        <div class='userSecondRow d-none'>
+          <div class='stanokList'>
+            {{#unless КоличествоОтчетов}}<div class="text-center w-100">Немає звітів</div>{{/unless}}
+            {{#each listStanok}}
+
+              <div class='reportContainer'>
+                <div class='reportAutor text-center text-truncate'>{{Станок}}</div>
+                {{#each listReport}}
+                  <div class='stanokDetailGroup'>
+                    <div class='stanokDetailHeader d-flex'>
+                      <div class='stanokNameDet text-truncate'>{{Деталь}}</div>
+                      <div class='notes d-flex'>
+                        {{#if Проведен}}<i class='bi bi-check proveden'></i>{{/if}}
+                        {{#if СтатусОТК}}<div class='otk'>ОТК</div>{{/if}}
+                      </div>
+                    </div>
+                    <div class='stanokEtapCount displayFlex'>
+                      <div class='nameStage'>{{Этап}}</div>
+                      <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
+                    </div>
+                    <div class='reportTime d-flex gap-2'>
+                      <i class='bi bi-clock color'> М <span class='time'>{{МашинноеВремя}}</span></i>
+                      <i class='bi bi-clock color'> П <span class='time'>{{ПолноеВремя}}</span></i>
+                      <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}:00</span></i>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            {{/each}}
+          </div>
         </div>
       </div>
     {{/each}}
@@ -370,12 +458,12 @@
     {{/each}}
   </script>
 
-  <!-- <div id="dialog-confirm" title="Видалити станок?">
+  <div id="dialog-confirm" title="Видалити станок?" style="display: none">
     <p>
-      <span class="ui-icon ui-icon-alert" style="float: left; margin: 12px 12px 20px 0"></span>Цей станок буде
-      видаленозі списку працівника.
+      <span class="ui-icon ui-icon-alert" style="float: left; margin: 12px 12px 20px 0"></span>Цей станок буде видалено
+      зі списку працівника.
     </p>
-  </div> -->
+  </div>
 </div>
 
 <script>
@@ -388,7 +476,7 @@
     callbackForRenderUser = function (data) {
       containerForTile = `#${data.uid}`;
       generateFromTemplate('#userTemplate', data, containerForTile);
-      // initInputAutocomplete('.stanok', 1);
+      initInputAutocomplete('.stanok', 1);
       // initStankiAutocomplete();
     };
 
@@ -428,40 +516,39 @@
       }, 100);
     };
 
-    selectorsForSearch = ['.sotrudnikName'];
-    setupSearch('#searchUsers', '.plateListItem', selectorsForSearch);
-
     $(document).on('click', '.stanokItem', function () {
-      console.log('stanokItem', this);
-      const stanok = $(this).closest('.stanokItem');
-      const stanokUID = $(this).attr('uid');
+      console.log('stanokItem', this, isUserMaster());
+      if (isUserMaster()) {
+        const stanok = $(this).closest('.stanokItem');
+        const stanokUID = $(this).attr('uid');
 
-      const edited = [
-        {
-          key: 'Оператор',
-          value: '',
-        },
-      ];
+        const edited = [
+          {
+            key: 'Оператор',
+            value: '',
+          },
+        ];
 
-      function callbackAfterDelete() {
-        $('#dialog-confirm').dialog('close');
-        stanok.remove();
+        function callbackAfterDelete() {
+          $('#dialog-confirm').dialog('close');
+          stanok.remove();
+        }
+        console.log('befre dialog confirm');
+        $('#dialog-confirm').dialog({
+          resizable: false,
+          height: 'auto',
+          width: 400,
+          modal: true,
+          buttons: {
+            Видалити: function () {
+              saveReportMaster(stanokUID, edited, callbackAfterDelete);
+            },
+            Відміна: function () {
+              $(this).dialog('close');
+            },
+          },
+        });
       }
-      console.log('befre dialog confirm');
-      $('#dialog-confirm').dialog({
-        resizable: false,
-        height: 'auto',
-        width: 400,
-        modal: true,
-        buttons: {
-          Видалити: function () {
-            saveReportMaster(stanokUID, edited, callbackAfterDelete);
-          },
-          Відміна: function () {
-            $(this).dialog('close');
-          },
-        },
-      });
     });
 
     function showCountOfFilters(idFilterButton, idFilterMenu) {
@@ -551,10 +638,49 @@
       }
     });
 
-    $(document).on('click', '.plateListItem', function () {
-      const reports = $(this).find('.userSecondRow');
-      console.log('plateListItem click', reports);
+    $(document).on('click', '.userFirstRow', function () {
+      console.log('userFirstRow click');
+      const container = $(this).closest('.plateListItem');
+      const reports = container.find('.userSecondRow');
+      console.log('reports', container, reports);
       reports.toggleClass('d-none');
+    });
+
+    $('#searchUsers').on('input', function () {
+      let searchTerms = $(this).val().split(' ').filter(Boolean);
+
+      $('.plateListItem').each(function () {
+        let found = true;
+        let elements = $(this)
+          .find(
+            '.sotrudnikName , .profa, .stanokInv , .reportAutor , .stanokNameDet , .stanokEtapCount , .stanokNameDet, .otk, .nameStage   '
+          )
+          .map(function () {
+            return { el: $(this) };
+          })
+          .get();
+        elements.forEach(element => {
+          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+        });
+
+        if (searchTerms.length > 0) {
+          found = searchTerms.every(term => {
+            const regex = new RegExp(`(${term})`, 'gi');
+            return elements.some(element => {
+              if (element.text.match(regex)) {
+                element.text = element.text.replace(regex, '<mark>$1</mark>');
+                return true;
+              }
+              return false;
+            });
+          });
+        }
+
+        $(this).toggleClass('hide', !found);
+        elements.forEach(element => {
+          element.el.html(element.text);
+        });
+      });
     });
   });
 

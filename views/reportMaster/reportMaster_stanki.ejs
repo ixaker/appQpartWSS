@@ -24,10 +24,15 @@
     flex-wrap: wrap;
   }
 
+  .inputContainer {
+    justify-content: space-between;
+    gap: 3px;
+  }
+
   .statusSelect,
   .operator {
     flex: 1 1 0;
-    max-width: 50%;
+    max-width: 49.5%;
   }
 
   .otherState {
@@ -82,7 +87,6 @@
   }
 
   #groupSearch {
-    margin-left: 3px !important;
   }
 
   .proveden {
@@ -151,6 +155,7 @@
 
   .patron {
     width: 10%;
+    margin-right: 5px;
   }
 
   .countReports {
@@ -220,14 +225,14 @@
         </div>
 
         <div class='stanokSecondRow d-flex align-items-center'>
-          {{#unless КоличествоОтчетов}} <div class='statusMaster'>{{Статус}}</div> {{/unless}}
-          <div class='statusFact d-none'>Статус по звітах: {{СтатусФакт}}</div>
-          {{#if КоличествоОтчетов}}<div class='countReports d-flex'><i class="bi bi-card-checklist"></i> {{КоличествоОтчетов}}</div>{{/if}}
           <div class="patron align-items-center d-flex">
             <img src="img/patron.png" class="patronImg" alt="patron icon" />
             {{#if РучнойПатрон}}Р{{/if}}{{#unless РучнойПатрон}}А{{/unless}}
           </div>
           <div class='kkd d-flex'>ККД: {{ККД}}%</div>
+          {{#if КоличествоОтчетов}}<div class='countReports d-flex'><i class="bi bi-card-checklist"></i> {{КоличествоОтчетов}}</div>{{/if}}
+          {{#unless КоличествоОтчетов}} <div class='statusMaster'>{{Статус.Наименование}}</div> {{/unless}}
+          <div class='statusFact d-none'>Статус по звітах: {{СтатусФакт}}</div>
 
         </div>
 
@@ -269,15 +274,15 @@
     <div class='plateListItem' id='{{uid}}'>
       <div class='.containerStanok'>
         <div class='stanokFirstRow'>
-          <div class='number'>
+          <div class='number text-truncate'>
             {{Наименование}}
-            {{#if Станок.ИнвентарныйНомер}}{{Станок.ИнвентарныйНомер}} {{else}} **** {{/if}}
-            -
+            {{#if Станок.ИнвентарныйНомер}}{{Станок.ИнвентарныйНомер}}{{/if}}
+
             {{Станок}}
           </div>
         </div>
 
-        <div class='stanokSecondRow'>
+        <div class='stanokSecondRow inputContainer'>
 
           <select name='status' class='form-control statusSelect' selectedUID="{{Статус.uid}}">
             {{{../options}}}
@@ -290,12 +295,13 @@
             data-editable='true'
             type='search'
             placeholder='оператор'
-            value='{{#if Оператор}} {{Оператор.Наименование}} {{/if}}'
+            value='{{#if Оператор}} {{Оператор}} {{/if}}'
             callbackAfterSelect='callbackAfterSelectOperator'
             callbackBlurIfNone='callbackBlurIfNone'
+            style="display: none;"
           />
-          <div class="hideOperator" style="display: none;">{{Оператор.Наименование}}</div>
-          <div class='input-group mb-3 otherStateContainer' style="display: none;" >
+          <div class="hideOperator" style="display: none;">{{Оператор}}</div>
+          <div class='input-group otherStateContainer' style="display: none;" >
             <input
               class='form-control otherState'
               aria-describedby='basic-addon3'
@@ -387,7 +393,6 @@
             return elements.some(element => {
               if (element.text.match(regex)) {
                 element.text = element.text.replace(regex, '<mark>$1</mark>');
-                console.log('element.text', element.text);
                 return true;
               }
               return false;
@@ -405,7 +410,8 @@
     // filterItemsByText(['statusMaster', 'statusFact'], 'Задіяні', '#activeStankiFilter');
   });
 
-  function initSelect() {
+  function initSelect(data) {
+    console.log('initSelect data', data);
     $('.statusSelect').each(function () {
       const selectedUID = $(this).attr('selectedUID');
       const container = $(this).closest('.plateListItem');
@@ -425,14 +431,18 @@
     });
 
     $('.statusSelect').on('change', function () {
-      const selectedIndex = $(this)[0].selectedIndex;
-      const data = $('#main').data('data');
-      const selectedStatus = data.СписокСтатусов[selectedIndex - 1];
-      console.log('$(this)', $(this), selectedStatus, selectedIndex);
       let container = $(this).closest('.plateListItem');
       let inputOperator = container.find('.operator ');
       let inputOtherStateContainer = container.find('.otherStateContainer');
-      console.log('inputOtherStateContainer', container, inputOtherStateContainer);
+
+      const selectedIndex = $(this)[0].selectedIndex;
+      if (selectedIndex === 0) {
+        inputOperator.hide();
+        return;
+      }
+      const selectedStatus = data[selectedIndex - 1];
+      console.log('$(this)', $(this), selectedStatus, selectedIndex);
+
       const stanokUID = container.attr('id');
       const edited = [
         {
@@ -443,8 +453,6 @@
       saveReportMaster(stanokUID, edited);
 
       if (selectedStatus.Наименование === 'Задіяні') {
-        console.log('select active');
-
         inputOperator.show();
       } else {
         inputOperator.hide();
@@ -457,6 +465,10 @@
         inputOtherStateContainer.hide();
       }
     });
+
+    // $('.statusSelect').each(function () {
+    //   $(this).trigger('change');
+    // });
   }
 
   callbackAfterSelectOperator = function (data) {
@@ -472,7 +484,6 @@
     ];
 
     console.log('edited', edited);
-
     saveReportMaster(stanokUID, edited);
   };
 
@@ -481,7 +492,6 @@
     const container = $(element).closest('.plateListItem');
     const stanokUID = container.attr('id');
     const select = container.find('.statusSelect');
-    // select.val('');
     const edited = [
       {
         key: 'Оператор',
@@ -490,7 +500,6 @@
     ];
 
     console.log('edited', edited);
-
     saveReportMaster(stanokUID, edited);
   };
 
