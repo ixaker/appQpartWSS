@@ -1,5 +1,4 @@
 <style>
-  
   #commandPanel {
     display: flex;
     justify-content: left;
@@ -20,12 +19,12 @@
   }
 
   #date {
-    font-size: large;
+    font-size: x-large;
     text-align: center;
   }
 
   #sotrudnik {
-    font-size: large;
+    font-size: x-large;
     width: 15em;
     margin: 0 1em;
   }
@@ -59,9 +58,15 @@
   }
 
   .tag.selected {
-    background-color: orange;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
   }
 
+  .tag.done {
+    background-color: darkgreen;
+    color: white;
+    font-weight: 600;
+  }
 
   #reloadPage {
     margin-left: auto;
@@ -71,9 +76,6 @@
     height: 65px;
   }
 
- 
-
-  
   #sumTable {
     margin-bottom: 15px;
   }
@@ -82,6 +84,15 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+
+  #checkReport {
+    transform: scale(3);
+    margin: 0 20px;
+  }
+
+  .checkReportLabel {
+    margin-bottom: 0;
   }
 </style>
 
@@ -100,7 +111,14 @@
     url="/app/autocompleteSotrydnik"
     aria-describedby="basic-addon3"
     callbackSelect="callbackSelectSotrudnik"
+    callbackBlurIfNone="callbackBlurIfNone"
   />
+
+  <div id="checkReportContainer" style="display: none">
+    <input type="checkbox" id="checkReport" />
+    <label for="checkReport" class="checkReportLabel">проверено</label>
+  </div>
+
   <i class="bi bi-arrow-clockwise" id="reloadPage"></i>
 </div>
 
@@ -110,12 +128,12 @@
   <table>
     <thead>
       <tr>
-        <th title="Станок" class="textAlignCenter" style="width: 6%">Станок</td>
-        <th title="Деталь" style="width: 27%">Деталь</td>
-        <th title="Этап" class="textAlignCenter" style="width: 5%">Этап</td>
-        <th title="Этап" style="width: 18%">Этап</td>
-        <th title="К-во" style="width: 4%">К-во</td>
-        <th title="К-во" style="width: 4%">Брак</td>
+        <th title="Станок" class="textAlignCenter" style="width: 6%">Станок</th>
+        <th title="Деталь" style="width: 27%">Деталь</th>
+        <th title="Этап" class="textAlignCenter" style="width: 5%">Этап</th>
+        <th title="Этап" style="width: 18%">Этап</th>
+        <th title="К-во" style="width: 4%">К-во</th>
+        <th title="К-во" style="width: 4%">Брак</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -214,7 +232,7 @@
           console.log('Filter Сотрудник', data['Сотрудник']['uid'], $('#sotrudnik').attr('uid'));
           result = false;
         }
-        console.log('before chek result=',result);
+        console.log('before chek result=', result);
         if (result) {
           console.log('before callbackAddNevRow');
           callbackAddNevRow(data);
@@ -231,9 +249,9 @@
       return result;
     };
 
-    callbackAddNevRow = function(data) {
+    callbackAddNevRow = function (data) {
       console.log('addNevRow start');
-      const url="/app/reportsOperatorForDay";
+      const url = '/app/reportsOperatorForDay';
       const sotrudnik = $('#sotrudnik');
       const date = $('#date');
       $('#sumTable tr.rowData').remove();
@@ -243,14 +261,19 @@
         userUID: $(sotrudnik).attr('uid'),
         date: dateParam,
       };
-      $.ajax({url: url, type: 'GET', dataType: 'json', data: param, success: async function (response) {
-        console.log('initTable response', response);
-        if (!response.error) {
-          renderSumTable(response);
-        }
-        }
-      })
-    }
+      $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        data: param,
+        success: async function (response) {
+          console.log('initTable response', response);
+          if (!response.error) {
+            renderSumTable(response);
+          }
+        },
+      });
+    };
 
     function initInputDate(element) {
       $(element).on('change', function () {
@@ -261,6 +284,7 @@
     updateTable = function () {
       const sotrudnik = $('#sotrudnik');
       const date = $('#date');
+
       $('tr.rowData').remove();
       dateParam = JSON.stringify(new Date($(date).val()));
       dateParam = dateParam.slice(1, -15);
@@ -304,7 +328,7 @@
     $('#reloadPage').on('click', function (event) {
       clickAnimate(this);
       updateTable();
-    })
+    });
 
     // клик по кнопке Редактировать
     $(tableID).on('click', '.btnEdit', function (event) {
@@ -358,22 +382,51 @@
       }
     });
 
+    $('#checkReport').change(function () {
+      const isChecked = $(this).is(':checked');
+      let currentDate = $('#date').val();
+      let userUID = $('#sotrudnik').attr('uid');
+      console.log('isChecked, currentDate, userUID', isChecked, currentDate, userUID);
+
+      universalRequest(
+        'app/reportsOperatorForDay',
+        'POST',
+        {
+          date: currentDate,
+          user: userUID,
+          value: isChecked,
+        },
+        {},
+        {},
+        {},
+        function onComplete() {
+          console.log('oncomplite');
+          updateTable();
+        }
+      );
+    });
+
     callbackSelectSotrudnik = function (data) {
       updateTable();
     };
 
+    callbackBlurIfNone = function (data) {
+      $('#checkReportContainer').hide();
+    };
+
     createTagsOfSotrudnik = function (data) {
-      console.log('createTagsOfSotrudnik');
+      console.log('createTagsOfSotrudnik', data);
       const listOfSotrudnik = data.users;
       const $container = $('#sotrudnikTags');
       $container.html('');
       listOfSotrudnik.forEach(item => {
+        console.log('item', item);
         let elementClass;
-        if (item.uid === selectedTagUID || item.value === $('#sotrudnik').val() ) {
-          elementClass = 'tag selected'
+        if (item.uid === selectedTagUID || item.value === $('#sotrudnik').val()) {
+          elementClass = 'tag selected';
           console.log('elementClass = tag selected');
         } else {
-          elementClass= 'tag'
+          elementClass = 'tag';
           console.log('elementClass = tag');
         }
         const $div = $('<div>', {
@@ -386,11 +439,13 @@
 
         $div.on('click', handleClickOnTag);
 
+        if (item['ЭтотДеньПроверен']) {
+          $div.addClass('done');
+        }
+
         $container.append($div);
       });
     };
-
-
 
     function handleClickOnTag() {
       clickAnimate(this);
@@ -398,9 +453,12 @@
       const value = $(this).attr('value');
       $input.val(value);
       const uid = $(this).attr('uid');
+      const done = $(this).hasClass('done');
+      $('#checkReportContainer').show();
+      $('#checkReport').prop('checked', done);
       $input.attr('uid', uid);
-      selectedTagUID=uid;
-      console.log('uid', uid)
+      selectedTagUID = uid;
+      console.log('uid', uid);
       console.log('selectedTagUID', selectedTagUID);
       updateTable();
     }
@@ -451,6 +509,5 @@
         $tbody.append($tr);
       });
     };
-
   });
 </script>
