@@ -584,13 +584,8 @@
     function showPage(element) {
       const children = $(element).attr('children');
       containerAnimation('left', '#main', children);
-      // $('#main').hide();
-      // $(children).show();
     }
 
-    // $(document).on('click', '#details', function () {
-    //   showPage(this);
-    // });
     Handlebars.registerHelper('log', function (something) {
       console.log(something);
     });
@@ -679,36 +674,7 @@
       initOtherState();
       initFilter('filterMenu', 'filter');
       initFilters(filterOptions);
-      // openMenu('filter', 'filterMenu', []);
     }
-
-    // $(document).on('click', event => {
-    //   const $datepicker = $('#ui-datepicker-div');
-    //   const $target = $(event.target);
-    //   var $shiftDate = $('#shiftDate');
-
-    //   console.log('isDatepicker visible, target', $datepicker.is(':visible'), $target);
-    //   console.log(
-    //     'isDatepicker  target, istarget ',
-    //     $target,
-    //     $datepicker.is($target) ||
-    //       $datepicker.has($target).length > 0 ||
-    //       $shiftDate.is($target) ||
-    //       $shiftDate.has(event.target).length > 0
-    //   );
-
-    //   if (
-    //     $datepicker.is($target) ||
-    //     $datepicker.has($target).length > 0 ||
-    //     $shiftDate.is($target) ||
-    //     $shiftDate.has(event.target).length > 0
-    //   ) {
-    //     console.log('click on datepicker');
-    //   } else {
-    //     console.log('click out of datepicker');
-    //     event.stopImmediatePropagation();
-    //   }
-    // });
 
     $(document).on('click', '#stanki', function () {
       console.log('this', $(this).attr('id'), $('#ui-datepicker-div').hasClass('datepicker-open'));
@@ -725,18 +691,12 @@
 
     function renderUsers(data) {
       console.log('renderUsers data', data);
-
       data.item.canEdit = isShiftActive && isUserMaster();
+      data.item.activeShift = isShiftActive;
       console.log('isUserMaster()', isUserMaster());
       generateFromTemplate('#usersTemplate', data.item, '#usersList');
       initInputAutocomplete('.stanok', 1);
       initFilter('filterMenuUsers', 'filterUsers');
-      // openMenu('filterUsers', 'filterMenuUsers', []);
-
-      // generateFromTemplate('#usersTemplate', users, '#usersList');
-      // generateFromTemplate('#menuTemplate', dataForMenu, '#filterMenuUsers');
-
-      console.log('renderUsers', users);
     }
 
     $(document).on('click', '#users', function () {

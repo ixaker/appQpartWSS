@@ -798,16 +798,9 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
         }
     });
 
-    // menuContainer.find('.menuItem').each(function (index) {
-    //     const action = menuItemActions[index];
-    //     if (action) {
-    //         $(this).off('click').on('click', function () {
-    //             console.log('clickonMenuItem',);
-    //             const isActive = $(this).toggleClass('active').hasClass('active');
-    //             action(isActive);
-    //         });
-    //     }
-    // });
+    $(window).on('scroll', function () {
+        menuContainer.hide();
+    });
 }
 
 function initFilter(idFilterMenu, idFilterButton) {

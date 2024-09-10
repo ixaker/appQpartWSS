@@ -94,6 +94,7 @@
   .userSecondRow {
     display: flex;
     font-size: large;
+    flex-direction: column;
   }
 
   .stanokListDynamic {
@@ -111,7 +112,7 @@
     flex-wrap: wrap;
     width: 100%;
     max-width: 100%;
-    margin-top: 15px;
+    margin-top: 10px;
   }
 
   .stanok {
@@ -163,13 +164,16 @@
     color: red;
   }
 
+  .attendance {
+  }
+
   .ui-dialog {
-    background: white; /* Переконатися, що фон білий */
+    background: white;
     width: auto !important;
   }
 
   .ui-dialog-titlebar {
-    background: #f1f1f1; /* Задати фон для заголовка */
+    background: #f1f1f1;
   }
 
   .ui-dialog {
@@ -296,14 +300,11 @@
               <div class='sotrudnikKkd d-flex'>ККД:
                 <div class='sotrudnikKkdValue {{getColorByKkd ККД}} text-end'>{{ККД}}%</div>
               </div>
-
             </div>
-
           </div>
-
         </div>
 
-
+          {{#if ../activeShift}}
           <div class='stanokListDynamic d-flex'>
             {{#if СписокСтанковНазначеныхМастером}}
             {{#each СписокСтанковНазначеныхМастером}}
@@ -334,10 +335,16 @@
             </div>
             {{/if}}
           </div>
-
-
+          {{/if}}
 
         <div class='userSecondRow d-none'>
+          <div class="mt-2">
+          {{#each Посещаемость}}
+          <div class="attendance">
+            {{ВремяПрихода}} - {{ВремяУхода}}
+          </div>
+          {{/each}}
+        </div>
           <div class='stanokList'>
             {{#unless КоличествоОтчетов}}<div class="text-center w-100">Немає звітів</div>{{/unless}}
             {{#each listStanok}}
