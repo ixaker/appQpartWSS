@@ -303,8 +303,9 @@
 
         </div>
 
-        {{#if СписокСтанковНазначеныхМастером}}
+
           <div class='stanokListDynamic d-flex'>
+            {{#if СписокСтанковНазначеныхМастером}}
             {{#each СписокСтанковНазначеныхМастером}}
               <div class='stanokItem' uid='{{uid}}'>
                 <div class='stanokInv text-truncate'>
@@ -317,6 +318,7 @@
                 </div>
               </div>
             {{/each}}
+            {{/if}}
             {{#if ../canEdit}}
             <div class='input-container'>
               <input
@@ -332,7 +334,7 @@
             </div>
             {{/if}}
           </div>
-        {{/if}}
+
 
 
         <div class='userSecondRow d-none'>
