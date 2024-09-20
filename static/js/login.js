@@ -137,7 +137,7 @@ function authentication() {
         console.log('/authentication', response);
         loadMenu(response.user, response.token, response.version);
         makeNavbarTextMove();
-        $.cookie("token", response.token);
+        $.cookie("token", response.token, { expires: 365 });
     }, 'json').fail(function (jqXHR, textStatus, errorThrown) {
         console.log("error - '/authentication'");
         exit();
@@ -179,7 +179,7 @@ function loadMenu(userInfo, token, version) {
     if (version !== versionFromLocalStorage) {
         console.log('update version because version in cookie is not actual')
         $.cookie("version", version);
-        location.reload();
+        location.reload(true);
     }
 
 
