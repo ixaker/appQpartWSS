@@ -13,16 +13,23 @@
 }
 
 .media-viewer-image-container {
-  position: relative;
+  position: fixed;
+  max-height: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .media-viewer-overlay img,
 .media-viewer-overlay video {
   width: 100%;
+  max-height: 100%;
 }
 .media-viewer-close,
 .media-viewer-prev,
-.media-viewer-next {
+.media-viewer-next,
+.media-viewer-delete {
   position: fixed;
   top: 50%;
   font-size: xxx-large;
@@ -50,6 +57,11 @@
   right: 20px;
 }
 
+.media-viewer-delete {
+  top: 10px;
+  left: 20px;
+}
+
 .play-icon {
   position: absolute;
   /* top: 50%; */
@@ -64,4 +76,12 @@
   justify-content: center;
   align-items: center;
   z-index: 10; /* Ensure play icon is on top */
+}
+
+.userFotoDelete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: xxx-large;
+  color: red;
 }
