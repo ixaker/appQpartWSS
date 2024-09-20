@@ -1,6 +1,6 @@
-function mediaviewer(element) {
+function mediaviewer(element, canDelete = false) {
     console.log('mediaviewer start', element)
-    const $currentElement = $(element);
+    let $currentElement = $(element);
     const $img = $currentElement.find('.src-source');
 
     const srcSource = $img.attr('src-source');
@@ -14,14 +14,20 @@ function mediaviewer(element) {
     const $closeBtn = $('<i class="bi bi-x-lg media-viewer-close"></i>');
     const $prevBtn = $('<i class="bi bi-chevron-left media-viewer-prev"></i>');
     const $nextBtn = $('<i class="bi bi-chevron-right media-viewer-next"></i>');
+    const $delete = $('<i class="bi bi-trash media-viewer-delete"></i>');
 
     $overlay.append($closeBtn, $prevBtn, $nextBtn);
+
+    if (canDelete) {
+        $overlay.append($delete);
+    }
 
     const $imageContainer = $('<div class="media-viewer-image-container"></div>');
     $overlay.append($imageContainer);
 
     function updateOverlayContent(src, $element) {
         console.log('updateOverlayContent', src, typeof (src));
+        $currentElement = $element.closest('.attachedImg');
         $overlay.find('img, video').remove();
         $overlay.find('.play-icon').remove();
 
@@ -175,6 +181,41 @@ function mediaviewer(element) {
         updateOverlayContent(blob, prevImg);
     });
 
+    $delete.on('click', function () {
+        clickAnimate(this);
+        const $currentFotoElement = $currentElement.find('.userFotoContent');
+
+        const confirmation = confirm('Ви впевнені, що хочете видалити це фото?');
+        if (!confirmation) return;
+
+        const photoData = getPhotoData($currentFotoElement);
+
+        if (!photoData) {
+            console.error('Не вдалося отримати дані фото для видалення');
+            return;
+        }
+
+        // Викликаємо функцію для видалення фото
+        deleteUserPhoto($currentFotoElement, photoData)
+            .then(() => {
+                // Оновлюємо інтерфейс після успішного видалення фото
+                const $remainingImgs = $attachedImgs.filter(':visible');
+                if ($remainingImgs.length > 0) {
+                    currentIndex = $remainingImgs.index($currentElement);
+                    currentIndex = (currentIndex >= $remainingImgs.length) ? $remainingImgs.length - 1 : currentIndex;
+
+                    const newImg = $remainingImgs.eq(currentIndex).find('.src-source');
+                    const blob = newImg.attr('src-source');
+                    updateOverlayContent(blob, newImg);
+                } else {
+                    closeViewer();
+                }
+            })
+            .catch(error => {
+                console.error('Помилка під час видалення фото:', error);
+            });
+    });
+
     history.pushState({ page: 'mediaViewer' }, '', '');
     window.addEventListener('popstate', function (event) {
         if (event.state && event.state.page === 'mediaViewer') {
@@ -189,4 +230,38 @@ function mediaviewer(element) {
         console.log('event.center.x', event.center.x);
 
     })
+
+    function deleteUserPhoto($element, data) {
+        return new Promise((resolve, reject) => {
+            NProgress.start();
+
+            universalRequest(
+                '/userListFoto',
+                'DELETE',
+                data,
+                {},
+                () => {
+                    $element.closest('.attachedImg').remove();  // Видаляємо фото з DOM
+                    NProgress.done();
+                    resolve();
+                },
+                error => {
+                    NProgress.done();
+                    reject(error);
+                }
+            );
+        });
+    }
+
+    // Функція для отримання даних фото
+    function getPhotoData($element) {
+        const file = $element.attr('alt');  // або інший атрибут
+        const UserID = $element.closest('.plateListItem').attr('id');
+
+        if (!file || !UserID) return null;
+
+        return { UserID, file };
+    }
+
+
 }
