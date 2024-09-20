@@ -883,6 +883,27 @@
         z-index: 1000;
       }
 
+      #spiner {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(1, 1, 1, 0.5);
+        left: 0;
+        top: 0;
+        display: flex;
+        align-items: center;
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #addPhotoToUser {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+
       #addPhotoClose {
         /* position: relative; */
         align-self: flex-end;
@@ -909,6 +930,7 @@
         height: fit-content;
         max-height: 95dvh;
         margin: 0 10px;
+        position: relative;
       }
 
       .addPhotoHeader {
@@ -958,15 +980,20 @@
         justify-content: flex-start;
         flex: 1;
         position: relative;
+        align-items: center;
       }
 
       #sourcePhoto::after,
       #originalPhoto::after {
         position: absolute;
         top: 10px;
-        width: 100%;
+        width: fit-content;
         text-align: center;
-        text-shadow: 1px 1px 1px white;
+        background-color: rgb(255, 255, 255, 0.8);
+        margin: 0 auto;
+        border-radius: 5px;
+        padding: 0 3px;
+        font-size: medium;
       }
 
       #sourcePhoto::after {
@@ -1107,6 +1134,12 @@
 
     <div id="formScanPhoto" style="display: none">
       <div class="addPhotoContent">
+        <div class="spiner" id="spiner">
+          <div class="spinner-border qpartSpinerForWaiting" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+
         <div class="addPhotoHeader">
           <div class="addPhotoTitle">Перевірка фото</div>
           <div id="scanPhotoClose"><i class="bi bi-x-lg"></i></div>
@@ -1138,6 +1171,9 @@
             <div id="sourcePhoto"></div>
             <div id="originalPhoto"></div>
           </div>
+          <button type="button" id="addPhotoToUser" class="btn btn-secondary btn-lg btn-block">
+            Додати фото користувачу
+          </button>
           <div id="photoArray" class="attachedImgContainer"></div>
         </div>
       </div>
@@ -1181,7 +1217,6 @@
       var selectedUID = '';
       var scannerActive = false;
       var canvasVideoScaner = document.createElement('canvas');
-
       pageUID = '944bf4ef-27bf-11ee-8208-000c29006152';
       userRights = $('#menu').data('userRight')[pageUID];
 
@@ -1217,6 +1252,11 @@
         const phoneMenu = $('.phoneMenu');
         const formAddPhoto = $('#formAddPhoto');
         const formScanPhoto = $('#formScanPhoto');
+
+        function addPhotoClose() {
+          $('#formAddPhoto').hide();
+        }
+
         if (!$(e.target).closest('.phoneMenu').length && !$(e.target).closest('.btnTel').length) {
           $('.phoneMenu').each(function () {
             $(this).hide();
@@ -1439,7 +1479,7 @@
                     setTimeout(() => {
                       savePhoto();
                     }, 500);
-                    console.log('--------------- error from fail --------------', textStatus);
+                    console.log(' error from fail', textStatus);
                     toastr['error']('ERROR');
                   });
                 };
@@ -1448,7 +1488,7 @@
             }
           }
         } catch (error) {
-          console.log('--------------- error from face scan ------------------', error);
+          console.log(' error from face scan', error);
           setTimeout(() => {
             savePhoto();
           }, 500);
@@ -1456,13 +1496,13 @@
         }
       }
 
-      function fileToBase64(file, callback) {
-        console.log('fileToBase64 start');
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          callback(reader.result);
-        };
-        reader.readAsDataURL(file);
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
       }
 
       function updateCountPhoto(uid, number) {
@@ -1561,69 +1601,103 @@
           });
       });
 
-      function uploadAvatarFromFile(file, uid, empCode) {
+      async function uploadAvatarFromFile(file, uid, empCode) {
         console.log('file from uploadAvatarFromFile', file, uid);
 
-        return new Promise((resolve, reject) => {
-          if (!file) {
-            toastr.error('Будь ласка, виберіть файл.');
-            return reject(new Error('No file selected'));
-          }
+        if (!file) {
+          toastr.error('Будь ласка, виберіть файл.');
+          throw new Error('No file selected');
+        }
 
-          if (file.size > 5 * 1024 * 1024) {
-            toastr.error('Файл завеликий. Максимальний розмір — 5MB.');
-            return reject(new Error('File size exceeds limit'));
-          }
+        if (file.size > 5 * 1024 * 1024) {
+          toastr.error('Файл завеликий. Максимальний розмір — 5MB.');
+          throw new Error('File size exceeds limit');
+        }
 
-          fileToBase64(file, function (base64Image) {
-            NProgress.start();
-            $.ajax({
-              url: '/updateAvatar',
-              type: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify({ photo: base64Image, uid: uid, empCode: empCode }),
-              dataType: 'json',
-              success: function (response) {
-                console.log('response from uploadAvatarFromFile', response);
-                const updateResponse = response.data.updateResult;
-                const addUserPhotoResult = response.data.addUserPhotoResult;
+        try {
+          const base64Image = await fileToBase64(file);
+          NProgress.start();
 
-                if (updateResponse.data.ret === 0) {
-                  toastr.success('Фото профіля успішно збережено.');
-                } else {
-                  toastr.error('Помилка зберігання фото профіля.');
-                }
-
-                if (addUserPhotoResult.addedFoto) {
-                  toastr.success('Фото додано в галерею користувача.');
-                } else {
-                  toastr.error('Фото не збережено до галереї користувача');
-                  console.log('');
-                }
-                resolve(response);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.error('error from fail', textStatus, errorThrown);
-
-                let errorMessage = 'ERROR';
-                if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
-                  errorMessage = 'помилка ' + jqXHR.responseJSON.error;
-                } else if (jqXHR.responseText) {
-                  errorMessage = 'помилка ' + jqXHR.responseText;
-                }
-
-                toastr['error'](errorMessage);
-                reject(new Error(errorMessage));
-              },
-              complete: function () {
-                NProgress.done();
-              },
-            });
+          const response = await $.ajax({
+            url: '/updateAvatar',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ photo: base64Image, uid: uid, empCode: empCode }),
+            dataType: 'json',
           });
+
+          console.log('response from uploadAvatarFromFile', response);
+
+          const updateResponse = response.data.updateResult;
+          const addUserPhotoResult = response.data.addUserPhotoResult;
+
+          if (updateResponse.data.ret === 0) {
+            toastr.success('Фото профіля успішно збережено.');
+          } else {
+            toastr.error('Помилка зберігання фото профіля.');
+          }
+
+          if (addUserPhotoResult.addedFoto) {
+            toastr.success('Фото додано в галерею користувача.');
+          } else {
+            toastr.error('Фото не збережено до галереї користувача');
+          }
+
+          return response;
+        } catch (error) {
+          console.error('Error in uploadAvatarFromFile:', error);
+
+          let errorMessage = 'ERROR';
+          if (error.responseJSON && error.responseJSON.error) {
+            errorMessage = 'помилка ' + error.responseJSON.error;
+          } else if (error.responseText) {
+            errorMessage = 'помилка ' + error.responseText;
+          }
+
+          toastr.error(errorMessage);
+          throw new Error(errorMessage);
+        } finally {
+          NProgress.done();
+        }
+      }
+
+      function sendPhotoOnly(base64Image, selectedUID) {
+        console.log('sendPhotoOnly start');
+        return new Promise((resolve, reject) => {
+          NProgress.start();
+
+          $.post(
+            '/savePhotoOnly',
+            { photo: base64Image, uid: selectedUID },
+            function (response) {
+              console.log('response from savePhotoOnly', response);
+              if (response.success) {
+                toastr['info']('Фото успішно збережено!');
+                resolve();
+              } else if (response.error) {
+                toastr['error']('Помилка при збереженні фото.');
+                reject(new Error('Помилка при збереженні фото.'));
+              } else if (response.exception) {
+                toastr['error']('Виникла невідома помилка.');
+                reject(new Error('Виникла невідома помилка.'));
+              }
+            },
+            'json'
+          )
+            .done(() => {
+              NProgress.done();
+            })
+            .fail((jqXHR, textStatus, errorThrown) => {
+              console.log('error - /savePhotoOnly textStatus, errorThrown', textStatus, errorThrown);
+              console.error('error from fail');
+              toastr['error']('ERROR');
+              NProgress.done();
+              reject(new Error('Не вдалося відправити фото.'));
+            });
         });
       }
 
-      function uploadFromFile(fileInput) {
+      async function uploadFromFile(fileInput) {
         const file = fileInput.files[0];
         console.log('file from uploadFromFile', file, fileInput.files);
         const fileInputId = $(fileInput).attr('id');
@@ -1640,38 +1714,22 @@
           return;
         }
 
-        fileToBase64(file, function (base64Image) {
-          NProgress.start();
-          $.post(
-            '/savePhotoOnly',
-            { photo: base64Image, uid: selectedUID },
-            function (response) {
-              console.log('response from savePhotoOnly', response);
-              if (response.success) {
-                toastr['info']('Фото успішно збережено!');
-              } else if (response.error) {
-                toastr['error']('Помилка при збереженні фото.');
-              } else if (response.exception) {
-                toastr['error']('Виникла невідома помилка.');
-              }
-            },
-            'json'
-          )
-            .done(function () {
-              NProgress.done();
+        try {
+          const base64Image = await fileToBase64(file);
+          sendPhotoOnly(base64Image, selectedUID)
+            .then(() => {
               generatePhotos(container);
             })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-              console.log('error - /savePhotoOnly textStatus, errorThrown', textStatus, errorThrown);
-              console.error('error from fail');
-              toastr['error']('ERROR');
-              NProgress.done();
+            .catch(error => {
+              console.error('error from sendPhotoOnly', error);
+              toastr['error']('Не вдалося зберегти фото.');
             });
-        });
+        } catch {}
       }
 
-      $('#scanMakePhoto, #scanLoadPhoto').on('change', function (e) {
+      $('#scanMakePhoto, #scanLoadPhoto').on('change', async function (e) {
         console.log('scanMakePhoto, #scanLoadPhoto change');
+        $('#spiner').css('display', 'flex');
         const file = this.files[0];
         if (!file) {
           toastr.error('Будь ласка, виберіть файл.');
@@ -1685,52 +1743,49 @@
           return;
         }
 
-        checkPhoto(file);
+        console.log('start fileToBase64');
+        const base64Data = await fileToBase64(file);
+        console.log('start sendPhotoForCheck');
+        const response = await sendPhotoForCheck(base64Data);
+        console.log('result of sendPhotoForCheck response', response);
+        renderCheckInfo(response, base64Data);
+        $('#spiner').css('display', 'none');
+
         this.value = '';
       });
 
       async function sendPhotoForCheck(base64Image) {
-        console.log('sendPhotoForCheck');
+        console.log('sendPhotoForCheck start');
         NProgress.start();
 
-        $.ajax({
-          url: '/checkPhoto',
-          method: 'POST',
-          data: { photo: base64Image },
-          success: function (response) {
-            if (response.error) {
-              toastr.error(response.error);
-            } else {
-              toastr.success('Фото успішно оброблено.');
-              console.log(response.result);
-              renderCheckInfo(response.result, (base64Image = ''));
-            }
-            NProgress.done();
-          },
-          error: function (xhr, status, error) {
-            const errorMessage = `Помилка при обробці фото: ${xhr.responseText || error}`;
-            console.log(errorMessage);
-            toastr.error(errorMessage);
-          },
-          complete: function () {
-            NProgress.done();
-          },
-        });
-      }
-
-      async function checkPhoto(file) {
-        console.log('checkPhoto');
         try {
-          fileToBase64(file, base64Image => {
-            sendPhotoForCheck(base64Image);
+          const response = await $.ajax({
+            url: '/checkPhoto',
+            method: 'POST',
+            data: { photo: base64Image },
+            dataType: 'json',
           });
+
+          if (response.error) {
+            toastr.error(response.error);
+            throw new Error(response.error);
+          }
+
+          toastr.success('Фото успішно оброблено.');
+          console.log('sendPhotoForCheck success:', response.result);
+          return response.result;
         } catch (error) {
-          toastr.error(`Помилка при перетворенні файла: ${error.message}`);
+          const errorMessage = `Помилка при обробці фото: ${error.responseText || error.statusText || error.message}`;
+          console.error(errorMessage);
+          toastr.error(errorMessage);
+          throw error;
+        } finally {
+          NProgress.done();
         }
       }
 
       function renderCheckInfo(info, sourcePhotoBase64) {
-        console.log('info', info);
+        console.log('renderCheckInfo start info', info);
         const scanResult = $('#scanResult');
         scanResult.show();
         const resultText = $('#resultText');
@@ -1742,6 +1797,7 @@
         const score = $('#score');
         const emotionDisplay = $('#emotion');
         const photoArrayContainer = $('#photoArray');
+        const addPhotoToUser = $('#addPhotoToUser');
 
         sourcePhotoContainer.empty();
         originalPhotoContainer.empty();
@@ -1752,18 +1808,20 @@
         score.text('');
         emotionDisplay.text('');
         photoArrayContainer.empty();
+        scanResult.attr('uid', info.user?.uid);
+        addPhotoToUser.hide();
 
-        if (info.user) {
-          const sourcePhoto = `
-        <div
-            class="attachedImg"
-            src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
-          >
-          <img class="checkPhoto src-source" src="${sourcePhotoBase64}" />
-        </div>
-        `;
-          sourcePhotoContainer.append(sourcePhoto);
-        }
+        // if (info.user) {
+        const sourcePhoto = `
+              <div
+                  class="attachedImg"
+                  src-source="/foto/${info.user?.uid}/${info.originalPhotoName}"
+                >
+                <img class="checkPhoto src-source" src="${sourcePhotoBase64}" />
+              </div>
+              `;
+        sourcePhotoContainer.append(sourcePhoto);
+        // }
 
         if (info.detectFace) {
           resultText.text('Обличчя розпізнано');
@@ -1779,20 +1837,21 @@
         if (info.user) {
           originalPhotoContainer.show();
           const originalPhoto = `
-          <div
-            class="attachedImg"
-            src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
-          >
-            <img
-              class="checkPhoto photoForSim src-source"
-              src="/foto/${info.user.uid}/${info.originalPhotoName}"
-              src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
-            />
-          </div>
-          `;
+                <div
+                  class="attachedImg"
+                  src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
+                >
+                  <img
+                    class="checkPhoto photoForSim src-source"
+                    src="/foto/${info.user.uid}/${info.originalPhotoName}"
+                    src-source="/foto/${info.user.uid}/${info.originalPhotoName}"
+                  />
+                </div>
+                `;
           originalPhotoContainer.append(originalPhoto);
           resultText.append(`Співробітник: ${info.user.name}`);
           resultText.append(`<br />`);
+          addPhotoToUser.show();
         }
 
         if (info.finded) {
@@ -1806,25 +1865,19 @@
           info.finded2.forEach(item => {
             console.log('from info.finded2 item', item);
             const photoItem = `
-                <div class="photoItem attachedImg" src-source="/foto/${item.uid}/${item.file}">
-                    <img
-                      class='photoForSim src-source'
-                      src="/foto/${item.uid}/${item.file}"
-                      src-source="/foto/${item.uid}/${item.file}"
-                    />
-                    <span class="photoSim">${item.similarity.toFixed(2)}</span>
-                    <span class="photoUserName">${item.userName}</span>
-                </div>
-            `;
+                      <div class="photoItem attachedImg" src-source="/foto/${item.uid}/${item.file}">
+                          <img
+                            class='photoForSim src-source'
+                            src="/foto/${item.uid}/${item.file}"
+                            src-source="/foto/${item.uid}/${item.file}"
+                          />
+                          <span class="photoSim">${item.similarity.toFixed(2)}</span>
+                          <span class="photoUserName">${item.userName}</span>
+                      </div>
+                  `;
             photoArrayContainer.append(photoItem);
           });
         }
-
-        // if (info.emotion) {
-        //   const emotions = info.emotion.map(emotionObj => emotionObj.emotion);
-        //   resultText.append(`Емоції: ${emotions.join(', ')}`);
-        //   resultText.append(`<br />`);
-        // }
       }
 
       function deletePhotos(e) {
@@ -1944,27 +1997,6 @@
         $('#formUpdateAvatar').hide();
       });
 
-      // function updateAvatar(uid) {
-      //   NProgress.start();
-
-      //   $.ajax({
-      //     url: '/updateAvatar',
-      //     type: 'post',
-      //     dataType: 'json',
-      //     data: { uid: uid },
-      //     headers: {},
-      //     success: function (response) {
-      //       console.log('updateAvatar success', response);
-      //     },
-      //     error: function (xhr, status, error) {
-      //       console.log('updateAvatar error', error);
-      //     },
-      //     complete: function () {
-      //       NProgress.done();
-      //     },
-      //   });
-      // }
-
       function loginUser(uid) {
         console.log('userRights', userRights.canLoginUser);
         if (!userRights.canLoginUser) return;
@@ -1976,7 +2008,7 @@
           $('#menu').html('');
           localStorage.setItem('PageUID', '');
           PageUID = '';
-          $.cookie('token', data.token);
+          $.cookie('token', data.token, { expires: 365 });
           authentication();
         });
       }
@@ -2124,37 +2156,6 @@
           render(data);
         };
 
-        // callbackForRender = function (data) {
-        //   console.log('callbackForRender data', data);
-        //   render(data.list);
-        //   containerForTile = `#${data.uid}`;
-        //   if ($(containerForTile).length === 0) return;
-        //   console.log('QPART data', data, containerForTile, $(containerForTile));
-        //   const workStyle = data.work;
-        //   data.styleWork = data.work ? 'onWork' : 'offWork';
-        //   function formatHours(hours) {
-        //     if (hours > 999) {
-        //       return 'ніколи';
-        //     } else if (hours > 48) {
-        //       let days = Math.floor(hours / 24);
-        //       return `${days} днів`;
-        //     } else {
-        //       return `${hours} годин`;
-        //     }
-        //   }
-
-        //   data.formattedHours = formatHours(data.hoursLastProhod);
-
-        //   data.tabelFormatted = data.tabel.map(day => ({
-        //     date: day[1],
-        //     arrival: day[2],
-        //     departure: day[3],
-        //   }));
-        //   console.log('data', data);
-
-        //   // generateFromTemplate('#tileTemplate', data, containerForTile);
-        // };
-
         $('#userList').on('click', '.arrival ', function (e) {
           console.log('data from id', $(platesID).data('data'), $(this).closest('.plateListItem').attr('id'));
           const data = $(platesID).data('data');
@@ -2240,11 +2241,8 @@
           const newUserID = row.attr('id');
           const oldUserID = $('#userFoto').attr('UserID') || '';
           let fotoContainer = $(this).closest('.plateListItem').find('.fotoContainer');
-          // let galleryContainer = $(this).closest('.plateListItem').find('.galleryContainer');
           let fullCommandLine = $(this).closest('.plateListItem').find('.fullCommandLine');
           let emptyCommandLine = $(this).closest('.plateListItem').find('.emptyCommandLine');
-
-          // let container = $(this).closest('.plateListItem');
 
           if (newUserID !== oldUserID) {
             console.log('newUserID !== oldUserID');
@@ -2265,51 +2263,38 @@
             fotoContainer.attr('UserID', newUserID);
 
             generatePhotos(row);
-
-            // NProgress.start();
-
-            // try {
-            //   $.ajax({
-            //     url: '/userListFoto',
-            //     type: 'GET',
-            //     dataType: 'json',
-            //     data: { UserID: newUserID },
-            //     success: function (response) {
-            //       console.log('response', response);
-
-            //       let dataForTemplate = response.map(element => {
-            //         return {
-            //           fileName: element.fileName,
-            //           countFileUse: element.countFileUse,
-            //           userId: element.userId,
-            //           dateLastFinded: element.dateLastFinded ? formatter.format(new Date(element.dateLastFinded)) : '',
-            //         };
-            //       });
-
-            //       console.log('dataForTemplate', dataForTemplate);
-            //       if (response.length > 0) {
-            //         fullCommandLine.css('display', 'flex');
-            //         generateFromTemplate('#fotoTemplate', dataForTemplate, galleryContainer);
-            //       } else {
-            //         emptyCommandLine.css('display', 'flex');
-            //       }
-            //       console.log('fotoContainer[0]', fotoContainer[0]);
-            //       container[0].scrollIntoView({
-            //         behavior: 'smooth',
-            //         block: 'start',
-            //       });
-            //       NProgress.done();
-            //     },
-            //   });
-            // } catch (error) {
-            //   NProgress.done();
-            // }
           }
         });
 
         $('#userScan').on('click', function () {
           console.log('userScan');
+          $('#scanResult').hide();
           $('#formScanPhoto').show();
+        });
+
+        $('#addPhotoToUser').on('click', function () {
+          $(this).append(spiner);
+          $(this).prop('disabled', true);
+          setTimeout(() => {
+            console.log('some actions');
+          }, 5000);
+          const container = $(this).closest('#scanResult');
+          const base64Image = container.find('#sourcePhoto').find('.checkPhoto').attr('src');
+
+          const UID = container.attr('uid');
+          console.log('UID, ', UID);
+          sendPhotoOnly(base64Image, UID)
+            .then(() => {
+              $(this).find('.qpartSpinerForWaiting').remove();
+              $(this).prop('disabled', false);
+              $('#formScanPhoto').hide();
+              toastr.success('Фото успішно додано в галерею користувача.');
+            })
+            .catch(error => {
+              console.error(error);
+              $(this).find('.qpartSpinerForWaiting').remove();
+              $(this).prop('disabled', false);
+            });
         });
 
         $('#filter').on('click', function () {
@@ -2320,12 +2305,7 @@
 
         $('#userList').on('click', '.userFoto', function (event) {
           console.log('click on photo', this);
-          mediaviewer(this);
-        });
-
-        $('#formScanPhoto').on('click', '.checkPhoto, .photoItem', function (event) {
-          console.log('click on photo', this);
-          mediaviewer(this);
+          mediaviewer(this, (canDelete = true));
         });
 
         $('#userList').on('click', '.userFotoDelete', function (event) {
@@ -2334,45 +2314,70 @@
           clickAnimate(this);
           setTimeout(() => {
             if (!userRights.canDeleteFoto) return;
-            let file = $(this).siblings('.userFotoContent').attr('alt');
-            let indexFoto = $(this).attr('indexFoto');
-            let UserID = $(this).closest('.plateListItem').attr('id');
-            let fotoForDelete = $(this).closest('.userFoto');
-            const deleteFoto = confirm('Ви впевнені, що хочете видалити цю фотографію?');
-
-            if (deleteFoto) {
-              try {
-                $.ajax({
-                  url: '/userListFoto',
-                  type: 'DELETE',
-                  dataType: 'json',
-                  data: { UserID: UserID, file: file, indexFoto: indexFoto },
-                  complete: function (response) {
-                    console.log('on complete');
-                    console.log(fotoForDelete);
-                    NProgress.done();
-                    let userCard = $(fotoForDelete).closest('.plateListItem');
-                    const fullCommandLine = $(fotoForDelete).closest('.plateListItem').find('.fullCommandLine');
-                    const emptyCommandLine = $(fotoForDelete).closest('.plateListItem').find('.emptyCommandLine');
-                    let userCount = $(userCard).find('.counFoto');
-                    let count = Number($(userCount).text());
-                    userCount.text(count - 1);
-
-                    if (count <= 1) {
-                      fullCommandLine.hide();
-                      emptyCommandLine.css('display', 'flex');
-                    }
-
-                    $(fotoForDelete).remove();
-                  },
-                });
-              } catch (error) {
-                console.log('error', error);
-                NProgress.done();
-              }
-            }
+            const container = $(this).closest('.attachedImg');
+            const element = container.find('.userFotoContent ');
+            deleteUserPhoto(this);
           }, 200);
         });
+
+        function deleteUserPhoto(element) {
+          console.log('deleteUserPhoto start');
+          return new Promise((resolve, reject) => {
+            const $element = $(element);
+            const confirmation = confirm('Ви впевнені, що хочете видалити цю фотографію?');
+            if (!confirmation) {
+              return resolve();
+            }
+            NProgress.start();
+
+            const data = getPhotoData($element);
+            console.log('data', data);
+            if (!data) return reject(new Error('Invalid data for deletion'));
+
+            universalRequest(
+              '/userListFoto',
+              'DELETE',
+              data,
+              {},
+              () => {
+                $element.closest('.userFoto').remove();
+                updatePhotoCount($element);
+                NProgress.done();
+                resolve();
+              },
+              error => {
+                NProgress.done();
+                reject(error);
+              }
+            );
+          });
+        }
+
+        function getPhotoData($element) {
+          console.log('start getPhotoData, element', $element);
+          const file = $element.closest('.attachedImg').find('.userFotoContent').attr('alt');
+          const UserID = $element.closest('.plateListItem').attr('id');
+          console.log('file, UserID', file, UserID);
+
+          if (!file || !UserID) return null;
+
+          return { UserID, file };
+        }
+
+        function updatePhotoCount($element) {
+          const userCard = $element.closest('.plateListItem');
+          const userCount = userCard.find('.counFoto');
+          const count = Number(userCount.text());
+          userCount.text(count - 1);
+
+          const fullCommandLine = userCard.find('.fullCommandLine');
+          const emptyCommandLine = userCard.find('.emptyCommandLine');
+
+          if (count <= 1) {
+            fullCommandLine.hide();
+            emptyCommandLine.css('display', 'flex');
+          }
+        }
 
         $('.userActions').hide();
 
@@ -2383,38 +2388,34 @@
           var $icon = $(this).find('i');
           $icon.toggleClass('bi-chevron-down bi-chevron-up');
         });
-      });
 
-      function addPhotoClose() {
-        $('#formAddPhoto').hide();
-      }
+        function scanPhotoClose() {
+          $('#formScanPhoto').hide();
+        }
 
-      function scanPhotoClose() {
-        $('#formScanPhoto').hide();
-      }
+        $('#addPhotoPhoto').on('click', function () {
+          const uid = $('#formAddPhoto').data('uid');
+          $('.plateListItem[id="' + uid + '"]')
+            .find('.addPhoto')
+            .click();
+          addPhotoClose();
+        });
 
-      $('#addPhotoPhoto').on('click', function () {
-        const uid = $('#formAddPhoto').data('uid');
-        $('.plateListItem[id="' + uid + '"]')
-          .find('.addPhoto')
-          .click();
-        addPhotoClose();
-      });
+        $('#addPhotoDownload').on('click', function () {
+          const uid = $('#formAddPhoto').data('uid');
+          $('.plateListItem[id="' + uid + '"]')
+            .find('.addPhotoFromFile')
+            .click();
+          addPhotoClose();
+        });
 
-      $('#addPhotoDownload').on('click', function () {
-        const uid = $('#formAddPhoto').data('uid');
-        $('.plateListItem[id="' + uid + '"]')
-          .find('.addPhotoFromFile')
-          .click();
-        addPhotoClose();
-      });
+        $('#addPhotoClose').on('click', function () {
+          addPhotoClose();
+        });
 
-      $('#addPhotoClose').on('click', function () {
-        addPhotoClose();
-      });
-
-      $('#scanPhotoClose').on('click', function () {
-        scanPhotoClose();
+        $('#scanPhotoClose').on('click', function () {
+          scanPhotoClose();
+        });
       });
     </script>
   </div>
