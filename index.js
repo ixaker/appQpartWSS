@@ -161,26 +161,12 @@ app.use('/auth_files/*', proxy('http://10.8.0.4', {
   }
 }));
 
-
-
 app.use(cookieParser());
 
-// + Обработчик админского обхода авторизации
 app.get('/uploadPhoto', (req, res, next) => {
   log.info('get uploadPhoto');
   res.sendFile(createPath('uploadPhoto.html'));
 });
-
-// + Обработчик админского обхода авторизации
-// app.get('/adminAuth', (req, res, next) => {
-//   let result = { detectUser: true };
-//   result.user = faceID.getUserInfoID('f9c18a95-123c-11ed-81c1-000c29006152');
-//   result.token = jwt.sign(result.user, secret, options);
-
-//   log.data('/adminAuth', result);
-
-//   res.send(result);
-// });
 
 function ensureDirectoryExistence(dirPath) {
   if (fs.existsSync(dirPath)) {
@@ -236,8 +222,6 @@ app.post('/saveFile', (req, res) => {
 
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.json({ limit: '100mb' }));
-
-
 
 // + Страничка - Оболочка с автоматической авторизацией
 app.get('/' + adminRoute, (req, res) => {
@@ -367,6 +351,13 @@ app.post('/authorizationByPassword', async (req, res) => {
         res.status(500).send('Користувача не знайдено в локальной базі бекенду.');
       }
       result.token = jwt.sign(result.user, secret, options);
+
+      const expiresIn = 365 * 24 * 60 * 60 * 1000;
+      const expiresDate = new Date(Date.now() + expiresIn);
+
+      res.cookie('token', result.token, {
+        expires: expiresDate
+      });
 
       const decodedToken = jwt.decode(result.token);
       log.info(`authorizationByPassword Token will expire at: ${new Date(decodedToken.exp * 1000).toISOString()}`);
