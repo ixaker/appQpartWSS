@@ -191,7 +191,7 @@
     placeholder="Текст заявки (необязательно)..."
   ></textarea>
 
-  <form id="canWork">
+  <form id="canWork" style="display: none">
     <div class="form-check">
       <input class="form-check-input" type="radio" name="canWorkInput" id="canWorkInput1" value="true" />
       <label class="form-check-label" for="canWorkInput1"> на станке можно работать </label>
@@ -1739,6 +1739,19 @@
     sortHandler('#sortStanok', '1', '0');
     sortHandler('#sortDate', '3', '1');
 
+    $('#newOrderStanok').on('change', function () {
+      console.log('stanok change');
+      const stanok = $('#newOrderStanok');
+      const canWork = $('#canWork');
+      if (stanok.val() !== '') {
+        canWork.show();
+        console.log('canwork show');
+      } else {
+        canWork.hide();
+        console.log('canwork hide');
+      }
+    });
+
     // click on saveOrder
     $('#saveOrder').on('click', function () {
       clickAnimate(this);
@@ -1755,8 +1768,8 @@
         $('#newOrderTopic').focus();
         return;
       }
-
-      if (canWork === undefined) {
+      console.log('stanokUID', stanokUID);
+      if (canWork === undefined && stanokUID) {
         toastr.error('Укажите можно ли работать на станке');
         $('input[name="canWorkInput"]').addClass('invalid-radio');
         return;
