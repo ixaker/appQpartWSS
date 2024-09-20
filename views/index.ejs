@@ -213,17 +213,17 @@
 
         <div id="loginByPassowrd" style="display: none">
           <div class="formContainer" id="formContainer">
-            <form>
+            <form id="loginForm" method="post">
               <div class="form-group">
                 <label for="username">Логін</label>
                 <input
                   type="text"
-                  form-control-lg
                   class="form-control form-control-lg"
                   id="username"
                   name="username"
                   required
                   placeholder="логін"
+                  autocomplete="username"
                 />
               </div>
               <div class="form-group">
@@ -236,6 +236,7 @@
                     name="password"
                     required
                     placeholder="пароль"
+                    autocomplete="current-password"
                   />
 
                   <span class="input-group-text" id="eye-password">
@@ -366,7 +367,7 @@
     <script src="lib/jquery.tablesorter.widgets.min.js?v=<%= version %>"></script>
     <script src="lib/handlebars.min.js?v=<%= version %>"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    <script src="lib/jquery.touchSwipe.min.js?v=<%= version %>"></script>
+    <!-- <script src="lib/jquery.touchSwipe.min.js?v=<%= version %>"></script> -->
 
     <!-- <script src="lib/jquery.mobile.min.js?v=<%= version %>"></script> -->
 
@@ -396,11 +397,9 @@
           });
         }
 
-        console.log('token from index.js ', token);
         if (token !== '') {
           // console.log('token from index.js записаний в кукіс');
-
-          $.cookie('token', token);
+          $.cookie('token', token, { expires: 365 });
         }
 
         function openLoginPassword() {
@@ -459,7 +458,7 @@
           closeLoginPassword();
         });
 
-        $('#loginBtn').on('click', function () {
+        $('#loginForm').on('submit', function () {
           event.preventDefault();
           clickAnimate(this);
           const username = $('#username').val();
