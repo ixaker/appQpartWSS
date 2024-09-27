@@ -1,10 +1,103 @@
-<style></style>
+<style>
+  .detailName {
+    font-size: x-large;
+    font-weight: 600;
+    width: 100%;
+    border-radius: 5px;
+  }
+
+  .stageName {
+    font-size: large;
+  }
+</style>
 
 <div id="detailContainer" class="container-slide" style="display: none">
-  Деталі
+  <header id="commandPanel" class="commandPanel">
+    <div class="titleContainer">
+      <i class="bi bi-arrow-left-circle backToMain" parent="#detailContainer"></i>
+      <div class="titleChildren">Деталі</div>
+      <span id="shiftDateUsers" class="titleShift"></span>
+    </div>
+    <div class="commandRow">
+      <div class="input-group-search rounded groupSearch" id="groupSearch">
+        <input
+          type="search"
+          id="searchDetails"
+          class="form-control rounded search"
+          placeholder="Поиск"
+          aria-label="Search"
+          aria-describedby="search-addon"
+        />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <div class="commandButtons"></div>
+    </div>
+  </header>
 
   <div id="detailList" class="containerForRender"></div>
 </div>
+
+<script id="detailsTemplate" type="text/x-handlebars-template">
+  {{#unless listDetali}}
+    <h4 class='noUsers mt-4 text-center'>Немає зроблених деталей на цій зміні</h4>
+  {{/unless}}
+  {{#each listDetali}}
+    <div class='plateListItem' id='{{uid}}'>
+      <div class='detailsFirstRow d-flex'>
+        <div class='detailName text-truncate'>
+          {{Деталь}}
+        </div>
+
+      </div>
+
+      <div class='detailsSecondRow'>
+        <div class='reportTable'>
+          {{#each ИнфоПоЭтапам}}
+            <div class='stageName text-center font-weight-bold mt-2'>{{Этап}}</div>
+            <table id='stanokLIst'>
+              <thead>
+                <tr>
+                  <th class='detailTd' style='width: 37%'>Станок.</th>
+                  <th class='stageTd' style='width: 25%'>Сотрудник</th>
+                  <th class='count' style='width: 8%; padding: 0'>К-во</th>
+                  <th class='count' style='width: 10%'>М</th>
+                  <th class='count' style='width: 10%'>П</th>
+                  <th class='count' style='width: 10%'>Д</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each Отчеты}}
+                  <tr>
+                    <td class='detailStanok'>{{Станок}}</td>
+                    <td class='detailSotrudnik'>{{Сотрудник}}</td>
+                    <td class='count text-right'>{{Количество}}</td>
+                    <td>{{М}}</td>
+                    <td>{{П}}</td>
+                    <td>{{Д}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+            <div class='textAlignEnd totalForTable font-weight-bold mt-1'>
+              Загальна кількість:
+              {{Количество}}
+              шт.
+            </div>
+          {{/each}}
+
+        </div>
+        <div class='stanokList'>
+          {{#unless ИнфоПоЭтапам}}
+            <div class='text-center w-100'>Немає інформації по етапах</div>
+          {{/unless}}
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</script>
 
 <script>
   $(document).ready(function () {});

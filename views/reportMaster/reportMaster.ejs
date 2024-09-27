@@ -1,9 +1,19 @@
 <%- include('reportMaster_details') %> <%- include('reportMaster_stanki') %> <%- include('reportMaster_users') %>
 
 <style>
+  #container {
+    max-width: 500px;
+  }
+  #content {
+    /* max-width: 500px; */
+    margin: 0 auto;
+  }
+
   #main {
     min-height: 80vh;
     overflow: auto;
+    max-width: 500px;
+    margin: 0 auto;
   }
 
   .main {
@@ -11,10 +21,12 @@
     max-width: 600px;
   }
 
-  #container {
-    max-width: 500px;
+  #containerSumInfo {
+    padding: 10px 10px 0 10px;
   }
-
+  #commandPanel {
+    margin-bottom: 10px;
+  }
   .titlePage {
     font-size: xx-large;
     line-height: normal;
@@ -24,6 +36,11 @@
     font-size: xx-large;
     color: darkgreen;
     margin-left: 15px;
+  }
+
+  .menuButton {
+    font-size: xx-large;
+    color: darkgreen;
   }
 
   #shiftHeader {
@@ -52,6 +69,9 @@
     margin: 0 30px;
   }
 
+  .plateListItem {
+    border: 2px solid darkgreen;
+  }
   .titleContainer {
     font-size: x-large;
     display: flex;
@@ -65,15 +85,13 @@
     font-weight: bold;
   }
 
-  .titleShifth {
-  }
   .plate {
     margin-bottom: 10px;
     border: 1px solid #bbbbbb;
     background-color: #ffffff;
     border-radius: 7px;
     box-shadow: 2px 3px 5px #999;
-    padding: 10px;
+    padding: 5px 10px 10px 10px;
 
     display: flex;
     flex-direction: column;
@@ -86,16 +104,14 @@
 
   .group {
     display: flex;
-    font-size: x-large;
+    font-size: large;
     line-height: 1.5em;
     justify-content: space-between;
     padding: 0 30px;
   }
 
-  .name {
-  }
-
-  .value {
+  .group:nth-child(odd) {
+    background-color: #e6e6e6;
   }
 
   .detailGroup {
@@ -181,33 +197,154 @@
     font-size: xx-large;
     color: darkgreen;
   }
+
+  th {
+    background: #e6e6e6;
+    color: black;
+    padding: 0 5px 0 5px;
+    border-color: #aaa;
+    font-size: x-small;
+  }
+
+  td {
+    font-size: small;
+    width: auto;
+    text-overflow: clip;
+  }
+
+  .tabulatorContainer {
+    width: 100%;
+  }
+
+  .tabulator .tabulator-cell {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+  }
+
+  .tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
+    text-overflow: clip;
+  }
+
+  .tabulator
+    .tabulator-header
+    .tabulator-col.tabulator-sortable[aria-sort='none']
+    .tabulator-col-content
+    .tabulator-col-sorter
+    .tabulator-arrow,
+  .tabulator
+    .tabulator-header
+    .tabulator-col.tabulator-sortable[aria-sort='asc']
+    .tabulator-col-content
+    .tabulator-col-sorter
+    .tabulator-arrow,
+  .tabulator
+    .tabulator-header
+    .tabulator-col.tabulator-sortable[aria-sort='desc']
+    .tabulator-col-content
+    .tabulator-col-sorter
+    .tabulator-arrow {
+    display: none;
+  }
+
+  @media (min-width: 500px) {
+    .tabulator
+      .tabulator-header
+      .tabulator-col.tabulator-sortable[aria-sort='none']
+      .tabulator-col-content
+      .tabulator-col-sorter
+      .tabulator-arrow,
+    .tabulator
+      .tabulator-header
+      .tabulator-col.tabulator-sortable[aria-sort='asc']
+      .tabulator-col-content
+      .tabulator-col-sorter
+      .tabulator-arrow,
+    .tabulator
+      .tabulator-header
+      .tabulator-col.tabulator-sortable[aria-sort='desc']
+      .tabulator-col-content
+      .tabulator-col-sorter
+      .tabulator-arrow {
+      display: block;
+    }
+  }
+
+  #stanokList {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  #stanokTable td {
+    font-size: x-small;
+  }
+
+  #stanokTable {
+    display: none;
+  }
+
+  .tablesorter th {
+    cursor: pointer;
+  }
+
+  .custom-arrow {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  select {
+    width: 18px;
+    background: transparent;
+    border: none;
+    color: white;
+  }
+
+  select:focus-visible {
+    outline: none;
+  }
+
+  select option {
+    color: black;
+  }
+
+  .totalForTable {
+    font-size: small;
+    padding-right: 3px;
+    margin-left: auto;
+  }
+
+  .totalForTables {
+    font-size: large;
+    padding-right: 3px;
+    margin-left: auto;
+  }
 </style>
 
-<div>
-  <div id="main" class="screen container-slide">
-    <header id="commandPanel" class="commandPanel">
-      <h3 class="titlePage">Отчет мастера</h3>
-      <i class="bi bi-pencil" id="btnMakeMaster"></i>
-    </header>
+<div id="main" class="screen container-slide">
+  <input type="date" id="testDate" />
+  <header id="commandPanel" class="commandPanel">
+    <h3 class="titlePage">Отчет мастера</h3>
+    <i class="bi bi-pencil" id="btnMakeMaster"></i>
+  </header>
 
-    <div id="shiftHeader">
-      <button id="prevShift" class="shiftButton">
-        <i class="bi bi-arrow-left-circle"></i>
-      </button>
-      <input id="shiftDate" name="shiftDate" type="text" readonly="" class="container-slide" />
-      <button id="nextShift" class="shiftButton">
-        <i class="bi bi-arrow-right-circle"></i>
-      </button>
-    </div>
+  <div id="shiftHeader">
+    <button id="prevShift" class="shiftButton">
+      <i class="bi bi-arrow-left-circle"></i>
+    </button>
+    <input id="shiftDate" name="shiftDate" type="text" readonly="" class="container-slide" />
+    <button id="nextShift" class="shiftButton">
+      <i class="bi bi-arrow-right-circle"></i>
+    </button>
+  </div>
 
-    <div id="containerSumInfo" class="container-slide"></div>
-    <div id="noShiftContainer" style="display: none">
-      <div class="noShiftText">
-        <p>Зміна ще не почалась.</p>
-        <p>До початку зміни:</p>
-      </div>
-      <div class="noShiftTimer">00:00:00</div>
+  <div id="containerSumInfo" class="container-slide"></div>
+  <div id="noShiftContainer" style="display: none">
+    <div class="noShiftText">
+      <p>Зміна ще не почалась.</p>
+      <p>До початку зміни:</p>
     </div>
+    <div class="noShiftTimer">00:00:00</div>
   </div>
 </div>
 
@@ -252,16 +389,36 @@
 
   <div id='details' class='plate' children='#detailContainer'>
     <div class='header'>Зроблені деталі</div>
-    {{#each detaliSumInfo.list}}
-      <div class='detailGroup'>
-        <div class='nameDet'>{{Артикул}} {{Деталь}}</div>
-        <div class='etapCount displayFlex'>
-          <div class='nameStage'>{{Этап}}</div>
-          <div class='valueDet'>{{Количество}} шт.</div>
-        </div>
+    <table id='detailsTable' class='tablesorter'>
+      <thead>
+        <tr>
+          <th class='detailTd' style='width: 30%;'>
+            Дет
+            <!-- <select id='detailFilter'>
+              <option value=''>Всі</option>
+            </select> -->
 
-      </div>
-    {{/each}}
+          </th>
+          <th class='stageTd' style='width: 60%;'>
+            Этап
+            <!-- 
+             -->
+          </th>
+          <th class='count' style='width: 10%; padding: 0;'>
+            К-во
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each detaliSumInfo.list}}
+          <tr>
+            <td class='detailTd'>{{Артикул}} {{Деталь}}</td>
+            <td class='stageTd'>{{Этап}}</td>
+            <td class='count text-right'>{{Количество}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
 </script>
 
@@ -284,11 +441,13 @@
   }
 
   $(document).ready(function () {
+    $('#testDate').datepicker({
+      dateFormat: 'dd/mm',
+    });
     let currentDate;
     let currentShift;
     let isShiftActive;
     let datepickerOpen = false;
-
     addSubscribeWSS('ОтчетЗаСмену_all');
 
     init();
@@ -319,23 +478,6 @@
         currentShift: shift,
       };
     }
-
-    // function getCurrentShift() {
-    //   currentShift = 'day';
-    //   // currentDate = new Date();
-    //   currentDate = new Date('2024-07-20T16:00:00');
-    //   const currentHour = currentDate.getHours();
-
-    //   if (currentHour > 19 && currentHour < 7) {
-    //     currentShift = 'night';
-
-    //     if (currentHour < 7) {
-    //       currentDate.setDate(currentDate.getDate() - 1);
-    //     }
-    //   }
-
-    //   console.log('currentDat, currentShift', currentDate, currentShift);
-    // }
 
     $('#prevShift').click(function () {
       getShift(-1);
@@ -410,6 +552,7 @@
       changeShift(direction);
       getReportFrom1C(direction);
     }
+
     async function getReportFrom1C(direction) {
       console.log('getReportFrom1C, currentDate, currentShift', currentDate, currentShift, direction);
       // changeShift(direction);
@@ -477,8 +620,6 @@
     });
 
     function renderTitle() {
-      console.log('currentDate', currentDate, currentDate.toISOString());
-
       const formattedDate = formatDate(currentDate.toISOString());
       const formattedShift = currentShift === 'day' ? 'день' : 'ніч';
       const titleText = `${formattedDate} - ${formattedShift}`;
@@ -568,6 +709,42 @@
         $('#containerSumInfo').show();
         $('#noShiftContainer').hide();
         generateFromTemplate('#mainTemplate', data.item, '#containerSumInfo');
+
+        $('#detailsTable').tablesorter();
+
+        const filterTable = () => {
+          const selectedDetail = $('#detailFilter').val().toLowerCase();
+          const selectedStage = $('#stageFilter').val().toLowerCase();
+
+          $('#detailsTable tbody tr').each(function () {
+            const detail = $(this).find('.detailTd').text().toLowerCase();
+            const stage = $(this).find('.stageTd').text().toLowerCase();
+
+            const matchesFilter =
+              (selectedDetail === '' || detail.includes(selectedDetail)) &&
+              (selectedStage === '' || stage.includes(selectedStage));
+            $(this).toggle(matchesFilter);
+          });
+        };
+
+        $('#detailFilter').change(filterTable);
+        $('#stageFilter').change(filterTable);
+
+        const populateSelect = (selector, columnClass) => {
+          const uniqueValues = new Set();
+
+          $(`#detailsTable tbody .${columnClass}`).each(function () {
+            uniqueValues.add($(this).text());
+          });
+
+          // $(selector).empty();
+          uniqueValues.forEach(value => {
+            $(selector).append(`<option value="${value}">${value}</option>`);
+          });
+        };
+
+        populateSelect('#detailFilter', 'detailTd');
+        populateSelect('#stageFilter', 'stageTd');
       } else {
         console.log('not item');
         $('#nextShift').addClass('disabled');
@@ -591,6 +768,8 @@
     });
 
     function renderStanki(data) {
+      $('#stanokContainer').data('data', data);
+
       if (isShiftActive) {
         filterOptions = {
           '#activeStankiFilter': {
@@ -660,7 +839,11 @@
         }
       } else {
         console.log('not active shift');
+
+        // let table = generateStankiTable(data);
+
         generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+
         filterOptions = {
           '#activeStankiFilter': {
             searchText: 'Задіяні',
@@ -668,13 +851,63 @@
             classList: ['statusMaster', 'statusFact'],
           },
         };
+
+        $('#stanokTable').tablesorter();
+
+        const filterStanokTable = () => {
+          const selectedStanok = $('#stanokFilter').val().toLowerCase();
+          const selectedOperator = $('#operatorFilter').val().toLowerCase();
+          const selectedStanokDetail = $('#stanokDetailFilter').val().toLowerCase();
+          const selectedStanokStage = $('#stanokStageFilter').val().toLowerCase();
+
+          $('#stanokTable tbody tr').each(function () {
+            const stanok = $(this).find('.stanokTd').text().toLowerCase();
+            const operator = $(this).find('.operatorTd').text().toLowerCase();
+            const stanokDetail = $(this).find('.detailTd').text().toLowerCase();
+            const stanokStage = $(this).find('.stanokStageFilter').text().toLowerCase();
+
+            const matchesFilter =
+              (selectedStanok === '' || stanok.includes(selectedStanok)) &&
+              (selectedOperator === '' || operator.includes(selectedOperator)) &&
+              (selectedStanokDetail === '' || stanokDetail.includes(selectedStanokDetail)) &&
+              (selectedStanokStage === '' || stanokStage.includes(selectedStanokStage));
+            $(this).toggle(matchesFilter);
+          });
+        };
+
+        $('#stanokFilter').change(filterStanokTable);
+        $('#operatorFilter').change(filterStanokTable);
+        $('#stanokDetailFilter').change(filterStanokTable);
+        $('#stanokStageFilter').change(filterStanokTable);
+
+        const populateStanokSelect = (selector, columnClass) => {
+          const uniqueValues = new Set();
+
+          $(`#stanokTable tbody .${columnClass}`).each(function () {
+            uniqueValues.add($(this).text());
+          });
+
+          uniqueValues.forEach(value => {
+            $(selector).append(`<option value="${value}">${value}</option>`);
+          });
+        };
+
+        populateStanokSelect('#stanokFilter', 'stanokTd');
+        populateStanokSelect('#operatorFilter', 'operatorTd');
+        populateStanokSelect('#stanokDetailFilter', 'detailTd');
+        populateStanokSelect('#stanokStageFilter', 'stageTd');
       }
 
-      // initInputAutocomplete('.operator', 0, filterOperatorNaladchick);
       initOtherState();
       initFilter('filterMenu', 'filter');
       initFilters(filterOptions);
+
+      console.log('tabulatorContainer display', $('#tabulatorContainer').css('display'));
     }
+
+    $(document).on('click', function (event) {
+      console.log('click on e.targer', event.target);
+    });
 
     $(document).on('click', '#stanki', function () {
       console.log('this', $(this).attr('id'), $('#ui-datepicker-div').hasClass('datepicker-open'));
@@ -686,7 +919,6 @@
       const param = $(this).attr('id');
       showPage(this);
       getInfoByParam(param, renderStanki);
-      // renderStanki();
     });
 
     function renderUsers(data) {
@@ -705,10 +937,26 @@
         event.stopImmediatePropagation();
         return;
       }
-      showPage(this);
       const param = $(this).attr('id');
       showPage(this);
       getInfoByParam(param, renderUsers);
+    });
+
+    function renderDetails(data) {
+      console.log('renderDetails data', data, $('#detailsTemplate'));
+      generateFromTemplate('#detailsTemplate', data.item, '#detailList');
+      setupSearch('#searchDetails', '.plateListItem', ['.detailName , .detailSotrudnik, .stageName, .detailStanok']);
+    }
+
+    $(document).on('click', '#details', function () {
+      console.log('click users');
+      if ($('#ui-datepicker-div').is(':visible')) {
+        event.stopImmediatePropagation();
+        return;
+      }
+      const param = $(this).attr('id');
+      showPage(this);
+      getInfoByParam(param, renderDetails);
     });
 
     $(document).on('click', '.backToMain', function () {

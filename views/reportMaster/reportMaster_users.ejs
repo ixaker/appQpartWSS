@@ -75,12 +75,6 @@
     text-align: end;
   }
 
-  .isReports {
-    width: 45px;
-    display: flex;
-    gap: 3px;
-  }
-
   .blue {
     color: blue;
   }
@@ -92,7 +86,7 @@
   }
 
   .userSecondRow {
-    display: flex;
+    /* display: none; */
     font-size: large;
     flex-direction: column;
   }
@@ -112,7 +106,6 @@
     flex-wrap: wrap;
     width: 100%;
     max-width: 100%;
-    margin-top: 10px;
   }
 
   .stanok {
@@ -278,7 +271,6 @@
               <div class='machineCount d-flex align-items-center'>
                 <img src='/img/machine.png' alt='stanok' class='machine' />{{КоличествоСтанков}}
               </div>
-              <div class='isReports'><i class='bi bi-file-earmark-text'></i>{{КоличествоОтчетов}}</div>
 
               <div class='phone'>
                 <a href='tel:{{tel_1}}'> <i class='bi bi-telephone-fill btn btnTel'></i></a>
@@ -337,42 +329,56 @@
           </div>
           {{/if}}
 
-        <div class='userSecondRow d-none'>
+        <div class='userSecondRow'>
           <div class="mt-2">
           {{#each Посещаемость}}
           <div class="attendance">
-            {{ВремяПрихода}} - {{ВремяУхода}}
+            Час роботи з {{ВремяПрихода}} по {{ВремяУхода}}
           </div>
           {{/each}}
         </div>
-          <div class='stanokList'>
-            {{#unless КоличествоОтчетов}}<div class="text-center w-100">Немає звітів</div>{{/unless}}
-            {{#each listStanok}}
+        <div class="reportTable">
 
-              <div class='reportContainer'>
-                <div class='reportAutor text-center text-truncate'>{{Станок}}</div>
+          {{#each listStanok}}
+          <div class="stanokNameTable text-center font-weight-bold mt-2">{{Станок}}</div>
+            <table id="stanokLIst">
+              <thead>
+                <tr>
+                  <!-- <th class='stanokTd' style="width: 20%;">Ст.</th> -->
+                  <th class='detailTd' style="width: 30%;">Дет.</th>
+                  <th class='stageTd' style="width: 30%;">Этап</th>
+                  <th class='count' style="width: 8%; padding: 0;">К-во</th>
+                  <th class='count' style="width: 10%;">М</th>
+                  <th class='count' style="width: 10%;">П</th>
+                  <th class='count' style="width: 10%;">Д</th>
+
+                </tr>
+              </thead>
+              <tbody>
                 {{#each listReport}}
-                  <div class='stanokDetailGroup'>
-                    <div class='stanokDetailHeader d-flex'>
-                      <div class='stanokNameDet text-truncate'>{{Деталь}}</div>
-                      <div class='notes d-flex'>
-                        {{#if Проведен}}<i class='bi bi-check proveden'></i>{{/if}}
-                        {{#if СтатусОТК}}<div class='otk'>ОТК</div>{{/if}}
-                      </div>
-                    </div>
-                    <div class='stanokEtapCount displayFlex'>
-                      <div class='nameStage'>{{Этап}}</div>
-                      <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
-                    </div>
-                    <div class='reportTime d-flex gap-2'>
-                      <i class='bi bi-clock color'> М <span class='time'>{{МашинноеВремя}}</span></i>
-                      <i class='bi bi-clock color'> П <span class='time'>{{ПолноеВремя}}</span></i>
-                      <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}:00</span></i>
-                    </div>
-                  </div>
+                    <tr>
+                      <!-- <td>{{../Станок}}</td> -->
+                      <td>{{Деталь}}</td>
+                      <td>{{Этап}}</td>
+                      <td class='count text-right'>{{Количество}}</td>
+                      <td>{{М}}</td>
+                      <td>{{П}}</td>
+                      <td>{{Д}}</td>
+                    </tr>
                 {{/each}}
-              </div>
-            {{/each}}
+              </tbody>
+            </table>
+            <div class="textAlignEnd totalForTable">
+              {{totalTime}}
+            </div>
+          {{/each}}
+            {{#if totalTime}}
+          <div class="textAlignEnd totalForTables">Загальний час: {{totalTime}}</div>
+          {{/if}}
+        </div>
+        <div class='stanokList'>
+
+
           </div>
         </div>
       </div>
@@ -402,7 +408,6 @@
               <div class='machineCount d-flex align-items-center'>
                 <img src='/img/machine.png' alt='stanok' class='machine' />{{КоличествоСтанков}}
               </div>
-              <div class='isReports'><i class='bi bi-file-earmark-text'></i>{{КоличествоОтчетов}}</div>
 
               <div class='phone'>
                 <a href='tel:{{tel_1}}'> <i class='bi bi-telephone-fill btn btnTel'></i></a>
@@ -452,7 +457,7 @@
                     <div class='reportTime d-flex gap-2'>
                       <i class='bi bi-clock color'> М <span class='time'>{{МашинноеВремя}}</span></i>
                       <i class='bi bi-clock color'> П <span class='time'>{{ПолноеВремя}}</span></i>
-                      <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}:00</span></i>
+                      <i class='bi bi-clock color'> Д <span class='time'>{{ДлительностьВремя}}</span></i>
                     </div>
                   </div>
                 {{/each}}
@@ -575,6 +580,16 @@
         if (currentCheckbox.prop('checked')) {
           $('#filterMenuUsers input[type="checkbox"]').not(currentCheckbox).prop('checked', false).trigger('change');
         }
+
+        // const checkboxStates = [];
+        // $('#filterMenuUsers input[type="checkbox"]').each(function (index, checkbox) {
+        //   const isChecked = $(checkbox).prop('checked');
+        //   const symbol = isChecked ? '-' : 'X'; // Символи для checked та unchecked
+        //   checkboxStates.push(`Checkbox ${index + 1}: ${symbol}`);
+        // });
+
+        // // Виводимо всі стани одночасно
+        // console.log(checkboxStates.join(', '));
       }, 0);
     });
 
@@ -647,13 +662,17 @@
       }
     });
 
-    $(document).on('click', '.userFirstRow', function () {
-      console.log('userFirstRow click');
-      const container = $(this).closest('.plateListItem');
-      const reports = container.find('.userSecondRow');
-      console.log('reports', container, reports);
-      reports.toggleClass('d-none');
-    });
+    // $(document).on('click', '.userFirstRow', function () {
+    //   console.log('userFirstRow click');
+    //   const container = $(this).closest('.plateListItem');
+    //   const reports = container.find('.userSecondRow');
+    //   console.log('reports', container, reports);
+    //   if (reports.css('display') === 'none') {
+    //     reports.css('display', 'flex');
+    //   } else {
+    //     reports.css('display', 'none');
+    //   }
+    // });
 
     $('#searchUsers').on('input', function () {
       let searchTerms = $(this).val().split(' ').filter(Boolean);

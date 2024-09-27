@@ -1,10 +1,13 @@
 <style>
   .containerStanok {
-    padding: 5px;
     display: flex;
     flex-direction: column;
     gap: 5px;
     font-size: medium;
+  }
+
+  th {
+    font-size: x-small;
   }
 
   .stanokFirstRow {
@@ -22,6 +25,7 @@
     gap: 0px;
     font-size: large;
     flex-wrap: wrap;
+    padding-top: 2px;
   }
 
   .inputContainer {
@@ -86,7 +90,10 @@
     font-size: large;
   }
 
-  #groupSearch {
+  @media screen and (min-width: 500px) {
+    #groupSearch {
+      width: 250px;
+    }
   }
 
   .proveden {
@@ -109,10 +116,6 @@
   }
 
   .reportContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 100%;
   }
   .stanokDetailGroup {
     font-size: large;
@@ -158,11 +161,6 @@
     margin-right: 5px;
   }
 
-  .countReports {
-    width: 10%;
-    gap: 4px;
-  }
-
   .kkd {
     width: 30%;
   }
@@ -170,6 +168,14 @@
   .patronImg {
     height: 18px;
     margin: 0 3px 3px;
+  }
+
+  #columnHide {
+    margin-right: 10px;
+  }
+
+  #columnHideMenu {
+    min-width: 160px;
   }
 </style>
 
@@ -198,7 +204,10 @@
       <div class="commandButtons">
         <!-- <i class="bi bi-card-checklist" id="reportsFilter"></i> -->
         <!-- <i class="bi bi-check-circle cmdButton" id="activeFilter"></i> -->
-        <i class="bi bi-funnel-fill menuButton" id="filter"><div class="filterCount"></div></i>
+        <i class="bi bi-funnel-fill menuButton" id="filter" title="Фільтр"><div class="filterCount"></div></i>
+        <i class="bi bi-pencil menuButton" id="columnHide" title="Фільтр колонок" style="display: none"></i>
+        <div id="columnHideMenu" class="menuContainer" style="display: none; position: absolute"></div>
+        <i class="bi bi-table menuButton" id="changeView" title="Змінити вигляд"></i>
         <div id="filterMenu" class="menuContainer">
           <div class="menuItem">
             <div class="form-check">
@@ -211,8 +220,30 @@
     </div>
   </header>
 
+  <div id="tabulatorContainer" style="display: none"></div>
+  <div id="stanokTableContainer" style="display: none"></div>
   <div id="stanokList" class="containerForRender"></div>
 </div>
+
+<style>
+  #stanokTable {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #stanokTable .count {
+    width: 32px;
+  }
+
+  #stanokTable .duration {
+    text-align: right;
+    width: 45px; /* Фіксована ширина для duration */
+  }
+
+  #stanokTable .stanokTd {
+    width: 9%;
+  }
+</style>
 
 <script id="stanokCloseTemplate" type="text/x-handlebars-template">
   {{#each this}}
@@ -224,45 +255,57 @@
           </div>
         </div>
 
+        {{#each СписокРаботПоСтанку}}
+        <div class="reportContainer">
+          <div class='reportAutor text-center'>{{Оператор}}</div>
+
+          <table>
+            <thead>
+              <tr>
+                <!-- <th class='stanokTd' style="width: 20%;">Ст.</th> -->
+                <th class='detailTd' style="width: 30%;">Дет.</th>
+                <th class='stageTd' style="width: 30%;">Этап</th>
+                <th class='count' style="width: 8%; padding: 0;">К-во</th>
+                <th class='count' style="width: 10%;">М</th>
+                <th class='count' style="width: 10%;">П</th>
+                <th class='count' style="width: 10%;">Д</th>
+
+              </tr>
+            </thead>
+            <tbody>
+          {{#each СписокОтчетовПоСотруднику}}
+          <tr>
+            <td class='detailTd'>{{Артикул}}{{Деталь}}</td>
+            <td class='stageTd'>{{Этап}}</td>
+            <td class='count text-right'>{{Количество}}</td>
+            <td class='count text-right'>{{М}}</td>
+            <td class='count text-right'>{{П}}</td>
+            <td class='count text-right'>{{Д}}</td>
+          </tr>
+
+            {{/each}}
+
+
+            </tbody>
+          </table>
+          <div class="textAlignEnd totalForTable">
+            {{totalTime}}
+          </div>
+        </div>
+        {{/each}}
         <div class='stanokSecondRow d-flex align-items-center'>
           <div class="patron align-items-center d-flex">
             <img src="img/patron.png" class="patronImg" alt="patron icon" />
             {{#if РучнойПатрон}}Р{{/if}}{{#unless РучнойПатрон}}А{{/unless}}
           </div>
           <div class='kkd d-flex'>ККД: {{ККД}}%</div>
-          {{#if КоличествоОтчетов}}<div class='countReports d-flex'><i class="bi bi-card-checklist"></i> {{КоличествоОтчетов}}</div>{{/if}}
           {{#unless КоличествоОтчетов}} <div class='statusMaster'>{{Статус.Наименование}}</div> {{/unless}}
           <div class='statusFact d-none'>Статус по звітах: {{СтатусФакт}}</div>
-
+          {{#if totalTime}}
+          <div class="textAlignEnd totalForTables">Загальний час: {{totalTime}}</div>
+          {{/if}}
         </div>
 
-        {{#each СписокРаботПоСтанку}}
-        <div class="reportContainer">
-          <div class='reportAutor text-center'>{{Оператор}}</div>
-
-              {{#each СписокОтчетовПоСотруднику}}
-              <div class='stanokDetailGroup'>
-                <div class="stanokDetailHeader d-flex">
-                  <div class='stanokNameDet'>{{Артикул}} {{Деталь}}</div>
-                    <div class="notes d-flex">
-                      {{#if Проведен}}<i class="bi bi-check proveden"></i>{{/if}}
-                      {{#if СтатусОТК}}<div class="otk">ОТК</div>{{/if}}
-                    </div>
-                </div>
-                <div class='stanokEtapCount displayFlex'>
-                  <div class='nameStage'>{{Этап}}</div>
-                  <div class='stanoValueDet'>{{КоличествоИзготовлено}} шт.</div>
-                </div>
-                <div class="reportTime d-flex gap-2">
-                  <i class="bi bi-clock color"> М <span class="time">{{МашинноеВремя}}</span></i>
-                  <i class="bi bi-clock color"> П <span class="time">{{ПолноеВремя}}</span></i>
-                  <i class="bi bi-clock color"> Д <span class="time">{{ДлительностьВремя}}:00</span></i>
-
-                </div>
-              </div>
-              {{/each}}
-        </div>
-        {{/each}}
       </div>
     </div>
   </div>
@@ -370,36 +413,69 @@
       $(container).html(html);
     }
 
+    $('#changeView').on('click', function () {
+      clickAnimate(this);
+      $('#stanokTableContainer').toggle();
+      $('#tabulatorContainer').toggle();
+      $('#stanokList').toggle();
+      $('#filter').toggle();
+      $('#columnHide').toggle();
+      $(this).toggleClass('bi-table bi-view-stacked');
+      let table;
+      if ($('#tabulatorContainer').is(':visible')) {
+        const data = $('#stanokContainer').data('data');
+
+        if (!table) {
+          table = generateStankiTable(data);
+        } else {
+          table.setData(data);
+        }
+      } else {
+        if (table) {
+          table.destroy();
+          table = null;
+        }
+      }
+    });
+
     $('#search').on('input', function () {
-      let searchTerms = $(this).val().split(' ').filter(Boolean);
+      const searchString = $(this).val().replace(/~/g, '');
+      let searchTerms = searchString.split(' ').filter(Boolean);
 
       $('.plateListItem').each(function () {
         let found = true;
         let elements = $(this)
           .find(
-            '.number, .hideOperator, .stanokDetail, .statusFact, .statusMaster, .reportAutor, .stanokNameDet, .otk, .nameStage   '
+            '.number, .hideOperator, .stanokDetail, .statusFact, .statusMaster, .reportAutor, .stanokNameDet, .stageTd, .detailTd'
           )
           .map(function () {
             return { el: $(this) };
           })
           .get();
         elements.forEach(element => {
-          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
-        });
+          // element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
 
+          element.text = element.el.text().replace('<mark>', '');
+          element.text = element.el.text().replace('</mark>', '');
+        });
+        console.log('elements[0]', $(elements[0]));
         if (searchTerms.length > 0) {
           found = searchTerms.every(term => {
             const regex = new RegExp(`(${term})`, 'gi');
             return elements.some(element => {
               if (element.text.match(regex)) {
-                element.text = element.text.replace(regex, '<mark>$1</mark>');
+                element.text = element.text.replace(regex, '<~~~~>$1</~~~~>');
+                // element.text = element.text.replace(term, '<mark>${term}</mark>');
                 return true;
               }
               return false;
             });
           });
         }
-
+        elements.some(element => {
+          element.text = element.text.replace(/~~~~/g, 'mark');
+          console.log('element.text', element.text);
+        });
         $(this).toggleClass('hide', !found);
         elements.forEach(element => {
           element.el.html(element.text);
@@ -407,7 +483,153 @@
       });
     });
 
-    // filterItemsByText(['statusMaster', 'statusFact'], 'Задіяні', '#activeStankiFilter');
+    function generateStankiTable(data) {
+      function flattenData(data) {
+        const flattened = [];
+
+        data.forEach(item => {
+          const stanok = item.Станок; // Ваш об'єкт станка
+
+          item.СписокРаботПоСтанку.forEach(work => {
+            work.СписокОтчетовПоСотруднику.forEach(report => {
+              flattened.push({
+                Станок: stanok,
+                Оператор: work.Оператор,
+                Деталь: report.Деталь,
+                Этап: report.Этап,
+                КоличествоИзготовлено: report.Количество,
+                МашинноеВремя: report.М,
+                ПолноеВремя: report.П,
+                ДлительностьВремя: report.Д,
+              });
+            });
+          });
+        });
+
+        return flattened;
+      }
+
+      const flatData = flattenData(data.item.listStanki);
+
+      let sumTime = function (values) {
+        let totalMinutes = 0;
+        values.forEach(value => {
+          if (value) {
+            const [hours, minutes] = value.split(':').map(Number);
+            totalMinutes += hours * 60 + minutes;
+          }
+        });
+
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      };
+
+      let table = new Tabulator('#tabulatorContainer', {
+        data: flatData,
+        layout: 'fitColumns',
+        responsiveLayout: 'hide',
+        resizableRows: false,
+        columns: [
+          {
+            title: 'Станок',
+            field: 'Станок',
+            minWidth: 50,
+          },
+          { title: 'Оператор', field: 'Оператор', minWidth: 50, widthGrow: 1 },
+          { title: 'Деталь', field: 'Деталь', minWidth: 50, widthGrow: 1 },
+          { title: 'Етап', field: 'Этап', minWidth: 50, widthGrow: 1 },
+          {
+            title: 'К',
+            field: 'КоличествоИзготовлено',
+            hozAlign: 'right',
+            minWidth: 10,
+            width: 30,
+          },
+          { title: 'М', field: 'МашинноеВремя', hozAlign: 'right', width: 45, responsive: 1 },
+          { title: 'П', field: 'ПолноеВремя', hozAlign: 'right', width: 45, responsive: 1 },
+          {
+            title: 'Д',
+            field: 'ДлительностьВремя',
+            width: 45,
+            hozAlign: 'right',
+            responsive: 0,
+            bottomCalc: function (values, data, calcParams) {
+              if (data.length > 1) {
+                $('.tabulator-footer').show();
+                return sumTime(values);
+              } else {
+                $('.tabulator-footer').hide();
+              }
+              return '';
+            },
+          },
+        ],
+        tableBuilt: searchInit,
+        resizableRows: false,
+      });
+
+      var generateColumnHideMenu = function () {
+        let menuContainer = document.getElementById('columnHideMenu');
+        menuContainer.innerHTML = '';
+
+        let columns = table.getColumns();
+
+        columns.forEach(function (column) {
+          let checkbox = document.createElement('input');
+          checkbox.setAttribute('type', 'checkbox');
+          checkbox.checked = column.isVisible();
+
+          let label = document.createElement('label');
+          label.style.display = 'block';
+
+          let title = document.createElement('span');
+          title.textContent = ' ' + column.getDefinition().title;
+
+          checkbox.addEventListener('change', function () {
+            column.toggle();
+            checkbox.checked = column.isVisible();
+          });
+
+          label.appendChild(checkbox);
+          label.appendChild(title);
+          menuContainer.appendChild(label);
+        });
+      };
+      openMenu('columnHide', 'columnHideMenu');
+
+      $('#columnHide').on('click', function () {
+        generateColumnHideMenu();
+      });
+
+      function searchInit() {
+        $('#search').on('input', function () {
+          var searchValue = $(this).val();
+          console.log('search input', searchValue);
+          table.clearFilter();
+
+          var searchTerms = searchValue.split(' ').filter(term => term.length > 0);
+
+          if (searchTerms.length > 0) {
+            var filters = [];
+
+            searchTerms.forEach(term => {
+              filters.push([
+                { field: 'Станок', type: 'like', value: term },
+                { field: 'Оператор', type: 'like', value: term },
+                { field: 'Деталь', type: 'like', value: term },
+                { field: 'Этап', type: 'like', value: term },
+              ]);
+            });
+
+            table.setFilter(filters, 'or');
+          }
+        });
+        $('#search').trigger('input');
+      }
+      return table;
+    }
   });
 
   function initSelect(data) {
@@ -431,6 +653,7 @@
     });
 
     $('.statusSelect').on('change', function () {
+      console.log('select onchange');
       let container = $(this).closest('.plateListItem');
       let inputOperator = container.find('.operator ');
       let inputOtherStateContainer = container.find('.otherStateContainer');
