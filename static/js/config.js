@@ -744,13 +744,13 @@ function resizeImage(file, targetWidth = 150) {
     });
 }
 
-// menu functionality
 function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
-    console.log('start openMenu',);
+    console.log('start openMenu', menuContainerId);
     const menuButton = $(`#${menuButtonId}`);
     const menuContainer = $(`#${menuContainerId}`);
 
     menuButton.off('click').on('click', function (event) {
+        clickAnimate(event.target)
         console.log('click open menu');
         event.stopPropagation();
 
@@ -761,27 +761,21 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
         const menuHeight = menuContainer.outerHeight();
         console.log('buttonOffset, buttonHeight, buttonWidth, menuWidth', buttonOffset, buttonHeight, buttonWidth, menuWidth);
 
-        // Calculate initial position
         let top = buttonOffset.top + buttonHeight;
         let left = buttonOffset.left - (menuWidth / 2) + (buttonWidth / 2);
 
-        // Adjust position if the menu is going out of screen
         const windowWidth = $(window).width();
         const windowHeight = $(window).height();
 
-        // Adjust left position
         if (left < 0) {
             left = 0;
         } else if (left + menuWidth > windowWidth) {
-            console.log('left + menuWidth > windowWidth',);
             left = windowWidth - menuWidth - 5;
         }
 
-        // Adjust top position if menu goes below viewport
         if (top + menuHeight > windowHeight) {
-            top = buttonOffset.top - menuHeight; // Position above the button
+            top = buttonOffset.top - menuHeight;
         }
-
 
         menuContainer.css({
             top: top,
@@ -806,6 +800,7 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
 function initFilter(idFilterMenu, idFilterButton) {
     console.log('initFilter');
     const button = $('#' + idFilterButton);
+    clickAnimate(button);
     const menu = $('#' + idFilterMenu);
     console.log('initFilter', button, menu);
 
@@ -848,6 +843,7 @@ function initFilters(filterSettings) {
     console.log('initFilters',);
     Object.keys(filterSettings).forEach(filterId => {
         $(filterId).on('change', function () {
+            clickAnimate(this);
             const isChecked = $(this).is(':checked');
             const searchText = isChecked ? filterSettings[filterId].searchTerm : '';
             filterSettings[filterId].searchText = searchText;
@@ -906,10 +902,52 @@ function formatSecondsToHHMMSS(seconds) {
         .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
+// function setupSearch(inputSelector, itemSelector, filterSelectors) {
+//     $(inputSelector).on('input', function () {
+//         let searchTerms = $(this).val().split(' ').filter(Boolean);
+
+//         $(itemSelector).each(function () {
+//             let found = true;
+//             let elements = $(this)
+//                 .find(filterSelectors.join(', '))
+//                 .map(function () {
+//                     return { el: $(this) };
+//                 })
+//                 .get();
+//             elements.forEach(element => {
+//                 console.log('element', element);
+//                 element.text = element.el.text().replace('<mark>', '');
+//                 element.text = element.el.text().replace('</mark>', '');
+//             });
+
+//             if (searchTerms.length > 0) {
+//                 found = searchTerms.every(term => {
+//                     const regex = new RegExp(`(${term})`, 'gi');
+//                     return elements.some(element => {
+//                         if (element.text.match(regex)) {
+//                             element.text = element.text.replace(regex, '<~~~~>$1</~~~~>');
+//                             return true;
+//                         }
+//                         return false;
+//                     });
+//                 });
+//             }
+
+//             elements.some(element => {
+//                 element.text = element.text.replace(/~~~~/g, 'mark');
+//                 console.log('element.text', element.text);
+//             });
+
+//             $(this).toggleClass('hide', !found);
+//             elements.forEach(element => {
+//                 element.el.html(element.text);
+//             });
+//         });
+//     });
+// }
+
 function setupSearch(inputSelector, itemSelector, filterSelectors) {
-    console.log('$(inputSelector)', $(inputSelector));
     $(inputSelector).on('input', function () {
-        console.log('start input',);
         let searchTerms = $(this).val().split(' ').filter(Boolean);
 
         $(itemSelector).each(function () {
@@ -917,34 +955,37 @@ function setupSearch(inputSelector, itemSelector, filterSelectors) {
             let elements = $(this)
                 .find(filterSelectors.join(', '))
                 .map(function () {
-                    return { el: $(this) };
+                    return { el: $(this), originalText: $(this).text() };
                 })
                 .get();
 
             elements.forEach(element => {
-                element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+                element.el.html(element.originalText);
             });
 
             if (searchTerms.length > 0) {
                 found = searchTerms.every(term => {
                     const regex = new RegExp(`(${term})`, 'gi');
-                    return elements.some(element => {
-                        if (element.text.match(regex)) {
-                            element.text = element.text.replace(regex, '<mark>$1</mark>');
-                            return true;
+                    let termFound = false;
+
+                    elements.forEach(element => {
+                        if (element.originalText.match(regex)) {
+                            element.el.html(element.originalText.replace(regex, '<mark>$1</mark>'));
+                            termFound = true;
                         }
-                        return false;
                     });
+
+                    return termFound;
                 });
+            } else {
+                found = true;
             }
 
             $(this).toggleClass('hide', !found);
-            elements.forEach(element => {
-                element.el.html(element.text);
-            });
         });
     });
 }
+
 
 const spiner = `<div class="spinner-border qpartSpinerForWaiting" role="status">
                     <span class="sr-only">Loading...</span>
