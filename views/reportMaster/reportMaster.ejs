@@ -322,7 +322,6 @@
 </style>
 
 <div id="main" class="screen container-slide">
-  <input type="date" id="testDate" />
   <header id="commandPanel" class="commandPanel">
     <h3 class="titlePage">Отчет мастера</h3>
     <i class="bi bi-pencil" id="btnMakeMaster"></i>
@@ -441,9 +440,6 @@
   }
 
   $(document).ready(function () {
-    $('#testDate').datepicker({
-      dateFormat: 'dd/mm',
-    });
     let currentDate;
     let currentShift;
     let isShiftActive;
