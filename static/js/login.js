@@ -15,6 +15,8 @@ function startCamera() {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
             video.srcObject = stream;
 
+            $('#ovalMask').css('display', 'flex');
+
             couterRequest = 0;
 
             $('#btnStartVideo').hide();
@@ -47,6 +49,7 @@ function stopTimeoutCamera() {
     if ($('#video').is(':visible')) {
         $('#btnStartVideo').show();
         $('#video').hide();
+        $('#ovalMask').hide();
         NProgress.done();
     }
 }
@@ -65,7 +68,7 @@ function exit() {
     //$('#exit').hide();
     //$('#navbar_text').hide();
     //$('#btnBurger').hide();
-    $('#content').hide();
+    $('#content').html('');
     NProgress.done();
     $('.navbar-collapse').collapse('hide');
     $('#navbar-brand-text').text('Qpart');
@@ -190,6 +193,8 @@ function loadMenu(userInfo, token, version) {
     $('#login').hide();
     $('#btnStartVideo').hide();
     $('#video').hide();
+    $('#ovalMask').hide();
+
     $('#content').show();
 
     //reconectWebSocket();
