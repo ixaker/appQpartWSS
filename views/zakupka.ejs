@@ -1033,10 +1033,7 @@
 
     // handle right to edit ва
     // const usersAllowToEdit = ['Соболев Андрей', 'Голуб Виталий'];
-
     // const whatUserCan = userRights[pageUID];
-    console.log('userRights', userRights, pageUID, userRights);
-
     // const canUserEdit = (user, usersAllowToEdit) => usersAllowToEdit.includes(user.name);
 
     const setEditableState = (selector, state) => {
@@ -1053,13 +1050,11 @@
     // const toggleEditability = (user, usersAllowToEdit) => {
     //   const isEditableExecutor = canUserEdit(user, usersAllowToEdit);
     //   console.log('isEditableExecutor', isEditableExecutor);
-
     //   const isEditable = false;
     //   setEditableState('#zakupkaExecutor', isEditableExecutor);
     //   setEditableState('#zakupkaPriority', isEditableExecutor);
     //   setEditableState('#zakupkaStatus', isEditableExecutor);
     // };
-
     // toggleEditability(user, usersAllowToEdit);
 
     const usersCanShowViews = ['Голуб Виталий', 'Кошубський Олександр '];
@@ -1107,9 +1102,6 @@
       }
       // $(`#historyContainer .view-card`).css('display', 'flex');
       // $(`.card-avatar`).removeClass('selected');
-
-      console.log('elements for show', $('.view-card'));
-      // console.log($(`#historyContainer .view-card[uid]:not([uid="${uid}"])`));
     });
 
     addSubscribeWSS('ЗаявкаНаЗакупку_all');
@@ -1276,7 +1268,7 @@
       const showEyeIcon = hasUserSeenLastChanges(user.uid, data.data.Просмотры, data.data.ДатаПоследнейАктивности);
       const linkedText = text.replace(
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
-        '<a href="$1" class="zakupkaLink" target="_blank">ccылка</a>'
+        '<a href="$1" class="zakupkaLink" target="_blank">ccылка...</a>'
       );
       const templateData = {
         orderNumber: orderNumber,
