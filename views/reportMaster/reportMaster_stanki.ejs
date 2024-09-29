@@ -438,50 +438,50 @@
       }
     });
 
-    $('#search').on('input', function () {
-      const searchString = $(this).val().replace(/~/g, '');
-      let searchTerms = searchString.split(' ').filter(Boolean);
+    // $('#search').on('input', function () {
+    //   const searchString = $(this).val().replace(/~/g, '');
+    //   let searchTerms = searchString.split(' ').filter(Boolean);
 
-      $('.plateListItem').each(function () {
-        let found = true;
-        let elements = $(this)
-          .find(
-            '.number, .hideOperator, .stanokDetail, .statusFact, .statusMaster, .reportAutor, .stanokNameDet, .stageTd, .detailTd'
-          )
-          .map(function () {
-            return { el: $(this) };
-          })
-          .get();
-        elements.forEach(element => {
-          // element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+    //   $('.plateListItem').each(function () {
+    //     let found = true;
+    //     let elements = $(this)
+    //       .find(
+    //         '.number, .hideOperator, .stanokDetail, .statusFact, .statusMaster, .reportAutor, .stanokNameDet, .stageTd, .detailTd'
+    //       )
+    //       .map(function () {
+    //         return { el: $(this) };
+    //       })
+    //       .get();
+    //     elements.forEach(element => {
+    //       // element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
 
-          element.text = element.el.text().replace('<mark>', '');
-          element.text = element.el.text().replace('</mark>', '');
-        });
-        console.log('elements[0]', $(elements[0]));
-        if (searchTerms.length > 0) {
-          found = searchTerms.every(term => {
-            const regex = new RegExp(`(${term})`, 'gi');
-            return elements.some(element => {
-              if (element.text.match(regex)) {
-                element.text = element.text.replace(regex, '<~~~~>$1</~~~~>');
-                // element.text = element.text.replace(term, '<mark>${term}</mark>');
-                return true;
-              }
-              return false;
-            });
-          });
-        }
-        elements.some(element => {
-          element.text = element.text.replace(/~~~~/g, 'mark');
-          console.log('element.text', element.text);
-        });
-        $(this).toggleClass('hide', !found);
-        elements.forEach(element => {
-          element.el.html(element.text);
-        });
-      });
-    });
+    //       element.text = element.el.text().replace('<mark>', '');
+    //       element.text = element.el.text().replace('</mark>', '');
+    //     });
+    //     console.log('elements[0]', $(elements[0]));
+    //     if (searchTerms.length > 0) {
+    //       found = searchTerms.every(term => {
+    //         const regex = new RegExp(`(${term})`, 'gi');
+    //         return elements.some(element => {
+    //           if (element.text.match(regex)) {
+    //             element.text = element.text.replace(regex, '<~~~~>$1</~~~~>');
+    //             // element.text = element.text.replace(term, '<mark>${term}</mark>');
+    //             return true;
+    //           }
+    //           return false;
+    //         });
+    //       });
+    //     }
+    //     elements.some(element => {
+    //       element.text = element.text.replace(/~~~~/g, 'mark');
+    //       console.log('element.text', element.text);
+    //     });
+    //     $(this).toggleClass('hide', !found);
+    //     elements.forEach(element => {
+    //       element.el.html(element.text);
+    //     });
+    //   });
+    // });
 
     function generateStankiTable(data) {
       function flattenData(data) {
