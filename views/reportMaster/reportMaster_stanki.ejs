@@ -566,8 +566,12 @@
             },
           },
         ],
-        tableBuilt: searchInit,
+        // tableBuilt: searchInit,
         resizableRows: false,
+      });
+
+      table.on('tableBuilt', function () {
+        searchInit();
       });
 
       var generateColumnHideMenu = function () {
