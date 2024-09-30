@@ -950,3 +950,11 @@ mark {
   opacity: 0;
   transition: opacity 10s ease;
 }
+
+.defaultCursor {
+  cursor: default;
+}
+
+.defaultCursor input {
+  cursor: default;
+}
