@@ -413,31 +413,6 @@
       $(container).html(html);
     }
 
-    $('#changeView').on('click', function () {
-      clickAnimate(this);
-      $('#stanokTableContainer').toggle();
-      $('#tabulatorContainer').toggle();
-      $('#stanokList').toggle();
-      $('#filter').toggle();
-      $('#columnHide').toggle();
-      $(this).toggleClass('bi-table bi-view-stacked');
-      let table;
-      if ($('#tabulatorContainer').is(':visible')) {
-        const data = $('#stanokContainer').data('data');
-
-        if (!table) {
-          table = generateStankiTable(data);
-        } else {
-          table.setData(data);
-        }
-      } else {
-        if (table) {
-          table.destroy();
-          table = null;
-        }
-      }
-    });
-
     // $('#search').on('input', function () {
     //   const searchString = $(this).val().replace(/~/g, '');
     //   let searchTerms = searchString.split(' ').filter(Boolean);
@@ -482,158 +457,6 @@
     //     });
     //   });
     // });
-
-    function generateStankiTable(data) {
-      function flattenData(data) {
-        const flattened = [];
-
-        data.forEach(item => {
-          const stanok = item.Станок; // Ваш об'єкт станка
-
-          item.СписокРаботПоСтанку.forEach(work => {
-            work.СписокОтчетовПоСотруднику.forEach(report => {
-              flattened.push({
-                Станок: stanok,
-                Оператор: work.Оператор,
-                Деталь: report.Деталь,
-                Этап: report.Этап,
-                КоличествоИзготовлено: report.Количество,
-                МашинноеВремя: report.М,
-                ПолноеВремя: report.П,
-                ДлительностьВремя: report.Д,
-              });
-            });
-          });
-        });
-
-        return flattened;
-      }
-
-      const flatData = flattenData(data.item.listStanki);
-
-      let sumTime = function (values) {
-        let totalMinutes = 0;
-        values.forEach(value => {
-          if (value) {
-            const [hours, minutes] = value.split(':').map(Number);
-            totalMinutes += hours * 60 + minutes;
-          }
-        });
-
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-      };
-
-      let table = new Tabulator('#tabulatorContainer', {
-        data: flatData,
-        layout: 'fitColumns',
-        responsiveLayout: 'hide',
-        resizableRows: false,
-        columns: [
-          {
-            title: 'Станок',
-            field: 'Станок',
-            minWidth: 50,
-          },
-          { title: 'Оператор', field: 'Оператор', minWidth: 50, widthGrow: 1 },
-          { title: 'Деталь', field: 'Деталь', minWidth: 50, widthGrow: 1 },
-          { title: 'Етап', field: 'Этап', minWidth: 50, widthGrow: 1 },
-          {
-            title: 'К',
-            field: 'КоличествоИзготовлено',
-            hozAlign: 'right',
-            minWidth: 10,
-            width: 30,
-          },
-          { title: 'М', field: 'МашинноеВремя', hozAlign: 'right', width: 45, responsive: 1 },
-          { title: 'П', field: 'ПолноеВремя', hozAlign: 'right', width: 45, responsive: 1 },
-          {
-            title: 'Д',
-            field: 'ДлительностьВремя',
-            width: 45,
-            hozAlign: 'right',
-            responsive: 0,
-            bottomCalc: function (values, data, calcParams) {
-              if (data.length > 1) {
-                $('.tabulator-footer').show();
-                return sumTime(values);
-              } else {
-                $('.tabulator-footer').hide();
-              }
-              return '';
-            },
-          },
-        ],
-        // tableBuilt: searchInit,
-        resizableRows: false,
-      });
-
-      table.on('tableBuilt', function () {
-        searchInit();
-      });
-
-      var generateColumnHideMenu = function () {
-        let menuContainer = document.getElementById('columnHideMenu');
-        menuContainer.innerHTML = '';
-
-        let columns = table.getColumns();
-
-        columns.forEach(function (column) {
-          let checkbox = document.createElement('input');
-          checkbox.setAttribute('type', 'checkbox');
-          checkbox.checked = column.isVisible();
-
-          let label = document.createElement('label');
-          label.style.display = 'block';
-
-          let title = document.createElement('span');
-          title.textContent = ' ' + column.getDefinition().title;
-
-          checkbox.addEventListener('change', function () {
-            column.toggle();
-            checkbox.checked = column.isVisible();
-          });
-
-          label.appendChild(checkbox);
-          label.appendChild(title);
-          menuContainer.appendChild(label);
-        });
-      };
-      openMenu('columnHide', 'columnHideMenu');
-
-      $('#columnHide').on('click', function () {
-        generateColumnHideMenu();
-      });
-
-      function searchInit() {
-        $('#search').on('input', function () {
-          var searchValue = $(this).val();
-          console.log('search input', searchValue);
-          table.clearFilter();
-
-          var searchTerms = searchValue.split(' ').filter(term => term.length > 0);
-
-          if (searchTerms.length > 0) {
-            var filters = [];
-
-            searchTerms.forEach(term => {
-              filters.push([
-                { field: 'Станок', type: 'like', value: term },
-                { field: 'Оператор', type: 'like', value: term },
-                { field: 'Деталь', type: 'like', value: term },
-                { field: 'Этап', type: 'like', value: term },
-              ]);
-            });
-
-            table.setFilter(filters, 'or');
-          }
-        });
-        $('#search').trigger('input');
-      }
-      return table;
-    }
   });
 
   function initSelect(data) {
@@ -759,5 +582,156 @@
 
       saveReportMaster(stanokUID, edited);
     }
+  }
+
+  function generateStankiTable(data) {
+    function flattenData(data) {
+      const flattened = [];
+
+      data.forEach(item => {
+        const stanok = item.Станок; // Ваш об'єкт станка
+
+        item.СписокРаботПоСтанку.forEach(work => {
+          work.СписокОтчетовПоСотруднику.forEach(report => {
+            flattened.push({
+              Станок: stanok,
+              Оператор: work.Оператор,
+              Деталь: report.Деталь,
+              Этап: report.Этап,
+              КоличествоИзготовлено: report.Количество,
+              МашинноеВремя: report.М,
+              ПолноеВремя: report.П,
+              ДлительностьВремя: report.Д,
+            });
+          });
+        });
+      });
+
+      return flattened;
+    }
+
+    const flatData = flattenData(data.item.listStanki);
+
+    let sumTime = function (values) {
+      let totalMinutes = 0;
+      values.forEach(value => {
+        if (value) {
+          const [hours, minutes] = value.split(':').map(Number);
+          totalMinutes += hours * 60 + minutes;
+        }
+      });
+
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    };
+
+    let table = new Tabulator('#tabulatorContainer', {
+      data: flatData,
+      layout: 'fitColumns',
+      responsiveLayout: 'hide',
+      resizableRows: false,
+      columns: [
+        {
+          title: 'Станок',
+          field: 'Станок',
+          minWidth: 50,
+        },
+        { title: 'Оператор', field: 'Оператор', minWidth: 50, widthGrow: 1 },
+        { title: 'Деталь', field: 'Деталь', minWidth: 50, widthGrow: 1 },
+        { title: 'Етап', field: 'Этап', minWidth: 50, widthGrow: 1 },
+        {
+          title: 'К',
+          field: 'КоличествоИзготовлено',
+          hozAlign: 'right',
+          minWidth: 10,
+          width: 30,
+        },
+        { title: 'М', field: 'МашинноеВремя', hozAlign: 'right', width: 45, responsive: 1 },
+        { title: 'П', field: 'ПолноеВремя', hozAlign: 'right', width: 45, responsive: 1 },
+        {
+          title: 'Д',
+          field: 'ДлительностьВремя',
+          width: 45,
+          hozAlign: 'right',
+          responsive: 0,
+          bottomCalc: function (values, data, calcParams) {
+            if (data.length > 1) {
+              $('.tabulator-footer').show();
+              return sumTime(values);
+            } else {
+              $('.tabulator-footer').hide();
+            }
+            return '';
+          },
+        },
+      ],
+      resizableRows: false,
+    });
+
+    table.on('tableBuilt', function () {
+      searchInit();
+    });
+
+    var generateColumnHideMenu = function () {
+      let menuContainer = document.getElementById('columnHideMenu');
+      menuContainer.innerHTML = '';
+
+      let columns = table.getColumns();
+
+      columns.forEach(function (column) {
+        let checkbox = document.createElement('input');
+        checkbox.setAttribute('type', 'checkbox');
+        checkbox.checked = column.isVisible();
+
+        let label = document.createElement('label');
+        label.style.display = 'block';
+
+        let title = document.createElement('span');
+        title.textContent = ' ' + column.getDefinition().title;
+
+        checkbox.addEventListener('change', function () {
+          column.toggle();
+          checkbox.checked = column.isVisible();
+        });
+
+        label.appendChild(checkbox);
+        label.appendChild(title);
+        menuContainer.appendChild(label);
+      });
+    };
+    openMenu('columnHide', 'columnHideMenu');
+
+    $('#columnHide').on('click', function () {
+      generateColumnHideMenu();
+    });
+
+    function searchInit() {
+      $('#search').on('input', function () {
+        var searchValue = $(this).val();
+        console.log('search input', searchValue);
+        table.clearFilter();
+
+        var searchTerms = searchValue.split(' ').filter(term => term.length > 0);
+
+        if (searchTerms.length > 0) {
+          var filters = [];
+
+          searchTerms.forEach(term => {
+            filters.push([
+              { field: 'Станок', type: 'like', value: term },
+              { field: 'Оператор', type: 'like', value: term },
+              { field: 'Деталь', type: 'like', value: term },
+              { field: 'Этап', type: 'like', value: term },
+            ]);
+          });
+
+          table.setFilter(filters, 'or');
+        }
+      });
+      $('#search').trigger('input');
+    }
+    return table;
   }
 </script>
