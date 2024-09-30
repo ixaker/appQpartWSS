@@ -2063,6 +2063,7 @@
         cards.push(card);
       });
 
+      console.log('cards.reverse()', cards.reverse());
       generateFromTemplate('#card-template', cards.reverse(), '#historyContainer');
 
       const uniqueUids = Array.from(new Set(cardsData.map(entry => entry.Сотрудник.uid)));
@@ -2312,7 +2313,7 @@
   <div class="form-group" id="orderButtonGroup">
     <!-- <button type="button" class="btn btn-secondary btn-lg" id="setPriorityZakupka">Срочно</button> -->
     <div id="statusZakupka">
-      <label class="form-label">Приоритет:</label>
+      <label class="form-label" for="priority">Приоритет:</label>
       <div class="btn-container">
         <input type="hidden" id="priority" name="priority" value="Нормально" />
         <button type="button" class="btn btn-secondary" id="srochno" data-priority="Срочно">Срочно</button>
