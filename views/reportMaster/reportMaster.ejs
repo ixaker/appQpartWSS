@@ -102,6 +102,19 @@
     font-weight: bold;
   }
 
+  #stankiTable td {
+    font-size: large;
+    height: 1.5em;
+  }
+
+  #stankiTable td:first-child {
+  }
+
+  #stankiTable td:nth-child(2) {
+    width: 16%;
+    text-align: end;
+  }
+
   .group {
     display: flex;
     font-size: large;
@@ -349,9 +362,34 @@
 
 <script id="mainTemplate" type="text/x-handlebars-template">
   <div id='stanki' class='plate' children='#stanokContainer'>
-
     <div class='header'>Станки</div>
-    <div class='group'>
+    <table id='stankiTable' class='tablesorter'>
+      <tbody>
+        <tr>
+          <td>Всього:</td>
+          <td>{{stankiSumInfo.totalCount}}</td>
+        </tr>
+        <tr>
+          <td>Задіяні:</td>
+          <td>{{stankiSumInfo.totalCount}}</td>
+        </tr>
+        <tr>
+          <td>Незадіяні:</td>
+          <td>{{stankiSumInfo.unused}}</td>
+        </tr>
+        <tr>
+          <td>Зламані:</td>
+          <td>{{stankiSumInfo.broken}}</td>
+        </tr>
+        {{#unless active}}
+          <tr>
+            <td>ККД, %:</td>
+            <td>{{stankiSumInfo.kkd}}</td>
+          </tr>
+        {{/unless}}
+      </tbody>
+    </table>
+    <!-- <div class='group'>
       <div class='name'>Всього:</div>
       <div class='value'>{{stankiSumInfo.totalCount}}</div>
     </div>
@@ -372,18 +410,33 @@
         <div class='name'>ККД, %:</div>
         <div class='value'>{{stankiSumInfo.kkd}}</div>
       </div>
-    {{/unless}}
+    {{/unless}} -->
   </div>
 
   <div id='users' class='plate' children='#usersContainer'>
     <div class='header'>Працівники зміни</div>
-
-    {{#each usersSumInfo.profa}}
+    <table id='stankiTable' class='tablesorter'>
+      <thead>
+        <tr>
+          <th>Посада</th>
+          <th style='width: 16%;'>К-ть</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each usersSumInfo.profa}}
+          <tr>
+            <td>{{Должность}}:</td>
+            <td>{{Количество}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <!-- {{#each usersSumInfo.profa}}
       <div class='group'>
         <div class='name'>{{Должность}}:</div>
         <div class='value'>{{Количество}}</div>
       </div>
-    {{/each}}
+    {{/each}} -->
   </div>
 
   <div id='details' class='plate' children='#detailContainer'>
@@ -400,7 +453,7 @@
           </th>
           <th class='stageTd' style='width: 60%;'>
             Этап
-            <!-- 
+            <!--
              -->
           </th>
           <th class='count' style='width: 10%; padding: 0;'>
@@ -457,8 +510,8 @@
 
     function getCurrentShift() {
       let shift = 'day';
-      const date = new Date();
-      // const date = new Date('2024-07-20T16:00:00');
+      // const date = new Date();
+      const date = new Date('2024-07-20T16:00:00');
       const currentHour = date.getHours();
 
       if (currentHour >= 19 || currentHour < 7) {
@@ -838,6 +891,46 @@
 
         // let table = generateStankiTable(data);
 
+        function openTabulator(data) {
+          // $('#stanokTableContainer').hide();
+          $('#tabulatorContainer').show();
+          $('#stanokList').hide();
+          $('#filter').hide();
+          $('#columnHide').hide();
+          $('#changeView').removeClass('bi-table').addClass('bi-view-stacked');
+
+          if (!table) {
+            table = generateStankiTable(data);
+          } else {
+            table.setData(data);
+          }
+        }
+
+        function closeTabulator() {
+          $('#tabulatorContainer').hide();
+          $('#stanokList').show();
+          $('#changeView').removeClass('bi-view-stacked').addClass('bi-table');
+
+          if (table) {
+            table.destroy();
+            table = null;
+          }
+        }
+
+        $('#changeView').on('click', function () {
+          clickAnimate(this);
+          // $(this).toggleClass('bi-table bi-view-stacked');
+
+          const data = $('#stanokContainer').data('data');
+
+          if ($('#tabulatorContainer').is(':visible')) {
+            closeTabulator();
+          } else {
+            openTabulator(data);
+          }
+        });
+        closeTabulator();
+
         generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
 
         filterOptions = {
@@ -848,50 +941,50 @@
           },
         };
 
-        $('#stanokTable').tablesorter();
+        // $('#stanokTable').tablesorter();
 
-        const filterStanokTable = () => {
-          const selectedStanok = $('#stanokFilter').val().toLowerCase();
-          const selectedOperator = $('#operatorFilter').val().toLowerCase();
-          const selectedStanokDetail = $('#stanokDetailFilter').val().toLowerCase();
-          const selectedStanokStage = $('#stanokStageFilter').val().toLowerCase();
+        // const filterStanokTable = () => {
+        //   const selectedStanok = $('#stanokFilter').val().toLowerCase();
+        //   const selectedOperator = $('#operatorFilter').val().toLowerCase();
+        //   const selectedStanokDetail = $('#stanokDetailFilter').val().toLowerCase();
+        //   const selectedStanokStage = $('#stanokStageFilter').val().toLowerCase();
 
-          $('#stanokTable tbody tr').each(function () {
-            const stanok = $(this).find('.stanokTd').text().toLowerCase();
-            const operator = $(this).find('.operatorTd').text().toLowerCase();
-            const stanokDetail = $(this).find('.detailTd').text().toLowerCase();
-            const stanokStage = $(this).find('.stanokStageFilter').text().toLowerCase();
+        //   $('#stanokTable tbody tr').each(function () {
+        //     const stanok = $(this).find('.stanokTd').text().toLowerCase();
+        //     const operator = $(this).find('.operatorTd').text().toLowerCase();
+        //     const stanokDetail = $(this).find('.detailTd').text().toLowerCase();
+        //     const stanokStage = $(this).find('.stanokStageFilter').text().toLowerCase();
 
-            const matchesFilter =
-              (selectedStanok === '' || stanok.includes(selectedStanok)) &&
-              (selectedOperator === '' || operator.includes(selectedOperator)) &&
-              (selectedStanokDetail === '' || stanokDetail.includes(selectedStanokDetail)) &&
-              (selectedStanokStage === '' || stanokStage.includes(selectedStanokStage));
-            $(this).toggle(matchesFilter);
-          });
-        };
+        //     const matchesFilter =
+        //       (selectedStanok === '' || stanok.includes(selectedStanok)) &&
+        //       (selectedOperator === '' || operator.includes(selectedOperator)) &&
+        //       (selectedStanokDetail === '' || stanokDetail.includes(selectedStanokDetail)) &&
+        //       (selectedStanokStage === '' || stanokStage.includes(selectedStanokStage));
+        //     $(this).toggle(matchesFilter);
+        //   });
+        // };
 
-        $('#stanokFilter').change(filterStanokTable);
-        $('#operatorFilter').change(filterStanokTable);
-        $('#stanokDetailFilter').change(filterStanokTable);
-        $('#stanokStageFilter').change(filterStanokTable);
+        // $('#stanokFilter').change(filterStanokTable);
+        // $('#operatorFilter').change(filterStanokTable);
+        // $('#stanokDetailFilter').change(filterStanokTable);
+        // $('#stanokStageFilter').change(filterStanokTable);
 
-        const populateStanokSelect = (selector, columnClass) => {
-          const uniqueValues = new Set();
+        // const populateStanokSelect = (selector, columnClass) => {
+        //   const uniqueValues = new Set();
 
-          $(`#stanokTable tbody .${columnClass}`).each(function () {
-            uniqueValues.add($(this).text());
-          });
+        //   $(`#stanokTable tbody .${columnClass}`).each(function () {
+        //     uniqueValues.add($(this).text());
+        //   });
 
-          uniqueValues.forEach(value => {
-            $(selector).append(`<option value="${value}">${value}</option>`);
-          });
-        };
+        //   uniqueValues.forEach(value => {
+        //     $(selector).append(`<option value="${value}">${value}</option>`);
+        //   });
+        // };
 
-        populateStanokSelect('#stanokFilter', 'stanokTd');
-        populateStanokSelect('#operatorFilter', 'operatorTd');
-        populateStanokSelect('#stanokDetailFilter', 'detailTd');
-        populateStanokSelect('#stanokStageFilter', 'stageTd');
+        // populateStanokSelect('#stanokFilter', 'stanokTd');
+        // populateStanokSelect('#operatorFilter', 'operatorTd');
+        // populateStanokSelect('#stanokDetailFilter', 'detailTd');
+        // populateStanokSelect('#stanokStageFilter', 'stageTd');
       }
 
       initOtherState();
@@ -1011,4 +1104,6 @@
       }
     );
   }
+
+  let table;
 </script>
