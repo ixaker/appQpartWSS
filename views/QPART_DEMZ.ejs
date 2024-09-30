@@ -7,18 +7,26 @@
   header h1 {
     font-size: xx-large;
   }
+  /*
+      input[type='date']::-webkit-calendar-picker-indicator {
+        opacity: 0;
+      }
 
-  input[type='date']::-webkit-calendar-picker-indicator {
-    opacity: 0;
-  }
+      input[type='date'] {
+        -moz-appearance: textfield;
+      }
 
-  input[type='date'] {
-    /* -moz-appearance: textfield; */
-  }
+      input[type='date']::-ms-clear {
+        display: none;
+      }
 
-  input[type='date']::-ms-clear {
-    display: none;
-  }
+      input[type='date'] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding-right: 0;
+        width: auto;
+      } */
 
   .titleContainer {
     width: 100%;
@@ -41,7 +49,25 @@
   }
 
   .form-control {
+    font-size: large;
+    height: auto;
+    padding: 0;
+    line-height: auto;
+  }
+
+  .ui-autocomplete {
+    font-size: large;
+  }
+
+  .photoCount {
     font-size: x-large;
+    position: relative;
+  }
+
+  .photoCountContainer {
+    display: flex;
+    align-items: center;
+    gap: 3px;
   }
 </style>
 
@@ -133,16 +159,16 @@
   }
 
   /* .inputTable tbody tr:last-child {
-    background-color: #f0f0f0;
-    color: #a0a0a0;
-    opacity: 0.6;
-  }
+        background-color: #f0f0f0;
+        color: #a0a0a0;
+        opacity: 0.6;
+      }
 
 
-  .inputTable tbody tr:last-child input {
-    background-color: #f0f0f0;
-    color: #a0a0a0;
-  } */
+      .inputTable tbody tr:last-child input {
+        background-color: #f0f0f0;
+        color: #a0a0a0;
+      } */
 
   thead {
     font-size: medium;
@@ -158,52 +184,74 @@
     background-color: aliceblue;
   }
 
-  .stage {
-    width: auto;
-  }
-
-  .number {
-    width: 70px;
-    max-width: 70px;
-  }
-
-  .defect {
-    width: 50px;
-    max-width: 50px;
-  }
-
-  #defectCheck {
-    transform: scale(2);
-  }
-
   #tableForm {
     margin-bottom: 10px;
   }
 
+  #downloadPhotoButton,
   #makePhotoButton {
     font-size: xxx-large;
-
     line-height: normal;
+    width: 100%;
   }
-  #downloadPhotoButton {
-    font-size: xxx-large;
-    line-height: normal;
+
+  .photoBtn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .photoLabel {
+    width: 100%;
+    margin-bottom: 0;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    display: flex;
   }
 
   .imgContainer {
     display: grid;
     grid-template-columns: repeat(3, minmax(100px, 1fr));
-    gap: 10px;
+    gap: 5px;
     justify-content: start;
-    margin-bottom: 10px;
   }
 
   .attachedImg {
     width: 100%;
+    position: relative;
+    min-height: 100px;
+    display: flex;
+    align-items: flex-start;
   }
 
   .attachedImg img {
     width: 100%;
+  }
+
+  .preview {
+    background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    width: 100%;
+    height: 100px;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 0%;
+    }
+  }
+
+  .preview.loaded {
+    background: none;
+    height: auto;
   }
 
   #btnGroup {
@@ -248,31 +296,26 @@
   }
 
   #details {
-    margin-bottom: 10px;
-    border: 1px solid #bbbbbb;
     background-color: #ffffff;
-    border-radius: 7px;
-    box-shadow: 2px 3px 5px #999;
-    padding: 5px;
     display: flex;
     flex-direction: column;
+    gap: 5px;
   }
 
   .detailHead {
     display: flex;
   }
 
-  .stageInput {
-    flex: 1;
-  }
-
   .numberInput {
-    width: 80px;
+    text-align: right;
+    padding: 0;
   }
 
   .detailCheckbox {
     display: flex;
     justify-content: flex-start;
+    gap: 5px;
+    font-size: large;
   }
 
   .detailConfirm {
@@ -283,6 +326,7 @@
   .checkboxGroup {
     display: flex;
     align-items: center;
+    gap: 5px;
   }
 
   .hidden-checkbox {
@@ -290,11 +334,12 @@
   }
 
   .checkbox-label {
-    display: inline-block;
+    display: inline-flex;
     cursor: pointer;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     text-align: center;
+    align-items: center;
     font-weight: 700;
     font-size: small;
     line-height: 1.5;
@@ -302,6 +347,7 @@
     color: #fff;
     border: 1px solid #6c757d;
     transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
   }
 
   .hidden-checkbox:checked + .checkbox-label {
@@ -324,158 +370,202 @@
     <h1>Відвантаження</h1>
     <i id='closeDocInfo' class='bi bi-x-circle commandBtn'></i>
   </header>
-  <div class='docTitle'>
-    <div class='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div>
-    <div class='docName {{className}}'>{{ВидОперации}}</div>
-    <div class='docDateEvent'>{{ДатаСобытияФормат}}</div>
-  </div>
 
-  {{#each Детали}}
+  <div
+  class='plateListItem'
+  uid="{{uid}}"
+  >
+    <div class='docTitle'>
+      <div class="docNumber input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">
+            <i class="bi bi-truck"></i>
+          </span>
+        </div>
+        <input
+          type="number"
+          class="form-control tripNumber"
+          name="tripNumber"
+          placeholder=""
+          aria-describedby="номер машини"
+          value="{{НомерПоездкиЗаДень}}"
+          min="0"
+          max="99"
+          oninput="if(this.value.length > 2) this.value = this.value.slice(0, 2);"
+          {{#unless canEdit}}disabled{{/unless}}
+        />
+      </div>
+
+      <div class='docName {{className}}'>{{ВидОперации}}</div>
+      <div class='docDateEvent input-group'>
+          <input
+            type='text'
+            class='form-control docDate'
+            placeholder=''
+            aria-describedby='дата'
+            value='{{ДатаСобытияФормат}}'
+            data-date='{{Дата}}'
+            readonly
+            {{#unless canEdit}}disabled{{/unless}}
+          />
+      </div>
+    </div>
+
     <div id='details'>
       <div class='detailHead'>
-        <input
-          type='text'
-          class='form-control controledInput stageInput'
-          placeholder=''
-          value='{{Этап.Наименование}}'
-        />
-        <input type='number' class='form-control controledInput numberInput' placeholder='' value='{{Количество}}' />
+        <table class='detailed' id='inputTable'>
+          <thead>
+            <tr>
+              <th class='stage'>Этап</th>
+              <th class='count'>К-во</th>
+              <th class='defect'><i class='bi bi-clipboard-x-fill'></i></th>
+              <th class='rework'><i class='bi bi-arrow-repeat'></i></th>
+              <!-- <th class='comment'><i class="bi bi-chat-right-text-fill"></i></th> -->
+            </tr>
+          </thead>
+          <tbody>
+            {{#unless Детали}}
+              <tr class='docRow'>
+                <td class='stage'>
+                  <input
+                    type='text'
+                    class='form-control controledInput stageInput'
+                    name="stageInput "
+                    placeholder='етап...'
+                    value='{{Этап.Наименование}}'
+                    data-value='{{Этап.uid}}'
+                    {{#unless canEdit}}disabled{{/unless}}
+                  />
+
+                  <span class='removeRowBtn'><i class='bi bi-x'></i></span>
+                  <i class='bi bi-chat-right-text-fill commentBtn'></i>
+                </td>
+                <td class='count'>
+                  <input
+                    type='number'
+                    class='form-control controledInput numberInput'
+                    placeholder=''
+                    value=''
+                    {{#unless canEdit}}disabled{{/unless}}
+                  />
+                </td>
+                <td class='defect'>
+                  <input type="checkbox" class="controledInput defectInput" {{#unless canEdit}}disabled{{/unless}}/>
+                </td>
+                <td class='rework'>
+                  <input type='checkbox' class='controledInput reworkInput' {{#unless canEdit}}disabled{{/unless}}/>
+                </td>
+              </tr>
+              <tr class='commentRow'>
+                <td colspan='4'>
+                  <input type='text' class='form-control controledInput commentInput' placeholder='' value='{{Комментарий}}' />
+                </td>
+              </tr>
+            {{/unless}}
+            {{#each Детали}}
+              <tr class='docRow'>
+                <td class='stage'>
+                  <input
+                    type='text'
+                    class='form-control controledInput stageInput'
+                    name="stageInput"
+                    placeholder='етап...'
+                    value='{{Этап.Наименование}}111'
+                    data-value='{{Этап.uid}}'
+                    {{#unless ../canEdit}}disabled{{/unless}}
+                  />
+
+                  <span class='removeRowBtn'><i class='bi bi-x'></i></span>
+                  <i class='bi bi-chat-right-text-fill commentBtn'></i>
+                </td>
+                <td class='count'>
+                  <input
+                    type='number'
+                    class='form-control controledInput numberInput'
+                    placeholder=''
+                    value='{{Количество}}'
+                    {{#unless ../canEdit}}disabled{{/unless}}
+                  />
+                </td>
+                <td class='defect'>
+                  <input type='checkbox' class='controledInput defectInput' {{#if Брак}} checked {{/if}} {{#unless ../canEdit}}disabled{{/unless}}/>
+                </td>
+                <td class='rework'>
+                  <input type='checkbox' class='controledInput reworkInput' {{#if Доработка}} checked {{/if}} {{#unless ../canEdit}}disabled{{/unless}}/>
+                </td>
+              </tr>
+              {{#if Комментарий}}
+              <tr class='commentRow' style="display: table-row">
+                <td colspan='4'>
+                  <input type='text' class='form-control controledInput commentInput' placeholder='' value='{{Комментарий}}' {{#unless ../canEdit}}disabled{{/unless}} />
+                </td>
+              </tr>
+              {{/if}}
+              {{#unless Комментарий}}
+              <tr class='commentRow' style="display: none">
+                <td colspan='4'>
+                  <input type='text' class='form-control controledInput commentInput' placeholder='' value='' {{#unless ../canEdit}}readonly{{/unless}}/>
+                </td>
+              </tr>
+              {{/unless}}
+            {{/each}}
+          </tbody>
+        </table>
       </div>
 
-      <div class='detailConfirm'>
-        <div class='checkboxGroup'>
-          <input
-            type='checkbox'
-            class='controledInput hidden-checkbox form-check-input'
-            id='confirmDemz{{НомерСтроки}}'
-            checked='{{ПідтвердженняДЕМЗ}}'
+    {{> photoGallery title='Фото ДЕМЗ' canEdit=canEdit files=ФайлыДемз showButton=true operationType=ВидОперации}}
+
+    <div id='saveDoc' class='btn btn-secondary'>Зберегти</div>
+
+  </div>
+</script>
+
+<script id="photoGalleryTemplate" type="text/x-handlebars-template">
+  <div class='photoContainer'>
+    <!-- <div class='galleryTitle'>{{title}}</div> -->
+    <div class='imgContainer attachedImgContainer'>
+      {{#each Файлы}}
+        <div class='attachedImg'>
+          <img
+            class='src-source source'
+            src-source='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+            src='storage/{{ИД}}/{{ИД}}/{{Файл}}'
+            alt='Image'
           />
-          <label for='confirmDemz{{НомерСтроки}}' class='btn btn-primary checkbox-label'>ДЕМЗ
-            <i class='bi bi-check'></i></label>
-        </div>
-        <div class='checkboxGroup'>
-          <input
-            type='checkbox'
-            class='controledInput hidden-checkbox form-check-input'
-            id='confirmQpartDemz{{НомерСтроки}}'
-            checked='{{ПідтвердженняQpart}}'
+          <img
+            class='preview'
+            src='storage/{{ИД}}/{{ИД}}/p{{Файл}}'
+            alt='Preview Image'
+            onload='this.classList.add("loaded");'
+            onerror='this.src="img/error-image.svg"; this.classList.add("loaded");'
           />
-          <label for='confirmQpartDemz{{НомерСтроки}}' class='btn btn-primary checkbox-label'>QPart
-            <i class='bi bi-check'></i></label>
+          <span class='userFotoDelete'> <i class='bi bi-trash'></i></span>
         </div>
-      </div>
-
-      <div class='detailCheckbox'>
-        <div class='checkboxGroup'>
-          <label for='defectCheck{{НомерСтроки}}'>Брак</label>
-          <input type='checkbox' class='controledInput' id='defectCheck{{НомерСтроки}}' checked='{{Брак}}' />
+      {{/each}}
+      {{#if showButton}}
+        <div class='btnAddPhoto'>
+          <input
+            type='file'
+            id='makePhoto{{operationType}}'
+            accept='image/*'
+            capture='environment'
+            multiple
+            style='display: none'
+            {{#unless canEdit}}disabled{{/unless}}
+          />
+          <label for='makePhoto{{operationType}}' class='photoLabel' ><i
+              class='bi bi-camera btn btn-secondary photoBtn'
+              id='makePhotoButton'
+            ></i></label>
+          <input type='file' id='downloadPhoto{{operationType}}' accept='image/*' style='display: none'  {{#unless canEdit}}disabled{{/unless}}/>
+          <label for='downloadPhoto{{operationType}}' class='photoLabel' ><i
+              class='bi bi-download btn btn-secondary photoBtn'
+              id='downloadPhotoButton'
+            ></i></label>
         </div>
-        <div class='checkboxGroup'>
-          <label for='reworking{{НомерСтроки}}'>Дороботка</label>
-          <input type='checkbox' class='controledInput' id='reworking{{НомерСтроки}}' checked='{{Дороботка}}' />
-        </div>
-
-      </div>
+      {{/if}}
     </div>
-  {{/each}}
-  <!-- <div id='tableForm'>
-    <table class='inputTable' id='inputTable'>
-      <thead>
-        <tr>
-          <th class='stage'>Етап</th>
-          <th class='number'>К-ть</th>
-          <th class='defect'>Брак</th>
-          <th class='confirm'></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each Детали}}
-          <tr>
-            <td class='stageTd'>
-              <input
-                type='text'
-                class='form-control controledInput stageInput'
-                placeholder=''
-                value='{{Этап.Наименование}}'
-              />
-              <span class='removeRowBtn'><i class='bi bi-x'></i></span>
-            </td>
-            <td><input
-                type='number'
-                class='form-control controledInput numberInput'
-                placeholder=''
-                value='{{Количество}}'
-              /></td>
-            <td><input type='checkbox' class='controledInput' id='defectCheck' checked='{{Брак}}' /></td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div> -->
-
-  {{#if ФайлыДемз}}
-    <div class='demzGallery'>
-      <div class='galleryTitle'>Фото ДЕМЗ</div>
-      <div class='imgContainer attachedImgContainer'>
-        {{#each ФайлыДемз}}
-          <div class='attachedImg'>
-            <img
-              class='src-source source'
-              src-source='storage/{{ИД}}/{{ИД}}/{{Файл}}'
-              src='storage/{{ИД}}/{{ИД}}/{{Файл}}'
-              alt='Image'
-            />
-            <img class='preview' src='storage/{{ИД}}/{{ИД}}/p{{Файл}}' />
-          </div>
-        {{/each}}
-      </div>
-      <div class='btnAddPhoto'>
-        <input
-          type='file'
-          id='makePhoto{{ВидОперации}}'
-          accept='image/*'
-          capture='environment'
-          multiple
-          style='display: none'
-        />
-        <label for='makePhoto{{ВидОперации}}'><i class='bi bi-camera' id='makePhotoButton'></i></label>
-        <input type='file' id='downloadPhoto{{ВидОперации}}' accept='image/*' style='display: none' />
-        <label for='downloadPhoto{{ВидОперации}}'><i class='bi bi-download' id='downloadPhotoButton'></i></label>
-      </div>
-    </div>
-  {{/if}}
-
-  {{#if ФайлыQpart}}
-    <div class='qpartGallery'>
-      <div class='galleryTitle'>Фото QPart</div>
-      <div class='imgContainer attachedImgContainer'>
-        {{#each ФайлыQpart}}
-          <div class='attachedImg'>
-            <img
-              class='src-source source'
-              src-source='storage/{{ИД}}/{{ИД}}/{{Файл}}'
-              src='storage/{{ИД}}/{{ИД}}/{{Файл}}'
-              alt='Image'
-            />
-            <img class='preview' src='storage/{{ИД}}/{{ИД}}/p{{Файл}}' />
-          </div>
-        {{/each}}
-      </div>
-      <div class='btnAddPhoto'>
-        <input
-          type='file'
-          id='makePhoto{{ВидОперации}}'
-          accept='image/*'
-          capture='environment'
-          multiple
-          style='display: none'
-        />
-        <label for='makePhoto{{ВидОперации}}'><i class='bi bi-camera' id='makePhotoButton'></i></label>
-        <input type='file' id='downloadPhoto{{ВидОперации}}' accept='image/*' style='display: none' />
-        <label for='downloadPhoto{{ВидОперации}}'><i class='bi bi-download' id='downloadPhotoButton'></i></label>
-      </div>
-    </div>
-  {{/if}}
+  </div>
 </script>
 
 <div id="docInfo" style="display: none"></div>
@@ -493,28 +583,95 @@
 
   .detailed {
     font-size: x-large;
+    margin-top: 5px;
   }
 
   .detailed .stage {
-    width: 65%;
+    width: 66%;
+  }
+
+  .detailed th {
+    background-color: rgb(226 226 226);
+    color: darkgreen;
+    border: 1px solid rgb(202, 202, 202);
+    color: darkgreen;
+    font-size: x-large;
+  }
+
+  .docRow {
+    position: relative;
   }
 
   td {
     padding: 3px;
+    height: auto;
+  }
+
+  .stage {
+    position: relative;
+    width: auto;
+  }
+
+  .stageInput {
+    flex: 1;
+    padding-left: 18px;
+    padding-right: 30px;
   }
 
   .count {
     width: 15%;
     text-align: right;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: clip;
   }
 
-  .confirm {
+  .count th {
+    text-align: center;
+  }
+
+  .defect,
+  .rework {
     width: 10%;
+    text-align: center;
+  }
+
+  .defectInput,
+  .reworkInput {
+    transform: scale(2);
+  }
+
+  .commentBtn {
+    position: absolute;
+    top: 50%;
+    right: 3px;
+    font-size: x-large;
+    transform: translateY(-50%);
+    color: darkgreen;
+    z-index: 1;
+  }
+
+  .commentBtn::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: transparent;
+    z-index: -1;
+  }
+
+  .commentRow {
     display: none;
   }
 
-  #confirmRow {
-    transform: scale(2);
+  .commentInput {
+    font-size: small;
+  }
+
+  .checkIcon {
+    color: green;
   }
 
   .brak {
@@ -538,7 +695,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
     font-size: large;
     padding: 0 3px;
   }
@@ -565,24 +721,47 @@
     width: 70%;
   }
 
+  #docInfo {
+    padding: 0 5px;
+  }
+
   #docDate {
     text-align: center;
   }
 
   .bi-truck {
     font-size: x-large;
+    margin-right: 5px;
   }
 
   .bi-calendar {
     font-size: large;
   }
   .docNumber {
-    width: 25%;
+    width: 20%;
+    font-size: large;
+    margin: 0;
+  }
+
+  .docNumber span {
+    padding: 0 5px;
+  }
+
+  .tripNumber {
+    font-size: large;
+    padding: 0;
+    text-align: center;
   }
 
   .docDateEvent {
-    width: 25%;
+    width: 20%;
+    min-width: 85px;
+    font-size: large;
     text-align: end;
+  }
+
+  .docDate {
+    text-align: center;
   }
 
   .stageTd {
@@ -599,10 +778,13 @@
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
+    width: 50px;
+    height: 38px;
+    display: flex;
+    align-items: center;
   }
 
   #saveDoc {
-    margin-left: auto;
   }
 
   .galleryTitle {
@@ -610,6 +792,17 @@
     width: 100%;
     text-align: center;
     margin-bottom: 10px;
+  }
+
+  .btnAddPhoto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .btnSaveDoc {
   }
 </style>
 
@@ -619,31 +812,65 @@
 </script>
 
 <script id="docTitleTemplate" type="text/x-handlebars-template">
-  <div class='docTitle'>
-    <div class='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div>
+  <div class='docTitle defaultCursor'>
+    <div class='docNumber input-group'>
+      <div class='input-group-prepend'>
+        <span class='input-group-text'>
+          <i class='bi bi-truck'></i>
+        </span>
+      </div>
+      <input
+        type='text'
+        class='form-control tripNumber'
+        name='tripNumber'
+        placeholder=''
+        aria-describedby='номер машини'
+        value='{{НомерПоездкиЗаДень}}'
+      />
+    </div>
+    <!-- <div class='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div> -->
     <div class='docName {{className}}'>{{ВидОперации}}</div>
+    <div class='photoCountContainer'>
+      <i class='bi bi-image photoCount'></i>
+      <span>{{Файлы.length}}</span>
+    </div>
     <div class='docDateEvent'>{{ДатаСобытияФормат}}</div>
   </div>
 </script>
 
 <script id="tableDetailsTemplate" type="text/x-handlebars-template">
-  <table class='detailed'>
+  {{#if Детали}}
+  <table class='detailed defaultCursor'>
+
+    <thead>
+      <tr>
+        <th class='stage'>Этап</th>
+        <th class='count'>К-во</th>
+        <th class='defect'><i class="bi bi-clipboard-x-fill"></i></th>
+        <th class='rework'><i class="bi bi-arrow-repeat"></i></th>
+      </tr>
+    </thead>
+
     <tbody>
         {{#each Детали}}
           <tr>
             <td class='stage {{#if Брак}}brak{{/if}}'>{{Этап.Наименование}}</td>
-            <td class='count'>{{Количество}} шт</td>
-            <td class='confirm'>
-              <input type="checkbox" class="controledInput" id="confirmRow" value="">
+            <td class='count'>{{Количество}}</td>
+            <td class='defect'>
+              {{#if Брак}} <i class="bi bi-check-lg checkIcon"></i> {{/if}}
+            </td>
+            <td class='rework'>
+              {{#if Доработка}} <i class="bi bi-check-lg checkIcon"></i> {{/if}}
             </td>
           </tr>
         {{/each}}
     </tbody>
   </table>
+  {{/if}}
 </script>
 
 <script id="photoGallery" type="text/x-handlebars-template">
-  <div class='galleryTitle'>{{title}}</div>
+  <div class='galleryTitle'>{{title}}1111111111111</div>
   <div class='imgContainer attachedImgContainer'>
     {{#each Файлы}}
       <div class='attachedImg'>
@@ -674,18 +901,14 @@
 
 <script>
   $(document).ready(function () {
+    let canEdit = true;
     const platesID = '#qpart_demz';
     pageUID = 'ce4e3ff4-50d6-11ef-825f-000c29006152';
     userRights = $('#menu').data('userRight')[pageUID];
     const uid = user.uid;
     let autocompleteStage;
+    console.log('userRights', userRights);
 
-    console.log(
-      'userRights, !userRights.canCreateDEMZQPART',
-      userRights,
-      userRights.canCreateQPART,
-      userRights.canCreateDEMZ
-    );
     !userRights.canCreateDEMZ ? $('#btnDemz').hide() : '';
     !userRights.canCreateQPART ? $('#btnQpart').hide() : '';
 
@@ -694,6 +917,8 @@
       $('.btnDesctiption').show();
     }
 
+    const photoGallerySource = document.getElementById('photoGalleryTemplate').innerHTML;
+    Handlebars.registerPartial('photoGallery', photoGallerySource);
     const docTemplateSource = document.getElementById('docTemplate').innerHTML;
     const docTemplate = Handlebars.compile(docTemplateSource);
 
@@ -719,25 +944,22 @@
       autocompleteStage = response.СписокЭтапов;
     };
 
+    function generateNewPlate(data, containerForTile) {
+      data.className = data.ВидОперации === 'QPART => ДЕМЗ' ? 'qpart-demz' : 'demz-qpart';
+      generateFromTemplate('#tileTemplate', data, containerForTile);
+    }
+
     callbackForRender = function (data) {
       containerForTile = `#${data.uid}`;
       if ($(containerForTile).length === 0) return;
-      data.className = data.ВидОперации === 'QPART => ДЕМЗ' ? 'qpart-demz' : 'demz-qpart';
-      const html = template(data);
-      $(containerForTile).html(html);
+      generateNewPlate(data, containerForTile);
     };
 
     callbackClick = function (element) {
       const data = $(element).data('data');
-      console.log('data', data);
+      console.log('callbackClick data', data);
       docInfoOpen(data);
     };
-
-    function docInfoOpen(data = {}) {
-      $('#main').hide();
-      $('#docInfo').show();
-      renderDoc(data);
-    }
 
     function docInfoClose() {
       console.log('docInfoClose');
@@ -751,66 +973,7 @@
       $('#inputTable tbody tr:first').find('input').val('');
       $('#inputTable tbody tr:first').find('input[type="checkbox"]').prop('checked', false);
       $('#newDocForm').hide();
-      $('.confirm').hide();
-    }
-
-    function renderExistDoc(data) {
-      const dataForDemz = {
-        ВидОперации: 'Demz-Qpart',
-        Файлы: [
-          {
-            НомерСтроки: '1',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '0.png',
-          },
-          {
-            НомерСтроки: '2',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '1.png',
-          },
-          {
-            НомерСтроки: '3',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '2.png',
-          },
-        ],
-      };
-
-      const dataForQpart = {
-        ВидОперации: 'Qpart-Demz',
-        Файлы: [
-          {
-            НомерСтроки: '1',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '0.png',
-          },
-          {
-            НомерСтроки: '2',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '1.png',
-          },
-          {
-            НомерСтроки: '3',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '2.png',
-          },
-        ],
-      };
-
-      const titleTemplate = Handlebars.compile($('#docTitleTemplate').html());
-      const tableDetailsTemplate = Handlebars.compile($('#tableDetailsTemplate').html());
-      // const photoGallery = Handlebars.compile($('#photoGallery').html());
-      const titleHtml = titleTemplate(data);
-      const html = tableDetailsTemplate(data);
-      // const galleryDemz = photoGallery(dataForDemz);
-      // const galleryQpart = photoGallery(dataForQpart);
-      $('#forTitle').html(titleHtml);
-      $('#forTable').html(html);
-      // $('#forGalleryDemz').html(galleryDemz);
-      // $('#forGalleryQpart').html(galleryQpart);
-      generatePhotoContainer(dataForDemz, 'demz');
-      generatePhotoContainer(dataForQpart, 'qpart');
-      $('.confirm').show();
+      // $('.confirm').hide();
     }
 
     function generatePhotoContainer(data, direction) {
@@ -831,42 +994,66 @@
       $(container).html(gallery);
     }
 
+    function docInfoOpen(data = {}) {
+      console.log('docInfoOpen data', data);
+      $('#main').hide();
+      $('#docInfo').show();
+      renderDoc(data);
+    }
+
     function renderDoc(data = {}) {
-      const dataForDemz = {
-        ВидОперации: 'Demz-Qpart',
-        Файлы: [
-          {
-            НомерСтроки: '1',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '0.png',
-          },
-          {
-            НомерСтроки: '2',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '1.png',
-          },
-          {
-            НомерСтроки: '3',
-            ИД: 'a7607f7b-5975-11ef-8261-000c29006152',
-            Файл: '2.png',
-          },
-        ],
-      };
-
-      data.ФайлыДемз = dataForDemz.Файлы;
-      data.ФайлыQpart1 = dataForDemz.Файлы;
-
       const docContainer = $('#docInfo');
-      console.log('docContainer, data', docContainer, data);
-      const docHtml = docTemplate(data);
-      console.log('docHtmls', docHtml);
-      docContainer.html(docHtml);
+      console.log('data.ВидОперации', data.ВидОперации);
+      data.canEdit = data.ВидОперации === 'QPART => ДЕМЗ' ? userRights.canCreateQPART : userRights.canCreateDEMZ;
+      if (userRights.canCreatePhoto) {
+        data.canEdit = true;
+      }
+      console.log('renderDoc data', data);
+      generateFromTemplate('#docTemplate', data, '#docInfo');
+      collectTableData(docContainer.find('.docTitle'));
+
+      console.log('$.docDate', $('.docDate'));
+      initializeAutocomplete();
+      $.datepicker.setDefaults($.datepicker.regional['uk']);
+      $('.docDate').datepicker({
+        dateFormat: 'DD, dd.mm',
+        maxDate: new Date(),
+        position: {
+          my: 'center top',
+          at: 'center bottom',
+          of: '#shiftDate',
+        },
+        onSelect: function (dateText, inst) {
+          const daysOfWeek = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+          const date = $(this).datepicker('getDate');
+          const dayOfWeek = daysOfWeek[date.getDay()];
+          const formattedDate = `${dayOfWeek} ${$.datepicker.formatDate('dd.mm', date)}`;
+          const dateValue = date.toISOString();
+          $(this).data('date', dateValue);
+          $(this).val(formattedDate);
+        },
+      });
 
       $('#closeDocInfo').on('click', function () {
-        console.log('closeDocInfo');
         clickAnimate(this);
         docInfoClose();
       });
+
+      $('.checkboxGroup input').change(function () {
+        console.log('checkboxGroup click this', this);
+        const label = $(this).siblings('label');
+        const icon = label.find('i');
+        clickAnimate(label);
+
+        if ($(this).is(':checked')) {
+          icon.removeClass('bi-x').addClass('bi-check rotate');
+        } else {
+          icon.removeClass('bi-check').addClass('bi-x rotate');
+        }
+      });
+
+      $('#testTable').tablesorter();
     }
 
     function renderNewDoc(direction) {
@@ -887,34 +1074,16 @@
 
     $('#addNewQpart').on('click', function (event) {
       clickAnimate(this);
-      console.log('addNew');
       const data = {
-        ВидОперации: 'Qpart => Demz',
-        Детали: [
-          {
-            Этап: {
-              Наименование: '',
-            },
-          },
-          {},
-        ],
+        ВидОперации: 'QPART => ДЕМЗ',
       };
       docInfoOpen(data);
     });
 
     $('#addNewDemz').on('click', function (event) {
       clickAnimate(this);
-      console.log('addNew');
       const data = {
-        ВидОперации: 'Demz => Qpart',
-        Детали: [
-          {
-            Этап: {
-              Наименование: '',
-            },
-          },
-          {},
-        ],
+        ВидОперации: 'ДЕМЗ => QPART',
       };
       docInfoOpen(data);
     });
@@ -933,85 +1102,132 @@
         select: function (event, ui) {
           $(this).val(ui.item.label);
           $(this).data('value', ui.item.value);
+          console.log('autocomplite select value', ui.item.value, ui.item);
           return false;
         },
       });
+      // .on('blur', function () {
+      //   if (!$(this).data('value')) {
+      //     $(this).val('');
+      //     $(this).data('value', '');
+      //   }
+      // });
     }
 
     initializeAutocomplete();
 
     function addRow() {
       const newRow = `
-             <tr >
-              <td class='stageTd'>
-                <input type="text" class="form-control controledInput stageInput" placeholder="" />
-                <span class="removeRowBtn"><i class="bi bi-x"></i></span>
-              </td>
-              <td><input type="number" class="form-control controledInput numberInput" placeholder="" /></td>
-              <td><input type="checkbox" class="controledInput" id="defectCheck" /></td>
-            </tr>
-        `;
+               <tr class="docRow">
+                <td class='stage'>
+                  <input type="text" class="form-control controledInput stageInput" placeholder="" />
+                  <span class="removeRowBtn"><i class="bi bi-x"></i></span>
+                  <i class='bi bi-chat-right-text-fill commentBtn'></i>
+                </td>
+                <td><input type="number" class="form-control controledInput numberInput" placeholder="" /></td>
+                <td><input type="checkbox" class="controledInput defectInput"/></td>
+                <td><input type="checkbox" class="controledInput reworkInput" ></td>
+              </tr>
+              <tr class='commentRow'>
+                <td colspan='4'>
+                  <input type='text' class='form-control controledInput commentInput' placeholder='' value='' />
+                </td>
+              </tr>
+          `;
       $('#inputTable tbody').append(newRow);
       initializeAutocomplete();
     }
 
     $(document).on('focus', 'input.controledInput', function () {
-      console.log('focus on table');
-      const $lastRow = $('#inputTable tbody tr:last-child');
-      if ($(this).closest('tr').is($lastRow)) {
+      const $currentRow = $(this).closest('tr');
+      const $nextRow = $currentRow.nextAll('tr.docRow');
+
+      if ($nextRow.length === 0 && canEdit) {
         addRow();
       }
     });
 
     $(document).on('click', '.removeRowBtn', function () {
+      const $row = $(this).closest('tr');
+      const $inputs = $row.find('input');
+      $inputs.toArray().forEach(input => console.log($(input).is(':checked') || $(input).val() !== ''));
+      const hasValue = $inputs.toArray().some(input => {
+        const $input = $(input);
+        return $input.is(':checkbox') ? $input.is(':checked') : $input.val() !== '';
+      });
+
       if ($('#inputTable tbody tr').length > 1) {
-        $(this).closest('tr').remove();
+        if (hasValue) {
+          $row.find('input').val('');
+          $row.find('input[type="checkbox"]').prop('checked', false);
+        } else {
+          $row.remove();
+        }
       } else {
-        $(this).closest('tr').find('input').val('');
-        $(this).closest('tr').find('input[type="checkbox"]').prop('checked', false);
+        $row.find('input').val('');
+        $row.find('input[type="checkbox"]').prop('checked', false);
       }
     });
 
-    function collectTableData() {
-      const tableData = [];
-
-      $('#inputTable tbody tr')
-        .not(':last')
-        .each(function () {
-          console.log('collectTableData this', this);
-          const detail = $(this).find('input.stageInput').data('value');
-          const count = $(this).find('input.numberInput').val();
-          const defect = $(this).find('input[type="checkbox"]').is(':checked');
-
-          tableData.push({
-            Деталь: detail,
-            Количество: count,
-            Брак: defect,
-          });
-        });
-
-      $('#inputTable').data('data', tableData);
-    }
-
-    $('#inputTable').on('blur', 'input', function () {
-      collectTableData();
+    $(document).on('click', '.commentBtn', function () {
+      if (!canEdit) return;
+      console.log('click commentBtn');
+      const container = $(this).closest('.docRow');
+      const commentRow = container.next('.commentRow');
+      let commentInput = commentRow.find('.commentInput');
+      commentRow.toggle();
+      commentInput.focus();
     });
 
-    $('#inputTable').on('change', 'input[type="checkbox"]', function () {
-      collectTableData();
+    function collectTableData(element) {
+      const tableData = [];
+      const container = $(element).closest('.plateListItem');
+      console.log('container from collectTableData', container, container.find('#inputTable tbody').find('tr.docRow'));
+
+      container
+        .find('#inputTable tbody')
+        .find('tr.docRow')
+        .each(function () {
+          const uid = $(this).find('input.stageInput').data('value');
+          const count = $(this).find('input.numberInput').val();
+          const comment = $(this).next('.commentRow').find('input.commentInput').val();
+          const defect = $(this).find('input.defectInput').is(':checked');
+          const rework = $(this).find('input.reworkInput').is(':checked');
+          if (uid) {
+            tableData.push({
+              Этап: {
+                uid: uid,
+              },
+              Количество: count,
+              Комментарий: comment,
+              Брак: defect,
+              Доработка: rework,
+            });
+          }
+        });
+      console.log('tableData', tableData);
+      container.data('data', tableData);
+    }
+
+    $(document).on('blur', 'input', function () {
+      collectTableData(this);
+    });
+
+    $('.inputTable').on('change', 'input[type="checkbox"]', function () {
+      collectTableData(this);
     });
 
     function getMediaFiles() {
       const mediaFiles = [];
-      $('#imgContainer .attachedImg .src-source').each(function (index) {
+      $('.imgContainer .attachedImg .src-source').each(function (index) {
         const src = $(this).attr('src-source');
+        const blob = $(this).attr('src-source');
         const name = (index + 1).toString() + '.png';
         mediaFiles.push({
           name: name,
-          data: dataURLtoBlob(src),
+          data: src,
         });
       });
-      console.log('Generated media files:', mediaFiles);
       return mediaFiles;
     }
 
@@ -1033,7 +1249,6 @@
         data,
         {},
         function onSuccess(response) {
-          console.log('Success callback:', response);
           if (response.error) {
             toastr.error('Помилка звязку', response['Причина']);
           } else {
@@ -1050,90 +1265,129 @@
       );
     }
 
-    $('#saveDoc').on('click', async function () {
-      console.log('saveDoc on click');
-      clickAnimate(this);
-      const mediaFiles = getMediaFiles();
+    $(document)
+      .off('click', '#saveDoc')
+      .on('click', '#saveDoc', async function () {
+        if (!canEdit) return;
+        clickAnimate(this);
+        const mediaFiles = getMediaFiles();
 
-      // try {
-      //   await saveFilesToStorage(mediaFiles, uid, uid);
-      //   console.log('Files saved successfully!');
-      // } catch (error) {
-      //   console.error('Error saving files:', error);
-      // }
+        // try {
+        //   await saveFilesToStorage(mediaFiles, uid, uid);
+        //   console.log('Files saved successfully!');
+        // } catch (error) {
+        //   console.error('Error saving files:', error);
+        // }
 
-      const tripNumber = $('#tripNumber').val().trim();
-      console.log('tripNumber', tripNumber, '#tripNumber');
-      if (!tripNumber) {
-        toastr.error('Заповніть номер відправлення');
-        $('#tripNumber').focus();
-        return;
-      }
+        const container = $(this).closest('.plateListItem');
+        const uid = container.attr('uid');
+        const tripNumber = container.find('.tripNumber');
+        const tripNumberValue = tripNumber.val();
+        if (tripNumberValue === '0') {
+          toastr.error('Заповніть номер відправлення');
+          tripNumber.focus();
+          return;
+        }
 
-      const docDate = $('#docDate').val();
-      if (docDate === '') {
-        toastr.error('Заповніть дату відправлення');
-        $('#docDate').focus();
-        return;
-      }
+        const operationType = container.find('.docName').text();
 
-      const details = $('#inputTable').data('data');
+        const docDate = container.find('.docDate').data('date');
+        console.log('docDate', docDate);
+        if (docDate === '') {
+          toastr.error('Заповніть дату відправлення');
+          $('#docDate').focus();
+          return;
+        }
 
-      console.log('tripNumber, docDate, details', tripNumber, docDate, details);
+        const details = container.data('data');
 
-      NProgress.start();
-      console.log('statusZakupka', statusZakupka);
+        NProgress.start();
 
-      let media = [];
-      let names = [];
-      $('#imgContainer')
-        .children()
-        .each((index, child) => {
-          const blob = $(child).children('.source').data('blob');
-          const blobPreview = $(child).children('.preview').data('blob');
+        let media = [];
+        let names = [];
+        container
+          .find('.imgContainer')
+          .children()
+          .slice(0, -1)
+          .each((index, child) => {
+            const blob = $(child).children('.source').data('blob');
+            const blobPreview = $(child).children('.preview').data('blob');
 
-          let file = { data: blob };
-          let filePreview = { data: blobPreview };
-          if (blob.type === 'image/jpeg') {
-            file.name = index.toString() + '.png';
-            filePreview.name = 'p' + index.toString() + '.png';
-          } else if (blob.type === 'video/mp4') {
-            file.name = index.toString() + '.mp4';
-            filePreview.name = 'p' + index.toString() + '.png';
-          } else {
-            file.name = index.toString() + '.none';
-            console.log('unknown type of blob', blob.type, file.name);
-          }
+            const src = $(child).children('.source').attr('src');
+            const fileType = src ? src.substring(src.length - 3) : 'unknown';
 
-          media.push(file);
-          media.push(filePreview);
-          names.push(file.name);
+            let file = {};
+            let filePreview = {};
+
+            if (blob) {
+              file = { data: blob };
+              filePreview = { data: blobPreview };
+              if (blob.type === 'image/jpeg') {
+                file.name = index.toString() + '.png';
+                filePreview.name = 'p' + index.toString() + '.png';
+              } else if (blob.type === 'video/mp4') {
+                file.name = index.toString() + '.mp4';
+                filePreview.name = 'p' + index.toString() + '.png';
+              } else {
+                file.name = index.toString() + '.none';
+              }
+              media.push(file);
+              media.push(filePreview);
+            } else {
+              if (fileType !== 'unknown') {
+                file.name = index.toString() + '.' + fileType;
+              }
+            }
+            names.push(file.name);
+          });
+
+        const data = {
+          Детали: details,
+          НомерПоездкиЗаДень: tripNumberValue,
+          ВидОперации: operationType,
+          ДатаСобытия: docDate,
+          Файлы: names,
+        };
+
+        if (uid) {
+          data.uid = uid;
+        }
+        console.log('data from saveDoc', data);
+        sendDataTo1C(data, 'POST', async function (response) {
+          await saveFilesToStorage(media, response.uid, response.uid);
+          docInfoClose();
+          hadleResponseAfterSave(response);
         });
-
-      const data = {
-        details: details,
-        tripNumber: tripNumber,
-        docData: docDate,
-        files: names,
-      };
-
-      console.log('data from qpart_demz', data);
-
-      sendDataTo1C(data, 'POST', async function (response) {
-        console.log('sendDataTo1C');
-        await saveFilesToStorage(media, response.uid, response.uid);
-        docInfoClose();
+        NProgress.done();
       });
-      NProgress.done();
-    });
+
+    function hadleResponseAfterSave(response) {
+      console.log('response from handleResponseAfterSave', response);
+      plateData = response.item.data;
+      const uid = plateData.uid;
+      const plateId = `#${uid}`;
+
+      if ($(plateId).length) {
+        console.log('plate exsist');
+        $(plateId).html();
+        plateData.className = plateData.ВидОперации === 'QPART => ДЕМЗ' ? 'qpart-demz' : 'demz-qpart';
+        generateFromTemplate('#tileTemplate', plateData, plateId);
+      } else {
+        const newBlock = `<div id="${uid}" class="plateListItem"></div>`;
+        $('.plateListItem').first().before(newBlock);
+        console.log('plate not exsist');
+        generateNewPlate(plateData, $(plateId));
+      }
+      $(plateId).data('data', plateData);
+    }
 
     // $('#cancelDoc').on('click', function () {
     //   docInfoClose();
     // });
 
     function handleFileSelection(files, container) {
-      console.log('handleFileSelection container', container);
       const imgContainer = $(container);
+      const btnAddPhoto = $('.btnAddPhoto');
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -1153,22 +1407,23 @@
               'object-fit': 'cover',
             });
 
+          const deleteBtn = `<span class='userFotoDelete'> <i class='bi bi-trash'></i></span>`;
+
           imgWrapper.append(img);
+          imgWrapper.append(deleteBtn);
 
           resizeImage(file)
             .then(resizedImageBlob => {
               const previewImg = $('<img>')
-                .addClass('preview')
+                .addClass('preview loaded')
                 .attr('src', URL.createObjectURL(resizedImageBlob))
                 .data('blob', resizedImageBlob);
 
               imgWrapper.append(previewImg);
             })
-            .catch(error => {
-              console.error(error);
-            });
+            .catch(error => {});
 
-          imgContainer.append(imgWrapper);
+          btnAddPhoto.before(imgWrapper);
         };
 
         reader.readAsDataURL(file);
@@ -1179,26 +1434,18 @@
       mediaviewer(this);
     });
 
-    //   $('#makePhoto').on('change', function (event) {
-    //     const files = event.target.files;
-    //     if (files.length > 0) {
-    //       handleFileSelection(files, this);
-    //       $(this).val('');
-    //     }
-    //   });
-
-    //  $('#downloadPhoto').on('change', function (event) {
-    //     const files = event.target.files;
-
-    //     if (this)
-    //       if (files.length > 0) {
-    //         handleFileSelection(files, container);
-    //       }
-    //   });
+    $(document).on('click', '.userFotoDelete', function (event) {
+      event.stopPropagation();
+      clickAnimate(this);
+      const deleteFoto = confirm('Ви впевнені, що хочете видалити цю фотографію?');
+      const photo = $(this).closest('.attachedImg');
+      photo.remove();
+    });
 
     $(document).on('change', 'input[type="file"]', function (event) {
       const $photoContainer = $(this).closest('.photoContainer');
       const $imgContainer = $photoContainer.find('.imgContainer');
+      // const $imgContainer = $(this).closest('.imgContainer');
 
       const files = event.target.files;
       if (files.length > 0) {
