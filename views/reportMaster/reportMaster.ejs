@@ -1105,5 +1105,11 @@
     );
   }
 
-  let table;
+  if (typeof table !== 'undefined') {
+    console.log('Переменная table уже существует');
+    var table;
+  } else {
+      console.log('Переменная table не существует');
+  }
+  
 </script>
