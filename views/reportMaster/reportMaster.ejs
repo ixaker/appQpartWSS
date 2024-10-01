@@ -371,7 +371,7 @@
         </tr>
         <tr>
           <td>Задіяні:</td>
-          <td>{{stankiSumInfo.totalCount}}</td>
+          <td>{{stankiSumInfo.used}}</td>
         </tr>
         <tr>
           <td>Незадіяні:</td>
@@ -510,8 +510,8 @@
 
     function getCurrentShift() {
       let shift = 'day';
-      // const date = new Date();
-      const date = new Date('2024-07-20T16:00:00');
+      const date = new Date();
+      // const date = new Date('2024-07-20T16:00:00');
       const currentHour = date.getHours();
 
       if (currentHour >= 19 || currentHour < 7) {
