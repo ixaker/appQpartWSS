@@ -1035,3 +1035,17 @@ function initScrollToTopButton() {
 
 
 initScrollToTopButton();
+
+$.datepicker.setDefaults({
+    dateFormat: "dd.mm.yy",
+    firstDay: 1, // Перший день тижня — понеділок
+    dayNamesMin: ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"], // Короткі назви днів
+    monthNames: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+        "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"], // Назви місяців
+    monthNamesShort: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+        "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"], // Назви місяців
+    showOtherMonths: true,
+    selectOtherMonths: true,
+    changeMonth: false,
+    changeYear: false,
+});

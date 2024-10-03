@@ -11,7 +11,7 @@
     background-color: #ffffff;
   }
 
-  th {
+  #tableList th {
     background: #007431;
     color: white;
     padding: 0 5px 0 5px;
@@ -79,6 +79,8 @@
     margin-top: 5px;
     height: 36px;
     text-align: center;
+    border-radius: 5px;
+    border: 1px solid darkgrey;
   }
 
   #date {
@@ -91,10 +93,13 @@
     max-width: 140px;
     padding: 0;
     margin-left: 10px;
+    border-radius: 6px;
+    border: 1px solid darkgrey;
   }
 
   .btnArrow {
     font-size: xx-large;
+    color: darkgreen;
   }
 
   #detail {
@@ -186,7 +191,7 @@
 </div>
 
 <div id="containerTable">
-  <table id="tableList" border="1" cellpadding="1" cellspacing="0">
+  <table id="tableList" cellpadding="1" cellspacing="0">
     <thead>
       <tr>
         <th class="sotrudnik">Сотрудник</th>
@@ -313,8 +318,33 @@
     $('#btnUp').on('click', function (event) {
       clickAnimate(this);
       date = new Date(date * 1 + oneDay);
+      console.log('date', date);
       $('#date').val(date.toLocaleString('ru', options));
       getData();
+    });
+
+    $('#date').datepicker({
+      dateFormat: 'dd.mm.yy',
+      maxDate: new Date(),
+
+      beforeShow: function (input, inst) {
+        console.log('datepicker is about to open');
+        $('#ui-datepicker-div').addClass('datepicker-open');
+      },
+
+      onSelect: function (dateText, dateObject) {
+        console.log('dateText', dateText, dateObject);
+        const dateString = `${dateObject.selectedYear}-${dateObject.selectedMonth}-${dateObject.selectedDay}`;
+        console.log('dateString', dateString);
+        date = new Date(dateString);
+        console.log('date', date);
+        getData();
+      },
+
+      onClose: function () {
+        console.log('datepicker is closed');
+        $('#ui-datepicker-div').removeClass('datepicker-open');
+      },
     });
 
     $(tableID).on('click', '.rowData', function () {

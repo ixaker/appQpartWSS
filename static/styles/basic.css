@@ -958,3 +958,14 @@ mark {
 .defaultCursor input {
   cursor: default;
 }
+
+.ui-datepicker-calendar th {
+  background: #e6e6e6;
+  color: black;
+  border-color: #aaa;
+  font-size: x-small;
+  padding: 0.7em 0.3em;
+  text-align: center;
+  font-weight: bold;
+  border: 0;
+}
