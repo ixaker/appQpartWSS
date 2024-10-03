@@ -58,21 +58,39 @@
     color: red;
   }
 
+  #commandRow {
+    position: relative;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
   #groupDate {
     display: flex;
-    margin-bottom: 10px;
-    padding-left: 60px;
-    padding-right: 60px;
+  }
+
+  #selectOrgContainer {
+    display: flex;
+    justify-content: center;
+  }
+
+  #selectOrg {
+    font-size: x-large;
+    margin-top: 5px;
+    height: 36px;
+    text-align: center;
   }
 
   #date {
     width: 100%;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-right: 10px;
     text-align: center;
     font-size: x-large;
     height: 36px;
     margin-top: 5px;
+    max-width: 140px;
+    padding: 0;
+    margin-left: 10px;
   }
 
   .btnArrow {
@@ -88,6 +106,11 @@
     width: 180px;
     height: 210px;
     margin: 5px;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
   }
 
   td {
@@ -148,11 +171,20 @@
   }
 </style>
 
-<div id="groupDate">
-  <div id="btnDown"><i class="bi bi-arrow-left-circle btnArrow"></i></div>
-  <input id="date" name="date" type="text" readonly />
-  <div id="btnUp"><i class="bi bi-arrow-right-circle btnArrow"></i></div>
+<div id="commandRow">
+  <div id="groupDate">
+    <div id="btnDown"><i class="bi bi-arrow-left-circle btnArrow"></i></div>
+    <input id="date" name="date" type="text" readonly />
+    <div id="btnUp"><i class="bi bi-arrow-right-circle btnArrow"></i></div>
+  </div>
+
+  <div id="selectOrgContainer">
+    <select name="selectOrg" id="selectOrg">
+      <option value="volvo">Volvo</option>
+    </select>
+  </div>
 </div>
+
 <div id="containerTable">
   <table id="tableList" border="1" cellpadding="1" cellspacing="0">
     <thead>
@@ -166,9 +198,16 @@
       </tr>
     </thead>
     <tbody id="tableBody"></tbody>
+    <tbody id="tableQpart"></tbody>
+    <tbody id="tableDzpv" style="display: none"></tbody>
   </table>
 </div>
 
+<script id="optionsTemplate" type="text/x-handlebars-template">
+  {{#each this}}
+    <option value='{{value}}'>{{label}}</option>
+  {{/each}}
+</script>
 <script id="row-template" type="text/x-handlebars-template">
   {{#each this}}
     <tr class='rowData' uid='{{uid}}'>
@@ -250,8 +289,11 @@
   $(document).ready(function () {
     const tableID = '#tableList';
     let options = { year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'UTC' };
-    let date = new Date();
+    // let date = new Date();
+    let date = new Date('2024-07-22');
     let oneDay = 1000 * 60 * 60 * 24;
+    let allData = [];
+    let selectedOrg = 'ТОВ "КЬЮПАРТ"';
 
     console.log(
       `window https://${window.location.hostname}/auth_files/photo/{{emp_code_ZKTeco}}.jpg`,
@@ -322,14 +364,18 @@
     }
 
     function getData() {
+      console.log('getData date', date);
       universalRequest(
         '/app/tabel',
         'GET',
         {},
         { date: date.toISOString() },
         function onSuccess(response) {
-          console.log('Success callback', response.list);
-          generateFromTemplate('#row-template', response.list, '#tableBody');
+          console.log('Success callback', response);
+          allData = response.list;
+          generateFromTemplate('#optionsTemplate', response.org, '#selectOrg');
+          $('#selectOrg').val(selectedOrg);
+          generateTable();
         },
         function onError(error) {
           console.log('Error callback:', error);
@@ -338,5 +384,17 @@
       );
     }
     getData();
+
+    $('#selectOrg').on('change', function () {
+      selectedOrg = $(this).val();
+      console.log('Вибрана організація:', selectedOrg);
+      generateTable();
+    });
+
+    function generateTable() {
+      console.log('generateTable selectedOrg', selectedOrg);
+      const filteredData = allData.filter(item => item['Организация'] === selectedOrg);
+      generateFromTemplate('#row-template', filteredData, '#tableBody');
+    }
   });
 </script>
