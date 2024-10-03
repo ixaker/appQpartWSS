@@ -304,12 +304,14 @@
     $('#date').val(date.toLocaleString('ru', options));
 
     $('#btnDown').on('click', function (event) {
+      clickAnimate(this);
       date = new Date(date - oneDay);
       $('#date').val(date.toLocaleString('ru', options));
       getData();
     });
 
     $('#btnUp').on('click', function (event) {
+      clickAnimate(this);
       date = new Date(date * 1 + oneDay);
       $('#date').val(date.toLocaleString('ru', options));
       getData();
