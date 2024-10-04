@@ -1298,9 +1298,11 @@
       }
     });
 
-    $(document).on('click', '.attachedImg', function () {
-      mediaviewer(this);
-    });
+    $(document)
+      .off('click', '.attachedImg')
+      .on('click', '.attachedImg', function () {
+        mediaviewer(this);
+      });
 
     function sortByParam(sortColumn, sortDirection) {
       $(tableID).trigger('sorton', [[[parseInt(sortColumn), parseInt(sortDirection)]]]);

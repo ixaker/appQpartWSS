@@ -2484,9 +2484,11 @@
       deleteMeParent(this);
     });
 
-    $(document).on('click', '.attachedImg', function () {
-      mediaviewer(this);
-    });
+    $(document)
+      .off('click', '.attachedImg')
+      .on('click', '.attachedImg', function () {
+        mediaviewer(this);
+      });
 
     // window.addEventListener('edgeSwipe', function () {
     //   console.log('Глобальна подія swipeEvent відбулася!');
