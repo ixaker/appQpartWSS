@@ -2303,10 +2303,16 @@
           $('#filterMenu').show();
         });
 
-        $('#userList').on('click', '.userFoto', function (event) {
-          console.log('click on photo', this);
-          mediaviewer(this, (canDelete = true));
-        });
+        // $('#userList').on('click', '.userFoto', function (event) {
+        //   console.log('click on photo', this);
+        //   mediaviewer(this, (canDelete = true));
+        // });
+
+        $(document)
+          .off('click', '.attachedImg')
+          .on('click', '.attachedImg', function () {
+            mediaviewer(this, true, updateNumberPhoto);
+          });
 
         $('#userList').on('click', '.userFotoDelete', function (event) {
           console.log('userFotoDelete click', this);
@@ -2377,6 +2383,14 @@
             fullCommandLine.hide();
             emptyCommandLine.css('display', 'flex');
           }
+        }
+
+        function updateNumberPhoto(element) {
+          console.log('updateNumberPhoto, element', element);
+          const container = $(element).closest('.plateListItem');
+          const photoCounter = container.find('.counFoto');
+          count = container.find('.userFotoContent').length;
+          photoCounter.text(count);
         }
 
         $('.userActions').hide();

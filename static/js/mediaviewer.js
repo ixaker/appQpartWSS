@@ -1,4 +1,4 @@
-function mediaviewer(element, canDelete = false) {
+function mediaviewer(element, canDelete = false, onDeleteCallback = null) {
     console.log('mediaviewer start', element)
     let $currentElement = $(element);
     const $img = $currentElement.find('.src-source');
@@ -7,6 +7,8 @@ function mediaviewer(element, canDelete = false) {
 
     const $attachedImgs = $currentElement.closest('.attachedImgContainer').find('.attachedImg');
     let currentIndex = $attachedImgs.index($currentElement);
+    let visibleImgs = $attachedImgs;
+
     console.log('$currentElement, $img, srcSource, $attachedImgs, currentIndex', $currentElement, $img, srcSource, $attachedImgs, currentIndex);
 
     const $overlay = $('<div class="media-viewer-overlay"></div>');
@@ -184,6 +186,7 @@ function mediaviewer(element, canDelete = false) {
     $delete.on('click', function () {
         clickAnimate(this);
         const $currentFotoElement = $currentElement.find('.userFotoContent');
+        console.log('$currentFotoElement, visibleImgs', $currentFotoElement, visibleImgs);
 
         const confirmation = confirm('Ви впевнені, що хочете видалити це фото?');
         if (!confirmation) return;
@@ -195,20 +198,22 @@ function mediaviewer(element, canDelete = false) {
             return;
         }
 
-        // Викликаємо функцію для видалення фото
         deleteUserPhoto($currentFotoElement, photoData)
             .then(() => {
-                // Оновлюємо інтерфейс після успішного видалення фото
-                const $remainingImgs = $attachedImgs.filter(':visible');
-                if ($remainingImgs.length > 0) {
-                    currentIndex = $remainingImgs.index($currentElement);
-                    currentIndex = (currentIndex >= $remainingImgs.length) ? $remainingImgs.length - 1 : currentIndex;
-
-                    const newImg = $remainingImgs.eq(currentIndex).find('.src-source');
+                let visibleImgsArray = visibleImgs.toArray();
+                visibleImgsArray = visibleImgsArray.filter((_, idx) => idx !== currentIndex);
+                visibleImgs = $(visibleImgsArray);
+                let newImg;
+                if (visibleImgs.length > 0) {
+                    currentIndex = (currentIndex >= visibleImgs.length) ? visibleImgs.length - 1 : currentIndex;
+                    newImg = visibleImgs.eq(currentIndex).find('.src-source');
                     const blob = newImg.attr('src-source');
                     updateOverlayContent(blob, newImg);
                 } else {
                     closeViewer();
+                }
+                if (typeof onDeleteCallback === 'function') {
+                    onDeleteCallback(newImg);
                 }
             })
             .catch(error => {
