@@ -52,10 +52,10 @@
     <td title="Номер детали" name="Заказ" key="АртикулНаименование" style="width: 22%">
       <div class="dataCell"></div>
     </td>
-    <td title="МЛ" name="Заказ" key="Номер" style="width: 5%">
+    <!-- <td title="МЛ" name="Заказ" key="Номер" style="width: 5%">
       <div class="dataCell textAlignCenter"></div>
-    </td>
-    <td title="Оператор" name="Сотрудник" key="Наименование" style="width: 20%">
+    </td> -->
+    <td title="Оператор" name="Сотрудник" key="Наименование" style="width: 15%">
       <div class="dataCell"></div>
     </td>
     <td title="Этап производства" name="ЭтапПроизводства" key="Наименование" style="width: 20%">
@@ -67,7 +67,10 @@
     <td title="Прове рено" name="КоличествоПроверено" style="width: 6%">
       <input type="number" inputmode="numeric" checkValid min="0" sync="none" class="dataCell quantity textAlignEnd" />
     </td>
-    <td title="Брак" name="КоличествоБрака" style="width: 5%">
+    <td title="Брак опер." name="КоличествоБрака" style="width: 5%">
+      <input type="number" inputmode="numeric" min="0" sync="none" class="dataCell quantity textAlignEnd" />
+    </td>
+    <td title="Брак загот." name="КоличествоБракаЗаготовки" style="width: 5%">
       <input type="number" inputmode="numeric" min="0" sync="none" class="dataCell quantity textAlignEnd" />
     </td>
     <td title="Готов" class="" name="СтатусОТК" style="width: 5%">
@@ -154,16 +157,20 @@
     $(tableID).on('click', '.btnOk', function (event) {
       const row = $(this).closest('tr');
       const data = $(row).data('data');
-      console.log('data', data);
+      console.log('data from btnOk1', data);
       const count = data.edited['КоличествоПроверено'] || 0;
       const OTK = data.edited['СтатусОТК'] || false;
       const defect = data.edited['КоличествоБрака'] || 0;
-      const edited = {
-        КоличествоПроверено: count,
-        КоличествоБрака: defect,
-        СтатусОТК: OTK,
-      };
-      data.edited = edited;
+      const defectZagot = data.edited['КоличествоБракаЗаготовки'] || 0;
+      // const edited = {
+      //   КоличествоПроверено: count,
+      //   КоличествоБрака: defect,
+      //   КоличествоБракаЗаготовки: defectZagot,
+      //   СтатусОТК: OTK,
+      // };
+      // data.edited = edited;
+
+      console.log('data from btnOk2', data);
 
       $(row).find('.btnOk').hide();
       $(row).find('.btnEdit').show();
