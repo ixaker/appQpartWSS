@@ -1,60 +1,99 @@
 <style>
-    .btnArrow {
-        font-size: xx-large;
-        display: block;
-        line-height: 41px;
+  #content {
+    padding-top: 0;
+  }
+
+  #weekRow {
+    background-image: none;
+    background-color: white;
+  }
+  #tableContainer {
+    padding: 0;
+  }
+
+  table {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  th,
+  td {
+    border: 1px solid rgb(202, 202, 202);
+  }
+  th {
+    font-size: x-small;
+  }
+  td {
+    font-size: small;
+    text-overflow: clip;
+  }
+
+  @media (min-width: 800px) {
+    th,
+    td {
+      font-size: large;
     }
 
-    #date {
-        margin: 0 10px;
-        width: 170px;
-        text-align: center;
-        font-size: x-large;
+    #tableContainer {
+      padding: 10px 0;
     }
+  }
+  .btnArrow {
+    font-size: xx-large;
+    display: block;
+    line-height: 41px;
+  }
 
-    .ui-icon {
-        margin-top: 0px;
-    }
+  #date {
+    margin: 0 10px;
+    width: 170px;
+    text-align: center;
+    font-size: x-large;
+  }
 
-    .workTime{
-        margin-left: 50px;
-        width: 110px;
-    }
+  .ui-icon {
+    margin-top: 0px;
+  }
 
-    .workDay{
-        width: 150px;
-    }
+  .workTime {
+    margin-left: 50px;
+    width: 110px;
+  }
 
-    .reportsTime {
-        margin-left: 50px;
-        width: 170px;
-    }
+  .workDay {
+    width: 150px;
+  }
 
-    .tabelTime {
-        margin-left: 50px;
-        width: 140px;
-    }
+  .reportsTime {
+    margin-left: 50px;
+    width: 170px;
+  }
 
-    .totalInfo {
-        margin-top: 8px;
-    }
+  .tabelTime {
+    margin-left: 50px;
+    width: 140px;
+  }
+
+  .totalInfo {
+    margin-top: 8px;
+    padding-right: 10px;
+    display: none;
+  }
 </style>
 
-
-<div style="display: flex;">
-    <h3 class="titlePage">Выработка / Табель</h3>
-
-    <div style="display: flex; height: 40px; margin-left: 20px;">
-        <i class="bi bi-arrow-left-circle btnArrow colorGreen" increment="-1"></i>
-        <input id="date" name="date" type="text" readonly>
-        <i class="bi bi-arrow-right-circle btnArrow colorGreen" increment="1"></i>
-    </div>
+<div style="display: flex; flex-direction: column; align-items: center">
+  <h3 class="titlePage">Выработка / Табель</h3>
+  <div style="display: flex; height: 40px; margin-bottom: 5px">
+    <i class="bi bi-arrow-left-circle btnArrow colorGreen" increment="-1"></i>
+    <input id="date" name="date" type="text" readonly />
+    <i class="bi bi-arrow-right-circle btnArrow colorGreen" increment="1"></i>
+  </div>
 </div>
 
 <div id="containerResult"></div>
 
 <script>
-/*     try {
+  /*     try {
         let week = 0;
     } catch (error) {
         week = 0;
@@ -65,153 +104,159 @@
     } catch (error) {
         accordion = false;
     } */
-    //let week = 0;
-    //let accordion = false;
+  //let week = 0;
+  //let accordion = false;
 
-    $(document).ready(function() {
-        let week = 0;
-        let accordion = false;
+  $(document).ready(function () {
+    let week = 0;
+    let accordion = false;
 
-/*         if (typeof accordion === 'undefined') {
+    /*         if (typeof accordion === 'undefined') {
             // Если переменная accordion не определена, объявите её
             var accordion = {};
             // Здесь вы можете добавить необходимую логику для инициализации переменной
         } */
 
-        $('.btnArrow').on('click', function(event){
-            clickAnimate(this);
-            week += parseInt($(this).attr('increment')||0);
-            updateInfo();
-        })
+    $('.btnArrow').on('click', function (event) {
+      clickAnimate(this);
+      week += parseInt($(this).attr('increment') || 0);
+      updateInfo();
+    });
 
-        $('#date').on('click', function(event){
-            week = 0;
-            updateInfo();
-        })
+    $('#date').on('click', function (event) {
+      week = 0;
+      updateInfo();
+    });
 
-        function updateInfo() {
-            console.log('updateInfo');
+    function updateInfo() {
+      console.log('updateInfo');
 
-            NProgress.start();
+      NProgress.start();
 
-            $.ajax({ url: '/app/tabelWork', type: 'GET', data: {week:week}, dataType: 'json', success: function(response) {
-                console.log('response', response);
+      $.ajax({
+        url: '/app/tabelWork',
+        type: 'GET',
+        data: { week: week },
+        dataType: 'json',
+        success: function (response) {
+          console.log('response', response);
 
-                if(accordion){
-                    try {
-                        console.log('destroy');
-                        $( "#containerResult" ).accordion("destroy");
-                    } catch (error) {
-                        
-                    }
-                    
-                    accordion = false;
-                }
+          if (accordion) {
+            try {
+              console.log('destroy');
+              $('#containerResult').accordion('destroy');
+            } catch (error) {}
 
-                $('#containerResult').html('');
-                $('#date').val(''); 
+            accordion = false;
+          }
 
-                if (response.error) {
-                    toastr.error("Ошибка при получении данных");
-                    return;
-                }
+          $('#containerResult').html('');
+          $('#date').val('');
 
-                $('#date').val(response['Период']);     
+          if (response.error) {
+            toastr.error('Ошибка при получении данных');
+            return;
+          }
 
-                /* <div class="workTime">${day['ВремяПрихода']} - ${day['ВремяУхода']}</div> */
+          $('#date').val(response['Период']);
 
-                let summForWeek = 0;
+          /* <div class="workTime">${day['ВремяПрихода']} - ${day['ВремяУхода']}</div> */
 
-                response.days.forEach((day) => {
-                    //console.log('day', day);
-                    let elemDay = $(`<h3 style="display: flex;">
+          let summForWeek = 0;
+
+          response.days.forEach(day => {
+            //console.log('day', day);
+            let elemDay = $(`<h3 style="display: flex;" id="weekRow">
                                         <div class="workDay">${day.dateLabel}</div> 
                                         <div class="workTime"></div>
                                         <div class="reportsTime">${day['ВремяВыработкиЗаДеньПоОтчетамСтрокой']}</div>
                                         <div class="tabelTime">${day['ИтогЧасовЗаДеньПоТабелюСтрокой']}</div>
                                     </h3>`);
-                    $('#containerResult').append(elemDay);
+            $('#containerResult').append(elemDay);
 
-                    let elemDayInfo = $(`<div></div>`).appendTo('#containerResult');
+            let elemDayInfo = $(`<div id='tableContainer'></div>`).appendTo('#containerResult');
 
-                    if (day.reports.length > 0) {
-                        let elemDayReports = $(`<table><thead><tr>
-                                                    <th style="width:70px;">Станок</th>
-                                                    <th>Деталь</th>
-                                                    <th style="width:70px;">Этап</th>
-                                                    <th style="width:75px;">Кол-во сделано</th>
-                                                    <th style="width:70px;">Кол-во брака</th>
-                                                    <th style="width:70px;">Кол-во годных</th>
-                                                    <th style="width:70px;">Цена</th>
-                                                    <th style="width:70px;">Сумма</th>
+            if (day.reports.length > 0) {
+              let elemDayReports = $(`<table><thead><tr>
+                                                    <th style="width:14%;">Стaнок</th>
+                                                    <th style="width:30%;">Деталь</th>
+                                                    <th style="width:14%;">Этап</th>
+                                                    <th style="width:14%;">Кол-во</th>
+                                                    <th style="width:14%;">Брак</th>
+                                                    <th style="width:14%;">Всего</th>
                                                 </tr></thead><tbody></tbody></table>`);
 
-                        $(elemDayInfo).append(elemDayReports);
+              // <th style="width:70px;">Цена</th>
+              //     <th style="width:70px;">Сумма</th>
+              $(elemDayInfo).append(elemDayReports);
 
-                        let elemTbody = $(elemDayInfo).find('tbody');
-                        let summForDay = 0;
+              let elemTbody = $(elemDayInfo).find('tbody');
+              let summForDay = 0;
 
-                        day.reports.forEach((report) => {
-                            //console.log('report', report, report['Деталь']['Артикул']);
-                            let количествоГодных = Number(report['КоличествоГодных'].replace(',', '.')); // Преобразование в число, если это строка
-                            let суммаОплатыЗаДетальНаЭтапе = Number(report['СуммаОплатыЗаДетальНаЭтапе'].replace(',', '.')); // То же самое здесь
-                            let результатУмножения = количествоГодных * суммаОплатыЗаДетальНаЭтапе; // Математическая операция
-                            summForDay += результатУмножения;
-                            результатУмножения = результатУмножения.toFixed(2);
-                            суммаОплатыЗаДетальНаЭтапе = суммаОплатыЗаДетальНаЭтапе.toFixed(2);
+              day.reports.forEach(report => {
+                //console.log('report', report, report['Деталь']['Артикул']);
+                let количествоГодных = Number(report['КоличествоГодных'].replace(',', '.')); // Преобразование в число, если это строка
+                let суммаОплатыЗаДетальНаЭтапе = Number(report['СуммаОплатыЗаДетальНаЭтапе'].replace(',', '.')); // То же самое здесь
+                let результатУмножения = количествоГодных * суммаОплатыЗаДетальНаЭтапе; // Математическая операция
+                summForDay += результатУмножения;
+                результатУмножения = результатУмножения.toFixed(2);
+                суммаОплатыЗаДетальНаЭтапе = суммаОплатыЗаДетальНаЭтапе.toFixed(2);
 
-                            let elemDataRow = $(`<tr>
+                let elemDataRow = $(`<tr>
                                 <td class="textAlignCenter">${report['Станок']['ИнвентарныйНомер']}</td>
                                 <td>${report['Деталь']['Артикул']}</td>
                                 <td class="textAlignCenter">${report['ЭтапПроизводства']['КодНовый']}</td>
                                 <td class="textAlignEnd">${report['КоличествоИзготовлено']}</td>
                                 <td class="textAlignEnd">${report['КоличествоБрака']}</td>
                                 <td class="textAlignEnd">${report['КоличествоГодных']}</td>
-                                <td class="textAlignEnd">${report['СуммаОплатыЗаДетальНаЭтапе']}</td>
-                                <td class="textAlignEnd">${результатУмножения}</td>
+                               
                             </tr>`);
+                // <td class="textAlignEnd">${report['СуммаОплатыЗаДетальНаЭтапе']}</td>
+                // <td class="textAlignEnd">${результатУмножения}</td>
+                //<td class="textAlignEnd">${report['СуммаЗаВсеДетали']}</td>
+                //console.log('elemDataRow', elemDataRow);
+                $(elemTbody).append(elemDataRow);
+              });
 
-                            //<td class="textAlignEnd">${report['СуммаЗаВсеДетали']}</td>
-                            //console.log('elemDataRow', elemDataRow);
-                            $(elemTbody).append(elemDataRow);
-                        })
-
-                        summForWeek += summForDay;
-                        summForDay = summForDay.toFixed(2);
-                        let elemDataRow = $(`<tr class="lastRowSumm">
-                            <td colspan="7" class="textAlignEnd" style="border: none;">Всего:</td>
-                            <td class="textAlignEnd" style="border: none;">${summForDay}</td>
+              summForWeek += summForDay;
+              summForDay = summForDay.toFixed(2);
+              let elemDataRow = $(`<tr class="lastRowSumm">
+                            <td colspan="4" class="textAlignEnd" style="border: none;">Всего:</td>
+                            <td colspan="2" class="textAlignEnd" style="border: none;">${summForDay}</td>
                         </tr>`);
 
-                        $(elemTbody).append(elemDataRow);
+              //   $(elemTbody).append(elemDataRow);
 
-                        $(elemDay).find('.reportsTime').text('По отчетам : ' + summForDay);
-                    }
-                    
-                });
+              $(elemDay)
+                .find('.reportsTime')
+                .text('По отчетам : ' + summForDay);
+            }
+          });
 
-                $("#containerResult").accordion({
-                    heightStyle: "content",
-                    collapsible: true,
-                    active: false
-                });
+          $('#containerResult').accordion({
+            heightStyle: 'content',
+            collapsible: true,
+            active: false,
+          });
 
-                let summForWeekStr = summForWeek.toFixed(2);
+          let summForWeekStr = summForWeek.toFixed(2);
 
-                $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Премия']}</h4>`));
-                $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Удержано']}</h4>`));
+          $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Премия']}</h4>`));
+          $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Удержано']}</h4>`));
 
-                let elemTotal = $(`<h4 class="totalInfo textAlignEnd">${response['ИтоговаяСтрока']}</h4>`);
-                $('#containerResult').append(elemTotal);
+          let elemTotal = $(`<h4 class="totalInfo textAlignEnd">${response['ИтоговаяСтрока']}</h4>`);
+          $('#containerResult').append(elemTotal);
 
-                $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Долг']}</h4>`));
+          $('#containerResult').append($(`<h4 class="totalInfo textAlignEnd">${response['Долг']}</h4>`));
 
-                accordion = true;
-            },complete: function(xhr, status) {
-                NProgress.done();
-            }});
-        }
+          accordion = true;
+        },
+        complete: function (xhr, status) {
+          NProgress.done();
+        },
+      });
+    }
 
-        updateInfo();
-    })
+    updateInfo();
+  });
 </script>
