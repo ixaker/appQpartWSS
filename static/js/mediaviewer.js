@@ -129,6 +129,7 @@ function mediaviewer(element, canDelete = false, onDeleteCallback = null) {
     }
 
     $closeBtn.on('click', function () {
+        $(document).off('keydown');
         clickAnimate(this);
         closeViewer();
     });
@@ -219,6 +220,28 @@ function mediaviewer(element, canDelete = false, onDeleteCallback = null) {
             .catch(error => {
                 console.error('Помилка під час видалення фото:', error);
             });
+    });
+
+    $(document).on('keydown', function (event) {
+        switch (event.key) {
+            case 'ArrowLeft': // Вліво
+                $prevBtn.trigger('click');
+                console.log('prevButton');
+                break;
+            case 'ArrowRight': // Вправо
+                $nextBtn.trigger('click');
+                break;
+            case 'Escape': // ESC
+                $closeBtn.trigger('click');
+                break;
+            case 'Delete': // Del
+                if (canDelete) {
+                    $delete.trigger('click');
+                }
+                break;
+            default:
+                break;
+        }
     });
 
     history.pushState({ page: 'mediaViewer' }, '', '');

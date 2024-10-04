@@ -1034,7 +1034,7 @@
     function renderDetails(data) {
       console.log('renderDetails data', data, $('#detailsTemplate'));
       generateFromTemplate('#detailsTemplate', data.item, '#detailList');
-      setupSearch('#searchDetails', '.plateListItem', ['.detailName , .detailSotrudnik, .stageName, .detailStanok']);
+      setupSearch('#searchDetails', '.plateListItem', '.detailName , .detailSotrudnik, .stageName, .detailStanok');
     }
 
     $(document).on('click', '#details', function () {

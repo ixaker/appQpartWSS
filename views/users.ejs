@@ -500,14 +500,6 @@
     gap: 5px;
   }
 
-  .menuContainer {
-    position: relative;
-    line-height: normal;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-
   [data-work='true'] {
     border: 3px solid #28ac28;
   }
@@ -656,6 +648,7 @@
         <div class='userNameText'>
           <h4 class='userNameFaceID'>
             <span class='userName'>{{name}}</span>
+            <span class="org" style="display: none;">{{Организация.Наименование}}</span>
           </h4>
         </div>
         <div class='infoRow'>
@@ -796,6 +789,26 @@
         <h3 class="titlePage2">Перелік користувачів</h3>
       </div>
       <i class="bi bi-funnel-fill" id="filter"></i>
+      <div id="filterUserMenu" class="menuContainer">
+        <div class="menuItem">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="filterItemQpart" data-filter='ТОВ "КЬЮПАРТ"' />
+            <label class="form-check-label" for="filterItemQpart"> Qpart</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="filterItemDzpv" data-filter='ТОВ "ДЗПВ"' />
+            <label class="form-check-label" for="filterItemDzpv"> ДЗПВ</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="filterOnline" data-filter="онлайн" />
+            <label class="form-check-label" for="filterOnline"> на роботі</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="filterZeroPhoto" data-filter="zero" />
+            <label class="form-check-label" for="filterZeroPhoto"> без фото</label>
+          </div>
+        </div>
+      </div>
       <i class="bi bi-person-exclamation" id="userScan"></i>
       <i class="bi bi-qr-code-scan qr-code" id="qr-code"></i>
     </div>
@@ -1179,8 +1192,6 @@
       </div>
     </div>
 
-    <div id="filterMenu" style="display: none">asdfasdf</div>
-
     <div id="qrContainer">
       <img class="qrImage" src="img/qrcode.png" alt="qr" />
       <i class="bi bi-x-lg closeBtn" id="closeQR"></i>
@@ -1261,10 +1272,6 @@
           $('.phoneMenu').each(function () {
             $(this).hide();
           });
-        }
-
-        if (!$(e.target).closest('#filterMenu').length) {
-          $('#filterMenu').hide();
         }
 
         if (!$(e.target).closest('.addPhotoContent').length) {
@@ -2016,6 +2023,7 @@
       $(document).ready(function () {
         const platesID = '#userList';
         const defaultParam = {};
+        initFilter('filterUserMenu', 'filter');
 
         $(platesID).data('defaultParam', defaultParam);
 
@@ -2156,6 +2164,24 @@
           render(data);
         };
 
+        $('#filterUserMenu').on('change', '.form-check-input', function () {
+          const searchInput = $('#search');
+          const currentValue = searchInput.val();
+          const filterText = $(this).data('filter'); // Отримуємо значення з data-filter
+
+          if ($(this).is(':checked')) {
+            // Додаємо текст, якщо чекбокс обрано
+            if (!currentValue.includes(filterText)) {
+              searchInput.val(currentValue ? currentValue + ' ' + filterText : filterText);
+            }
+          } else {
+            // Видаляємо текст, якщо чекбокс знято
+            const newValue = currentValue.replace(filterText, '').trim();
+            searchInput.val(newValue);
+          }
+          searchInput.trigger('input');
+        });
+
         $('#userList').on('click', '.arrival ', function (e) {
           console.log('data from id', $(platesID).data('data'), $(this).closest('.plateListItem').attr('id'));
           const data = $(platesID).data('data');
@@ -2193,45 +2219,10 @@
           tabel.toggle();
           console.log('openTable');
         }
+        searchListElements =
+          '.userName, .org, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone, .online, .zero';
+        setupSearch('#search', '.plateListItem', searchListElements);
 
-        $('#search').on('input', function () {
-          let searchTerms = $(this).val().split(' ').filter(Boolean);
-
-          $('.plateListItem').each(function () {
-            let found = true;
-            let elements = $(this)
-              .find(
-                '.userName, .userProfaFaceID, .empCode, .timeContainer, .profa, .phoneText, .hidePhone, .online, .zero'
-              )
-              .map(function () {
-                return { el: $(this) };
-              })
-              .get();
-            elements.forEach(element => {
-              element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
-            });
-
-            if (searchTerms.length > 0) {
-              found = searchTerms.every(term => {
-                const regex = new RegExp(`(${term})`, 'gi');
-                return elements.some(element => {
-                  if (element.text.match(regex)) {
-                    element.text = element.text.replace(regex, '<mark>$1</mark>');
-                    return true;
-                  }
-                  return false;
-                });
-              });
-            }
-
-            $(this).toggleClass('hide', !found);
-            elements.forEach(element => {
-              element.el.html(element.text);
-            });
-          });
-        });
-
-        // клик по количеству фото .userCountFaceID
         $('#userList').on('click', '.userCountFaceID', function (event) {
           console.log('userCountFaceID');
 
@@ -2295,12 +2286,6 @@
               $(this).find('.qpartSpinerForWaiting').remove();
               $(this).prop('disabled', false);
             });
-        });
-
-        $('#filter').on('click', function () {
-          console.log('');
-
-          $('#filterMenu').show();
         });
 
         // $('#userList').on('click', '.userFoto', function (event) {

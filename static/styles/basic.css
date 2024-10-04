@@ -792,6 +792,7 @@ mark {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   border-radius: 4px;
   overflow: hidden;
+  flex-direction: column;
 }
 
 .menuItem {

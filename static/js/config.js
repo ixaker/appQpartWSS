@@ -780,7 +780,7 @@ function openMenu(menuButtonId, menuContainerId, menuItemActions = []) {
         menuContainer.css({
             top: top,
             left: left,
-            position: 'fixed'
+            position: 'fixed',
         });
 
         menuContainer.toggle();
@@ -953,7 +953,7 @@ function setupSearch(inputSelector, itemSelector, filterSelectors) {
         $(itemSelector).each(function () {
             let found = true;
             let elements = $(this)
-                .find(filterSelectors.join(', '))
+                .find(filterSelectors)
                 .map(function () {
                     return { el: $(this), originalText: $(this).text() };
                 })
