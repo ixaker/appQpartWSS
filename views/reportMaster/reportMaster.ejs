@@ -1,5 +1,3 @@
-<%- include('reportMaster_details') %> <%- include('reportMaster_stanki') %> <%- include('reportMaster_users') %>
-
 <style>
   #container {
     max-width: 500px;
@@ -25,7 +23,7 @@
     padding: 10px 10px 0 10px;
   }
   #commandPanel {
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
   }
   .titlePage {
     font-size: xx-large;
@@ -35,7 +33,7 @@
   .backToMain {
     font-size: xx-large;
     color: darkgreen;
-    margin-left: 15px;
+    /* margin-left: 15px; */
   }
 
   .menuButton {
@@ -77,7 +75,11 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 15px;
+    gap: 5px;
+  }
+
+  .groupSearch {
+    width: auto;
   }
 
   .titleChildren {
@@ -335,30 +337,33 @@
   }
 </style>
 
+<div id="shiftHeader">
+  <button id="prevShift" class="shiftButton">
+    <i class="bi bi-arrow-left-circle"></i>
+  </button>
+  <input id="shiftDate" name="shiftDate" type="text" readonly="" class="container-slide" />
+  <button id="nextShift" class="shiftButton">
+    <i class="bi bi-arrow-right-circle"></i>
+  </button>
+</div>
+<%- include('reportMaster_details') %> <%- include('reportMaster_stanki') %> <%- include('reportMaster_users') %>
+
 <div id="main" class="screen container-slide">
   <header id="commandPanel" class="commandPanel">
     <h3 class="titlePage">Отчет мастера</h3>
     <i class="bi bi-pencil" id="btnMakeMaster"></i>
   </header>
 
-  <div id="shiftHeader">
-    <button id="prevShift" class="shiftButton">
-      <i class="bi bi-arrow-left-circle"></i>
-    </button>
-    <input id="shiftDate" name="shiftDate" type="text" readonly="" class="container-slide" />
-    <button id="nextShift" class="shiftButton">
-      <i class="bi bi-arrow-right-circle"></i>
-    </button>
-  </div>
-
   <div id="containerSumInfo" class="container-slide"></div>
-  <div id="noShiftContainer" style="display: none">
-    <div class="noShiftText">
-      <p>Зміна ще не почалась.</p>
-      <p>До початку зміни:</p>
-    </div>
-    <div class="noShiftTimer">00:00:00</div>
+</div>
+
+<div id="noShiftContainer" style="display: none">
+  <i class="bi bi-arrow-up-circle" id="backBtn" style="font-size: xx-large; color: darkgreen"></i>
+  <div class="noShiftText">
+    <p>Зміна ще не почалась.</p>
+    <p>До початку зміни:</p>
   </div>
+  <div class="noShiftTimer">00:00:00</div>
 </div>
 
 <script id="mainTemplate" type="text/x-handlebars-template">
@@ -496,9 +501,17 @@
   $(document).ready(function () {
     let currentDate;
     let currentShift;
-    let isShiftActive;
     let datepickerOpen = false;
+    let activePage = 'main';
+    let timerInterval;
     addSubscribeWSS('ОтчетЗаСмену_all');
+
+    const pageData = {
+      main: { function: renderReport, container: '#main' },
+      stanki: { function: renderStanki, container: '#stanokContainer' },
+      users: { function: renderUsers, container: '#usersContainer' },
+      details: { function: renderDetails, container: '#detailContainer' },
+    };
 
     init();
 
@@ -530,8 +543,14 @@
     }
 
     $('#prevShift').click(function () {
+      console.log('activePage', activePage);
       getShift(-1);
       clickAnimate(this);
+    });
+
+    $('#backBtn').click(function () {
+      clickAnimate(this);
+      $('#prevShift').click();
     });
 
     $('#nextShift').click(function () {
@@ -553,16 +572,33 @@
     });
 
     function getShiftByDate(date) {
-      console.log('getShiftByDate', date);
-      currentDate = new Date(date);
-      currentShift = 'day';
-      console.log('getShiftByDate currentDate, currentShift', currentDate, currentShift);
+      console.log('date, currentDate', date, currentDate);
+      const oneDayInMs = 24 * 60 * 60 * 1000;
+      const dateObj = new Date(date);
+      const currentDateObj = new Date(currentDate);
+      const differenceInMs = dateObj - currentDateObj;
+      const direction = Math.round(differenceInMs / oneDayInMs);
+      getShift(direction);
+      return;
+      const isShiftExist = changeShift(direction);
+      renderTitle();
+      if (!isShiftExist) {
+        disableActivePage();
+        generateTimer();
+        return;
+      } else {
+        enableActivePage();
+        clearInterval(timerInterval);
+      }
+      console.log('getShiftByDate isShiftExist', isShiftExist);
     }
 
     function changeShift(direction) {
+      console.log('---- changeShift currentShift, direction', currentShift, direction);
       const today = getCurrentShift();
       const todayDate = today.currentDate;
       const todayShift = today.currentShift;
+
       if (direction !== 0) {
         if (direction === 1 && currentShift === 'day') {
           direction = 0;
@@ -574,63 +610,98 @@
 
         const newDate = new Date(currentDate);
         const newShift = currentShift === 'day' ? 'night' : 'day';
+        console.log('newShift', newShift);
         newDate.setDate(currentDate.getDate() + direction);
 
         const todayShiftBegin = new Date(todayDate);
         todayShiftBegin.setHours(todayShift === 'day' ? 7 : 19, 0, 0, 0);
 
         const newShiftBegin = new Date(newDate);
-        newShiftBegin.setHours(currentShift === 'day' ? 7 : 19, 0, 0, 0);
+        newShiftBegin.setHours(newShift === 'day' ? 7 : 19, 0, 0, 0);
+        console.log('todayShiftBegin, newShiftBegin', todayShiftBegin, newShiftBegin);
 
-        if (todayShiftBegin < newShiftBegin) {
-          $('#nextShift').addClass('disabled');
-          $('#containerSumInfo').hide();
-          $('#noShiftContainer').show();
-        }
         currentDate = newDate;
         currentShift = newShift;
+
+        if (todayShiftBegin < newShiftBegin) {
+          console.log('зміна ще не почалась');
+          return false;
+        }
       }
+      return true;
     }
 
     function getInfoByParam(preset, callback) {
-      console.log('getInfoByParam, currentShift', currentShift);
+      $(`${pageData[preset].container} .plate`).html(skeleton);
       const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift, preset: preset };
       universalRequest('app/reportMaster', 'GET', '', shift, callback);
     }
 
+    function disableActivePage() {
+      $('#nextShift').addClass('disabled');
+      $(pageData[activePage].container).hide();
+      $('#noShiftContainer').show();
+    }
+
+    function enableActivePage() {
+      $('#nextShift').removeClass('disabled');
+      console.log('pageData[activePage].container, activePage', pageData[activePage].container, activePage);
+      $(pageData[activePage].container).show();
+      $('#noShiftContainer').hide();
+    }
+
+    function generateTimer() {
+      console.log('generate timer');
+      const secondsToShiftStart = getTimeToShiftStart();
+      startTimer(secondsToShiftStart, '.noShiftTimer');
+    }
+
     function getShift(direction) {
-      changeShift(direction);
-      getReportFrom1C(direction);
+      const isShiftExist = changeShift(direction);
+      renderTitle();
+      if (!isShiftExist) {
+        disableActivePage();
+        generateTimer();
+        return;
+      } else {
+        enableActivePage();
+        clearInterval(timerInterval);
+      }
+      abortAllRequests();
+      const animationDirection = direction > 0 ? 'right' : 'left';
+      const container = pageData[activePage].container;
+      containerAnimation(animationDirection, '#shiftDate', '#shiftDate');
+      containerAnimation(animationDirection, container, container);
+      getInfoByParam(activePage, pageData[activePage].function);
+      // getReportFrom1C(direction);
     }
 
     async function getReportFrom1C(direction) {
       console.log('getReportFrom1C, currentDate, currentShift', currentDate, currentShift, direction);
-      // changeShift(direction);
-      renderTitle();
 
       const shift = { date: formatDateToYYYYMMDD(currentDate), smena: currentShift, preset: 'main' };
 
-      const classForOut = direction === 1 ? 'outLeft' : direction === -1 ? 'outRight' : '';
-      const classForIn = direction === 1 ? 'inRight' : direction === -1 ? 'inLeft' : '';
+      // const classForOut = direction === 1 ? 'outLeft' : direction === -1 ? 'outRight' : '';
+      // const classForIn = direction === 1 ? 'inRight' : direction === -1 ? 'inLeft' : '';
 
-      $('#containerSumInfo').addClass(classForOut);
-      console.log('$(#containerSumInfo).children(.plates)', $('#containerSumInfo').children('.plate'));
+      // $('#containerSumInfo').addClass(classForOut);
+      // console.log('$(#containerSumInfo).children(.plates)', $('#containerSumInfo').children('.plate'));
       $('#containerSumInfo').show();
       $('#noShiftContainer').hide();
       $('#containerSumInfo').children('.plate').html(skeleton);
 
-      $('#shiftDate').addClass(classForOut);
-      abortAllRequests();
-      universalRequest('app/reportMaster', 'GET', '', shift, renderReport);
-      setTimeout(() => {
-        $('#containerSumInfo').removeClass(classForOut).addClass(classForIn);
-        $('#shiftDate').removeClass(classForOut).addClass(classForIn);
+      // $('#shiftDate').addClass(classForOut);
+      // abortAllRequests();
+      // universalRequest('app/reportMaster', 'GET', '', shift, renderReport);
+      // setTimeout(() => {
+      //   $('#containerSumInfo').removeClass(classForOut).addClass(classForIn);
+      //   $('#shiftDate').removeClass(classForOut).addClass(classForIn);
 
-        setTimeout(() => {
-          $('#containerSumInfo').removeClass(classForIn);
-          $('#shiftDate').removeClass(classForIn);
-        }, 100);
-      }, 100);
+      //   setTimeout(() => {
+      //     $('#containerSumInfo').removeClass(classForIn);
+      //     $('#shiftDate').removeClass(classForIn);
+      //   }, 100);
+      // }, 100);
     }
 
     $('#shiftDate').datepicker({
@@ -659,7 +730,8 @@
         }
         console.log('selectedDate', selectedDate);
         getShiftByDate(selectedDate);
-        getReportFrom1C(1);
+        getInfoByParam(activePage, pageData[activePage].function);
+        // getReportFrom1C(1);
       },
 
       onClose: function () {
@@ -674,8 +746,8 @@
       const titleText = `${formattedDate} - ${formattedShift}`;
       console.log('titleText', titleText);
       $('#shiftDate').val(titleText);
-      $('#shiftDateStanki').text(titleText);
-      $('#shiftDateUsers').text(titleText);
+      // $('#shiftDateStanki').text(titleText);
+      // $('#shiftDateUsers').text(titleText);
       console.log('renderTitle', $('#shiftDateStanki'), $('#shiftDateUsers'));
     }
 
@@ -710,7 +782,7 @@
 
     function startTimer(time, element) {
       let remainingTime = time;
-      const timerInterval = setInterval(() => {
+      timerInterval = setInterval(() => {
         $(element).text(formatSecondsToHHMMSS(remainingTime));
         remainingTime--;
         if (remainingTime < 0) {
@@ -818,8 +890,11 @@
 
     function renderStanki(data) {
       $('#stanokContainer').data('data', data);
-
+      console.log('renderStanki data', data.item.active);
+      isShiftActive = data.item.active;
       if (isShiftActive) {
+        $('#changeView').hide();
+
         filterOptions = {
           '#activeStankiFilter': {
             searchText: '',
@@ -888,6 +963,7 @@
         }
       } else {
         console.log('not active shift');
+        $('#changeView').show();
 
         // let table = generateStankiTable(data);
 
@@ -916,8 +992,8 @@
             table = null;
           }
         }
-
         $('#changeView').on('click', function () {
+          console.log('change view');
           clickAnimate(this);
           // $(this).toggleClass('bi-table bi-view-stacked');
 
@@ -940,67 +1016,17 @@
             classList: ['statusMaster', 'statusFact'],
           },
         };
-
-        // $('#stanokTable').tablesorter();
-
-        // const filterStanokTable = () => {
-        //   const selectedStanok = $('#stanokFilter').val().toLowerCase();
-        //   const selectedOperator = $('#operatorFilter').val().toLowerCase();
-        //   const selectedStanokDetail = $('#stanokDetailFilter').val().toLowerCase();
-        //   const selectedStanokStage = $('#stanokStageFilter').val().toLowerCase();
-
-        //   $('#stanokTable tbody tr').each(function () {
-        //     const stanok = $(this).find('.stanokTd').text().toLowerCase();
-        //     const operator = $(this).find('.operatorTd').text().toLowerCase();
-        //     const stanokDetail = $(this).find('.detailTd').text().toLowerCase();
-        //     const stanokStage = $(this).find('.stanokStageFilter').text().toLowerCase();
-
-        //     const matchesFilter =
-        //       (selectedStanok === '' || stanok.includes(selectedStanok)) &&
-        //       (selectedOperator === '' || operator.includes(selectedOperator)) &&
-        //       (selectedStanokDetail === '' || stanokDetail.includes(selectedStanokDetail)) &&
-        //       (selectedStanokStage === '' || stanokStage.includes(selectedStanokStage));
-        //     $(this).toggle(matchesFilter);
-        //   });
-        // };
-
-        // $('#stanokFilter').change(filterStanokTable);
-        // $('#operatorFilter').change(filterStanokTable);
-        // $('#stanokDetailFilter').change(filterStanokTable);
-        // $('#stanokStageFilter').change(filterStanokTable);
-
-        // const populateStanokSelect = (selector, columnClass) => {
-        //   const uniqueValues = new Set();
-
-        //   $(`#stanokTable tbody .${columnClass}`).each(function () {
-        //     uniqueValues.add($(this).text());
-        //   });
-
-        //   uniqueValues.forEach(value => {
-        //     $(selector).append(`<option value="${value}">${value}</option>`);
-        //   });
-        // };
-
-        // populateStanokSelect('#stanokFilter', 'stanokTd');
-        // populateStanokSelect('#operatorFilter', 'operatorTd');
-        // populateStanokSelect('#stanokDetailFilter', 'detailTd');
-        // populateStanokSelect('#stanokStageFilter', 'stageTd');
       }
 
       initOtherState();
       initFilter('filterMenu', 'filter');
       initFilters(filterOptions);
-
-      console.log('tabulatorContainer display', $('#tabulatorContainer').css('display'));
     }
-
-    $(document).on('click', function (event) {
-      console.log('click on e.targer', event.target);
-    });
 
     $(document).on('click', '#stanki', function () {
       console.log('this', $(this).attr('id'), $('#ui-datepicker-div').hasClass('datepicker-open'));
-
+      activePage = 'stanki';
+      console.log('activePage', activePage);
       if ($('#ui-datepicker-div').is(':visible')) {
         event.stopImmediatePropagation();
         return;
@@ -1012,9 +1038,10 @@
 
     function renderUsers(data) {
       console.log('renderUsers data', data);
+      isShiftActive = data.item.active;
       data.item.canEdit = isShiftActive && isUserMaster();
       data.item.activeShift = isShiftActive;
-      console.log('isUserMaster()', isUserMaster());
+
       generateFromTemplate('#usersTemplate', data.item, '#usersList');
       initInputAutocomplete('.stanok', 1);
       initFilter('filterMenuUsers', 'filterUsers');
@@ -1022,6 +1049,7 @@
 
     $(document).on('click', '#users', function () {
       console.log('click users');
+      activePage = 'users';
       if ($('#ui-datepicker-div').is(':visible')) {
         event.stopImmediatePropagation();
         return;
@@ -1038,6 +1066,7 @@
     }
 
     $(document).on('click', '#details', function () {
+      activePage = 'details';
       console.log('click users');
       if ($('#ui-datepicker-div').is(':visible')) {
         event.stopImmediatePropagation();
@@ -1050,11 +1079,11 @@
 
     $(document).on('click', '.backToMain', function () {
       console.log('backtomain click', this);
-
       // $('#main').show();
       const parent = $(this).attr('parent');
       // $(parent).hide();
       containerAnimation('right', parent, '#main');
+      activePage = 'main';
       $(parent).find('.containerForRender').empty();
       $('#tabulatorContainer').hide();
       $('#stanokList').show();

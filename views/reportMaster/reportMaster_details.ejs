@@ -14,11 +14,9 @@
 <div id="detailContainer" class="container-slide" style="display: none">
   <header id="commandPanel" class="commandPanel">
     <div class="titleContainer">
-      <i class="bi bi-arrow-left-circle backToMain" parent="#detailContainer"></i>
+      <i class="bi bi-arrow-up-circle backToMain" parent="#detailContainer"></i>
       <div class="titleChildren">Деталі</div>
       <span id="shiftDateUsers" class="titleShift"></span>
-    </div>
-    <div class="commandRow">
       <div class="input-group-search rounded groupSearch" id="groupSearch">
         <input
           type="search"
@@ -33,7 +31,7 @@
         </span>
       </div>
 
-      <div class="commandButtons"></div>
+      <!-- <div class="commandButtons"></div> -->
     </div>
   </header>
 
@@ -45,7 +43,7 @@
     <h4 class='noUsers mt-4 text-center'>Немає зроблених деталей на цій зміні</h4>
   {{/unless}}
   {{#each listDetali}}
-    <div class='plateListItem' id='{{uid}}'>
+    <div class='plateListItem plate' id='{{uid}}'>
       <div class='detailsFirstRow d-flex'>
         <div class='detailName text-truncate'>
           {{Деталь}}

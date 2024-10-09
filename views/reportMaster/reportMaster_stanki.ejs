@@ -77,7 +77,6 @@
 
   .commandButtons {
     margin-left: auto;
-    margin-right: 10px;
     display: flex;
     align-items: center;
   }
@@ -182,11 +181,10 @@
 <div id="stanokContainer" class="container-slide" style="display: none">
   <header id="commandPanel" class="commandPanel">
     <div class="titleContainer">
-      <i class="bi bi-arrow-left-circle backToMain" parent="#stanokContainer"></i>
+      <i class="bi bi-arrow-up-circle backToMain" parent="#stanokContainer"></i>
       <div class="titleChildren">Станки</div>
       <span id="shiftDateStanki" class="titleShift"></span>
-    </div>
-    <div class="commandRow">
+
       <div class="input-group-search rounded groupSearch" id="groupSearch">
         <input
           type="search"
@@ -247,7 +245,7 @@
 
 <script id="stanokCloseTemplate" type="text/x-handlebars-template">
   {{#each this}}
-    <div class='plateListItem' id='{{Станок.uid}}'>
+    <div class='plateListItem plate' id='{{Станок.uid}}'>
       <div class='containerStanok'>
         <div class='stanokFirstRow'>
           <div class='number text-truncate'>
@@ -295,7 +293,7 @@
         {{/each}}
         <div class='stanokSecondRow d-flex align-items-center'>
           <div class="patron align-items-center d-flex">
-            <img src="img/patron.png" class="patronImg" alt="patron icon" />
+            <img src="img/patron.png?v=<%= version %> " class="patronImg" alt="patron icon" />
             {{#if РучнойПатрон}}Р{{/if}}{{#unless РучнойПатрон}}А{{/unless}}
           </div>
           <div class='kkd d-flex'>ККД: {{ККД}}%</div>

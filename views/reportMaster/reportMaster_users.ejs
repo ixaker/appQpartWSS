@@ -181,11 +181,10 @@
 <div id="usersContainer" class="container-slide" style="display: none">
   <header id="commandPanel" class="commandPanel">
     <div class="titleContainer">
-      <i class="bi bi-arrow-left-circle backToMain" parent="#usersContainer"></i>
+      <i class="bi bi-arrow-up-circle backToMain" parent="#usersContainer"></i>
       <div class="titleChildren">Працівники</div>
       <span id="shiftDateUsers" class="titleShift"></span>
-    </div>
-    <div class="commandRow">
+
       <div class="input-group-search rounded groupSearch" id="groupSearch">
         <input
           type="search"
@@ -250,7 +249,7 @@
   <script id="usersTemplate" type="text/x-handlebars-template">
     {{#unless listUsers}} <h4 class="noUsers mt-4 text-center">Немає працівників на цій зміні </h4> {{/unless}}
     {{#each listUsers}}
-      <div class='plateListItem' id='{{uid}}'>
+      <div class='plateListItem plate' id='{{uid}}'>
         <div class='userFirstRow d-flex'>
           <div class='avatarContainer'>
             <img
@@ -297,36 +296,36 @@
         </div>
 
           {{#if ../activeShift}}
-          <div class='stanokListDynamic d-flex'>
-            {{#if СписокСтанковНазначеныхМастером}}
-            {{#each СписокСтанковНазначеныхМастером}}
-              <div class='stanokItem' uid='{{uid}}'>
-                <div class='stanokInv text-truncate'>
-                  {{ИнвентарныйНомер}}
+            <div class='stanokListDynamic d-flex'>
+              {{#if СписокСтанковНазначеныхМастером}}
+              {{#each СписокСтанковНазначеныхМастером}}
+                <div class='stanokItem' uid='{{uid}}'>
+                  <div class='stanokInv text-truncate'>
+                    {{ИнвентарныйНомер}}
+                  </div>
+                  <div class='stanokDel'>
+                    {{#if ../../canEdit}}
+                    <i class='bi bi-x'></i>
+                    {{/if}}
+                  </div>
                 </div>
-                <div class='stanokDel'>
-                  {{#if ../../canEdit}}
-                  <i class='bi bi-x'></i>
-                  {{/if}}
-                </div>
+              {{/each}}
+              {{/if}}
+              {{#if ../canEdit}}
+              <div class='input-container'>
+                <input
+                  class='form-control stanok'
+                  url='/app/autocompleteStanok'
+                  aria-describedby='basic-addon3'
+                  data-editable='true'
+                  type='text'
+                  placeholder='станок'
+                  callbackAfterSelect='callbackAfterSelect'
+                />
+                <span class='plus-sign'>+</span>
               </div>
-            {{/each}}
-            {{/if}}
-            {{#if ../canEdit}}
-            <div class='input-container'>
-              <input
-                class='form-control stanok'
-                url='/app/autocompleteStanok'
-                aria-describedby='basic-addon3'
-                data-editable='true'
-                type='text'
-                placeholder='станок'
-                callbackAfterSelect='callbackAfterSelect'
-              />
-              <span class='plus-sign'>+</span>
+              {{/if}}
             </div>
-            {{/if}}
-          </div>
           {{/if}}
 
         <div class='userSecondRow'>
@@ -387,7 +386,7 @@
 
   <script id="usersCloseShiftTemplate" type="text/x-handlebars-template">
     {{#each this}}
-      <div class='plateListItem' id='{{uid}}'>
+      <div class='plateListItem plate' id='{{uid}}'>
         <div class='userFirstRow d-flex'>
           <div class='avatarContainer'>
             <img

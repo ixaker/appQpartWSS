@@ -376,7 +376,7 @@
   uid="{{uid}}"
   >
     <div class='docTitle'>
-      <div class="docNumber input-group">
+      <div class="docNumber input-group" id="docNumber">
         <div class="input-group-prepend">
           <span class="input-group-text">
             <i class="bi bi-truck"></i>
@@ -389,6 +389,7 @@
           placeholder=""
           aria-describedby="номер машини"
           value="{{НомерПоездкиЗаДень}}"
+
           min="0"
           max="99"
           oninput="if(this.value.length > 2) this.value = this.value.slice(0, 2);"
@@ -397,11 +398,11 @@
       </div>
 
       <div class='docName {{className}}'>{{ВидОперации}}</div>
-      <div class='docDateEvent input-group'>
+      <div class='docDateEvent input-group' id="docDateEvent">
           <input
             type='text'
             class='form-control docDate'
-            placeholder=''
+            placeholder='дата'
             aria-describedby='дата'
             value='{{ДатаСобытияФормат}}'
             data-date='{{Дата}}'
@@ -580,8 +581,7 @@
     box-shadow: 2px 3px 5px #999;
     width: 100%;
   }
-
-  .detailed {
+  1 .detailed {
     font-size: x-large;
     margin-top: 5px;
   }
@@ -785,9 +785,6 @@
     align-items: center;
   }
 
-  #saveDoc {
-  }
-
   .galleryTitle {
     font-size: x-large;
     width: 100%;
@@ -801,9 +798,6 @@
     justify-content: space-between;
     flex-direction: column;
     gap: 5px;
-  }
-
-  .btnSaveDoc {
   }
 </style>
 
@@ -826,10 +820,11 @@
         name='tripNumber'
         placeholder=''
         aria-describedby='номер машини'
-        value='{{НомерПоездкиЗаДень}}'
+         value="{{#if (isZero НомерПоездкиЗаДень)}}
+        {{else}}{{НомерПоездкиЗаДень}}{{/if}}"
       />
     </div>
-    <!-- <div class='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div> -->
+    <!-- <div clas  s='docNumber'><i class='bi bi-truck'></i> {{НомерПоездкиЗаДень}}</div> -->
     <div class='docName {{className}} text-truncate'>{{ВидОперации}}</div>
     <div class='photoCountContainer'>
       <i class='bi bi-image photoCount'></i>
@@ -904,12 +899,13 @@
   $(document).ready(function () {
     let canEdit = true;
     const platesID = '#qpart_demz';
+
     // pageUID = 'ce4e3ff4-50d6-11ef-825f-000c29006152';
-    pageUID = 'abc0707c-7f12-11ef-8265-000c29006152';
+    pageUID = testEnvironment ? 'ce4e3ff4-50d6-11ef-825f-000c29006152' : 'abc0707c-7f12-11ef-8265-000c29006152';
     userRights = $('#menu').data('userRight')[pageUID];
     const uid = user.uid;
     let autocompleteStage;
-    console.log('userRights', userRights);
+    console.log('userRights, test', userRights, testEnvironment);
 
     !userRights.canCreateDEMZ ? $('#btnDemz').hide() : '';
     !userRights.canCreateQPART ? $('#btnQpart').hide() : '';
@@ -926,6 +922,9 @@
 
     Handlebars.registerPartial('docTitleTemplate', $('#docTitleTemplate').html());
     Handlebars.registerPartial('tableDetailsTemplate', $('#tableDetailsTemplate').html());
+    Handlebars.registerHelper('isZero', function (value) {
+      return value === '0' || value === 0;
+    });
 
     const source = document.getElementById('tileTemplate').innerHTML;
     const template = Handlebars.compile(source);
@@ -1011,7 +1010,27 @@
         data.canEdit = true;
       }
       console.log('renderDoc data', data);
+
+      function hideDocParams() {
+        $('#docNumber').css('visibility', 'hidden');
+        $('#docDateEvent').css('visibility', 'hidden');
+        console.log('hideDocParams');
+      }
+      function showDocParams() {
+        console.log('showDocParams');
+        $('#docNumber').css('visibility', 'visible');
+        $('#docDateEvent').css('visibility', 'visible');
+      }
       generateFromTemplate('#docTemplate', data, '#docInfo');
+      let canEditDocParams = false;
+      if (data.isDocNew) {
+        if (canEditDocParams) {
+          showDocParams();
+        } else {
+          hideDocParams();
+        }
+      }
+
       collectTableData(docContainer.find('.docTitle'));
 
       console.log('$.docDate', $('.docDate'));
@@ -1078,6 +1097,7 @@
       clickAnimate(this);
       const data = {
         ВидОперации: 'QPART => ДЕМЗ',
+        isDocNew: true,
       };
       docInfoOpen(data);
     });
@@ -1086,6 +1106,7 @@
       clickAnimate(this);
       const data = {
         ВидОперации: 'ДЕМЗ => QPART',
+        isDocNew: true,
       };
       docInfoOpen(data);
     });
@@ -1285,21 +1306,22 @@
         const uid = container.attr('uid');
         const tripNumber = container.find('.tripNumber');
         const tripNumberValue = tripNumber.val();
-        if (tripNumberValue === '0') {
-          toastr.error('Заповніть номер відправлення');
-          tripNumber.focus();
-          return;
-        }
+
+        // if (tripNumberValue === '0') {
+        //   toastr.error('Заповніть номер відправлення');
+        //   tripNumber.focus();
+        //   return;
+        // }
 
         const operationType = container.find('.docName').text();
 
         const docDate = container.find('.docDate').data('date');
         console.log('docDate', docDate);
-        if (docDate === '') {
-          toastr.error('Заповніть дату відправлення');
-          $('#docDate').focus();
-          return;
-        }
+        // if (docDate === '') {
+        //   toastr.error('Заповніть дату відправлення');
+        //   $('#docDate').focus();
+        //   return;
+        // }
 
         const details = container.data('data');
 
@@ -1432,9 +1454,11 @@
       }
     }
 
-    $(document).on('click', '.attachedImg', function () {
-      mediaviewer(this);
-    });
+    $(document)
+      .off('click', '.attachedImg')
+      .on('click', '.attachedImg', function () {
+        mediaviewer(this);
+      });
 
     $(document).on('click', '.userFotoDelete', function (event) {
       event.stopPropagation();
