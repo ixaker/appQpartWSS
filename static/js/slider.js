@@ -6,7 +6,10 @@ function containerAnimation(direction, containerOut, containerIn) {
 
     $(containerOut).addClass(classForOut);
 
+
     setTimeout(() => {
+        // $(containerOut).children('.plate').empty();
+        // $(containerIn).children('.plate').empty();
         $(containerOut).hide();
         $(containerIn).show();
         $(containerIn).addClass(classForIn);

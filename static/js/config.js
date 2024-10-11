@@ -947,6 +947,7 @@ function formatSecondsToHHMMSS(seconds) {
 // }
 
 function setupSearch(inputSelector, itemSelector, filterSelectors) {
+    console.log('setupSearch start');
     $(inputSelector).on('input', function () {
         let searchTerms = $(this).val().split(' ').filter(Boolean);
 
