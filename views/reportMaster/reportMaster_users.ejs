@@ -357,8 +357,8 @@
                 {{#each listReport}}
                     <tr>
                       <!-- <td>{{../Станок}}</td> -->
-                      <td>{{Деталь}}</td>
-                      <td>{{Этап}}</td>
+                      <td class="detailTd">{{Деталь}}</td>
+                      <td class="stageTd">{{Этап}}</td>
                       <td class='count text-right'>{{Количество}}</td>
                       <td>{{М}}</td>
                       <td>{{П}}</td>
@@ -673,42 +673,42 @@
     //   }
     // });
 
-    $('#searchUsers').on('input', function () {
-      let searchTerms = $(this).val().split(' ').filter(Boolean);
+    // $('#searchUsers').on('input', function () {
+    //   let searchTerms = $(this).val().split(' ').filter(Boolean);
 
-      $('.plateListItem').each(function () {
-        let found = true;
-        let elements = $(this)
-          .find(
-            '.sotrudnikName , .profa, .stanokInv , .reportAutor , .stanokNameDet , .stanokEtapCount , .stanokNameDet, .otk, .nameStage   '
-          )
-          .map(function () {
-            return { el: $(this) };
-          })
-          .get();
-        elements.forEach(element => {
-          element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
-        });
+    //   $('.plateListItem').each(function () {
+    //     let found = true;
+    //     let elements = $(this)
+    //       .find(
+    //         '.sotrudnikName , .profa, .stanokInv , .reportAutor , .stanokNameDet , .stanokEtapCount , .stanokNameDet, .otk, .nameStage   '
+    //       )
+    //       .map(function () {
+    //         return { el: $(this) };
+    //       })
+    //       .get();
+    //     elements.forEach(element => {
+    //       element.text = element.el.text().replace(/<mark>|<\/mark>/g, '');
+    //     });
 
-        if (searchTerms.length > 0) {
-          found = searchTerms.every(term => {
-            const regex = new RegExp(`(${term})`, 'gi');
-            return elements.some(element => {
-              if (element.text.match(regex)) {
-                element.text = element.text.replace(regex, '<mark>$1</mark>');
-                return true;
-              }
-              return false;
-            });
-          });
-        }
+    //     if (searchTerms.length > 0) {
+    //       found = searchTerms.every(term => {
+    //         const regex = new RegExp(`(${term})`, 'gi');
+    //         return elements.some(element => {
+    //           if (element.text.match(regex)) {
+    //             element.text = element.text.replace(regex, '<mark>$1</mark>');
+    //             return true;
+    //           }
+    //           return false;
+    //         });
+    //       });
+    //     }
 
-        $(this).toggleClass('hide', !found);
-        elements.forEach(element => {
-          element.el.html(element.text);
-        });
-      });
-    });
+    //     $(this).toggleClass('hide', !found);
+    //     elements.forEach(element => {
+    //       element.el.html(element.text);
+    //     });
+    //   });
+    // });
   });
 
   function initStankiAutocomplete(stankiList) {

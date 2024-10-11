@@ -950,6 +950,7 @@ function setupSearch(inputSelector, itemSelector, filterSelectors) {
     console.log('setupSearch start');
     $(inputSelector).on('input', function () {
         let searchTerms = $(this).val().split(' ').filter(Boolean);
+        console.log('searchTerms some input', searchTerms);
 
         $(itemSelector).each(function () {
             let found = true;
@@ -960,7 +961,9 @@ function setupSearch(inputSelector, itemSelector, filterSelectors) {
                 })
                 .get();
 
+            console.log(elements);
             elements.forEach(element => {
+                console.log(element.originalText);
                 element.el.html(element.originalText);
             });
 
