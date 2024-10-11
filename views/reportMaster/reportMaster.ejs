@@ -1021,6 +1021,7 @@
       initOtherState();
       initFilter('filterMenu', 'filter');
       initFilters(filterOptions);
+      setupSearch('#searchStanki', '.plateListItem', '.number, .reportAutor, .detailTd, .stageTd');
     }
 
     $(document).on('click', '#stanki', function () {
