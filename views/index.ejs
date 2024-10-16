@@ -403,10 +403,12 @@
         <div id="flash" class="flash"></div>
       </div>
 
-      <div id="offlineContainer" class="network-error text-center" style="display: none">
-        <h1>Відсутнє з'єднання з інтернет</h1>
-        <p>Немає доступу до Інтернету.</p>
-        <p>Перевірте підключення до wi-fi або мобільного інтернету.</p>
+      <div id="backgroundOffline" style="display: none">
+        <div id="offlineContainer" class="network-error text-center">
+          <h1>Відсутнє з'єднання з інтернет</h1>
+          <p>Немає доступу до Інтернету.</p>
+          <p>Перевірте підключення до wi-fi або мобільного інтернету.</p>
+        </div>
       </div>
     </div>
 
@@ -653,12 +655,12 @@
           if (navigator.onLine) {
             console.log('You are online');
             $('#content').show();
-            $('#offlineContainer').hide();
+            $('#backgroundOffline').hide();
             console.log('offline finish');
           } else {
             console.log('You are offline');
             $('#content').hide();
-            $('#offlineContainer').show();
+            $('#backgroundOffline').show();
           }
         }
 
