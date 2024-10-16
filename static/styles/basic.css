@@ -971,15 +971,22 @@ mark {
   border: 0;
 }
 
+#backgroundOffline {
+  background-color: #eee;
+  width: 100%;
+  height: 90dvh;
+  margin-bottom: 0;
+  z-index: 2;
+  position: relative;
+}
 .network-error {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  text-align: center;
   z-index: 9999;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 1);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
