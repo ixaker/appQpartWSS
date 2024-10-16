@@ -187,14 +187,12 @@ function loadMenu(userInfo, token, version) {
 
 
     $('#navbar-brand-text').text(userInfo.name + ' - ' + user.profa);
-
     $('#group-navbar').show();
     $('#navbar_text').text('');
     $('#login').hide();
     $('#btnStartVideo').hide();
     $('#video').hide();
     $('#ovalMask').hide();
-
     $('#content').show();
 
     //reconectWebSocket();
