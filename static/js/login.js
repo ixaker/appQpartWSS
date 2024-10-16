@@ -185,7 +185,6 @@ function loadMenu(userInfo, token, version) {
         location.reload(true);
     }
 
-
     $('#navbar-brand-text').text(userInfo.name + ' - ' + user.profa);
     $('#group-navbar').show();
     $('#navbar_text').text('');

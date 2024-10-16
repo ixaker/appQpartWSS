@@ -278,8 +278,6 @@ function initInputTimeMask(element) {
                     let newCep = cep.slice(0, -1);
                     $(element).val(newCep);
                 }
-
-
             }
         });
     } catch (error) {
@@ -400,8 +398,6 @@ function universalRequest(url, method = 'GET', payload = '', params = {}, onSucc
     }
 }
 
-
-
 function sortHandler1(selector, sortValue, defaultSortDirection, tableID) {
     $(selector).on('click', function () {
         console.log('sortHandler', this);
@@ -441,7 +437,6 @@ function formatSecondToStringTime(seconds) {
     const formattedTime = `${days} д ${hoursStr}:${minutesStr}:${secondsStr}`;
     return isNegative ? `-${formattedTime}` : formattedTime;
 }
-
 
 function formattedTimeToSeconds(formattedTime) {
     const regex = /(-?)\s*(\d+) д (\d{2}):(\d{2}):(\d{2})/;

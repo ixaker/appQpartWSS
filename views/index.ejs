@@ -402,6 +402,12 @@
         </div>
         <div id="flash" class="flash"></div>
       </div>
+
+      <div id="offlineContainer" class="network-error text-center">
+        <h1>Відсутнє з'єднання з інтернет</h1>
+        <p>Немає доступу до Інтернету.</p>
+        <p>Перевірте підключення до wi-fi або мобільного інтернету.</p>
+      </div>
     </div>
 
     <script>
@@ -443,6 +449,7 @@
     <script src="js/swipe.js?v=<%= version %>"></script>
     <script src="js/slider.js?v=<%= version %>"></script>
     <script src="https://unpkg.com/tabulator-tables@5.2.2/dist/js/tabulator.min.js"></script>
+    <script src="js/sw-register.js?v=<%= version %>"></script>
 
     <%- include('zakupkaForm') %> <%- include('notification') %>
     <script>
@@ -641,6 +648,25 @@
         }
 
         listenResize();
+
+        function updateConnectionStatus() {
+          if (navigator.onLine) {
+            console.log('You are online');
+            $('#content').show();
+            $('#offlineContainer').hide();
+            console.log('offline finish');
+          } else {
+            console.log('You are offline');
+            $('#content').hide();
+            $('#offlineContainer').show();
+          }
+        }
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Викликаємо функцію при завантаженні сторінки
+        updateConnectionStatus();
       });
     </script>
   </body>
