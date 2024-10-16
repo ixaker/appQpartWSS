@@ -403,7 +403,7 @@
         <div id="flash" class="flash"></div>
       </div>
 
-      <div id="offlineContainer" class="network-error text-center">
+      <div id="offlineContainer" class="network-error text-center" style="display: none">
         <h1>Відсутнє з'єднання з інтернет</h1>
         <p>Немає доступу до Інтернету.</p>
         <p>Перевірте підключення до wi-fi або мобільного інтернету.</p>
@@ -664,8 +664,6 @@
 
         window.addEventListener('online', updateConnectionStatus);
         window.addEventListener('offline', updateConnectionStatus);
-
-        // Викликаємо функцію при завантаженні сторінки
         updateConnectionStatus();
       });
     </script>
