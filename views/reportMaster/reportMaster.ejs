@@ -5,7 +5,7 @@
   #content {
     /* max-width: 500px; */
     margin: 0 auto;
-    padding-top: 0;
+    padding-top: 01;
   }
 
   #main {
@@ -893,87 +893,74 @@
       console.log(something);
     });
 
-    function renderStanki(data) {
-      $('#stanokContainer').data('data', data);
-      console.log('renderStanki data', data.item.active);
-      isShiftActive = data.item.active;
-      if (isShiftActive) {
-        $('#changeView').hide();
-
-        filterOptions = {
-          '#activeStankiFilter': {
-            searchText: '',
-            searchTerm: 'Задіяні',
-            classList: ['statusMaster', 'statusFact'],
-          },
-        };
-
-        const mainData = $('#main').data('data');
-        let master = false;
-        if (mainData.usersSumInfo.masters && Array.isArray(mainData.usersSumInfo.masters)) {
-          master = mainData.usersSumInfo.masters.some(master => master.uid === user.uid);
-        }
-
-        if (isUserMaster()) {
-          console.log('render stanki for master');
-          data.item.listStanki.options = generateOptions(data.item.listStatus);
-          generateFromTemplate('#stanokTemplate', data.item.listStanki, '#stanokList');
-          initSelect(data.item.listStatus);
-          let users = data.item.СписокСотрудников;
-
-          $('.operator')
-            .autocomplete({
-              minLength: 0,
-              source: users,
-              select: function (event, ui) {
-                console.log('Selected User Value: ' + ui.item.value, ui.item.label);
-                $(this).val(ui.item.label);
-                const userUID = ui.item.value;
-                const stanokUID = $(this).closest('.plateListItem').attr('id');
-                const edited = [
-                  {
-                    key: 'Оператор',
-                    value: ui.item.value,
-                  },
-                ];
-                console.log('edited', edited);
-                saveReportMaster(stanokUID, edited);
-                return false;
+    function initStankiAutocomplite() {
+      $('.operator')
+        .autocomplete({
+          minLength: 0,
+          source: users,
+          select: function (event, ui) {
+            console.log('Selected User Value: ' + ui.item.value, ui.item.label);
+            $(this).val(ui.item.label);
+            const userUID = ui.item.value;
+            const stanokUID = $(this).closest('.plateListItem').attr('id');
+            const edited = [
+              {
+                key: 'Оператор',
+                value: ui.item.value,
               },
-            })
-            .focus(function () {
-              $(this).autocomplete('search', '');
-            })
-            .blur(function () {
-              console.log('Input lost focus');
-              if ($(this).val() === '') {
-                console.log('Input cleared');
-                const container = $(this).closest('.plateListItem');
-                const stanokUID = container.attr('id');
-                const edited = [
-                  {
-                    key: 'Оператор',
-                    value: '',
-                  },
-                ];
+            ];
+            console.log('edited', edited);
+            saveReportMaster(stanokUID, edited);
+            return false;
+          },
+        })
+        .focus(function () {
+          $(this).autocomplete('search', '');
+        })
+        .blur(function () {
+          console.log('Input lost focus');
+          if ($(this).val() === '') {
+            console.log('Input cleared');
+            const container = $(this).closest('.plateListItem');
+            const stanokUID = container.attr('id');
+            const edited = [
+              {
+                key: 'Оператор',
+                value: '',
+              },
+            ];
 
-                console.log('edited', edited);
-                saveReportMaster(stanokUID, edited);
-              } else {
-                console.log('Input not cleared, no request sent');
-              }
-            });
-        } else {
-          generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
-        }
+            console.log('edited', edited);
+            saveReportMaster(stanokUID, edited);
+          } else {
+            console.log('Input not cleared, no request sent');
+          }
+        });
+    }
+
+    function renderStanki(data) {
+      console.log('renderStanki start with data ', data);
+      $('#stanokContainer').data('data', data);
+      isShiftActive = data.item.active;
+
+      if (isUserMaster() && isShiftActive) {
+        data.item.listStanki.options = generateOptions(data.item.listStatus);
+        generateFromTemplate('#stanokTemplate', data.item.listStanki, '#stanokList');
+        $('#filter').hide();
+        initSelect(data.item.listStatus);
+        let users = data.item.СписокСотрудников;
+        initStankiAutocomplite();
       } else {
         console.log('not active shift');
+        closeTabulator();
+
         $('#changeView').show();
 
         // let table = generateStankiTable(data);
 
         function openTabulator(data) {
           // $('#stanokTableContainer').hide();
+          console.log('tabulator data', data);
           $('#tabulatorContainer').show();
           $('#stanokList').hide();
           $('#filter').hide();
@@ -997,22 +984,25 @@
             table = null;
           }
         }
-        $('#changeView').on('click', function () {
-          console.log('change view');
-          clickAnimate(this);
-          // $(this).toggleClass('bi-table bi-view-stacked');
 
-          const data = $('#stanokContainer').data('data');
+        $('#changeView')
+          .off('click')
+          .on('click', function () {
+            console.log('change view');
+            clickAnimate(this);
+            // $(this).toggleClass('bi-table bi-view-stacked');
 
-          if ($('#tabulatorContainer').is(':visible')) {
-            closeTabulator();
-          } else {
-            openTabulator(data);
-          }
-        });
-        closeTabulator();
+            const data = $('#stanokContainer').data('data');
+
+            if ($('#tabulatorContainer').is(':visible')) {
+              closeTabulator();
+            } else {
+              openTabulator(data);
+            }
+          });
 
         generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+        $('#filter').show();
 
         filterOptions = {
           '#activeStankiFilter': {
@@ -1021,13 +1011,96 @@
             classList: ['statusMaster', 'statusFact'],
           },
         };
-      }
 
-      initOtherState();
-      initFilter('filterMenu', 'filter');
-      initFilters(filterOptions);
-      setupSearch('#searchStanki', '.plateListItem', '.number, .reportAutor, .detailTd, .stageTd');
+        initOtherState();
+        initFilter('filterMenu', 'filter');
+        initFilters(filterOptions);
+        setupSearch('#searchStanki', '.plateListItem', '.number, .reportAutor, .detailTd, .stageTd');
+      }
     }
+
+    //   if (isShiftActive) {
+    //     // $('#changeView').hide();
+
+    //     filterOptions = {
+    //       '#activeStankiFilter': {
+    //         searchText: '',
+    //         searchTerm: 'Задіяні',
+    //         classList: ['statusMaster', 'statusFact'],
+    //       },
+    //     };
+
+    //     if (isUserMaster()) {
+    //       data.item.listStanki.options = generateOptions(data.item.listStatus);
+    //       generateFromTemplate('#stanokTemplate', data.item.listStanki, '#stanokList');
+    //       initSelect(data.item.listStatus);
+    //       let users = data.item.СписокСотрудников;
+    //       initStankiAutocomplite();
+    //     } else {
+    //       generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+    //     }
+    //   } else {
+    //     console.log('not active shift');
+    //     $('#changeView').show();
+
+    //     // let table = generateStankiTable(data);
+
+    //     function openTabulator(data) {
+    //       // $('#stanokTableContainer').hide();
+    //       $('#tabulatorContainer').show();
+    //       $('#stanokList').hide();
+    //       $('#filter').hide();
+    //       $('#columnHide').hide();
+    //       $('#changeView').removeClass('bi-table').addClass('bi-view-stacked');
+
+    //       if (!table) {
+    //         table = generateStankiTable(data);
+    //       } else {
+    //         table.setData(data);
+    //       }
+    //     }
+
+    //     function closeTabulator() {
+    //       $('#tabulatorContainer').hide();
+    //       $('#stanokList').show();
+    //       $('#changeView').removeClass('bi-view-stacked').addClass('bi-table');
+
+    //       if (table) {
+    //         table.destroy();
+    //         table = null;
+    //       }
+    //     }
+    //     $('#changeView').on('click', function () {
+    //       console.log('change view');
+    //       clickAnimate(this);
+    //       // $(this).toggleClass('bi-table bi-view-stacked');
+
+    //       const data = $('#stanokContainer').data('data');
+
+    //       if ($('#tabulatorContainer').is(':visible')) {
+    //         closeTabulator();
+    //       } else {
+    //         openTabulator(data);
+    //       }
+    //     });
+    //     closeTabulator();
+
+    //     generateFromTemplate('#stanokCloseTemplate', data.item.listStanki, '#stanokList');
+
+    //     filterOptions = {
+    //       '#activeStankiFilter': {
+    //         searchText: 'Задіяні',
+    //         searchTerm: 'Задіяні',
+    //         classList: ['statusMaster', 'statusFact'],
+    //       },
+    //     };
+    //   }
+
+    //   initOtherState();
+    //   initFilter('filterMenu', 'filter');
+    //   initFilters(filterOptions);
+    //   setupSearch('#searchStanki', '.plateListItem', '.number, .reportAutor, .detailTd, .stageTd');
+    // }
 
     $(document).on('click', '#stanki', function () {
       console.log('this', $(this).attr('id'), $('#ui-datepicker-div').hasClass('datepicker-open'));
