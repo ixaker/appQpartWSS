@@ -673,7 +673,7 @@
         clearInterval(timerInterval);
       }
       abortAllRequests();
-      const animationDirection = direction > 0 ? 'right' : 'left';
+      const animationDirection = direction > 0 ? 'left' : 'right';
       const container = pageData[activePage].container;
       containerAnimation(animationDirection, '#shiftDate', '#shiftDate');
       containerAnimation(animationDirection, container, container);
