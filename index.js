@@ -72,8 +72,8 @@ const renderParams = {
 
 const maxAge = 31536000;
 
-const ssl_key = path.join("/etc/letsencrypt/live", domian, '-0001', 'privkey.pem');
-const ssl_cert = path.join("/etc/letsencrypt/live", domian, '-0001', 'fullchain.pem');
+const ssl_key = path.join("/etc/letsencrypt/live", domian + '-0001', 'privkey.pem');
+const ssl_cert = path.join("/etc/letsencrypt/live", domian + '-0001', 'fullchain.pem');
 
 const createPath = (page) => path.resolve(__dirname, 'views', `${page}`);
 
