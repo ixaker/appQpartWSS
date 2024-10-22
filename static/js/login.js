@@ -61,6 +61,7 @@ function exit() {
     $('#menu').html('');
     $.cookie("token", '');
     $('#group-navbar').hide();
+    $('#loginByPassowrd').hide();
     $('#login').show();
     $('#btnStartVideo').show();
     $('#video').hide();
