@@ -949,7 +949,6 @@ wss.on('error', (error) => {
 async function main() {
   await faceID.initHuman();
   func1C.init();
-  // Запуск сервера
   httpsServer.listen(443, () => {
     log.info('Secure server is running on port 443');
   });
