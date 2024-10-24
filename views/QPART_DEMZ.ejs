@@ -4,6 +4,19 @@
     margin: 0 auto;
   }
 
+  #main {
+    background-color: antiquewhite;
+    position: absolute;
+    left: 0px;
+    padding: 10px 2px;
+    top: 56px;
+  }
+
+  .input-group-text {
+    width: 32px;
+    padding: 0 3px;
+  }
+
   header h1 {
     font-size: xx-large;
   }
@@ -70,12 +83,26 @@
     gap: 3px;
   }
 
+  .btnContainer {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+  }
+
+  #makePhotoLabel,
+  #downloadPhotoLabel {
+    width: 90px;
+    flex-grow: 0;
+  }
+
   #saveDoc {
     font-size: inherit;
+    flex-grow: 1;
   }
 
   .plateListItem {
-    font-size: x-large !important;
+    font-size: medium !important;
+    border: none;
   }
 
   .fixed {
@@ -95,6 +122,10 @@
       font-size: xx-large !important;
     }
 
+    #downloadPhotoButton,
+    #makePhotoButton {
+      font-size: xxx-large !important;
+    }
     /* .docRow {
       font-size: xx-large;
     } */
@@ -220,9 +251,11 @@
 
   #downloadPhotoButton,
   #makePhotoButton {
-    font-size: xxx-large;
+    font-size: xx-large;
     line-height: normal;
     width: 100%;
+    background-color: lightgrey;
+    border: 1px solid darkgrey;
   }
 
   .photoBtn {
@@ -546,7 +579,26 @@
 
     {{> photoGallery title='Фото ДЕМЗ' canEdit=canEdit files=ФайлыДемз showButton=true operationType=ВидОперации}}
 
-    <div id='saveDoc' class='btn btn-lg btn-secondary'>Зберегти</div>
+    <div class='btnContainer'>
+      <input
+        type='file'
+        id='makePhoto'
+        accept='image/*'
+        capture='environment'
+        multiple
+        style='display: none'
+      />
+      <label for='makePhoto' class='photoLabel' id="makePhotoLabel" ><i
+          class='bi bi-camera btn photoBtn'
+          id='makePhotoButton'
+        ></i></label>
+      <input type='file' id='downloadPhoto' accept='image/*' style='display: none' />
+      <label for='downloadPhoto' class='photoLabel' id="downloadPhotoLabel"><i
+          class='bi bi-download btn photoBtn'
+          id='downloadPhotoButton'
+        ></i></label>
+        <button id='saveDoc' class='btn btn-secondary btn-lg'>Зберегти</button>
+    </div>
 
   </div>
 </script>
@@ -575,7 +627,7 @@
       {{/each}}
       {{#if showButton}}
         <div class='btnAddPhoto'>
-          <input
+          <!-- <input
             type='file'
             id='makePhoto{{operationType}}'
             accept='image/*'
@@ -592,7 +644,7 @@
           <label for='downloadPhoto{{operationType}}' class='photoLabel' ><i
               class='bi bi-download btn btn-secondary photoBtn'
               id='downloadPhotoButton'
-            ></i></label>
+            ></i></label> -->
         </div>
       {{/if}}
     </div>
@@ -625,7 +677,7 @@
     color: darkgreen;
     border: 1px solid rgb(202, 202, 202);
     color: darkgreen;
-    font-size: x-large;
+    text-align: center;
   }
 
   .docRow {
@@ -706,21 +758,8 @@
     color: green;
   }
 
-  .brak {
-    position: relative;
-  }
-
   .numberInput {
     text-align: right;
-  }
-
-  .brak::after {
-    content: 'брак';
-    position: absolute;
-    background-color: white;
-    color: red;
-    right: 5px;
-    padding: 0 0 0 5px;
   }
 
   .docTitle {
@@ -866,32 +905,32 @@
 
 <script id="tableDetailsTemplate" type="text/x-handlebars-template">
   {{#if Детали}}
-  <table class='detailed defaultCursor'>
+    <table class='detailed defaultCursor'>
 
-    <thead>
-      <tr>
-        <th class='stage'>Этап</th>
-        <th class='count text-center'>К-во</th>
-        <th class='defect text-truncate'>Брак</th>
-        <th class='rework'><i class="bi bi-arrow-repeat"></i></th>
-      </tr>
-    </thead>
+      <thead>
+        <tr>
+          <th class='stage'>Этап</th>
+          <th class='count text-center'>К-во</th>
+          <th class='defect text-truncate'>Брак</th>
+          <th class='rework'><i class='bi bi-arrow-repeat'></i></th>
+        </tr>
+      </thead>
 
-    <tbody>
+      <tbody>
         {{#each Детали}}
           <tr>
-            <td class='stage {{#if Брак}}brak{{/if}}'>{{Этап.Наименование}}</td>
+            <td class='stage'>{{Этап.Наименование}}</td>
             <td class='count'>{{Количество}}</td>
             <td class='defect'>
-              {{#if Брак}} <i class="bi bi-check-lg checkIcon"></i> {{/if}}
+              {{#if Брак}} <i class='bi bi-check-lg checkIcon'></i> {{/if}}
             </td>
             <td class='rework'>
-              {{#if Доработка}} <i class="bi bi-check-lg checkIcon"></i> {{/if}}
+              {{#if Доработка}} <i class='bi bi-check-lg checkIcon'></i> {{/if}}
             </td>
           </tr>
         {{/each}}
-    </tbody>
-  </table>
+      </tbody>
+    </table>
   {{/if}}
 </script>
 
@@ -1025,16 +1064,25 @@
       $(container).html(gallery);
     }
 
-    function docInfoOpen(data = {}) {
+    function docInfoOpen(data) {
       console.log('docInfoOpen data', data);
       $('#main').hide();
       $('#docInfo').show();
       renderDoc(data);
+
+      $('#saveDoc').on('click', async function () {
+        saveDoc(this);
+      });
+
+      $('.tripNumber').on('change', function () {
+        console.log('this tripNumber', this);
+        $(this).attr('changed', true);
+      });
     }
 
-    function renderDoc(data = {}) {
+    function renderDoc(data) {
       const docContainer = $('#docInfo');
-      console.log('data.ВидОперации', data.ВидОперации);
+      console.log('data.ВидОперации', data.ВидОперации, data);
       data.canEdit = data.ВидОперации === 'QPART => ДЕМЗ' ? userRights.canCreateQPART : userRights.canCreateDEMZ;
       if (userRights.canCreatePhoto) {
         data.canEdit = true;
@@ -1083,6 +1131,7 @@
           const dateValue = date.toISOString();
           $(this).data('date', dateValue);
           $(this).val(formattedDate);
+          $(this).attr('changed', true);
         },
       });
 
@@ -1209,20 +1258,28 @@
         const $input = $(input);
         return $input.is(':checkbox') ? $input.is(':checked') : $input.val() !== '';
       });
+      console.log('$(#inputTable tbody tr.docRow).length', $('#inputTable tbody tr.docRow').length);
 
-      if ($('#inputTable tbody tr.docRow').length > 1) {
-        if (hasValue) {
-          $row.find('input').val('');
-          $row.find('input[type="checkbox"]').prop('checked', false);
-          $commentRow.find('input').val('');
-        } else {
+      console.log('inside length>1');
+      if (hasValue) {
+        console.log('inside hasValue');
+        $row.find('input').val('');
+        $row.find('input.stageInput').data('value', null);
+        $row.find('input[type="checkbox"]').prop('checked', false);
+        $commentRow.find('input').val('');
+      } else {
+        if ($('#inputTable tbody tr.docRow').length > 1) {
           $row.remove();
           $commentRow.remove();
         }
-      } else {
-        $row.find('input').val('');
-        $row.find('input[type="checkbox"]').prop('checked', false);
       }
+
+      console.log('data-value after removal:', $row.find('input.stageInput').data('value'));
+      collectTableData(this);
+      // else {
+      //   $row.find('input').val('');
+      //   $row.find('input[type="checkbox"]').prop('checked', false);
+      // }
     });
 
     $(document).on('click', '.commentBtn', function () {
@@ -1237,6 +1294,7 @@
 
     function collectTableData(element) {
       const tableData = [];
+      console.log('tableData1', tableData);
       const container = $(element).closest('.plateListItem');
       console.log('container from collectTableData', container, container.find('#inputTable tbody').find('tr.docRow'));
 
@@ -1244,7 +1302,9 @@
         .find('#inputTable tbody')
         .find('tr.docRow')
         .each(function () {
+          console.log('each tr.docRow', this, $(this).find('input.stageInput'));
           const uid = $(this).find('input.stageInput').data('value');
+          console.log('collectTableData data-value', uid);
           const count = $(this).find('input.numberInput').val();
           const comment = $(this).next('.commentRow').find('input.commentInput').val();
           const defect = $(this).find('input.defectInput').is(':checked');
@@ -1261,7 +1321,7 @@
             });
           }
         });
-      console.log('tableData', tableData);
+      console.log('tableData2', tableData);
       container.data('data', tableData);
     }
 
@@ -1321,102 +1381,109 @@
       );
     }
 
-    $(document)
-      .off('click', '#saveDoc')
-      .on('click', '#saveDoc', async function () {
-        if (!canEdit) return;
-        clickAnimate(this);
-        const mediaFiles = getMediaFiles();
+    async function saveDoc(element) {
+      console.log('saveDoc');
+      if (!canEdit) return;
+      clickAnimate(element);
+      $(element).prop('disabled', true);
+      const mediaFiles = getMediaFiles();
 
-        // try {
-        //   await saveFilesToStorage(mediaFiles, uid, uid);
-        //   console.log('Files saved successfully!');
-        // } catch (error) {
-        //   console.error('Error saving files:', error);
-        // }
+      // try {
+      //   await saveFilesToStorage(mediaFiles, uid, uid);
+      //   console.log('Files saved successfully!');
+      // } catch (error) {
+      //   console.error('Error saving files:', error);
+      // }
 
-        const container = $(this).closest('.plateListItem');
-        const uid = container.attr('uid');
-        const tripNumber = container.find('.tripNumber');
-        const tripNumberValue = tripNumber.val();
+      const container = $(element).closest('.plateListItem');
+      const uid = container.attr('uid');
+      const tripNumber = container.find('.tripNumber');
+      const tripNumberValue = tripNumber.val();
 
-        // if (tripNumberValue === '0') {
-        //   toastr.error('Заповніть номер відправлення');
-        //   tripNumber.focus();
-        //   return;
-        // }
+      // if (tripNumberValue === '0') {
+      //   toastr.error('Заповніть номер відправлення');
+      //   tripNumber.focus();
+      //   return;
+      // }
 
-        const operationType = container.find('.docName').text();
+      const operationType = container.find('.docName').text();
+      console.log('operationType', operationType, container.find('.docName'));
 
-        const docDate = container.find('.docDate').data('date');
-        console.log('docDate', docDate);
-        // if (docDate === '') {
-        //   toastr.error('Заповніть дату відправлення');
-        //   $('#docDate').focus();
-        //   return;
-        // }
+      const docDate = container.find('.docDate').data('date');
+      console.log('docDate', docDate);
+      // if (docDate === '') {
+      //   toastr.error('Заповніть дату відправлення');
+      //   $('#docDate').focus();
+      //   return;
+      // }
 
-        const details = container.data('data');
+      const details = container.data('data');
 
-        NProgress.start();
+      NProgress.start();
 
-        let media = [];
-        let names = [];
-        container
-          .find('.imgContainer')
-          .children()
-          .slice(0, -1)
-          .each((index, child) => {
-            const blob = $(child).children('.source').data('blob');
-            const blobPreview = $(child).children('.preview').data('blob');
+      let media = [];
+      let names = [];
+      container
+        .find('.imgContainer')
+        .children()
+        .slice(0, -1)
+        .each((index, child) => {
+          const blob = $(child).children('.source').data('blob');
+          const blobPreview = $(child).children('.preview').data('blob');
 
-            const src = $(child).children('.source').attr('src');
-            const fileType = src ? src.substring(src.length - 3) : 'unknown';
+          const src = $(child).children('.source').attr('src');
+          const fileType = src ? src.substring(src.length - 3) : 'unknown';
 
-            let file = {};
-            let filePreview = {};
+          let file = {};
+          let filePreview = {};
 
-            if (blob) {
-              file = { data: blob };
-              filePreview = { data: blobPreview };
-              if (blob.type === 'image/jpeg') {
-                file.name = index.toString() + '.png';
-                filePreview.name = 'p' + index.toString() + '.png';
-              } else if (blob.type === 'video/mp4') {
-                file.name = index.toString() + '.mp4';
-                filePreview.name = 'p' + index.toString() + '.png';
-              } else {
-                file.name = index.toString() + '.none';
-              }
-              media.push(file);
-              media.push(filePreview);
+          if (blob) {
+            file = { data: blob };
+            filePreview = { data: blobPreview };
+            if (blob.type === 'image/jpeg') {
+              file.name = index.toString() + '.png';
+              filePreview.name = 'p' + index.toString() + '.png';
+            } else if (blob.type === 'video/mp4') {
+              file.name = index.toString() + '.mp4';
+              filePreview.name = 'p' + index.toString() + '.png';
             } else {
-              if (fileType !== 'unknown') {
-                file.name = index.toString() + '.' + fileType;
-              }
+              file.name = index.toString() + '.none';
             }
-            names.push(file.name);
-          });
-
-        const data = {
-          Детали: details,
-          НомерПоездкиЗаДень: tripNumberValue,
-          ВидОперации: operationType,
-          ДатаСобытия: docDate,
-          Файлы: names,
-        };
-
-        if (uid) {
-          data.uid = uid;
-        }
-        console.log('data from saveDoc', data);
-        sendDataTo1C(data, 'POST', async function (response) {
-          await saveFilesToStorage(media, response.uid, response.uid);
-          docInfoClose();
-          hadleResponseAfterSave(response);
+            media.push(file);
+            media.push(filePreview);
+          } else {
+            if (fileType !== 'unknown') {
+              file.name = index.toString() + '.' + fileType;
+            }
+          }
+          names.push(file.name);
         });
-        NProgress.done();
+
+      const data = {
+        Детали: details,
+        ВидОперации: operationType,
+        Файлы: names,
+      };
+
+      if ($('.tripNumber').attr('changed') === true) {
+        data.НомерПоездкиЗаДень = tripNumberValue;
+      }
+
+      if (docDate) {
+        data.ДатаСобытия = docDate;
+      }
+
+      if (uid) {
+        data.uid = uid;
+      }
+      console.log('data from saveDoc', data);
+      sendDataTo1C(data, 'POST', async function (response) {
+        await saveFilesToStorage(media, response.uid, response.uid);
+        docInfoClose();
+        hadleResponseAfterSave(response);
       });
+      NProgress.done();
+    }
 
     function hadleResponseAfterSave(response) {
       console.log('response from handleResponseAfterSave', response);
