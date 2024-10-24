@@ -123,9 +123,11 @@
     #makePhotoButton {
       font-size: xxx-large !important;
     }
-    /* .docRow {
-      font-size: xx-large;
-    } */
+
+    .defectInput,
+    .reworkInput {
+      transform: scale(2.5) !important;
+    }
   }
 </style>
 
@@ -676,6 +678,7 @@
   .docRow {
     position: relative;
     font-size: inherit;
+    line-height: 0;
   }
 
   td {
@@ -715,7 +718,7 @@
 
   .defectInput,
   .reworkInput {
-    transform: scale(2);
+    transform: scale(1.6);
   }
 
   .commentBtn {
@@ -1237,7 +1240,7 @@
       const $currentRow = $(this).closest('tr');
       const $nextRow = $currentRow.nextAll('tr.docRow');
 
-      if ($nextRow.length === 0 && canEdit) {
+      if ($nextRow.length === 0 && canEdit && $(this).attr('type') !== 'checkbox') {
         addRow();
       }
     });
