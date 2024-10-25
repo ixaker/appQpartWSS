@@ -78,6 +78,9 @@
     npm install
     npm run dev
 
+<h3> Оновлення з github </h3>
+./update_and_restart.sh
+
 <h3>SSL сертификат</h3>
 
 sudo apt install certbot
@@ -140,3 +143,131 @@ paste this:
 @reboot /root/mount_ftp.sh
 
 save file and reboot os.
+
+Запуск через Nginx:
+
+Виконати команду для установки Nginx: sudo apt update sudo apt install nginx
+Запустити Nginx: sudo systemctl start nginx
+Переконатися, що Nginx працює: sudo systemctl status nginx
+Встановлення Certbot:
+
+Встановити Certbot та плагін для Nginx: sudo apt install certbot python3-certbot-nginx
+Отримання сертифіката SSL:
+
+Запустити Certbot для отримання сертифіката: sudo certbot --nginx
+Дотримуватись вказівок на екрані для завершення процесу.
+Налаштування автоматичного оновлення сертифікатів:
+
+Додати cron-завдання для автоматичного оновлення сертифікатів: sudo crontab -e
+Додати рядок для оновлення щодня о півночі: 0 0 \* \* \* certbot renew --quiet --nginx
+Перевірка автоматичного оновлення:
+
+Виконати тестове оновлення сертифіката: sudo certbot renew --dry-run --nginx
+Переконатися, що тест пройшов успішно
+
+
+# Встановлення nginx
+
+## Оновлення списку пакетів
+sudo apt update
+
+## Встановлення nginx
+sudo apt install nginx
+
+## Налаштувати конфіг
+sudo nano /etc/nginx/sites-available/wss.qpart.com.ua
+
+## Створюємо симлінк в папці sites-enabled
+sudo ln -s /etc/nginx/sites-available/wss.qpart.com.ua /etc/nginx/sites-enabled/
+
+## Перевірка конфігурації nginx
+sudo nginx -t
+
+## Запуск nginx
+sudo systemctl start nginx
+
+## Зупинка nginx
+sudo systemctl stop nginx
+
+## Перевірка, чи працює nginx
+sudo systemctl status nginx
+
+
+# Встановлення Cerbot та плагіна для Nginx
+
+## Оновити список пакетів
+sudo apt update
+
+## Встановлюємо Cerbot та плагін для Nginx
+sudo apt install certbot python3-certbot-nginx
+
+## Випускаємо сертифікати
+sudo certbot --nginx -d wss.qpart.com.ua
+
+## Редагуємо Crontab
+sudo crontab -e
+
+## Додати рядок в кінець файла
+0 3 * * * /usr/bin/certbot renew --quiet --webroot -w /var/www/html
+
+
+## Перевіряємо наявність запису
+sudo crontab -l
+
+## Створюємо потрібну папку
+sudo mkdir -p /var/www/html/.well-known/acme-challenge
+
+## Змінюємо права доступу
+sudo chown -R www-data:www-data /var/www/html/.well-known
+sudo chmod -R 755 /var/www/html/.well-known
+
+
+# Конфіг Nginx
+
+server {
+    listen 80;
+    server_name wss.qpart.com.ua;
+
+    # Перенаправлення HTTP на HTTPS
+    return 301 https://$host$request_uri;
+
+}
+
+server {
+    listen 443 ssl;  # SSL на порту 443
+    server_name wss.qpart.com.ua;
+
+    client_max_body_size 50M;
+    ssl_certificate /etc/letsencrypt/live/wss.qpart.com.ua/fullchain.pem; # managed by Certbot
+  # Ваш сертифікат
+    ssl_certificate_key /etc/letsencrypt/live/wss.qpart.com.ua/privkey.pem; # managed by Certbot
+  # Ваш закритий ключ
+
+    # Проксі для вашого веб-сервера
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+
+        error_page 502 /502.html;
+    }
+
+    # Обробка статичних файлів
+    location /static {
+        alias /root/dev/wss/static;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+
+        location = /502.html {
+        root /var/www/html;
+        internal;
+    }
+}
+
+
+
+

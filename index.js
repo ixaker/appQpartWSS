@@ -23,7 +23,7 @@ const { updateAvatar } = require('./services/updateAvatar.js')
 
 const base = process.env.base;
 
-exec('kill -9 $(lsof -t -i :443)');
+// exec('kill -9 $(lsof -t -i :443)');
 
 const envFilePath = path.join(__dirname, '.env');
 
@@ -72,8 +72,8 @@ const renderParams = {
 
 const maxAge = 31536000;
 
-const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
-const ssl_cert = path.join("/etc/letsencrypt/live", domian, 'fullchain.pem');
+// const ssl_key = path.join("/etc/letsencrypt/live", domian, 'privkey.pem');
+// const ssl_cert = path.join("/etc/letsencrypt/live", domian, 'fullchain.pem');
 // const ssl_key = path.join("/etc/letsencrypt/live", domian + '-0001', 'privkey.pem');
 // const ssl_cert = path.join("/etc/letsencrypt/live", domian + '-0001', 'fullchain.pem');
 
@@ -88,7 +88,7 @@ app.set('view engine', 'ejs');
 
 
 const httpServer = http.createServer(app);
-const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
+// const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
 
 app.use((req, res, next) => {
   log.info(`Запит на бекенд прийшов: ${req.method} ${req.url}`);
@@ -795,7 +795,7 @@ app.use((err, req, res, next) => {
 
 
 // ******************************************* WebSocket *******************************************
-const wss = new WebSocket.Server({ server: httpsServer });
+const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on('connection', (ws, request) => {
   ws.isAlive = true;
@@ -945,14 +945,13 @@ wss.on('error', (error) => {
 });
 
 //********************************************* main ******************************************/
-
 async function main() {
   await faceID.initHuman();
   func1C.init();
-  httpsServer.listen(443, () => {
-    log.info('Secure server is running on port 443');
-  });
-  httpServer.listen(80, () => {
+  // httpsServer.listen(443, () => {
+  //   log.info('Secure server is running on port 443');
+  // });
+  httpServer.listen(5000, () => {
     log.info(`HTTP сервер запущений на порту 80`);
   });
 }
