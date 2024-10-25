@@ -18,10 +18,12 @@ async function saveFilesToStorage(media, uid, uidChild) {
                     data,
                     function (response) {
                         console.log('/saveFile', response);
+                        toastr.success('Зображення збережено')
                         resolve();
                     },
                     'json'
                 ).fail(function (jqXHR, textStatus, errorThrown) {
+                     toastr.error('Зображення не зберіглось');
                     reject(errorThrown);
                 });
             };

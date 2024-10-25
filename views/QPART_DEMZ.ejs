@@ -1537,8 +1537,8 @@
           return;
         }
         console.log('callback from sendDataTo1C');
-        enableSaveDocButton();
         await saveFilesToStorage(media, response.uid, response.uid);
+        enableSaveDocButton();
         docInfoClose();
         hadleResponseAfterSave(response);
       });
