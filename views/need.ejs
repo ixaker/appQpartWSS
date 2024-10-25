@@ -444,7 +444,7 @@
     let tableID = '#OTK';
     initTables();
     const userRights = $('#menu').data('userRight');
-    const canFix = haveUserRight(userRights, 'canFix');
+    const canFix = haveUserRight(userRights, 'canFix1');
 
     initInputProvider();
     initInputAutocomplete('#provider');
@@ -632,7 +632,7 @@
 
     callbackAddNewRowForListNeed = function (data) {
       try {
-        if (canFix) {
+        if (access) {
           $('#' + data.data['uid'])
             .find('.btnPlay')
             .show();
