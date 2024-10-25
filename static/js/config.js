@@ -1048,3 +1048,17 @@ $.datepicker.setDefaults({
     changeMonth: false,
     changeYear: false,
 });
+
+function haveUserRight(userRights, rightName) {
+    console.log('findUserRight');
+    for (const key in userRights) {
+        if (userRights[key] && userRights[key].canFix !== undefined) {
+            console.log('findUserRight key, rightName: ', key, rightName);
+            console.log('findUserRight userRights[key]: ', userRights[key]);
+            console.log('findUserRight userRights[key][rightName]: ', userRights[key][rightName]);
+
+            return userRights[key][rightName];
+        }
+    }
+
+}

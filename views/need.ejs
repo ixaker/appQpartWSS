@@ -441,9 +441,10 @@
   var access = false;
 
   $(document).ready(function () {
-    console.log('need.ejs $(document).ready');
     let tableID = '#OTK';
     initTables();
+    const userRights = $('#menu').data('userRight');
+    const canFix = haveUserRight(userRights, 'canFix');
 
     initInputProvider();
     initInputAutocomplete('#provider');
@@ -631,7 +632,7 @@
 
     callbackAddNewRowForListNeed = function (data) {
       try {
-        if (access) {
+        if (canFix) {
           $('#' + data.data['uid'])
             .find('.btnPlay')
             .show();
@@ -1037,9 +1038,10 @@
     // ************************************************** Брак ********************************************************
 
     callbackBeforeInitTableForListDefect = function (data) {
+      console.log('data from callbackBeforeInitTableForListDefect', data);
       const access = data['ПравоВноситьИсправлениеБрака'] || false;
       console.log('callbackBeforeInitTableForListDefect', access, data);
-      if (access) {
+      if (canFix) {
         console.log($('#DefectListRow .config .btnPlay'));
         $('#DefectListRow .config .btnPlay').removeClass('hide');
         console.log($('#DefectListRow .config .btnPlay'));

@@ -1,9 +1,14 @@
 <style>
+  .fixReportHeader {
+    font-size: 1.2em;
+    text-align: center;
+  }
+
   #groupFixReport label {
     width: 58%;
   }
 
-  label[for="sotrudnikFix"] {
+  label[for='sotrudnikFix'] {
     width: 32% !important;
   }
 
@@ -21,11 +26,11 @@
       font-size: 0.9em;
     }
 
-    label[for="sotrudnikFix"] {
+    label[for='sotrudnikFix'] {
       width: 40% !important;
     }
 
-    label[for="dateFix"] {
+    label[for='dateFix'] {
       width: 40% !important;
     }
   }
@@ -33,7 +38,7 @@
 
 <div id="fixReportForm">
   <div id="groupFixReport" class="reportContainer">
-    <h5>Отчет по исправлению брака</h5>
+    <h5 class="fixReportHeader mb-4">Отчет по исправлению брака</h5>
     <div class="input-group mb-2">
       <label for="sotrudnikFix" class="labelFixBrak">Кто исправлял :</label>
       <input
@@ -85,20 +90,8 @@
 
     <div class="input-group" id="buttonsGroup">
       <label></label>
-      <button
-        type="button"
-        class="btn btn-success reportButton"
-        id="saveFixReport"
-      >
-        Сохранить
-      </button>
-      <button
-        type="button"
-        class="btn btn-secondary reportButton"
-        id="cancelFixReport"
-      >
-        Отмена
-      </button>
+      <button type="button" class="btn btn-success reportButton" id="saveFixReport">Сохранить</button>
+      <button type="button" class="btn btn-secondary reportButton" id="cancelFixReport">Отмена</button>
     </div>
   </div>
 </div>
