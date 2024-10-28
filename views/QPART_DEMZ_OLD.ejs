@@ -1,8 +1,26 @@
 <style>
+    #container{
+        min-width: 330px;
+    }
+
     #content {
         padding: 10px 0px;
         user-select: none;
         font-size: medium;
+    }
+
+    @media (max-width: 400px) {
+        #content {
+            font-size: small;
+        }
+
+        .docFirstRow{
+            font-size: small;
+        }
+
+        h5 {
+            font-size: large;
+        }
     }
 
     #listDoc {
@@ -63,6 +81,7 @@
         line-height: 27px;
         border-radius: 7px;
         padding: 0 5px;
+        min-width: 135px;
     }
 
     .docCount{
@@ -521,9 +540,16 @@
 
                 GetInfo1C('createQpartDemz', JSON.stringify(doc), function(result){
                     console.log(result);
-                    refreshListDoc();
-                    $('#listDoc').show();
-                    $('#openDoc').hide();
+
+                    if (result.Error) {
+                        toastr.error('Ошибка');
+                        toastr.error(result.Msg);
+                    }else{
+                        refreshListDoc();
+                        $('#listDoc').show();
+                        $('#openDoc').hide();
+                    }
+                    
                 }, false, 'POST'); 
             }, 300); // время анимации в миллисекундах
         });
