@@ -1,0 +1,534 @@
+<style>
+    #content {
+        padding: 10px 0px;
+        user-select: none;
+        font-size: medium;
+    }
+
+    #listDoc {
+        padding: 0 10px;
+    }
+
+    #groupHead {
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    #create {
+        margin-left: auto;
+    /*     height: 30px;
+        padding: revert; */
+    }
+
+    .btn:hover {
+        color: #FFFFFF !important;
+    }
+
+    .doc{
+        border: 1px solid #BBBBBB;
+        background-color: #FFFFFF;
+        box-shadow: 2px 3px 5px #999;
+        margin-top: 10px;
+        border-radius: 7px;
+        padding: 5px 10px;
+    }
+
+    .docFirstRow{
+        width: 100%;
+        display: flex;
+        font-size: larger;
+    }
+
+    .docSecondRow{
+        width: 100%;
+        font-size: small;
+        margin-top: 4px;
+    }
+
+    .docThirdRow{
+        display: flex;
+    }
+
+    .docDate{
+        width: 20%;
+    }
+
+    .docMachine{
+        margin-right: 15px;
+        margin-left: 5px;
+    }
+
+    .docType{
+        border: 1px solid #BBBBBB;
+        line-height: 27px;
+        border-radius: 7px;
+        padding: 0 5px;
+    }
+
+    .docCount{
+        width: 20%;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .docTypeDemzQpart{
+        background-color: #f7cccc;
+    }
+
+    .docTypeQpartDemz{
+        background-color: #ccf7d4;
+    }
+
+    @keyframes clickAnimation {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(0.95);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .clicked {
+        animation: clickAnimation 0.2s ease;
+    }
+
+    .btnMy{
+        background-color: #007431;
+        color: #FFFFFF;
+        height: 35px;
+        padding: revert;
+    }
+
+    .labelFilter{
+        margin-top: 5px;
+    }
+
+    #groupFilter {
+        display: flex;
+    }
+
+    .btnMyFilter{
+        height: 35px;
+        padding: revert;
+        border: 1px solid #BBBBBB;
+        margin-left: 10px;
+    }
+
+    .btnMyFilter:hover {
+        background-color: #0062b3 !important;
+        color: #FFFFFF !important;
+    }
+
+    .activeFilter {
+        background-color: #0062b3 !important;
+        color: #FFFFFF !important;
+    }
+
+    #save{
+        margin-left: auto;
+    }
+
+    #cancel{
+        margin-left: 20px;
+    }
+
+    #dateGroup{
+        display: flex;
+        margin-top: 10px;
+    }
+
+    #dateLabel{
+        margin-bottom: 0px !important;
+        margin-top: 7px;
+    }
+
+    #date{
+        display: inline;
+        margin-left: auto;
+    }
+
+    .labels{
+        font-size: 1.2rem;
+    }
+
+    #etapinput{
+        font-size: small;
+        padding-left: 3px;
+        padding-right: 28px;
+    }
+
+    .sender{
+        border: 1px solid #BBBBBB;
+        padding: 1px 10px;
+        height: 27px;
+        border-radius: 3px;
+        width: 35%;
+        text-align: center;
+    }
+
+    .reciver{
+        margin-left: auto;
+        border: 1px solid #BBBBBB;
+        padding: 1px 10px;
+        height: 27px;
+        border-radius: 3px;
+        width: 35%;
+        text-align: center;
+    }
+
+    .noChecked{
+        background-color: gold;
+    }
+
+    .needCheck{
+        background-color: red;
+        color: #FFFFFF;
+    }
+
+    .brak{
+        color: red;
+    }
+
+    #skladQPART{
+        margin-left: auto;
+        height: 35px;
+        padding: revert;
+        border: 1px solid #BBBBBB;
+    }
+
+    .activeSklad {
+        background-color: #0062b3 !important;
+        color: #FFFFFF !important;
+    }
+
+    .tableSklad{
+        width: 100%;
+        border-collapse:collapse;
+        border-spacing:0;
+        height: auto;
+    }
+
+    table.tableSklad,table.tableSklad td, table.tableSklad th {
+        border: 1px solid #595959;
+    }
+
+    table.tableSklad th {
+        background: #0062b3; 
+        color: #fff; 
+        font-weight: normal;
+        padding-left: 10px;
+    }
+
+    table.tableSklad td {
+        padding-left: 10px;
+    }
+
+    table.tableSklad td:nth-child(2) {
+        text-align: right;
+        padding-right: 10px;
+    }
+
+    #listSklad{
+        margin-top: 30px;
+        margin-bottom: 40px;
+    }    
+
+    .ui-menu-item{
+        font-size: small;
+    }
+</style>
+
+<div id="listDoc"></div>
+
+<div id="openDoc" style="display: none;">
+<div id="dateGroup" class="form-group fieldForm">
+    <label id="dateLabel" class="labels col-md-4" for="date">Дата:</label>
+    <div class="col-md-4">
+        <input id="date" name="date" type="text" placeholder="" class="form-control invalid">
+    </div>
+</div>
+
+
+<div class="form-group fieldForm" style="display: flex;">
+    <label class="col-md-4 control-label labels" for="machine" style="margin-top: 7px;">Машина:</label>  
+    <div class="col-md-4">
+        <input id="machine" name="machine" type="number" style="text-align: right;" class="form-control input-md invalid">       
+    </div>
+</div>
+
+
+<div class="form-group col-md-10" style="display: flex;">         
+    <label class="control-label labels" for="brak" style="margin-top: 10px;">Это брак:</label>  
+    <input type="checkbox" name="brak" id="brak" style="margin-left: auto; width: 20px;">
+</div>
+
+
+<div class="form-group fieldForm" style="display: flex;">
+    <label class="col-md-4 control-label labels" for="count" style="margin-top: 7px;">Количество:</label>  
+    <div class="col-md-4">
+        <input id="count" name="count" type="number" style="text-align: right;" class="form-control input-md invalid">       
+    </div>
+</div>
+
+
+<div class="form-group fieldForm">
+    <!-- <label class="col-md-12 control-label" for="etapinput" style="margin-top: 10px;">Этап</label> -->  
+    <div class="col-md-12">
+        <input id="etapinput" name="etapinput" type="text" placeholder="Этап..." class="form-control input-md invalid">       
+    </div>
+</div>
+
+
+<div class="form-group fieldForm">         
+    <!-- <label class="col-md-12 control-label" for="comment" style="margin-top: 10px;">Комментарий</label> -->  
+    <div class="col-md-12">
+        <textarea id="comment" name="comment" placeholder="Комментарий..." cols="40" rows="5" class="form-control input-md"></textarea>     
+    </div>
+</div>
+
+
+<div class="col-md-12" style="display: flex;">
+    <button id="save" name="save" class="btn btnMy">Сохранить</button>
+    <button id="cancel" name="cancel" class="btn btnMy">Отмена</button>
+</div>
+</div>
+
+<script>
+    $(function() {
+        refreshListDoc();
+
+        function refreshListDoc(param){
+            GetInfo1C('getListQpartDemz', param, function(result){
+                $('#listDoc').html(result.table);
+            });
+        }
+
+        $(document).on('click', '#QPART', function() {
+            clickAnimate(this);
+            param = '';
+
+
+            $(this).toggleClass('activeFilter')
+            $('#DEMZ').removeClass('activeFilter');
+
+
+            if ($(this).hasClass('activeFilter')) {
+                param = 'filter=QPART';    
+            }
+            
+            refreshListDoc(param);
+        });
+
+
+        $(document).on('click', '#DEMZ', function() {
+            clickAnimate(this);
+            param = '';
+
+
+            $(this).toggleClass('activeFilter')
+            $('#QPART').removeClass('activeFilter');
+
+
+            if ($(this).hasClass('activeFilter')) {
+                param = 'filter=DEMZ';    
+            }
+            
+            refreshListDoc(param);
+        });
+
+
+        $(document).on('click', '#skladQPART', function() {
+            clickAnimate(this);
+
+
+            $(this).toggleClass('activeFilter');
+        
+            if ($(this).hasClass('activeFilter')) {
+                $('#listSklad').show();    
+            }else{
+                $('#listSklad').hide();
+            }
+        });
+
+        $('#date').datepicker({
+            inline: true,
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            maxDate: 0,
+            dateFormat: 'dd.mm.yy',
+            onClose: function(dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+
+
+                var dateSel = String(inst.selectedYear) + ("0"+(inst.selectedMonth+1)).slice(-2) + ("0" + inst.selectedDay).slice(-2)
+                
+                let year = String(inst.selectedYear);
+                let month = ("0"+(inst.selectedMonth+1)).slice(-2);
+                let day = ("0" + inst.selectedDay).slice(-2);
+                let strDate = year + month + day;
+
+
+                $(this).attr('selDate', strDate);
+
+
+                setValid(this, true);
+            }
+        }).on("input" ,function() {
+            $(this).attr('selDate', '');
+            setValid(this, false);
+        });
+
+        $('#cancel').on( "click", function( event ) {
+            clickAnimate(this);
+
+
+            setTimeout(() => {
+                $('#listDoc').show();
+                $('#openDoc').hide();
+            }, 300); // время анимации в миллисекундах
+        });
+
+        $('#count').on("input",function(){
+            var count = $(this).val();
+            console.log(count);
+
+
+            if(count > 0){
+                setValid(this, true);
+            }else{
+                setValid(this, false);
+            }
+        });
+
+        $('#machine').on("input",function(){
+            var count = $(this).val();
+            console.log(count);
+
+
+            if(count > 0){
+                setValid(this, true);
+            }else{
+                setValid(this, false);
+            }
+        });
+
+        $('#etapinput').autocomplete({ 
+            source: function(request,response){
+                var brak = $('#brak').prop('checked');
+
+
+                GetInfo1C('etapDemz', 'text='+this.term+'&brak='+brak, function(result){
+                    response(result);
+                }, this.element[0]);
+            },
+            minLength: 2,
+            select: function(event, ui){
+                $(this).attr('uid', ui.item.uid);
+                setValid(this, true);
+            }
+        }).blur(function(){
+            if(($(this).attr('uid')||'')==''){
+                $(this).val('');
+                setValid(this, false);
+            } 
+        }).on("input" ,function() {
+            $(this).attr('uid', '');
+            setValid(this, false);
+        }).on("click", function(){
+            $(this).attr('uid', '');
+            $(this).val(''); 
+            setValid(this, false);
+        });
+
+        $(document).on('click', '#create', function() {
+            clickAnimate(this);
+            $('#brak').prop('checked', false);
+            $('#count').val('');
+
+            setTimeout(() => {
+                $('#listDoc').hide();
+                $('#openDoc').show();
+            }, 300); // время анимации в миллисекундах
+        });
+
+//********************************************************************
+
+        $(document).on('click', '.needCheck', function() {
+            clickAnimate(this);
+
+
+            setTimeout(() => {
+                var doc = $(this).attr('doc')||'';
+                console.log('check 2');
+                console.log(doc);
+
+
+                const isConfirmed = confirm("Вы уверены?");
+                console.log(isConfirmed);
+
+
+                if (isConfirmed) {
+                    GetInfo1C('checkQpartDemz', 'doc=' + doc, function(result){
+                        console.log(result);
+                        refreshListDoc();
+                    });
+                }
+            }, 300); // время анимации в миллисекундах
+        });
+
+
+
+
+        $('#save').on( "click", function( event ) {
+            clickAnimate(this);
+
+            setTimeout(() => {
+                var doc = {};
+
+                doc.Date = $('#date').val();
+                doc.seldate = $('#date').attr('selDate');
+                doc.machine = $('#machine').val();
+                doc.brak = $('#brak').prop('checked');
+                doc.count = $('#count').val();
+                doc.etap = $('#etapinput').attr('uid');
+                doc.comment = $('#comment').val();
+
+                console.log(doc);
+
+                if ($('#date').hasClass('is-invalid')) {
+                    toastr["error"]('Укажите дату')
+                    return;
+                }
+
+                if ($('#machine').hasClass('is-invalid')) {
+                    toastr["error"]('Укажите машину')
+                    return;
+                }
+
+                if ($('#count').hasClass('is-invalid')) {
+                    toastr["error"]('Укажите количество')
+                    return;
+                }
+
+                if ($('#etap').hasClass('is-invalid')) {
+                    toastr["error"]('Укажите этап')
+                    return;
+                }
+
+                GetInfo1C('createQpartDemz', JSON.stringify(doc), function(result){
+                    console.log(result);
+                    refreshListDoc();
+                    $('#listDoc').show();
+                    $('#openDoc').hide();
+                }, false, 'POST'); 
+            }, 300); // время анимации в миллисекундах
+        });
+
+        
+
+    });
+</script>

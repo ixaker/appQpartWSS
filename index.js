@@ -781,6 +781,10 @@ app.get('/QPART_DEMZ', async function (req, res) {
   res.render('QPART_DEMZ', renderParams);
 });
 
+app.get('/QPART_DEMZ_OLD', async function (req, res) {
+  res.render('QPART_DEMZ_OLD', renderParams);
+});
+
 // Error
 app.use((req, res) => {
   log.warn('error path')
