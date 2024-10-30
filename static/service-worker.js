@@ -8,8 +8,6 @@ const urlsToCache = [
     'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css',
     '/lib/toastr.min.css',
     '/lib/bootstrap-icons.css',
-    '/styles/basic.css',
-    '/styles/tables.css',
     '/styles/mediaviewer.css',
     '/styles/slider.css',
     'https://unpkg.com/tabulator-tables@5.2.2/dist/css/tabulator.min.css',
@@ -27,10 +25,6 @@ const urlsToCache = [
     '/lib/handlebars.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js',
     '/lib/jquery.touchSwipe.min.js',
-    '/js/config.js',
-    '/js/wss.js',
-    '/js/login.js',
-    '/js/tables.js',
     '/js/listplate.js',
     '/js/telegram.js',
     '/js/mediaviewer.js',
@@ -42,6 +36,12 @@ const urlsToCache = [
     '/js/sw-register.js',
 ];
 
+/* '/js/config.js',
+'/js/wss.js',
+'/js/login.js',
+'/js/tables.js', */
+/* '/styles/basic.css',
+'/styles/tables.css', */
 
 // Інсталяція Service Worker і кешування ресурсів
 self.addEventListener('install', (event) => {

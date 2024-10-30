@@ -755,7 +755,7 @@ function callbackFromAttr(element, attr, param = null) {
             }
         }
     } catch (error) {
-        console.log('callbackFromAttr', error, attr);
+        console.log('callbackFromAttr', error, attr, param, func, callbackFunc);
     }
 }
 
