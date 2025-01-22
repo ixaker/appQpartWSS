@@ -163,6 +163,32 @@
     </div>
 
     <div class="input-group" id="groupIntputQuantity">
+      <label for="time" class="labelNewReport">Количество за установку, шт:</label>
+      <input
+        type="number"
+        class="form-control inputFixBrak textAlignEnd"
+        inputmode="numeric"
+        id="countPerOne"
+        aria-describedby="basic-addon3"
+        maxCount="9999" 
+      />
+    </div>
+
+    <div class="input-group" id="groupIntputQuantity">
+      <label for="time" class="labelNewReport">Машинное время, мм:сс</label>
+      <input
+        type="text"
+        class="form-control inputFixBrak textAlignCenter"
+        inputmode="numeric"
+        limitHourse="23"
+        data-mask="99:A9"
+        id="machineTime"
+        placeholder="мм:сс"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group" id="groupIntputQuantity">
       <label for="time" class="labelNewReport">Количество изготовлено, шт:</label>
       <input
         type="number"

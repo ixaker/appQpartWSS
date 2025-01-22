@@ -454,12 +454,14 @@
     initInputTimeMask('#timeStart');
     initInputTimeMask('#timeStop');
     initInputTimeMask('#time');
+    initInputTimeMask('#machineTime');
 
     initInputTimeMask();
     initInputDate('#date');
     initInputDate('#dateFix');
     initInputCount('#count');
     initInputCount('#countFix');
+    initInputCount('#countPerOne');
     initInputWeight();
     initInputPrice();
 
@@ -763,6 +765,12 @@
         $('#count').attr('maxCount', maxCount);
         setValid('#count', false);
 
+        $('#countPerOne').val('');
+        setValid('#countPerOne', false);
+
+        $('#machineTime').val('');
+        setValid('#machineTime', false);
+
         $('#weight').val('');
         setValid('#weight', false);
 
@@ -784,6 +792,12 @@
         } else {
           $('#workTimePeriod').show();
         }
+
+        // "Порезка / Списание" - 11001
+        if (data.data['ЭтапПроизводства']['КодНовый'] === "11001") {
+          $('#workTimePeriod').hide();
+        }
+
 
         $('#newReportRow').attr('report', rowID);
         $('#newReportRow').insertAfter(row);
@@ -819,10 +833,24 @@
       const priceForOne = $('#priceForOne');
       const info = $('#newReportRow').data('data') || {};
       const etapID = info.data['ИД'];
+
+      const countPerOne = $('#countPerOne');
+      const machineTime = $('#machineTime');
+
       let error = false;
 
       if (provider.hasClass('invalid') && provider.is(':visible')) {
         toastr.error('Укажите подрядчика');
+        error = true;
+      }
+
+      if (countPerOne.hasClass('invalid') && countPerOne.is(':visible')) {
+        toastr.error('Укажите количество деталей за одну установку');
+        error = true;
+      }
+
+      if (machineTime.hasClass('invalid') && machineTime.is(':visible')) {
+        toastr.error('Укажите машинное время');
         error = true;
       }
 
@@ -884,6 +912,9 @@
         return;
       }
 
+      // const countPerOne = $('#countPerOne');
+      // const machineTime = $('#machineTime');
+
       const data = {};
       data.workInProvider = $(workInProvider).prop('checked');
       data.provider = $(provider).attr('uid');
@@ -895,6 +926,8 @@
       data.weight = parseInt($(weight).val() || 0);
       data.price = parseInt($(price).val() || 0);
       data.priceForOne = parseInt($(priceForOne).val() || 0);
+      data.countPerOne = parseInt($(countPerOne).val());
+      data.machineTime = $(machineTime).val();
       data.data = info;
 
       NProgress.start();
@@ -947,6 +980,11 @@
           $('#workTimePeriod').hide();
         } else {
           $('#workTimePeriod').show();
+        }
+
+        // "Порезка / Списание" - 11001
+        if (data.data['ЭтапПроизводства']['КодНовый'] === "11001") {
+          $('#workTimePeriod').hide();
         }
       }
     });
