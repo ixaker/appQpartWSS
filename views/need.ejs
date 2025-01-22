@@ -796,8 +796,12 @@
         // "Порезка / Списание" - 11001
         if (data.data['ЭтапПроизводства']['КодНовый'] === "11001") {
           $('#workTimePeriod').hide();
+          $('#countPerOne').hide();
+          $('#machineTime').hide();
+        }else{
+          $('#countPerOne').show();
+          $('#machineTime').show();
         }
-
 
         $('#newReportRow').attr('report', rowID);
         $('#newReportRow').insertAfter(row);
