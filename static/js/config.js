@@ -206,7 +206,7 @@ async function logToServer(msg, data = {}) {
     // });
 }
 
-function initInputAutocomplete(element, minLength = 1, filter = {}) {
+function initInputAutocomplete(element, minLength = 1, filter = {}, keyValue = undefined) {
     try {
         const url = $(element).attr('url');
 
@@ -220,6 +220,9 @@ function initInputAutocomplete(element, minLength = 1, filter = {}) {
                     data: JSON.stringify(data),
                     contentType: 'application/json',
                     success: function (data) {
+                        if (keyValue) {
+                            data = data.map(item => ({...item, value: item[keyValue]}));
+                        }
                         res(data);
                     }
                 });

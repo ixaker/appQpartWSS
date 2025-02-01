@@ -73,7 +73,7 @@
   }
 
   .reportContainer {
-    width: 630px;
+    width: 550px;
     font-size: 25px;
     margin: 10px auto 10px auto;
     background-color: aliceblue;
@@ -85,12 +85,13 @@
   .reportContainer label {
     font-size: 1em;
     margin-bottom: 0;
+    margin-top: 5px;
   }
 
   .reportContainer input {
     flex-grow: 0;
     height: 2.5em;
-    font-size: 1em;
+    font-size: large;
     border-radius: 0.25rem;
   }
 
@@ -104,6 +105,10 @@
       width: 100%;
       font-size: 5vw;
       line-height: 3em;
+    }
+
+    .reportContainer label {
+      margin-top: 0px;
     }
 
     .input-group {
@@ -450,13 +455,14 @@
     initInputAutocomplete('#provider');
     initInputAutocomplete('#sotrudnik');
     initInputAutocomplete('#sotrudnikFix');
+    initInputAutocomplete('#stanok', 1, {}, 'fullName');
 
     initInputTimeMask('#timeStart');
     initInputTimeMask('#timeStop');
     initInputTimeMask('#time');
     initInputTimeMask('#machineTime');
+    initInputTimeMask('#fullTime');
 
-    initInputTimeMask();
     initInputDate('#date');
     initInputDate('#dateFix');
     initInputCount('#count');
@@ -752,6 +758,10 @@
         $('#sotrudnik').attr('uid', '');
         setValid('#sotrudnik', false);
 
+        $('#stanok').val('');
+        $('#stanok').attr('uid', '');
+        setValid('#stanok', false);
+
         $('#date').val('');
         setValid('#date', false);
 
@@ -771,6 +781,9 @@
         $('#machineTime').val('');
         setValid('#machineTime', false);
 
+        $('#fullTime').val('');
+        setValid('#fullTime', false);
+
         $('#weight').val('');
         setValid('#weight', false);
 
@@ -786,27 +799,32 @@
         $('#groupInputProvider').hide();
         $('.termoobrabotkaProvider').hide();
         $('.obrabotkaProviderPrice').hide();
+        $('#groupInputStanok').hide();
+        $('#groupFullTime').hide();
+        $('#groupCountPerOne').hide();
+        $('#groupMachineTime').hide();
+        $('#workTimePeriod').hide();
 
-        if (data.data['ЭтапПроизводства']['НеУчитыватьВремяРаботы']) {
-          $('#workTimePeriod').hide();
-        } else {
+        console.log('click btnPlay', data);
+        
+
+        if (!data.data['ЭтапПроизводства']['НеУчитыватьВремяРаботы']) {
           $('#workTimePeriod').show();
         }
 
         // "Порезка / Списание" - 11001
         if (data.data['ЭтапПроизводства']['КодНовый'] === "11001") {
+          $('#groupInputStanok').show();
           $('#workTimePeriod').hide();
           $('#groupCountPerOne').show();
           $('#groupMachineTime').show();
-        }else{
-          $('#groupCountPerOne').hide();
-          $('#groupMachineTime').hide();
+          //$('#groupFullTime').show();
         }
+
 
         $('#newReportRow').attr('report', rowID);
         $('#newReportRow').insertAfter(row);
         $('#newReportRow').show(100);
-
         $('#sotrudnik').focus();
       }
     });
@@ -840,6 +858,8 @@
 
       const countPerOne = $('#countPerOne');
       const machineTime = $('#machineTime');
+      const fullTime = $('#fullTime');
+      const stanok = $('#stanok');
 
       let error = false;
 
@@ -855,6 +875,16 @@
 
       if (machineTime.hasClass('invalid') && machineTime.is(':visible')) {
         toastr.error('Укажите машинное время');
+        error = true;
+      }
+
+      if (fullTime.hasClass('invalid') && fullTime.is(':visible')) {
+        toastr.error('Укажите полное время');
+        error = true;
+      }
+
+      if (stanok.hasClass('invalid') && stanok.is(':visible')) {
+        toastr.error('Укажите станок');
         error = true;
       }
 
@@ -923,6 +953,7 @@
       data.workInProvider = $(workInProvider).prop('checked');
       data.provider = $(provider).attr('uid');
       data.sotrudnik = $(sotrudnik).attr('uid');
+      data.stanok = $(stanok).attr('uid');
       data.date = new Date($(date).val());
       data.timeStart = $(timeStart).val();
       data.timeStop = $(timeStop).val();
@@ -932,6 +963,7 @@
       data.priceForOne = parseInt($(priceForOne).val() || 0);
       data.countPerOne = parseInt($(countPerOne).val());
       data.machineTime = $(machineTime).val();
+      data.fullTime = $(fullTime).val();
       data.data = info;
 
       NProgress.start();

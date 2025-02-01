@@ -209,10 +209,10 @@ html {
 }
 
 .ui-autocomplete {
-  max-height: 400px;
-  font-size: 1.5em;
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* max-height: 400px; */
+  font-size: 1.4em;
+  /* overflow-y: auto;
+  overflow-x: hidden; */
 }
 
 .ui-menu-item {
@@ -236,7 +236,7 @@ html {
   }
 
   .ui-autocomplete {
-    font-size: 1.3em;
+    font-size: 1em;
   }
 }
 

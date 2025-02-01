@@ -1,7 +1,16 @@
 <style>
+
+  #groupNewReport {
+    font-size: x-large;
+  }
+
   @media (max-width: 600px) {
     #workTimePeriod input {
       padding: 2px;
+    }
+
+    #groupNewReport {
+      font-size: 4vw;
     }
   }
 
@@ -13,23 +22,36 @@
     width: 1.5em;
     height: 1.5em;
     flex-grow: initial;
+    margin-top: 10px;
+  }
+
+  #workInProviderInput {
+    margin-top: 5px;
+    margin-left: 20px;
   }
 
   #groupInputProvider label,
   #groupInputSotrudnik label,
   #groupInputData label,
   #workTimePeriod label,
-  #buttonsGroup label {
+  #buttonsGroup label,
+  #groupInputStanok label {
     width: 32%;
   }
 
   #groupIntputQuantity label,
-  .termoobrabotka label {
+  .termoobrabotka label,
+  #groupMachineTime label,
+  #groupFullTime label,
+  #groupCountPerOne label {
     width: 70%;
   }
 
+
+
+
   @media (max-width: 600px) {
-    #groupInputProvider label,
+    /* #groupInputProvider label,
     #groupInputSotrudnik label,
     #groupInputData label,
     #workTimePeriod label,
@@ -40,7 +62,7 @@
     #groupIntputQuantity label,
     .termoobrabotka label {
       width: 75%;
-    }
+    } */
   }
 
   #groupInputProvider input {
@@ -162,6 +184,18 @@
       </div>
     </div>
 
+    <div class="input-group" id="groupInputStanok">
+      <label for="stanok" class="labelNewReport">Станок :</label>
+      <input
+        type="text"
+        class="form-control inputFixBrak"
+        id="stanok"
+        url="/app/autocompleteStanok"
+        aria-describedby="basic-addon3"
+        placeholder="инвентарный номер..."
+      />
+    </div>
+
     <div class="input-group" id="groupCountPerOne">
       <label for="time" class="labelNewReport">Количество за установку, шт:</label>
       <input
@@ -173,17 +207,6 @@
         maxCount="9999" 
       />
     </div>
-
-    <div class="input-group" id="groupInputStanok">
-      <label for="stanok" class="labelNewReport">Станок :</label>
-      <input
-        type="text"
-        class="form-control inputFixBrak"
-        id="stanok"
-        url="/app/autocompleteStanok"
-        aria-describedby="basic-addon3"
-      />
-    </div>
     
     <div class="input-group" id="groupMachineTime">
       <label for="time" class="labelNewReport">Машинное время, мм:сс</label>
@@ -191,9 +214,23 @@
         type="text"
         class="form-control inputFixBrak textAlignCenter"
         inputmode="numeric"
-        limitHourse="23"
+        limitHourse="99"
         data-mask="99:A9"
         id="machineTime"
+        placeholder="мм:сс"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+
+    <div class="input-group" id="groupFullTime">
+      <label for="time" class="labelNewReport">Полное время, мм:сс</label>
+      <input
+        type="text"
+        class="form-control inputFixBrak textAlignCenter"
+        inputmode="numeric"
+        limitHourse="99"
+        data-mask="99:A9"
+        id="fullTime"
         placeholder="мм:сс"
         aria-describedby="basic-addon3"
       />
