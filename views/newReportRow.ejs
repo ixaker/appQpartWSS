@@ -162,7 +162,7 @@
       </div>
     </div>
 
-    <div class="input-group" id="groupIntputQuantity">
+    <div class="input-group" id="groupCountPerOne">
       <label for="time" class="labelNewReport">Количество за установку, шт:</label>
       <input
         type="number"
@@ -174,7 +174,18 @@
       />
     </div>
 
-    <div class="input-group" id="groupIntputQuantity">
+    <div class="input-group" id="groupInputStanok">
+      <label for="stanok" class="labelNewReport">Станок :</label>
+      <input
+        type="text"
+        class="form-control inputFixBrak"
+        id="stanok"
+        url="/app/autocompleteStanok"
+        aria-describedby="basic-addon3"
+      />
+    </div>
+    
+    <div class="input-group" id="groupMachineTime">
       <label for="time" class="labelNewReport">Машинное время, мм:сс</label>
       <input
         type="text"
