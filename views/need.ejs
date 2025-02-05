@@ -583,16 +583,21 @@
     // callback придобавлении строки группового этапа в атрибут пишем есть ли право вносить отчеты
     callbackAddNewRowForListGroupEtapNeed = function (data) {
       try {
-        $(`#${data.data.uid}`).attr('access', data.data['edit']);
+        console.log('callbackAddNewRowForListGroupEtapNeed', data.data);
+        
+        if (data.data.hasOwnProperty('edit')) {
+          $(`#${data.data.uid}`).attr('access', data.data['edit']);
+        } else {
+          data.data['ДоступApp'].forEach(function(element) {
+            const uidSotr = element['Сотрудник'].uid||'';
 
-        // data.data['ДоступApp'].forEach(function(element) {
-        //     const uidSotr = element['Сотрудник'].uid||'';
+            if (uidSotr === user.uid) {
+                $(`#${data.data.uid}`).attr('access', element['РазрешеноВноситьОтчеты']);
+                return;
+            }
+          });
+        }
 
-        //     if (uidSotr === user.uid) {
-        //         $(`#${data.data.uid}`).attr('access', element['РазрешеноВноситьОтчеты']);
-        //         return;
-        //     }
-        // });
       } catch (error) {
         console.log(error);
       }
