@@ -15,13 +15,14 @@ const embeddingsDataPath = path.join(projectRoot, 'embeddings.json');
 const userInfoDataPath = path.join(projectRoot, 'userInfoData.json');
 const usersFolderPath = path.join(projectRoot, 'foto');
 
-const humanConfig = { // user configuration for human, used to fine-tune behavior
+const humanConfig = {
+  // user configuration for human, used to fine-tune behavior
   cacheSensitivity: 0,
   modelBasePath: 'file://services/models/',
   filter: {
     enabled: true,
     equalization: true,
-    return: false
+    return: false,
   },
   debug: false,
   face: {
@@ -30,14 +31,14 @@ const humanConfig = { // user configuration for human, used to fine-tune behavio
       rotation: true,
       return: false,
       mask: false,
-      minConfidence: 0.82
+      minConfidence: 0.82,
     }, // return tensor is used to get detected face image
     description: { enabled: true }, // default model for face descriptor extraction is faceres
     // mobilefacenet: { enabled: true, modelPath: 'https://vladmandic.github.io/human-models/models/mobilefacenet.json' }, // alternative model
     // insightface: { enabled: true, modelPath: 'https://vladmandic.github.io/insightface/models/insightface-mobilenet-swish.json' }, // alternative model
     iris: { enabled: false }, // needed to determine gaze direction
     emotion: { enabled: true }, // not needed
-    mesh: { enabled: false },   // not needed
+    mesh: { enabled: false }, // not needed
     antispoof: { enabled: false }, // enable optional antispoof module
     liveness: { enabled: false }, // enable optional liveness module
   },
@@ -125,7 +126,7 @@ async function savePhotoOnly(body, userUID) {
 
       const newEmbedding = { uid: userUID, embedding: embedding, file: file, countFileUse: 0 };
       db.push(newEmbedding);
-      embeddings = db.map((rec) => rec.embedding);
+      embeddings = db.map(rec => rec.embedding);
       saveDB();
 
       console.log('Database updated. New embedding added:');
@@ -148,29 +149,27 @@ async function addPhotoWhithoutVerify(photo, uid) {
   console.log('addPhotoWhithoutVerify uid', uid);
   let result = {};
   try {
-
     const detection = await detectFaceFromBase64(photo);
 
     if (detection && detection.face && detection.face.length === 1) {
-      log.info('addPhotoWhithoutVerify detection', detection)
+      log.info('addPhotoWhithoutVerify detection', detection);
       const embedding = detection.face[0].embedding;
       const file = `${Date.now()}.png`;
       const newEmbedding = { uid: uid, embedding: embedding, file: file, countFileUse: 0 };
 
       userInfo[uid].isNewFoto = true;
-      db.push(newEmbedding)
-      embeddings = db.map((rec) => rec.embedding);
+      db.push(newEmbedding);
+      embeddings = db.map(rec => rec.embedding);
       saveDB();
       saveUserFoto(uid, photo, file);
-      result.message = 'фото успішно збережено'
+      result.message = 'фото успішно збережено';
       result.success = true;
       result.user = userInfo[uid];
-      log.info('result from addPhotoWhithoutVerify', result)
+      log.info('result from addPhotoWhithoutVerify', result);
     }
-
   } catch (error) {
     result.exception = true;
-    result.success = false
+    result.success = false;
     log.error(`Failed to process addPhotoWhithoutVerify: ${error}`, result);
   }
 
@@ -182,15 +181,14 @@ async function findSeveralMatches(embedding, embeddings) {
 
   try {
     const results = embeddings.map((descriptor, index) => {
-
       return {
         index: index,
         similarity: human.match.similarity(embedding, descriptor, {
           order: 2,
           multiplier: 20,
           min: 0.5,
-          max: 1
-        })
+          max: 1,
+        }),
       };
     });
 
@@ -200,7 +198,7 @@ async function findSeveralMatches(embedding, embeddings) {
     log.info('findSeveralMatches', topResults);
 
     return topResults.map(result => {
-      log.info('result', result)
+      log.info('result', result);
       const file = db[result.index]?.file || 'Unknown file';
       const uid = db[result.index]?.uid || 'Unknown UID';
       const userName = userInfo[uid]?.name || 'Unknown name';
@@ -209,10 +207,9 @@ async function findSeveralMatches(embedding, embeddings) {
         similarity: result.similarity,
         file: file,
         uid: uid,
-        userName: userName
+        userName: userName,
       };
     });
-
   } catch (error) {
     log.error('Error in findSeveralMatches:', error.message);
     throw error;
@@ -239,19 +236,24 @@ async function checkPhoto(body) {
           result.originalPhotoName = db[result.index].file;
           result.detectUser = true;
         }
-
-
       }
     }
-  } catch (error) {
-
-  }
+  } catch (error) {}
   return result;
 }
 
 async function findUserOnFoto(body, forUserUID = '') {
   console.log('findUserOnFoto forUserUID', forUserUID);
-  let result = { detectFace: false, error: false, exception: false, detectUser: false, uid: '', addedFoto: false, forUserUID: forUserUID, photoPath: '' };
+  let result = {
+    detectFace: false,
+    error: false,
+    exception: false,
+    detectUser: false,
+    uid: '',
+    addedFoto: false,
+    forUserUID: forUserUID,
+    photoPath: '',
+  };
   result.originalPhoto = body.photo;
 
   try {
@@ -300,7 +302,7 @@ async function findUserOnFoto(body, forUserUID = '') {
           //result.uid = forUserUID;
           result.uid = '';
 
-          log.info('forUserUID !==', result.uid, forUserUID)
+          log.info('forUserUID !==', result.uid, forUserUID);
 
           if (result.uid === '') {
             result.uid = forUserUID;
@@ -316,15 +318,14 @@ async function findUserOnFoto(body, forUserUID = '') {
         }
 
         if (result.uid === '') {
-
         } else {
           if (result.finded.similarity > 0.72) {
             result.user = userInfo[result.uid];
-            result.detectUser = true
+            result.detectUser = true;
 
             if (result.finded.similarity < 0.98) {
               if (result.user.count < 40) {
-                result.addedFoto = true;
+                //result.addedFoto = true;
               }
             }
           } else {
@@ -336,8 +337,8 @@ async function findUserOnFoto(body, forUserUID = '') {
           const file = `${Date.now()}.png`;
           const newEmbedding = { uid: result.uid, embedding: embedding, file: file, countFileUse: 0 };
           userInfo[result.uid].isNewFoto = true;
-          db.push(newEmbedding)
-          embeddings = db.map((rec) => rec.embedding);
+          db.push(newEmbedding);
+          embeddings = db.map(rec => rec.embedding);
           saveDB();
           saveUserFoto(result.uid, body.photo, file);
 
@@ -362,7 +363,7 @@ async function calcCount() {
   for (let key in userInfo) {
     userInfo[key].count = 0;
 
-    db.forEach((info) => {
+    db.forEach(info => {
       if (info.uid == key) {
         userInfo[key].count += 1;
       }
@@ -377,12 +378,11 @@ async function initDB() {
       fs.writeFileSync(embeddingsDataPath, DataDB);
     }
 
-
     const loadedEmbeddingsData = fs.readFileSync(embeddingsDataPath);
     db = JSON.parse(loadedEmbeddingsData);
     db = db.filter(obj => 'uid' in obj);
 
-    embeddings = db.map((rec) => rec.embedding);
+    embeddings = db.map(rec => rec.embedding);
   } catch (error) {
     log.error(error);
     db = [];
@@ -390,7 +390,7 @@ async function initDB() {
   }
 
   try {
-    log.info('userInfoDataPath', userInfoDataPath)
+    log.info('userInfoDataPath', userInfoDataPath);
 
     if (!fs.existsSync(userInfoDataPath)) {
       const DataUserInfo = JSON.stringify([], null, 2);
@@ -404,15 +404,14 @@ async function initDB() {
     userInfo = {};
   }
 
-
   if (Object.keys(userInfo).length == 0) {
     userInfo['f9c18a95-123c-11ed-81c1-000c29006152'] = {
-      "name": "Голуб Виталий",
-      "uid": "f9c18a95-123c-11ed-81c1-000c29006152",
-      "count": 0,
-      "isAdmin": false,
-      "profa": "Программист",
-      "menu": ""
+      name: 'Голуб Виталий',
+      uid: 'f9c18a95-123c-11ed-81c1-000c29006152',
+      count: 0,
+      isAdmin: false,
+      profa: 'Программист',
+      menu: '',
     };
   }
 
@@ -440,17 +439,21 @@ async function saveDB() {
 
 function saveUserFoto(uid, base64Data, name) {
   const folderRootPath = path.join(projectRoot, 'foto');
-  if (!fs.existsSync(folderRootPath)) { fs.mkdirSync(folderRootPath); }
+  if (!fs.existsSync(folderRootPath)) {
+    fs.mkdirSync(folderRootPath);
+  }
 
   const folderUserPath = path.join(folderRootPath, uid);
-  if (!fs.existsSync(folderUserPath)) { fs.mkdirSync(folderUserPath); }
+  if (!fs.existsSync(folderUserPath)) {
+    fs.mkdirSync(folderUserPath);
+  }
 
   const filePath = path.join(folderUserPath, name);
 
   const base64Image = base64Data.split(';base64,').pop();
   const binaryData = Buffer.from(base64Image, 'base64');
 
-  fs.writeFile(filePath, binaryData, 'binary', (err) => {
+  fs.writeFile(filePath, binaryData, 'binary', err => {
     if (err) {
       log.error(err);
     } else {
@@ -477,11 +480,10 @@ function getUserInfoByEmpCode(empCode) {
 }
 
 async function updateUser(user) {
-  log.info('updateUser user=', user)
+  log.info('updateUser user=', user);
   if (user.fired) {
     delete userInfo[user.uid];
     db = db.filter(emb => emb.uid !== user.uid);
-
   } else {
     userInfo[user.uid] = user;
   }
@@ -490,18 +492,26 @@ async function updateUser(user) {
 }
 
 async function updateUsersInfo(users) {
-  userInfo = users.reduce((acc, cur) => { acc[cur.uid] = { ...cur }; return acc; }, {});
+  userInfo = users.reduce((acc, cur) => {
+    acc[cur.uid] = { ...cur };
+    return acc;
+  }, {});
   saveDB();
 }
 
 async function updateFaceID(users) {
-  userInfo = users.reduce((acc, cur) => { acc[cur.uid] = { ...cur }; return acc; }, {});
+  userInfo = users.reduce((acc, cur) => {
+    acc[cur.uid] = { ...cur };
+    return acc;
+  }, {});
   // log.info('updateFaceID userInfo', userInfo);
   db = [];
 
   for (const user of users) {
     let folderPath = path.join(usersFolderPath, user.uid);
-    if (!fs.existsSync(folderPath)) { fs.mkdirSync(folderPath); }
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
 
     log.info(user.name, folderPath);
 
@@ -530,7 +540,7 @@ async function updateFaceID(users) {
     }
   }
 
-  embeddings = db.map((rec) => rec.embedding);
+  embeddings = db.map(rec => rec.embedding);
   saveDB();
 }
 
@@ -545,12 +555,14 @@ function loadImageSync(filePath) {
 }
 
 function deleteFotosUserAll(uid) {
-  db = db.filter((obj) => obj.uid !== uid);
-  embeddings = db.map((rec) => rec.embedding);
+  db = db.filter(obj => obj.uid !== uid);
+  embeddings = db.map(rec => rec.embedding);
   saveDB();
 
   let folderPath = path.join(usersFolderPath, uid);
-  if (!fs.existsSync(folderPath)) { fs.mkdirSync(folderPath); }
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
 
   try {
     const files = fs.readdirSync(folderPath);
@@ -571,7 +583,7 @@ function getUserFotoList(uid) {
   const userEmb = db.filter(user => user.uid === uid);
   if (!userInfo[uid]) return [];
   userInfo[uid].isNewFoto = false;
-  log.info('isNewFoto delete from user', userInfo[uid], userInfo[uid].isNewFoto)
+  log.info('isNewFoto delete from user', userInfo[uid], userInfo[uid].isNewFoto);
   saveDB();
   const fotoUse = userEmb.reduce((acc, user) => {
     if (user.file) {
@@ -585,7 +597,7 @@ function getUserFotoList(uid) {
     fileName: fileName,
     countFileUse: fotoUse[fileName],
     userId: uid,
-    dateLastFinded: userEmb.find(user => user.file === fileName)?.dateLastFinded || null
+    dateLastFinded: userEmb.find(user => user.file === fileName)?.dateLastFinded || null,
   }));
 
   log.info('fotoUseArray', fotoUseArray);
@@ -597,7 +609,7 @@ function deleteUserFoto(uid, file) {
   try {
     log.info('deleteUserFoto', uid, file);
     db = db.filter(item => !(item.uid === uid && item.file === file));
-    embeddings = db.map((rec) => rec.embedding);
+    embeddings = db.map(rec => rec.embedding);
     saveDB();
 
     const userFolderPath = path.join(usersFolderPath, uid);
@@ -626,5 +638,5 @@ module.exports = {
   deleteFotosUserAll,
   getUserFotoList,
   deleteUserFoto,
-  updateFaceID
+  updateFaceID,
 };
