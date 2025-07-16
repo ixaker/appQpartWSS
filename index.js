@@ -785,6 +785,10 @@ app.get('/QPART_DEMZ_OLD', async function (req, res) {
   res.render('QPART_DEMZ_OLD', renderParams);
 });
 
+app.get('/ratingOperators', async function (req, res) {
+  res.render('ratingOperators', renderParams);
+});
+
 // Error
 app.use((req, res) => {
   log.warn('error path')

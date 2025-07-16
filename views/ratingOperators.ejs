@@ -1,0 +1,201 @@
+<style>
+  .raitings {
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: bold;
+  }
+  #commandRow {
+    position: relative;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    gap: 10px;
+  }
+
+  #groupDate {
+    display: flex;
+  }
+
+  #date {
+    width: 100%;
+    margin-right: 10px;
+    text-align: center;
+    font-size: x-large;
+    height: 36px;
+    margin-top: 5px;
+    max-width: 140px;
+    padding: 0;
+    margin-left: 10px;
+    border-radius: 6px;
+    border: 1px solid darkgrey;
+  }
+
+  .btnArrow {
+    font-size: xx-large;
+    color: darkgreen;
+  }
+
+  #tableList {
+    width: 100%;
+    font-size: small;
+    background-color: #ffffff;
+  }
+
+  #tableList th {
+    background: #007431;
+    color: white;
+    padding: 0 5px 0 5px;
+    border-color: black;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+  }
+
+  td {
+    text-align: center;
+  }
+
+  .sotrudnik {
+    width: 35%;
+    text-align: left;
+  }
+  .sotrudnik,
+  .dateofemployment {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dateofemployment {
+    width: 20%;
+    text-align: center;
+  }
+
+  .hours {
+    width: 13%;
+  }
+
+  .own {
+    background: yellow;
+  }
+
+  .newUser {
+    background: lightgreen;
+  }
+
+  .shift {
+    width: 7%;
+    text-align: left;
+  }
+  .rownum {
+    width: 7%;
+    text-align: center;
+  }
+
+  .ratestatus {
+    width: 15%;
+    text-align: center;
+  }
+
+  .containerTable {
+    max-width: 450px;
+  }
+
+  #content {
+    max-width: 450px !important;
+    margin: 0 auto;
+  }
+</style>
+
+<h3 class="raitings">Рейтинг операторов</h3>
+<div id="commandRow">
+  <div id="groupDate">
+    <div id="btnDown"><i class="bi bi-arrow-left-circle btnArrow"></i></div>
+    <input id="date" name="date" type="text" readonly />
+    <div id="btnUp"><i class="bi bi-arrow-right-circle btnArrow"></i></div>
+  </div>
+</div>
+
+<div id="containerTable">
+  <table id="tableList" cellpadding="1" cellspacing="0">
+    <thead>
+      <tr>
+        <th class="rownum">№</th>
+        <th class="sotrudnik">Оператор</th>
+        <th class="hours">Часы</th>
+        <th class="shift">С</th>
+        <th class="dateofemployment">Дата оф-я</th>
+        <th class="ratestatus">Статус</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script id="row-template" type="text/x-handlebars-template">
+  {{#each this}}
+    <tr class='rowData {{rowClass}}'>
+      <td class='rownum'>{{Номер}}</td>
+      <td class='sotrudnik'>{{Сотрудник}}</td>
+      <td class='hours'>{{Часы}}</td>
+      <td class='shift'>{{КоличествоСмен}}</td>
+      <td class='dateofemployment'>{{ДатаОформления}}</td>
+      <td class='ratestatus'>{{Статус}}</td>
+    </tr>
+  {{/each}}
+</script>
+
+<script>
+  $(document).ready(function () {
+    const tableID = '#tableList';
+    let options = { year: 'numeric', month: 'numeric', timezone: 'UTC' };
+    // let date = new Date();
+    // const dateOfEmployment =
+    let date = new Date('2025-02-22');
+    let allData = [];
+    const pageUID = localStorage.getItem('PageUID');
+    const userRights = $('#menu').data('userRight')[pageUID];
+
+    console.log('userRights', userRights);
+
+    $('#date').val(date.toLocaleString('ru', options));
+
+    $('#btnDown').on('click', function (event) {
+      clickAnimate(this);
+      date.setMonth(date.getMonth() - 1);
+      $('#date').val(date.toLocaleString('ru', options));
+      getData();
+    });
+
+    $('#btnUp').on('click', function (event) {
+      clickAnimate(this);
+      date.setMonth(date.getMonth() + 1);
+      console.log('date', date);
+      $('#date').val(date.toLocaleString('ru', options));
+      getData();
+    });
+
+    function getData() {
+      console.log('getData date', date);
+      universalRequest(
+        '/app/ratingOperators',
+        'GET',
+        {},
+        { date: date.toISOString() },
+        function onSuccess(response) {
+          console.log('Success callback', response);
+          allData = response.list;
+          generateFromTemplate('#row-template', allData, '#tableBody');
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+        },
+        () => {}
+      );
+    }
+    getData();
+  });
+</script>
