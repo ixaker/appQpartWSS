@@ -15,6 +15,7 @@
 
   #groupDate {
     display: flex;
+    align-items: center;
   }
 
   #date {
@@ -40,6 +41,14 @@
     width: 100%;
     font-size: small;
     background-color: #ffffff;
+    border-collapse: collapse;
+    position: relative;
+  }
+
+  #tableList thead {
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
   #tableList th {
@@ -47,9 +56,6 @@
     color: white;
     padding: 0 5px 0 5px;
     border-color: black;
-  }
-
-  thead {
     position: sticky;
     top: 0;
   }
@@ -98,6 +104,10 @@
   .ratestatus {
     width: 15%;
     text-align: center;
+  }
+
+  .danger {
+    background: #ffcccc;
   }
 
   .containerTable {
