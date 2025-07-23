@@ -124,6 +124,33 @@
   }
 </style>
 
+<style>
+  #detail {
+    padding: 5px;
+    background-color: aliceblue;
+  }
+
+  .userFoto {
+    width: 180px;
+    height: 210px;
+    margin: 5px;
+  }
+
+  #textInfo {
+    text-align: left;
+    font-size: small;
+  }
+
+  dl {
+    display: flex;
+    margin-bottom: 0;
+  }
+
+  dt {
+    width: 70%;
+  }
+</style>
+
 <h3 class="raitings">Рейтинг операторов</h3>
 <div id="commandRow">
   <div id="groupDate">
@@ -152,7 +179,7 @@
 
 <script id="row-template" type="text/x-handlebars-template">
   {{#each this}}
-    <tr class='rowData {{rowClass}}'>
+    <tr class='rowData {{rowClass}}' uid='{{uid}}'>
       <td class='rownum'>{{Номер}}</td>
       <td class='sotrudnik'>{{Сотрудник}}</td>
       <td class='hours'>{{Часы}}</td>
@@ -162,6 +189,70 @@
       <td class='ratestatus'>{{Статус}}</td>
     </tr>
   {{/each}}
+</script>
+
+<script id="userInfo" type="text/x-handlebars-template">
+  <td id='detail' colspan='6'>
+    <div style='display:flex;'>
+      <img class='userFoto' src='/auth_files/photo/{{emp_code_ZKTeco}}.jpg' alt='Фото користувача {{uid}}' />
+      <div id='textInfo' style='width: 200px;'>
+        <div class='user-info'>
+          <p>{{Должность}}</p>
+          <p>Оформлен : {{ДатаОформления}}</p>
+          <a href='tel:{{ОсновнойНомерТелефона}}'>{{ОсновнойНомерТелефона}}</a>
+          <address>{{address}}</address>
+          <div class='fieldContainer'>
+            <dl>
+              <dt>Трудовая книга:</dt>
+              <dd>{{#if ТрудоваяКнига}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>Копия паспорта:</dt>
+              <dd>{{#if КопияПаспорта}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>Копия ИНН:</dt>
+              <dd>{{#if КопияИНН}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>Неразглашение:</dt>
+              <dd>{{#if НеразглашениеКоммерчТайны}} есть {{else}} нет {{/if}}</dd>
+            </dl>
+            <dl>
+              <dt>{{#if НеМестный}} Не местный {{/if}}</dt>
+              <dd></dd>
+            </dl>
+
+          </div>
+        </div>
+        <!-- <div class='debt' style='color: red;'>Долг : {{debt}}</div> -->
+      </div>
+
+    </div>
+    <div class='orderContainer'>
+      <table>
+        <thead>
+          <tr>
+            <th class='stanok'>Станок</th>
+            <th class='detail'>Деталь</th>
+            <th class='stage'>Этап</th>
+            <th class='count'>Кол-во</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each СписокОтчетов}}
+            <tr>
+              <td>{{СтанокИнвентарныйНомер}}</td>
+              <td>{{ДетальАртикул}}</td>
+              <td>{{ЭтапПроизводстваНаименование}}</td>
+              <td>{{КоличествоИзготовлено}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+  </td>
 </script>
 
 <script>
@@ -211,6 +302,60 @@
         () => {}
       );
     }
+
+    $(tableID).on('click', '.rowData', function () {
+      console.log('userRights', userRights);
+      if (!userRights.canViewDetailInfo) {
+        return;
+      }
+      const uid = $(this).attr('uid') || '';
+      console.log('uid', uid);
+      const infoElement = $('#infoRow');
+      const isInfoPresent = infoElement.length > 0;
+      const oldUID = isInfoPresent ? infoElement.attr('uid') || '' : '';
+      const needRender = !isInfoPresent || uid !== oldUID;
+      console.log('needRender', needRender, infoElement, oldUID, uid);
+      if (isInfoPresent) {
+        infoElement.remove();
+      }
+
+      if (needRender) {
+        render(uid, this);
+        console.log('needRender');
+      }
+    });
+
+    function render(uid, targetRow) {
+      console.log('render', this, uid);
+      console.log('targetRow', targetRow);
+      let newRow = $(`<tr id='infoRow'>row about user</tr>`);
+      $(targetRow).after(newRow);
+      $('#infoRow').attr('uid', uid);
+      const data = {
+        date: date.toISOString(),
+        userUID: uid,
+      };
+      getUserInfo(data);
+    }
+
+    function getUserInfo(data) {
+      console.log('data', data);
+      universalRequest(
+        '/app/tabel',
+        'POST',
+        data,
+        {},
+        function onSuccess(response) {
+          console.log('Success callback', response.data);
+          generateFromTemplate('#userInfo', response.data, '#infoRow');
+        },
+        function onError(error) {
+          console.log('Error callback:', error);
+        },
+        () => {}
+      );
+    }
+
     getData();
   });
 </script>
