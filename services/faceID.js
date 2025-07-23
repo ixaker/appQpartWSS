@@ -424,13 +424,13 @@ async function findUserOnFoto(body, forUserUID = '') {
   }
 
   // log.data(result);
-  log.info('Face detection results:', {
-    detectionScore: detection.face[0].score,
-    faceCount: detection.face.length,
-    similarity: result.similarity,
-    matchedUID: result.uid,
-    requestedUID: forUserUID,
-  });
+  // log.info('Face detection results:', {
+  //   detectionScore: detection.face[0].score,
+  //   faceCount: detection.face.length,
+  //   similarity: result.similarity,
+  //   matchedUID: result.uid,
+  //   requestedUID: forUserUID,
+  // });
 
   return result;
 }
