@@ -118,6 +118,10 @@
     max-width: 450px !important;
     margin: 0 auto;
   }
+
+  .mdhours {
+    width: 15%;
+  }
 </style>
 
 <h3 class="raitings">Рейтинг операторов</h3>
@@ -137,7 +141,8 @@
         <th class="sotrudnik">Оператор</th>
         <th class="hours">Часы</th>
         <th class="shift">С</th>
-        <th class="dateofemployment">Дата оф-я</th>
+        <th class="mdhours">Сред Ч.</th>
+        <!-- <th class="dateofemployment">Дата оф-я</th> -->
         <th class="ratestatus">Статус</th>
       </tr>
     </thead>
@@ -152,7 +157,8 @@
       <td class='sotrudnik'>{{Сотрудник}}</td>
       <td class='hours'>{{Часы}}</td>
       <td class='shift'>{{КоличествоСмен}}</td>
-      <td class='dateofemployment'>{{ДатаОформления}}</td>
+      <td class='mdhours'>{{СредниеЧасы}}</td>
+      <!-- <td class='dateofemployment'>{{ДатаОформления}}</td> -->
       <td class='ratestatus'>{{Статус}}</td>
     </tr>
   {{/each}}
@@ -162,8 +168,8 @@
   $(document).ready(function () {
     const tableID = '#tableList';
     let options = { year: 'numeric', month: 'numeric', timezone: 'UTC' };
-    let date = new Date();
-    // let date = new Date('2025-02-22');
+    // let date = new Date();
+    let date = new Date('2025-02-22');
     let allData = [];
     const pageUID = localStorage.getItem('PageUID');
     const userRights = $('#menu').data('userRight')[pageUID];
