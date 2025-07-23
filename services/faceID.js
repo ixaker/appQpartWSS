@@ -79,8 +79,23 @@ async function detectFaceFromBase64(img) {
 
 async function detectFaceFromBuffer(buffer) {
   const tensor = human.tf.node.decodeImage(buffer);
+
+  log.info('Image tensor info', {
+    shape: tensor.shape,
+    dtype: tensor.dtype,
+    size: tensor.size,
+    bufferLength: buffer.length,
+  });
+
   const result = await human.detect(tensor, humanConfig);
   human.tf.dispose(tensor);
+
+  log.info('Face detection results', {
+    faceCount: result.face?.length || 0,
+    scores: result.face?.map(f => f.score) || [],
+    model: human.config.face.description.enabled ? 'default' : 'unknown',
+  });
+
   // log.info('detectFaceFromBuffer result', result)
   return result;
 }
@@ -112,7 +127,21 @@ async function savePhotoOnly(body, userUID) {
 
       console.log('Received photo for userUID:', userUID, photo.substring(0, 50) + '...');
 
+      log.info('Saving new photo', {
+        userUID: userUID,
+        photoLength: photo.length,
+        first50chars: photo.substring(0, 50),
+      });
+
       const embedding = await getEmbeddingFromPhoto(photo);
+
+      if (embedding) {
+        log.info('Photo embedding obtained', {
+          embeddingLength: embedding.length,
+          userUID: userUID,
+        });
+      }
+
       console.log('Obtained embedding:', embedding);
 
       if (!embedding) {
@@ -136,6 +165,13 @@ async function savePhotoOnly(body, userUID) {
       console.log('Error: No photo found in body.');
       result.error = true;
     }
+
+    log.info('Photo successfully saved', {
+      userUID: userUID,
+      fileName: file,
+      embeddingLength: embedding.length,
+      dbRecordsCount: db.length,
+    });
   } catch (error) {
     console.error(`Failed to save photo only: ${error}`);
     result.exception = true;
@@ -150,6 +186,11 @@ async function addPhotoWhithoutVerify(photo, uid) {
   let result = {};
   try {
     const detection = await detectFaceFromBase64(photo);
+
+    log.info('Detection results for new photo', {
+      faceCount: detection?.face?.length || 0,
+      score: detection?.face?.[0]?.score || 0,
+    });
 
     if (detection && detection.face && detection.face.length === 1) {
       log.info('addPhotoWhithoutVerify detection', detection);
@@ -223,6 +264,11 @@ async function checkPhoto(body) {
       const detection = await detectFaceFromBase64(body.photo);
 
       if (detection && detection.face) {
+        log.info('CheckPhoto detection results', {
+          faceCount: detection.face.length,
+          topScore: detection.face[0]?.score,
+        });
+
         const embedding = detection.face[0].embedding;
         result.finded = await human.match.find(embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
@@ -239,6 +285,14 @@ async function checkPhoto(body) {
       }
     }
   } catch (error) {}
+
+  log.info('Photo check results:', {
+    detected: result.detectFace,
+    similarity: result.similarity,
+    score: result.score,
+    matchedUID: result.uid,
+  });
+
   return result;
 }
 
@@ -264,7 +318,21 @@ async function findUserOnFoto(body, forUserUID = '') {
       if (detection && detection.face && detection.face.length === 1) {
         // console.log('detection.face.length', detection.face.length);
         const embedding = detection.face[0].embedding;
+
+        log.info('Starting face matching', {
+          embeddingLength: embedding.length,
+          embeddingsCount: embeddings.length,
+          forUserUID: forUserUID,
+        });
+
         result.finded = await human.match.find(embedding, embeddings);
+
+        log.info('Matching results', {
+          similarity: result.finded.similarity,
+          index: result.finded.index,
+          matchedUID: result.finded.index > -1 ? db[result.finded.index].uid : 'none',
+        });
+
         // result.finded2 = await findSeveralMatches(embedding, embeddings);
         result.similarity = result.finded.similarity.toFixed(2);
         result.score = detection.face[0].score;
@@ -356,6 +424,14 @@ async function findUserOnFoto(body, forUserUID = '') {
   }
 
   // log.data(result);
+  log.info('Face detection results:', {
+    detectionScore: detection.face[0].score,
+    faceCount: detection.face.length,
+    similarity: result.similarity,
+    matchedUID: result.uid,
+    requestedUID: forUserUID,
+  });
+
   return result;
 }
 

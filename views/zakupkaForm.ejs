@@ -50,34 +50,42 @@
   #statusZakupka {
     width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
-    flex-direction: row;
+    align-items: flex-start;
     gap: 10px;
   }
 
-  #statusZakupka label {
+  #statusZakupka label.form-label {
     font-size: 1.25rem;
     margin: 0;
   }
 
-  #statusZakupka .btn-container {
+  .priority-options {
     display: flex;
-    justify-content: space-between;
+    gap: 15px;
     width: 100%;
   }
 
-  #statusZakupka .btn-group {
-    width: 100%;
+  .priority-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 
-  #srochno,
-  #now {
-    border: 1px solid grey;
+  .priority-option input[type='radio'] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
   }
 
-  .btn-container button {
-    flex: 1;
+  .priority-option label {
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .priority-label {
+    margin-right: 15px;
   }
 
   #groupButton {
@@ -98,16 +106,22 @@
     flex-wrap: wrap;
   }
 </style>
+
 <div id="formZakupka" class="zakupkaContainer" style="display: none">
   <div class="applicationForm">
     <div class="applicationTitle">Новая заявка на закупку</div>
     <div id="statusZakupka">
-      <label class="form-label">Приоритет:</label>
-      <div class="btn-container">
-        <div class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-light" id="srochno" data-priority="Срочно">Срочно</button>
-          <button type="button" class="btn btn-light" id="now" data-priority="На сейчас">На сейчас</button>
-        </div>
+      <label class="form-label">Приоритет заявки:</label>
+
+      <div class="priority-container">
+        <input type="radio" class="priority-checkbox" id="normal" name="priority" value="Нормально" checked />
+        <label for="normal" class="priority-label">Нормально</label>
+
+        <input type="radio" class="priority-checkbox" id="srochno" name="priority" value="Срочно" />
+        <label for="srochno" class="priority-label">Срочно</label>
+
+        <input type="radio" class="priority-checkbox" id="now" name="priority" value="НаСейчас" />
+        <label for="now" class="priority-label">На сейчас</label>
       </div>
     </div>
     <textarea
@@ -130,35 +144,22 @@
 
 <script>
   $(document).ready(function () {
+    let priority = 'Нормально';
+
+    deleteBtnClass();
+
+    $('input[name="priority"]').on('change', function () {
+      priority = $(this).val();
+      console.log('Выбран приоритет:', priority);
+
+      deleteBtnClass();
+    });
+
     $('#cancelZakupka').on('click', function (event) {
       console.log('cancelZakupka');
 
       $('#formZakupka').hide();
       $('#content').show();
-    });
-
-    function toggleStatusButtons(element) {
-      if (element.hasClass('active')) {
-        priority = 'Нормально';
-        element.removeClass('active btn-danger').addClass('btn-light');
-        console.log('has class active');
-      } else {
-        $('#statusZakupka .btn').removeClass('btn-danger active').addClass('btn-light');
-        $(element).removeClass('btn-light').addClass('btn-danger active');
-        console.log('dont has class active');
-      }
-
-      console.log(element);
-    }
-
-    let priority = 'Нормально';
-    $('#srochno').on('click', () => {
-      priority = 'Срочно';
-      toggleStatusButtons($('#srochno'));
-    });
-    $('#now').on('click', () => {
-      priority = 'НаСейчас';
-      toggleStatusButtons($('#now'));
     });
 
     $('#attachPhotoVideoForNewOrder').on('click', function () {
@@ -230,7 +231,17 @@
         await saveFilesToStorage(media, response.uid, response.uid);
         $('#formZakupka').hide();
         $('#content').show();
+        // await initTable($('#content table'), { force: true });
+
+        // sendWSS('publish', 'zakupka_updates', {
+        //   type: 'full_update',
+        //   payload: {
+        //     uid: response.uid,
+        //     trigger_device: 'mobile', // или 'desktop'
+        //   },
+        // });
       });
+
       NProgress.done();
     });
 
@@ -242,19 +253,18 @@
     // priority = 'Нормально';
     // });
 
-    $('#setPriorityZakupka').on('click', function (event) {
-      if ($(this).hasClass('btn-secondary')) {
-        $(this).switchClass('btn-secondary', 'btn-danger');
-      } else {
-        $(this).switchClass('btn-danger', 'btn-secondary');
-      }
-    });
+    // $('#setPriorityZakupka').on('click', function (event) {
+    //   if ($(this).hasClass('btn-secondary')) {
+    //     $(this).switchClass('btn-secondary', 'btn-danger');
+    //   } else {
+    //     $(this).switchClass('btn-danger', 'btn-secondary');
+    //   }
+    // });
 
     $(document).on('click', '.deleteBtn', function (event) {
       event.stopPropagation();
       deleteMeParent(this);
     });
-
 
     function sendDataTo1C(data, method = 'GET', callback) {
       universalRequest(
@@ -267,7 +277,7 @@
           if (response.error) {
             toastr.error('Помилка звязку', response['Причина']);
           } else {
-            toastr.success('Дані сохранено');
+            toastr.success('Дані збережено');
             if (typeof callback === 'function') {
               callback(response);
             }
@@ -278,6 +288,10 @@
         },
         function onComplete() {}
       );
+    }
+
+    function deleteBtnClass() {
+      $('input[name="priority"]').removeClass('btn-light active btn-danger');
     }
   });
 </script>

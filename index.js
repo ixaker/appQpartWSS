@@ -19,7 +19,7 @@ const log = require('./services/loggerConfig.js');
 const telegramBot = require('./services/telegramBot.js');
 const faceID = require('./services/faceID.js');
 const func1C = require('./services/1C.js');
-const { updateAvatar } = require('./services/updateAvatar.js')
+const { updateAvatar } = require('./services/updateAvatar.js');
 
 const base = process.env.base;
 
@@ -46,7 +46,6 @@ const options = { expiresIn: '1w' };
 const adminRoute = process.env.adminRoute || 'admin';
 const domian = process.env.domian;
 
-
 const test = process.env.TEST;
 log.warn('test: ', test);
 let version;
@@ -60,15 +59,14 @@ if (test === 'true') {
   log.info('test version: ', version);
 } else {
   version = process.env.version || '1.0.0';
-  log.info('production version: ', version);
+  // log.info('production version: ', version);
 }
 
 const renderParams = {
   version: version,
   token: '',
   test: test,
-}
-
+};
 
 const maxAge = 31536000;
 
@@ -77,7 +75,7 @@ const maxAge = 31536000;
 // const ssl_key = path.join("/etc/letsencrypt/live", domian + '-0001', 'privkey.pem');
 // const ssl_cert = path.join("/etc/letsencrypt/live", domian + '-0001', 'fullchain.pem');
 
-const createPath = (page) => path.resolve(__dirname, 'views', `${page}`);
+const createPath = page => path.resolve(__dirname, 'views', `${page}`);
 
 let clients = [];
 
@@ -86,26 +84,24 @@ const app = express();
 app.set('view engine', 'ejs');
 // app.set('views', path.join(__dirname, 'views'));
 
-
 const httpServer = http.createServer(app);
 // const httpsServer = https.createServer({ key: fs.readFileSync(ssl_key), cert: fs.readFileSync(ssl_cert) }, app);
 
 app.use((req, res, next) => {
-  log.info(`Запит на бекенд прийшов: ${req.method} ${req.url}`);
+  // log.info(`Запит на бекенд прийшов: ${req.method} ${req.url}`);
   next();
 });
 
 app.post('/getUserByEmpCode', (req, res) => {
-  log.info('getUserByEmpCode', req.query.empCode)
+  log.info('getUserByEmpCode', req.query.empCode);
   try {
     const empCode = req.query.empCode;
     const user = faceID.getUserInfoByEmpCode(empCode);
-    res.send(user)
+    res.send(user);
   } catch (error) {
     res.status(500);
   }
-})
-
+});
 
 // app.use((req, res, next) => {
 //   if (req.secure) {
@@ -119,55 +115,68 @@ app.post('/getUserByEmpCode', (req, res) => {
 // app.use(express.static('img'));
 app.use('/foto', express.static('foto'));
 app.use('/storage', express.static(path.join(__dirname, 'static/storage/mediaFiles')));
-app.use(express.static('static', {
-  setHeaders: function (res, path) {
-    res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
-    res.setHeader('ETag', true);
-  }
-}));
+app.use(
+  express.static('static', {
+    setHeaders: function (res, path) {
+      res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+      res.setHeader('ETag', true);
+    },
+  })
+);
 
 // Прокси для всех запросов к /auth_files/photo/*
-app.use('/auth_files/photo/*', proxy('http://10.8.0.4', {
-  proxyReqPathResolver: (req) => {
-    return req.originalUrl;
-  },
-  userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
-    userRes.setHeader('Content-Type', 'image/jpeg');
+app.use(
+  '/auth_files/photo/*',
+  proxy('http://10.8.0.4', {
+    proxyReqPathResolver: req => {
+      return req.originalUrl;
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+      userRes.setHeader('Content-Type', 'image/jpeg');
 
-    const maxAge = 60 * 60 * 24 * 30;
-    userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
-    userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
-    userRes.setHeader('ETag', true);
+      const maxAge = 60 * 60 * 24 * 30;
+      userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+      userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
+      userRes.setHeader('ETag', true);
 
-    userRes.removeHeader('pragma');
+      userRes.removeHeader('pragma');
 
-    return proxyResData;
-  }
-}));
+      return proxyResData;
+    },
+  })
+);
 
-app.use('/auth_files/*', proxy('http://10.8.0.4', {
-  proxyReqPathResolver: (req) => {
-    return req.originalUrl;
-  },
-  userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
-    userRes.setHeader('Content-Type', 'image/jpeg');
+app.use(
+  '/auth_files/*',
+  proxy('http://10.8.0.4', {
+    proxyReqPathResolver: req => {
+      return req.originalUrl;
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+      userRes.setHeader('Content-Type', 'image/jpeg');
 
-    const maxAge = 60 * 60 * 24 * 30;
-    userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
-    userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
-    userRes.setHeader('ETag', true);
+      const maxAge = 60 * 60 * 24 * 30;
+      userRes.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+      userRes.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
+      userRes.setHeader('ETag', true);
 
-    userRes.removeHeader('pragma');
+      userRes.removeHeader('pragma');
 
-    return proxyResData;
-  }
-}));
+      return proxyResData;
+    },
+  })
+);
 
 app.use(cookieParser());
 
 app.get('/uploadPhoto', (req, res, next) => {
-  log.info('get uploadPhoto');
+  // log.info('get uploadPhoto');
   res.sendFile(createPath('uploadPhoto.html'));
+});
+
+app.get('/version', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.json({ version: process.env.version });
 });
 
 function ensureDirectoryExistence(dirPath) {
@@ -176,7 +185,7 @@ function ensureDirectoryExistence(dirPath) {
   }
   ensureDirectoryExistence(path.dirname(dirPath));
   fs.mkdirSync(dirPath);
-};
+}
 
 app.post('/saveFile', (req, res) => {
   let body = '';
@@ -194,29 +203,29 @@ app.post('/saveFile', (req, res) => {
       const binaryData = Buffer.from(base64Image, 'base64');
       const filePath = path.join(__dirname, 'static', 'storage', 'mediaFiles', jsonData.path, jsonData.name);
 
-      log.info('filePath', filePath);
+      // log.info('filePath', filePath);
 
       const dir = path.dirname(filePath);
 
       ensureDirectoryExistence(dir);
 
-      fs.writeFile(filePath, binaryData, 'binary', (err) => {
+      fs.writeFile(filePath, binaryData, 'binary', err => {
         if (err) {
           log.error(err);
-          res.status(400).send({ 'result': 'error write file to storage' + jsonData.name });
+          res.status(400).send({ result: 'error write file to storage' + jsonData.name });
         } else {
           log.info(`Изображение успешно сохранено в ${filePath}`);
-          res.status(200).send({ 'result': 'Data received' });
+          res.status(200).send({ result: 'Data received' });
         }
       });
     } catch (error) {
       console.error('Failed to parse JSON:', error);
-      res.status(400).send({ 'result': 'Invalid JSON' });
+      res.status(400).send({ result: 'Invalid JSON' });
     }
   });
 
-  // Обработка ошибок чтения данных 
-  req.on('error', (err) => {
+  // Обработка ошибок чтения данных
+  req.on('error', err => {
     console.error('Error reading request:', err);
     res.status(500).send('Internal Server Error');
   });
@@ -237,14 +246,14 @@ app.get('/' + adminRoute, (req, res) => {
   res.render('index', {
     version: version,
     token: token,
-    test: test
+    test: test,
   });
   // res.sendFile(createPath('admin.html'));
 });
 
 // + Страничка - Оболочка
 app.get('/', (req, res) => {
-  log.info('app.get send index.html')
+  // log.info('app.get send index.html');
   // res.sendFile(createPath('index.html'));
 
   res.render('index', {
@@ -255,19 +264,18 @@ app.get('/', (req, res) => {
 });
 
 app.post('/userUpdated', (req, res) => {
-  log.info('userUpdate', req.body)
+  // log.info('userUpdate', req.body);
   const data = req.body;
   faceID.updateUser(data);
   res.send('all ok');
 
-  notifyClient(data)
-
+  notifyClient(data);
 
   return;
 });
 
 function notifyClient(user) {
-  log.info('notifyClient user', user)
+  log.info('notifyClient user', user);
   let subscribedClients = clients.filter(function (client) {
     return client.subscriptions.includes('users_all');
   });
@@ -276,7 +284,6 @@ function notifyClient(user) {
     client.socket.send(JSON.stringify(user));
   });
 }
-
 
 // Обработчик запросов из 1С об изменениях данных
 app.post('/dataUpdated', (req, res) => {
@@ -289,7 +296,7 @@ app.post('/dataUpdated', (req, res) => {
   const topic = req.body.data['Имя'];
   const uids = req.body.users;
 
-  log.data('/dataUpdated', req.body.data['Имя'], req.body.users, topic);
+  // log.data('/dataUpdated', req.body.data['Имя'], req.body.users, topic);
 
   // clients.forEach(client => {
   //   log.data('user', client.user);
@@ -328,13 +335,13 @@ app.post('/authorizationByPassword', async (req, res) => {
     const baseUrl = process.env.BASE_URL.replace(/^http?:\/\//, '');
     const Authorization = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
     authHeaders = {
-      'Authorization': Authorization,
-    }
+      Authorization: Authorization,
+    };
 
-    const url = `http://${baseUrl}/${base}/hs/client/authentication`
+    const url = `http://${baseUrl}/${base}/hs/client/authentication`;
     // const url = `http://${username}:${password}@ http://Holub:1@10.8.0.3:23456/UTCRM_test/hs/client/authentication/${base}/hs/client/authentication`
 
-    log.info('url before axios')
+    // log.info('url before axios');
 
     const response = await axios({
       method: 'GET',
@@ -342,12 +349,11 @@ app.post('/authorizationByPassword', async (req, res) => {
       headers: authHeaders,
     });
 
-    log.info('url', url, response.status);
+    // log.info('url', url, response.status);
 
     if (response.status === 200) {
       let result = { detectUser: true };
       result.user = faceID.getUserInfoID(response.data.uid);
-
 
       if (result.user === undefined) {
         res.status(500).send('Користувача не знайдено в локальной базі бекенду.');
@@ -358,11 +364,11 @@ app.post('/authorizationByPassword', async (req, res) => {
       const expiresDate = new Date(Date.now() + expiresIn);
 
       res.cookie('token', result.token, {
-        expires: expiresDate
+        expires: expiresDate,
       });
 
       const decodedToken = jwt.decode(result.token);
-      log.info(`authorizationByPassword Token will expire at: ${new Date(decodedToken.exp * 1000).toISOString()}`);
+      // log.info(`authorizationByPassword Token will expire at: ${new Date(decodedToken.exp * 1000).toISOString()}`);
 
       result.version = version;
       res.send(result);
@@ -378,7 +384,7 @@ app.post('/authorizationByPassword', async (req, res) => {
       log.error('Error in request setup:', error.message, error);
       res.status(500).send({
         message: 'Внутрішня помилка сервера.',
-        error
+        error,
       });
     }
   }
@@ -395,22 +401,21 @@ app.post('/detectFace', async (req, res) => {
         if (result.finded.similarity > 0.72) {
           result.token = jwt.sign(result.user, secret, options);
           result.version = version;
-          const origin = test ? 'Тестова база' : "Робоча база";
+          const origin = test ? 'Тестова база' : 'Робоча база';
           message += `, +++ Detected ${result.user.name} - попытка ${req.body.counter}, Оригінальне фото: ${result.originalPhotoName}. ${origin}`;
           telegramBot.sendImageAndMessage(req.body.photo, message, result.originalPhoto);
         } else {
         }
       }
     }
-  } catch (error) {
-  }
+  } catch (error) {}
   res.send(result);
 });
 
 // Мідлвар для перевірки авторизації
 app.use((req, res, next) => {
   log.warn('app.use verify', `Request - method: ${req.method}  path: ${req.path}`);
-  log.info('req.cookies.token');
+  // log.info('req.cookies.token');
 
   if (!req.cookies.token) {
     log.warn('Token is missing');
@@ -420,7 +425,7 @@ app.use((req, res, next) => {
   const decodedToken = jwt.decode(req.cookies.token);
   if (decodedToken && decodedToken.exp) {
     const expirationTime = new Date(decodedToken.exp * 1000).toISOString();
-    log.info(`verify token Token expiration time: ${expirationTime}`);
+    // log.info(`verify token Token expiration time: ${expirationTime}`);
   } else {
     log.warn('verify token Unable to decode token or missing expiration time');
   }
@@ -429,7 +434,7 @@ app.use((req, res, next) => {
     if (err) {
       log.info('jwt.verify error');
       res.status(403).send({ textError: 'jwt.verify error' });
-      return
+      return;
     } else {
       let { iat, exp, ...userClear } = user;
       req.user = userClear;
@@ -440,7 +445,6 @@ app.use((req, res, next) => {
 
 app.use('/app', func1C.ProxyMiddleware1C);
 
-
 app.use('/appPOST', async (req, res) => {
   const newTarget = new url.URL(req.path, 'http://localhost');
   newTarget.searchParams.set('uid', req.user.uid);
@@ -450,9 +454,7 @@ app.use('/appPOST', async (req, res) => {
   const response = await func1C.request1C('POST', path, {}, req.body);
   // console.log('appPOST', response);
   res.send(response.data);
-})
-
-
+});
 
 // Проверка авторизации
 app.post('/authentication', async (req, res) => {
@@ -469,7 +471,6 @@ app.post('/authentication', async (req, res) => {
 app.post('/uploadPhoto', async (req, res) => {
   // log.info('post uploadPhoto', req.body);
 
-
   await func1C.request1C('POST', '/uploadPhotoNomenklatura', req.body);
 
   // await axios.post(`${API_1C_URL}/uploadPhotoNomenklatura`, req.body, {
@@ -483,10 +484,9 @@ app.post('/uploadPhoto', async (req, res) => {
   //   log.error('catch uploadPhoto error', error);
   // });
 
-  res.send("OK");
+  res.send('OK');
 });
 // *******************************************************************************************
-
 
 app.post('/saveFace', async (req, res) => {
   // log.info('saveFace', req.body);
@@ -497,7 +497,7 @@ app.post('/saveFace', async (req, res) => {
 });
 
 app.post('/savePhotoOnly', async (req, res) => {
-  log.info('savePhotoOnly')
+  log.info('savePhotoOnly');
   let result = await faceID.savePhotoOnly(req.body, req.body.uid);
 
   res.send(result);
@@ -513,31 +513,28 @@ app.get('/setip', function (req, res) {
   log.info('setip', func1C.API_1C_URL);
   // https://test.qpart.com.ua/setip?ip=http://10.8.0.3:23456/UTCRM_test/ru_RU/hs/app
   // https://test.qpart.com.ua/setip?ip=http://10.8.0.33:23456/UTCRM_test/ru_RU/hs/app
-  res.send('ok')
+  res.send('ok');
 });
 
 app.get('/reportMaster', function (req, res) {
-
   res.render('reportMaster/reportMaster', renderParams, function (err, html) {
     if (err) {
       log.error('Render error:', err);
       res.status(500).send('Server Error');
     } else {
-
       res.send(html);
     }
   });
 });
 
 app.get('/machines', function (req, res) {
-  log.info('machines start')
+  log.info('machines start');
 
   res.render('machines', renderParams, function (err, html) {
     if (err) {
       log.error('Render error:', err);
       res.status(500).send('Server Error');
     } else {
-
       res.send(html);
     }
   });
@@ -545,7 +542,7 @@ app.get('/machines', function (req, res) {
 
 // + Страничка - Список пользователей
 app.get('/users', function (req, res) {
-  log.info('users start')
+  log.info('users start');
   let usersArray = Object.values(faceID.getUserInfo());
 
   res.render('users', renderParams, function (err, html) {
@@ -553,7 +550,6 @@ app.get('/users', function (req, res) {
       log.error('Render error:', err);
       res.status(500).send('Server Error');
     } else {
-
       res.send(html);
     }
   });
@@ -579,27 +575,25 @@ app.post('/deleteFaces', async (req, res) => {
     faceID.deleteFotosUserAll(req.body.uid);
 
     result.user = faceID.getUserInfoID(req.body.uid);
-
   } catch (error) {
     log.error(`Failed to process message: ${error}`);
   }
-
 
   res.send(result);
 });
 
 app.post('/updateAvatar', async (req, res) => {
-  log.info('updataAvatar index.js uid')
+  log.info('updataAvatar index.js uid');
   try {
     if (!req.body.photo) {
-      log.error('there is no file')
-      return res.status(400).send({ "error": "No file uploaded" });
+      log.error('there is no file');
+      return res.status(400).send({ error: 'No file uploaded' });
     }
 
     const file = req.body.photo;
     const uid = req.body.uid;
     const empCode = req.body.empCode;
-    log.info('updateAvatar from index.js file, uid', file.toString('base64').slice(0, 50), uid, empCode)
+    log.info('updateAvatar from index.js file, uid', file.toString('base64').slice(0, 50), uid, empCode);
 
     const updateAvatarResult = await updateAvatar(file, empCode);
 
@@ -611,27 +605,26 @@ app.post('/updateAvatar', async (req, res) => {
     const photoUrl = `auth_files/biophoto/${empCode}.jpg`;
     const photoBioTimeResponse = await axios.get(photoUrl, { responseType: 'arraybuffer' });
     const photoBioTime = Buffer.from(photoBioTimeResponse.data, 'binary');
-    const base64Image = photoBioTime.toString('base64')
+    const base64Image = photoBioTime.toString('base64');
 
     const body = {
-      photo: base64Image
+      photo: base64Image,
     };
     const addUserPhotoResult = await faceID.findUserOnFoto(body, uid);
-    log.info('addUserPhotoResult', addUserPhotoResult)
-
+    log.info('addUserPhotoResult', addUserPhotoResult);
 
     const addedPhotoUrl = addUserPhotoResult.photoPath;
     const addedPhotoUrlResponse = await axios.get(addedPhotoUrl, { responseType: 'arraybuffer' });
     const addedPhotoBinary = Buffer.from(addedPhotoUrlResponse.data, 'binary');
     const addedPhoto = addedPhotoBinary.toString('base64');
-    const origin = test ? 'Тестова база' : "Робоча база";
+    const origin = test ? 'Тестова база' : 'Робоча база';
     const userName = addUserPhotoResult.forUser.name || '';
     const similarity = addUserPhotoResult.similarity || '';
     const pathToPhoto = addUserPhotoResult.photoPath;
-    let message = `${origin}. Додано фото користувача ${userName}, similarity: ${similarity}.`
+    let message = `${origin}. Додано фото користувача ${userName}, similarity: ${similarity}.`;
     log.info('message for telegram', message);
     // telegramBot.sendImageAndMessage(base64Image, message, addedPhoto);
-    const imgUrl = `https://test.qpart.com.ua/${addedPhotoUrl}`
+    const imgUrl = `https://test.qpart.com.ua/${addedPhotoUrl}`;
     log.info('imgUrl for telegram', imgUrl);
     telegramBot.sendImageAndMessageUrl(file, message, imgUrl);
 
@@ -649,12 +642,12 @@ app.post('/updateAvatar', async (req, res) => {
       message: 'Avatar updated successfully',
       data: {
         updateResult: updateAvatarResult,
-        addUserPhotoResult
-      }
+        addUserPhotoResult,
+      },
     });
   } catch (error) {
     log.error(`Error: ${error.message}`);
-    res.status(500).json({ error: error.message || "Помилка при завантаженні аватара" });
+    res.status(500).json({ error: error.message || 'Помилка при завантаженні аватара' });
   }
 });
 
@@ -666,7 +659,7 @@ app.post('/checkPhoto', async (req, res) => {
     console.error('Error processing photo:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-})
+});
 
 app.get('/loadUserListFrom1C', async (req, res) => {
   log.info('lr');
@@ -674,7 +667,7 @@ app.get('/loadUserListFrom1C', async (req, res) => {
 
   log.info('result.users', result.users);
   if (result.error) {
-    log.error('Error Причина', result.Причина)
+    log.error('Error Причина', result.Причина);
   }
 
   await faceID.updateUsersInfo(result.users);
@@ -687,7 +680,7 @@ app.get('/loadUserListFrom1C', async (req, res) => {
 
 app.get('/updateFaceID', async (req, res) => {
   let result = await func1C.GET('/getUserList');
-  log.info('updateFaceID', result)
+  log.info('updateFaceID', result);
 
   await faceID.updateFaceID(result.users);
 
@@ -791,28 +784,27 @@ app.get('/ratingOperators', async function (req, res) {
 
 // Error
 app.use((req, res) => {
-  log.warn('error path')
+  log.warn('error path');
   // res.redirect('/');
   res.status(404).sendFile(createPath('error.html'));
   // res.status(404).send({ textError: 'error' })
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).send({ "error": "Произошла ошибка на сервере." });
+  res.status(500).send({ error: 'Произошла ошибка на сервере.' });
 });
-
 
 // ******************************************* WebSocket *******************************************
 const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on('connection', (ws, request) => {
   ws.isAlive = true;
-  log.info('Client connected');
+  // log.info('Client connected');
 
   let client = {
     socket: ws,
     subscriptions: [],
-    user: {}
+    user: {},
   };
 
   clients.push(client);
@@ -821,7 +813,7 @@ wss.on('connection', (ws, request) => {
     ws.isAlive = true;
   });
 
-  ws.on('message', async (message) => {
+  ws.on('message', async message => {
     //log.info('WSS Received message:', message.toString().length);
     //log.info('message str', message.toString());
 
@@ -847,11 +839,14 @@ wss.on('connection', (ws, request) => {
               const decoded_token = jwt.decode(payload, secret);
               log.info('decoded_token', decoded_token);
 
-              if (!decoded_token) { throw new Error('Empty token'); }
-              if (typeof decoded_token !== 'object') { throw new Error('Invalid token format'); }
+              if (!decoded_token) {
+                throw new Error('Empty token');
+              }
+              if (typeof decoded_token !== 'object') {
+                throw new Error('Invalid token format');
+              }
 
               client.user = userFromToken;
-
             } catch (error) {
               // log.error(error);
               ws.close();
@@ -862,7 +857,6 @@ wss.on('connection', (ws, request) => {
         });
       } else if (action === 'updateDataOnServer') {
         //log.info(action, topic, payload);
-
 
         const data = JSON.parse(message);
         const response = await func1C.request1C('POST', '/updateData', {}, data);
@@ -875,21 +869,21 @@ wss.on('connection', (ws, request) => {
 
             const msg = {
               topic: 'notification',
-              type: 'error',           // success, error, warning, info.
+              type: 'error', // success, error, warning, info.
               text: response.data['Причина'],
-              title: ''
-            }
+              title: '',
+            };
 
             ws.send(JSON.stringify(msg));
           } else {
             const msg = {
               topic: 'notification',
-              type: 'success',           // success, error, warning, info.
+              type: 'success', // success, error, warning, info.
               text: 'Сохранено',
-              title: ''
-            }
+              title: '',
+            };
 
-            response.topic = 'notification'
+            response.topic = 'notification';
             ws.send(JSON.stringify(msg));
           }
         } else {
@@ -931,24 +925,22 @@ wss.on('connection', (ws, request) => {
         //   log.error('catch updateData error');
         // });
       }
-
-
     } catch (error) {
       log.error('Error wss');
     }
   });
 
   ws.on('close', () => {
-    log.info('Client disconnected');
+    // log.info('Client disconnected');
     clients = clients.filter(c => c.socket !== ws);
   });
 
-  ws.on('error', (error) => {
+  ws.on('error', error => {
     log.error(`WebSocket error: ${error}`);
   });
 });
 
-wss.on('error', (error) => {
+wss.on('error', error => {
   log.error(`WebSocket server error: ${error}`);
 });
 
@@ -960,13 +952,13 @@ async function main() {
   //   log.info('Secure server is running on port 443');
   // });
   httpServer.listen(5000, () => {
-    log.info(`HTTP сервер запущений на порту 80`);
+    // log.info(`HTTP сервер запущений на порту 80`);
   });
 }
 
 // Проверка соединений на "живость"
 setInterval(() => {
-  wss.clients.forEach((ws) => {
+  wss.clients.forEach(ws => {
     if (!ws.isAlive) {
       return ws.terminate();
     }
