@@ -259,8 +259,8 @@
   $(document).ready(function () {
     const tableID = '#tableList';
     let options = { year: 'numeric', month: 'numeric', timezone: 'UTC' };
-    // let date = new Date();
-    let date = new Date('2025-02-22');
+    let date = new Date();
+    // let date = new Date('2025-02-22');
     let allData = [];
     const pageUID = localStorage.getItem('PageUID');
     const userRights = $('#menu').data('userRight')[pageUID];
