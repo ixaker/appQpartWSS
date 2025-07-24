@@ -60,9 +60,9 @@
     top: 0;
   }
 
-  td {
+  /* td {
     text-align: center;
-  }
+  } */
 
   .sotrudnik {
     width: 35%;
@@ -122,6 +122,10 @@
   .mdhours {
     width: 15%;
   }
+
+  .rowData {
+    cursor: pointer;
+  }
 </style>
 
 <style>
@@ -148,6 +152,89 @@
 
   dt {
     width: 70%;
+  }
+
+  .when {
+    width: 33%;
+  }
+
+  .workhours {
+    width: 33%;
+  }
+
+  .employeshift {
+    width: 33%;
+  }
+</style>
+
+<style>
+  .work-day-row {
+    cursor: pointer;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 30% auto;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  #work-table th {
+    font-size: small;
+    background: #007431;
+    color: white;
+    padding: 0 5px 0 5px;
+    border-color: black;
+  }
+
+  #work-table td {
+    font-size: small;
+    padding: 0 5px 0 5px;
+  }
+
+  .close {
+    color: #888;
+    float: right;
+    margin-left: 9px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover {
+    color: black;
+  }
+
+  .mashinf {
+    width: 28%;
+  }
+
+  .detail {
+    width: 30%;
+  }
+
+  .stage {
+    width: 20%;
+  }
+
+  .quantity {
+    width: 10%;
+  }
+
+  .mashinehors {
+    width: 12%;
+  }
+
+  .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
   }
 </style>
 
@@ -193,33 +280,37 @@
 
 <script id="userInfo" type="text/x-handlebars-template">
   <td id='detail' colspan='6'>
-    <div style='display:flex;'>
-      <img class='userFoto' src='/auth_files/photo/{{emp_code_ZKTeco}}.jpg' alt='Фото користувача {{uid}}' />
+    <div id='hideblock' style='display:flex;'>
+      <img
+        class='userFoto'
+        src='/auth_files/photo/{{ИнфоПоСотруднику.emp_code_ZKTeco}}.jpg'
+        alt='Фото користувача {{uid}}'
+      />
       <div id='textInfo' style='width: 200px;'>
         <div class='user-info'>
-          <p>{{Должность}}</p>
-          <p>Оформлен : {{ДатаОформления}}</p>
-          <a href='tel:{{ОсновнойНомерТелефона}}'>{{ОсновнойНомерТелефона}}</a>
-          <address>{{address}}</address>
+          <p>{{ИнфоПоСотруднику.Должность}}</p>
+          <p>Оформлен : {{ИнфоПоСотруднику.ДатаОформления}}</p>
+          <a href='tel:{{ОсновнойНомерТелефона}}'>{{ИнфоПоСотруднику.ОсновнойНомерТелефона}}</a>
+          <address>{{ИнфоПоСотруднику.address}}</address>
           <div class='fieldContainer'>
             <dl>
               <dt>Трудовая книга:</dt>
-              <dd>{{#if ТрудоваяКнига}} есть {{else}} нет {{/if}}</dd>
+              <dd>{{#if ИнфоПоСотруднику.ТрудоваяКнига}} есть {{else}} нет {{/if}}</dd>
             </dl>
             <dl>
               <dt>Копия паспорта:</dt>
-              <dd>{{#if КопияПаспорта}} есть {{else}} нет {{/if}}</dd>
+              <dd>{{#if ИнфоПоСотруднику.КопияПаспорта}} есть {{else}} нет {{/if}}</dd>
             </dl>
             <dl>
               <dt>Копия ИНН:</dt>
-              <dd>{{#if КопияИНН}} есть {{else}} нет {{/if}}</dd>
+              <dd>{{#if ИнфоПоСотруднику.КопияИНН}} есть {{else}} нет {{/if}}</dd>
             </dl>
             <dl>
               <dt>Неразглашение:</dt>
-              <dd>{{#if НеразглашениеКоммерчТайны}} есть {{else}} нет {{/if}}</dd>
+              <dd>{{#if ИнфоПоСотруднику.НеразглашениеКоммерчТайны}} есть {{else}} нет {{/if}}</dd>
             </dl>
             <dl>
-              <dt>{{#if НеМестный}} Не местный {{/if}}</dt>
+              <dt>{{#if ИнфоПоСотруднику.НеМестный}} Не местный {{/if}}</dt>
               <dd></dd>
             </dl>
 
@@ -233,26 +324,54 @@
       <table>
         <thead>
           <tr>
-            <th class='stanok'>Станок</th>
-            <th class='detail'>Деталь</th>
-            <th class='stage'>Этап</th>
-            <th class='count'>Кол-во</th>
+            <th class='when'>Дата</th>
+            <th class='workhours'>Часы</th>
+            <th class='employeshift'>Смена</th>
+            <!-- <th class='count'>Кол-во</th> -->
           </tr>
         </thead>
         <tbody>
-          {{#each СписокОтчетов}}
-            <tr>
-              <td>{{СтанокИнвентарныйНомер}}</td>
-              <td>{{ДетальАртикул}}</td>
-              <td>{{ЭтапПроизводстваНаименование}}</td>
-              <td>{{КоличествоИзготовлено}}</td>
+          {{#each ИнфоПоОтчетам}}
+            <tr class='work-day-row' data-date='{{Дата}}' data-shift='{{Смена}}' data-hours='{{Часы}}'>
+              <td>{{Дата}}</td>
+              <td>{{Часы}}</td>
+              <td>{{Смена}}</td>
+              <!-- <td>{{КоличествоИзготовлено}}</td> -->
             </tr>
           {{/each}}
         </tbody>
       </table>
-
     </div>
+
   </td>
+</script>
+
+<script id="workInfo" type="text/x-handlebars-template">
+  <div class='card'>
+
+    <table id='work-table'>
+      <thead>
+        <tr>
+          <th class='mashin'>Станок</th>
+          <th class='detail'>Деталь</th>
+          <th class='stage'>Этап</th>
+          <th class='quantity textAlignEnd'>К-во</th>
+          <th class='mashinehors textAlignEnd'>Часы</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each this}}
+          <tr>
+            <td>{{Станок}}</td>
+            <td>{{Деталь}}</td>
+            <td>{{Этап}}</td>
+            <td class='textAlignEnd'>{{Количество}}</td>
+            <td class='textAlignEnd'>{{Часы}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
 </script>
 
 <script>
@@ -260,10 +379,23 @@
     const tableID = '#tableList';
     let options = { year: 'numeric', month: 'numeric', timezone: 'UTC' };
     let date = new Date();
-    // let date = new Date('2025-02-22');
     let allData = [];
     const pageUID = localStorage.getItem('PageUID');
     const userRights = $('#menu').data('userRight')[pageUID];
+    let currentUser = {};
+
+    if (testEnvironment) {
+      date = new Date('2025-02-22');
+    }
+
+    $(document).on('click', '.work-day-row', function () {
+      const row = $(this);
+      const date = row.data('date');
+      console.log(currentUser, date);
+      const dataOfDay = currentUser?.ИнфоПоОтчетам?.find(r => r.Дата === date)['РаботыЗаСмену'];
+      console.log('dataOfDay', dataOfDay);
+      showWorkDetails(dataOfDay);
+    });
 
     console.log('userRights', userRights);
 
@@ -304,11 +436,15 @@
     }
 
     $(tableID).on('click', '.rowData', function () {
+      const uid = $(this).attr('uid') || '';
+      const currentUID = user.uid;
       console.log('userRights', userRights);
       if (!userRights.canViewDetailInfo) {
-        return;
+        if (uid !== currentUID) {
+          return;
+        }
       }
-      const uid = $(this).attr('uid') || '';
+
       console.log('uid', uid);
       const infoElement = $('#infoRow');
       const isInfoPresent = infoElement.length > 0;
@@ -336,18 +472,42 @@
         userUID: uid,
       };
       getUserInfo(data);
+
+      // setTimeout(() => {
+      //   $('.work-day-row')
+      //     .off('click')
+      //     .on('click', function () {
+      //       const $row = $(this);
+      //       showWorkDetails({
+      //         date: $row.data('date'),
+      //         shift: $row.data('shift'),
+      //         hours: $row.data('hours'),
+      //       });
+      //     });
+      // }, 300);
     }
 
     function getUserInfo(data) {
       console.log('data', data);
       universalRequest(
-        '/app/tabel',
+        '/app/ratingOperators',
         'POST',
         data,
         {},
         function onSuccess(response) {
-          console.log('Success callback', response.data);
-          generateFromTemplate('#userInfo', response.data, '#infoRow');
+          currentUser = response;
+          console.log('Success callback', response);
+          generateFromTemplate('#userInfo', response, '#infoRow');
+
+          const currentUID = user.uid;
+          const uid = response['ИнфоПоСотруднику'].uid;
+
+          console.log('currentUID', currentUID, 'uid', uid);
+
+          if (uid === currentUID) {
+            $('#hideblock').hide();
+            console.log('hideblock', $('#hideblock'));
+          }
         },
         function onError(error) {
           console.log('Error callback:', error);
@@ -356,6 +516,29 @@
       );
     }
 
+    function showWorkDetails(dataOfDay) {
+      console.log('showWorkDetails', dataOfDay);
+      // 2. Создаем модальное окно (если еще не существует)
+      if ($('#workDetailsModal').length === 0) {
+        $('body').append(`
+      <div id="workDetailsModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          
+          <div id="workDetailsContent"></div>
+        </div>
+      </div>
+    `);
+
+        $('.close').on('click', function () {
+          $('#workDetailsModal').hide();
+        });
+      }
+
+      // 4. Рендерим содержимое
+      generateFromTemplate('#workInfo', dataOfDay, '#workDetailsContent');
+      $('#workDetailsModal').show();
+    }
     getData();
   });
 </script>
