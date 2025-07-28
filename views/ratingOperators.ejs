@@ -1,9 +1,11 @@
+<!--for date field and arrows-->
 <style>
   .raitings {
     font-size: 24px;
     line-height: 24px;
     font-weight: bold;
   }
+
   #commandRow {
     position: relative;
     margin-bottom: 12px;
@@ -60,10 +62,6 @@
     top: 0;
   }
 
-  /* td {
-    text-align: center;
-  } */
-
   .sotrudnik {
     width: 35%;
     text-align: left;
@@ -82,6 +80,7 @@
 
   .hours {
     width: 13%;
+    text-align: right;
   }
 
   .own {
@@ -120,14 +119,20 @@
   }
 
   .mdhours {
-    width: 15%;
+    width: 16%;
+    text-align: right;
   }
 
   .rowData {
     cursor: pointer;
   }
+
+  td {
+    padding: 0 5px;
+  }
 </style>
 
+<!-- for user info -->
 <style>
   #detail {
     padding: 5px;
@@ -154,64 +159,48 @@
     width: 70%;
   }
 
+  .workDayInfoHeader .when {
+    border-right: 1px solid black;
+    text-align: center;
+  }
+
   .when {
     width: 33%;
+    padding: 0 5px;
+    border-right: 1px solid #ccc;
+    line-height: 1.5;
+  }
+
+  .workDayInfoHeader .workhours {
+    border-right: 1px solid black;
+    text-align: center;
   }
 
   .workhours {
     width: 33%;
+    padding: 0 5px;
+    border-right: 1px solid #ccc;
+    line-height: 1.5;
+  }
+
+  .workDayInfoHeader .employeshift {
+    text-align: center;
   }
 
   .employeshift {
     width: 33%;
+    padding: 0 5px;
+    line-height: 1.5;
   }
 </style>
 
 <style>
-  .work-day-row {
-    cursor: pointer;
+  .mashin {
+    width: 26%;
   }
 
-  .modal-content {
-    background-color: #fefefe;
-    margin: 30% auto;
-    max-width: 800px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-
-  #work-table th {
-    font-size: small;
-    background: #007431;
-    color: white;
-    padding: 0 5px 0 5px;
-    border-color: black;
-  }
-
-  #work-table td {
-    font-size: small;
-    padding: 0 5px 0 5px;
-  }
-
-  .close {
-    color: #888;
-    float: right;
-    margin-left: 9px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .close:hover {
-    color: black;
-  }
-
-  .mashinf {
+  .part {
     width: 28%;
-  }
-
-  .detail {
-    width: 30%;
   }
 
   .stage {
@@ -219,22 +208,161 @@
   }
 
   .quantity {
-    width: 10%;
+    width: 13%;
   }
 
   .mashinehors {
-    width: 12%;
+    width: 14%;
   }
 
-  .modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
+  .blur {
+    filter: blur(2px);
+    background-color: rgba(222, 237, 229, 0.8);
+  }
+
+  .workDayInfoHeader {
+    display: flex;
+    font-size: small;
+    background-color: #007431;
+    color: white;
+    border: 1px solid black;
+  }
+
+  .workDayInfoHeader,
+  .mashin,
+  .part,
+  .stage,
+  .quantity {
+    border-right: 1px solid black;
+    text-align: center;
+  }
+
+  .work-day-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+    font-size: small;
+  }
+</style>
+
+<!-- for accordion -->
+<style>
+  /* Стили для заголовка секции аккордеона */
+  div.qpart-ui-accordion .qpart-ui-accordion-header {
+    display: flex;
+    justify-content: normal;
+    background: #fff;
+    border: solid #ccc;
+    border-width: 0 1px 1px 1px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Иконка в заголовке аккордеона */
+  div.qpart-ui-accordion .qpart-ui-accordion-header-icon {
+    background-image: none;
+    width: 0;
+  }
+
+  /* Стиль для активного (развернутого) заголовка */
+  div.qpart-ui-accordion .qpart-ui-accordion-header-active {
+    display: flex;
+    justify-content: normal;
+    background: #fff;
+    border: solid #ccc;
+    border-width: 0 1px 1px 1px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Содержимое секции аккордеона */
+  div.qpart-ui-accordion .qpart-ui-accordion-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .workDayInfoRow {
+    display: flex;
     width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
+    border-bottom: 1px solid #eee;
+  }
+
+  .workDayInfoRow-mashin,
+  .workDayInfoRow-part,
+  .workDayInfoRow-stage,
+  .workDayInfoRow-quantity {
+    border-left: 1px solid #eee;
+  }
+
+  .workDayInfoHeader .mashin {
+    width: 26.3%;
+  }
+
+  .workDayInfoHeader .part {
+    width: 27.5%;
+  }
+  .workDayInfoHeader .stage {
+    width: 20.3%;
+  }
+
+  .workDayInfoHeader .quantity {
+    width: 13%;
+  }
+
+  .workDayInfoHeader .mashinehors {
+    width: 14%;
+  }
+
+  .workDayInfoRow-mashin {
+    width: 26%;
+  }
+
+  .workDayInfoRow-part {
+    width: 27%;
+  }
+
+  .workDayInfoRow-stage {
+    width: 20%;
+  }
+
+  .workDayInfoRow-quantity {
+    width: 13%;
+    text-align: right;
+    border-right: 1px solid #eee;
+  }
+
+  .workDayInfoRow-mashinehors {
+    width: 14%;
+    text-align: right;
+    border-right: 1px solid #eee;
+  }
+  .workDayInfoHeader > div,
+  .workDayInfoRow > div {
+    padding: 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .totalHoursRow {
+    display: grid;
+    grid-template-columns: calc(100% - 12%) 12%;
+    align-items: center;
+    font-weight: bold;
+  }
+
+  .total {
+    text-align: right;
+    padding-right: 10px;
+  }
+
+  .hoursTotal {
+    text-align: right;
+    padding-right: 5px;
   }
 </style>
 
@@ -256,7 +384,6 @@
         <th class="hours">Часы</th>
         <th class="shift">С</th>
         <th class="mdhours">Сред Ч.</th>
-        <!-- <th class="dateofemployment">Дата оф-я</th> -->
         <th class="ratestatus">Статус</th>
       </tr>
     </thead>
@@ -272,7 +399,6 @@
       <td class='hours'>{{Часы}}</td>
       <td class='shift'>{{КоличествоСмен}}</td>
       <td class='mdhours'>{{СредниеЧасы}}</td>
-      <!-- <td class='dateofemployment'>{{ДатаОформления}}</td> -->
       <td class='ratestatus'>{{Статус}}</td>
     </tr>
   {{/each}}
@@ -280,7 +406,7 @@
 
 <script id="userInfo" type="text/x-handlebars-template">
   <td id='detail' colspan='6'>
-    <div id='hideblock' style='display:flex;'>
+    <div id='hideUserInfoBlock' style='display:flex;'>
       <img
         class='userFoto'
         src='/auth_files/photo/{{ИнфоПоСотруднику.emp_code_ZKTeco}}.jpg'
@@ -316,62 +442,51 @@
 
           </div>
         </div>
-        <!-- <div class='debt' style='color: red;'>Долг : {{debt}}</div> -->
       </div>
 
     </div>
     <div class='orderContainer'>
-      <table>
-        <thead>
-          <tr>
-            <th class='when'>Дата</th>
-            <th class='workhours'>Часы</th>
-            <th class='employeshift'>Смена</th>
-            <!-- <th class='count'>Кол-во</th> -->
-          </tr>
-        </thead>
-        <tbody>
-          {{#each ИнфоПоОтчетам}}
-            <tr class='work-day-row' data-date='{{Дата}}' data-shift='{{Смена}}' data-hours='{{Часы}}'>
-              <td>{{Дата}}</td>
-              <td>{{Часы}}</td>
-              <td>{{Смена}}</td>
-              <!-- <td>{{КоличествоИзготовлено}}</td> -->
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
+
+      <div class='workDayInfoHeader'>
+        <div class='when'>Дата</div>
+        <div class='workhours'>Часы</div>
+        <div class='employeshift'>Смена</div>
+      </div>
+
+      <div id='accordion'>
+        {{#each ИнфоПоОтчетам}}
+          <h3 class='work-day-row' data-date='{{Дата}}' data-shift='{{Смена}}' data-hours='{{Часы}}'>
+            <div class='when'>{{Дата}}</div>
+            <div class='workhours textAlignEnd'>{{Часы}}</div>
+            <div class='employeshift textAlignCenter'>{{Смена}}</div>
+          </h3>
+          <div class=''>
+            <div class='workDayInfoHeader'>
+              <div class='mashin'>Станок</div>
+              <div class='part'>Деталь</div>
+              <div class='stage'>Этап</div>
+              <div class='quantity'>К-во</div>
+              <div class='mashinehors'>Часы</div>
+            </div>
+            {{#each РаботыЗаСмену}}
+              <div class='workDayInfoRow'>
+                <div class='workDayInfoRow-mashin'>{{Станок}}</div>
+                <div class='workDayInfoRow-part'>{{Деталь}}</div>
+                <div class='workDayInfoRow-stage'>{{Этап}}</div>
+                <div class='workDayInfoRow-quantity'>{{Количество}}</div>
+                <div class='workDayInfoRow-mashinehors'>{{Часы}}</div>
+              </div>
+            {{/each}}
+            <div class='totalHoursRow'>
+              <div class='total'>Итого:</div>
+              <div class='hoursTotal'>{{Часы}}</div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
     </div>
 
   </td>
-</script>
-
-<script id="workInfo" type="text/x-handlebars-template">
-  <div class='card'>
-
-    <table id='work-table'>
-      <thead>
-        <tr>
-          <th class='mashin'>Станок</th>
-          <th class='detail'>Деталь</th>
-          <th class='stage'>Этап</th>
-          <th class='quantity textAlignEnd'>К-во</th>
-          <th class='mashinehors textAlignEnd'>Часы</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each this}}
-          <tr>
-            <td>{{Станок}}</td>
-            <td>{{Деталь}}</td>
-            <td>{{Этап}}</td>
-            <td class='textAlignEnd'>{{Количество}}</td>
-            <td class='textAlignEnd'>{{Часы}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
 </script>
 
 <script>
@@ -387,15 +502,6 @@
     if (testEnvironment) {
       date = new Date('2025-02-22');
     }
-
-    $(document).on('click', '.work-day-row', function () {
-      const row = $(this);
-      const date = row.data('date');
-      console.log(currentUser, date);
-      const dataOfDay = currentUser?.ИнфоПоОтчетам?.find(r => r.Дата === date)['РаботыЗаСмену'];
-      console.log('dataOfDay', dataOfDay);
-      showWorkDetails(dataOfDay);
-    });
 
     console.log('userRights', userRights);
 
@@ -455,7 +561,11 @@
         infoElement.remove();
       }
 
+      $('.rowData').removeClass('blur');
+
       if (needRender) {
+        $('.rowData').addClass('blur');
+        $(this).removeClass('blur');
         render(uid, this);
         console.log('needRender');
       }
@@ -472,19 +582,6 @@
         userUID: uid,
       };
       getUserInfo(data);
-
-      // setTimeout(() => {
-      //   $('.work-day-row')
-      //     .off('click')
-      //     .on('click', function () {
-      //       const $row = $(this);
-      //       showWorkDetails({
-      //         date: $row.data('date'),
-      //         shift: $row.data('shift'),
-      //         hours: $row.data('hours'),
-      //       });
-      //     });
-      // }, 300);
     }
 
     function getUserInfo(data) {
@@ -499,14 +596,29 @@
           console.log('Success callback', response);
           generateFromTemplate('#userInfo', response, '#infoRow');
 
+          $('#accordion').accordion({
+            collapsible: true,
+            active: false,
+            heightStyle: 'content',
+            classes: {
+              'ui-accordion': 'qpart-ui-accordion',
+              'ui-accordion-header': 'qpart-ui-accordion-header',
+              'ui-accordion-header-collapsed': 'qpart-ui-accordion-header-collapsed',
+              'ui-accordion-header-active': 'qpart-ui-accordion-header-active',
+              'ui-accordion-header-icon': 'qpart-ui-accordion-header-icon',
+              'ui-accordion-content': 'qpart-ui-accordion-content',
+              'ui-accordion-icons': 'qpart-ui-accordion-icons',
+              'ui-accordion-content-active': 'qpart-ui-accordion-content-active',
+            },
+          });
           const currentUID = user.uid;
           const uid = response['ИнфоПоСотруднику'].uid;
 
           console.log('currentUID', currentUID, 'uid', uid);
 
           if (uid === currentUID) {
-            $('#hideblock').hide();
-            console.log('hideblock', $('#hideblock'));
+            $('#hideUserInfoBlock').hide();
+            console.log('hideUserInfoBlock', $('#hideUserInfoBlock'));
           }
         },
         function onError(error) {
@@ -514,30 +626,6 @@
         },
         () => {}
       );
-    }
-
-    function showWorkDetails(dataOfDay) {
-      console.log('showWorkDetails', dataOfDay);
-      // 2. Создаем модальное окно (если еще не существует)
-      if ($('#workDetailsModal').length === 0) {
-        $('body').append(`
-      <div id="workDetailsModal" class="modal">
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          
-          <div id="workDetailsContent"></div>
-        </div>
-      </div>
-    `);
-
-        $('.close').on('click', function () {
-          $('#workDetailsModal').hide();
-        });
-      }
-
-      // 4. Рендерим содержимое
-      generateFromTemplate('#workInfo', dataOfDay, '#workDetailsContent');
-      $('#workDetailsModal').show();
     }
     getData();
   });
